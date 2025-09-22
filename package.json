@@ -2,7 +2,7 @@
   "name": "reactchullin_app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://chullin.github.io/reactchullin_app",
+  "homepage": "https://chullin.github.io/ReactChullin/",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.8.0",
