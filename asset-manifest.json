@@ -1,16 +1,17 @@
 {
   "files": {
-    "main.css": "/ReactChullin/static/css/main.f855e6bc.css",
-    "main.js": "/ReactChullin/static/js/main.f96b057f.js",
+    "main.css": "/ReactChullin/static/css/main.5775e983.css",
+    "main.js": "/ReactChullin/static/js/main.217ed4d8.js",
     "static/js/453.d067b303.chunk.js": "/ReactChullin/static/js/453.d067b303.chunk.js",
+    "static/media/photo0.png": "/ReactChullin/static/media/photo0.19c5f9da85e1e6d6269a.png",
     "static/media/logo.svg": "/ReactChullin/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/ReactChullin/index.html",
-    "main.f855e6bc.css.map": "/ReactChullin/static/css/main.f855e6bc.css.map",
-    "main.f96b057f.js.map": "/ReactChullin/static/js/main.f96b057f.js.map",
+    "main.5775e983.css.map": "/ReactChullin/static/css/main.5775e983.css.map",
+    "main.217ed4d8.js.map": "/ReactChullin/static/js/main.217ed4d8.js.map",
     "453.d067b303.chunk.js.map": "/ReactChullin/static/js/453.d067b303.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f855e6bc.css",
-    "static/js/main.f96b057f.js"
+    "static/css/main.5775e983.css",
+    "static/js/main.217ed4d8.js"
   ]
 }
