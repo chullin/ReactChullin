@@ -37,73 +37,56 @@ export default function Home() {
             </div>
             <div className="col-xxl-7">
               <div className="d-flex justify-content-center mt-5 mt-xxl-0">
-                <div className="profile bg-gradient-primary-to-secondary">
-                  <img
-                    className="profile-img"
-                    src="/assets/profile3.png"
-                    alt="Joseph Chen Profile"
-                  />
-                  <div className="dots-1">
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlnsXlink="http://www.w3.org/1999/xlink"
-                      x="0px"
-                      y="0px"
-                      viewBox="0 0 191.6 1215.4"
-                      xmlSpace="preserve"
-                    >
-                      <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)">
-                        <path d="M227.7,12788.6c-105-35-200-141-222-248c-43-206,163-412,369-369c155,32,275,190,260,339c-11,105-90,213-190,262 C383.7,12801.6,289.7,12808.6,227.7,12788.6z"></path>
-                        {/* ... Path data simplified for the dots ... */}
-                        <path d="M1507.7,12788.6c-151-50-253-216-222-362c25-119,136-230,254-255c194-41,395,142,375,339c-11,105-90,213-190,262 C1663.7,12801.6,1569.7,12808.6,1507.7,12788.6z"></path>
-                      </g>
-                    </svg>
+                <div className="position-relative" style={{ width: '380px', height: '380px' }}>
+                  {/* Vibrant Gradient Circle Background */}
+                  <div 
+                    className="position-absolute top-50 start-50 translate-middle rounded-circle shadow-lg" 
+                    style={{ 
+                      width: '320px', height: '320px', 
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      zIndex: 0 
+                    }}
+                  ></div>
+                  
+                  {/* Profile Image */}
+                  <div 
+                    className="position-absolute top-50 start-50 translate-middle overflow-hidden rounded-circle shadow" 
+                    style={{ width: '300px', height: '300px', zIndex: 1, border: '6px solid white' }}
+                  >
+                    <img
+                      className="w-100 h-100"
+                      src="/assets/profile3.png"
+                      alt="Joseph Chen Profile"
+                      style={{ objectFit: 'cover' }}
+                    />
                   </div>
-                  <div className="dots-2">
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlnsXlink="http://www.w3.org/1999/xlink"
-                      x="0px"
-                      y="0px"
-                      viewBox="0 0 191.6 1215.4"
-                      xmlSpace="preserve"
-                    >
-                      <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)">
-                        <path d="M227.7,12788.6c-105-35-200-141-222-248c-43-206,163-412,369-369c155,32,275,190,260,339c-11,105-90,213-190,262 C383.7,12801.6,289.7,12808.6,227.7,12788.6z"></path>
-                      </g>
-                    </svg>
+
+                  {/* Floating Card 1 (Top Right - overlaps circle edge) */}
+                  <div 
+                    className="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center" 
+                    style={{ top: '5%', right: '-22%', zIndex: 2, transform: 'rotate(5deg)', border: '1px solid rgba(0,0,0,0.05)' }}
+                  >
+                    <div className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '42px', height: '42px' }}>
+                      <i className="bi bi-code-slash fs-5"></i>
+                    </div>
+                    <div>
+                      <div className="fw-bolder fs-6 text-dark lh-1 mb-1">Software</div>
+                      <div className="text-muted small fw-medium lh-1">Engineer</div>
+                    </div>
                   </div>
-                  <div className="dots-3">
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlnsXlink="http://www.w3.org/1999/xlink"
-                      x="0px"
-                      y="0px"
-                      viewBox="0 0 191.6 1215.4"
-                      xmlSpace="preserve"
-                    >
-                      <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)">
-                        <path d="M227.7,12788.6c-105-35-200-141-222-248c-43-206,163-412,369-369c155,32,275,190,260,339c-11,105-90,213-190,262 C383.7,12801.6,289.7,12808.6,227.7,12788.6z"></path>
-                      </g>
-                    </svg>
-                  </div>
-                  <div className="dots-4">
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      xmlnsXlink="http://www.w3.org/1999/xlink"
-                      x="0px"
-                      y="0px"
-                      viewBox="0 0 191.6 1215.4"
-                      xmlSpace="preserve"
-                    >
-                      <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)">
-                        <path d="M227.7,12788.6c-105-35-200-141-222-248c-43-206,163-412,369-369c155,32,275,190,260,339c-11,105-90,213-190,262 C383.7,12801.6,289.7,12808.6,227.7,12788.6z"></path>
-                      </g>
-                    </svg>
+
+                  {/* Floating Card 2 (Bottom Left - overlaps circle edge) */}
+                  <div 
+                    className="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center" 
+                    style={{ bottom: '5%', left: '-22%', zIndex: 2, transform: 'rotate(-5deg)', border: '1px solid rgba(0,0,0,0.05)' }}
+                  >
+                    <div className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '42px', height: '42px' }}>
+                      <i className="bi bi-cpu fs-5"></i>
+                    </div>
+                    <div>
+                      <div className="fw-bolder fs-6 text-dark lh-1 mb-1">Embedded</div>
+                      <div className="text-muted small fw-medium lh-1">2+ Years Exp.</div>
+                    </div>
                   </div>
                 </div>
               </div>
