@@ -101,7 +101,7 @@ self.__SERVER_FILES_MANIFEST={
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/Users/chullin/Desktop/chullin.github.io",
+    "outputFileTracingRoot": "/Users/chullin/Desktop/ReactChullin",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -294,11 +294,11 @@ self.__SERVER_FILES_MANIFEST={
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
     "turbopack": {
-      "root": "/Users/chullin/Desktop/chullin.github.io"
+      "root": "/Users/chullin/Desktop/ReactChullin"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "/Users/chullin/Desktop/chullin.github.io",
+  "appDir": "/Users/chullin/Desktop/ReactChullin",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",
