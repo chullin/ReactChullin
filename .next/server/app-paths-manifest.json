@@ -9,7 +9,9 @@
   "/post/page": "app/post/page.js",
   "/projects/page": "app/projects/page.js",
   "/resume/page": "app/resume/page.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
   "/segmented-video-player/page": "app/segmented-video-player/page.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
   "/snake/page": "app/snake/page.js",
   "/tetris-battle/page": "app/tetris-battle/page.js",
   "/video-player/page": "app/video-player/page.js"

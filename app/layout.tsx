@@ -4,8 +4,41 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export const metadata = {
+  metadataBase: new URL('https://chullin.vercel.app/'),
   title: '陳憲億 Joseph Chen | Software Engineer | AI & Robotics',
-  description: 'Software Engineer | Python | AI | Robotics | Joseph Chen 陳憲億 Portfolio',
+  description: 'Software Engineer specializing in Python, AI, and Robotics. Explore Joseph Chen（陳憲億） portfolio and projects.',
+  keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'AI', 'Robotics', 'Python', 'Next.js', 'Portfolio'],
+  authors: [{ name: 'Joseph Chen' }],
+  creator: 'Joseph Chen',
+  openGraph: {
+    type: 'website',
+    locale: 'zh_TW',
+    url: 'https://chullin.vercel.app/',
+    title: '陳憲億 Joseph Chen | Software Engineer | AI & Robotics',
+    description: 'Software Engineer | Python | AI | Robotics | Joseph Chen 陳憲億 Portfolio',
+    siteName: 'Joseph Chen Portfolio',
+    images: [
+      {
+        url: '/assets/profile3.png',
+        width: 1200,
+        height: 630,
+        alt: 'Joseph Chen Profile',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '陳憲億 Joseph Chen | Software Engineer',
+    description: 'Explore the portfolio of Joseph Chen, a Software Engineer in AI & Robotics.',
+    images: ['/assets/profile3.png'],
+  },
+  alternates: {
+    canonical: 'https://chullin.vercel.app/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

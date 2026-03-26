@@ -9,7 +9,9 @@
   "/post/page": "/post",
   "/projects/page": "/projects",
   "/resume/page": "/resume",
+  "/robots.txt/route": "/robots.txt",
   "/segmented-video-player/page": "/segmented-video-player",
+  "/sitemap.xml/route": "/sitemap.xml",
   "/snake/page": "/snake",
   "/tetris-battle/page": "/tetris-battle",
   "/video-player/page": "/video-player"
