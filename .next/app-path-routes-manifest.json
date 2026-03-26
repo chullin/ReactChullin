@@ -1,0 +1,16 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/blog/man-must-explore/page": "/blog/man-must-explore",
+  "/blog/page": "/blog",
+  "/contact/page": "/contact",
+  "/demo/page": "/demo",
+  "/page": "/",
+  "/post/page": "/post",
+  "/projects/page": "/projects",
+  "/resume/page": "/resume",
+  "/segmented-video-player/page": "/segmented-video-player",
+  "/snake/page": "/snake",
+  "/tetris-battle/page": "/tetris-battle",
+  "/video-player/page": "/video-player"
+}

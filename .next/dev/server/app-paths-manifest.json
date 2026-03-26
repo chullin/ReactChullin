@@ -1,0 +1,10 @@
+{
+  "/blog/page": "app/blog/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/demo/page": "app/demo/page.js",
+  "/page": "app/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/resume/page": "app/resume/page.js",
+  "/snake/page": "app/snake/page.js",
+  "/tetris-battle/page": "app/tetris-battle/page.js"
+}

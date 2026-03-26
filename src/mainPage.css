@@ -1,0 +1,36 @@
+/* 主頁中文字的漸變色 */
+.text-gradient {
+  background: linear-gradient(90deg, #1e30f3, #da1f84);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.theme-color-blue {
+  color: #1e30f3;
+}
+
+.bg-gradient-primary-to-secondary {
+  background: linear-gradient(to right, #1e30f3, #da1f84);
+}
+
+/* 主頁圖片圓形和裝飾點 */
+.profile {
+  position: relative; /* 父元素必須是 relative 才能讓子元素 absolute 定位 */
+  width: 250px;
+  height: 250px;
+  border-radius: 15%;
+
+  /* 讓主頁面裝飾點可以在框框外顯示 */
+  overflow: visible;
+  position: relative;
+}
+
+.profile-img {
+  position: absolute; /* 必須設 absolute 才能用 bottom/left */
+  bottom: 0; /* 貼底 */
+  left: 50%; /* 水平置中 */
+  transform: translateX(-50%); /* 修正水平置中 */
+  width: 80%; /* 圖片大小 */
+  height: 80%;
+  object-fit: cover;
+}

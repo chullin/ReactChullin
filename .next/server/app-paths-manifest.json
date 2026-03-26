@@ -1,0 +1,16 @@
+{
+  "/_global-error/page": "app/_global-error/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/blog/man-must-explore/page": "app/blog/man-must-explore/page.js",
+  "/blog/page": "app/blog/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/demo/page": "app/demo/page.js",
+  "/page": "app/page.js",
+  "/post/page": "app/post/page.js",
+  "/projects/page": "app/projects/page.js",
+  "/resume/page": "app/resume/page.js",
+  "/segmented-video-player/page": "app/segmented-video-player/page.js",
+  "/snake/page": "app/snake/page.js",
+  "/tetris-battle/page": "app/tetris-battle/page.js",
+  "/video-player/page": "app/video-player/page.js"
+}
