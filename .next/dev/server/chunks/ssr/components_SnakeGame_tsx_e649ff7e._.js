@@ -133,6 +133,7 @@ function SnakeGame() {
         };
         const handleTouchMove = (e)=>{
             if (e.touches.length > 1) return;
+            e.preventDefault(); // Prevent scrolling and pull-to-refresh
             const dxTouch = e.touches[0].clientX - touchStartRef.current.x;
             const dyTouch = e.touches[0].clientY - touchStartRef.current.y;
             const { dx, dy } = directionRef.current;
@@ -157,8 +158,12 @@ function SnakeGame() {
             }
         };
         window.addEventListener('keydown', handleKeyDown);
-        canvas.addEventListener('touchstart', handleTouchStart);
-        canvas.addEventListener('touchmove', handleTouchMove);
+        canvas.addEventListener('touchstart', handleTouchStart, {
+            passive: false
+        });
+        canvas.addEventListener('touchmove', handleTouchMove, {
+            passive: false
+        });
         return ()=>{
             clearInterval(gameInterval);
             window.removeEventListener('keydown', handleKeyDown);
@@ -168,6 +173,10 @@ function SnakeGame() {
     }, []);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "container px-4",
+        style: {
+            touchAction: 'none',
+            overscrollBehavior: 'none'
+        },
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "text-center mb-5",
@@ -178,17 +187,17 @@ function SnakeGame() {
                         children: "Greedy Snake"
                     }, void 0, false, {
                         fileName: "[project]/components/SnakeGame.tsx",
-                        lineNumber: 126,
+                        lineNumber: 130,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/SnakeGame.tsx",
-                    lineNumber: 125,
+                    lineNumber: 129,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/SnakeGame.tsx",
-                lineNumber: 124,
+                lineNumber: 128,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -200,16 +209,17 @@ function SnakeGame() {
                     style: {
                         border: '2px solid #ccc',
                         borderRadius: '8px',
-                        background: '#fff'
+                        background: '#fff',
+                        touchAction: 'none'
                     }
                 }, void 0, false, {
                     fileName: "[project]/components/SnakeGame.tsx",
-                    lineNumber: 130,
+                    lineNumber: 134,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/SnakeGame.tsx",
-                lineNumber: 129,
+                lineNumber: 133,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -221,7 +231,7 @@ function SnakeGame() {
                 children: "Modal Trigger"
             }, void 0, false, {
                 fileName: "[project]/components/SnakeGame.tsx",
-                lineNumber: 138,
+                lineNumber: 147,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -239,10 +249,10 @@ function SnakeGame() {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                                         className: "modal-title fs-5",
-                                        children: "注意事項"
+                                        children: "遊戲說明"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SnakeGame.tsx",
-                                        lineNumber: 152,
+                                        lineNumber: 161,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -252,35 +262,35 @@ function SnakeGame() {
                                         "aria-label": "Close"
                                     }, void 0, false, {
                                         fileName: "[project]/components/SnakeGame.tsx",
-                                        lineNumber: 153,
+                                        lineNumber: 162,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SnakeGame.tsx",
-                                lineNumber: 151,
+                                lineNumber: 160,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "modal-body",
                                 children: [
-                                    "請使用方向鍵 😊 ",
+                                    "請使用方向鍵控制 😊 ",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/components/SnakeGame.tsx",
-                                        lineNumber: 156,
-                                        columnNumber: 25
+                                        lineNumber: 165,
+                                        columnNumber: 27
                                     }, this),
-                                    "手機也可以玩了！但小心不要下拉過多變成重新整理 XD ",
+                                    "手機玩家也可以透過滑動螢幕來控制蛇的方向！ ",
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                         fileName: "[project]/components/SnakeGame.tsx",
-                                        lineNumber: 157,
-                                        columnNumber: 42
+                                        lineNumber: 166,
+                                        columnNumber: 37
                                     }, this),
-                                    "建議壓著直接操作"
+                                    "已優化滑動體驗，不會再觸發頁面滾動或重新整理。"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SnakeGame.tsx",
-                                lineNumber: 155,
+                                lineNumber: 164,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -289,37 +299,37 @@ function SnakeGame() {
                                     type: "button",
                                     className: "btn btn-secondary",
                                     "data-bs-dismiss": "modal",
-                                    children: "關閉"
+                                    children: "開始遊戲"
                                 }, void 0, false, {
                                     fileName: "[project]/components/SnakeGame.tsx",
-                                    lineNumber: 161,
+                                    lineNumber: 170,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/SnakeGame.tsx",
-                                lineNumber: 160,
+                                lineNumber: 169,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/SnakeGame.tsx",
-                        lineNumber: 150,
+                        lineNumber: 159,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/components/SnakeGame.tsx",
-                    lineNumber: 149,
+                    lineNumber: 158,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/components/SnakeGame.tsx",
-                lineNumber: 148,
+                lineNumber: 157,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/SnakeGame.tsx",
-        lineNumber: 123,
+        lineNumber: 124,
         columnNumber: 5
     }, this);
 }

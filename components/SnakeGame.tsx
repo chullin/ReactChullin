@@ -95,6 +95,7 @@ export default function SnakeGame() {
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 1) return;
+      e.preventDefault(); // Prevent scrolling and pull-to-refresh
       const dxTouch = e.touches[0].clientX - touchStartRef.current.x;
       const dyTouch = e.touches[0].clientY - touchStartRef.current.y;
       const { dx, dy } = directionRef.current;
@@ -108,8 +109,8 @@ export default function SnakeGame() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    canvas.addEventListener('touchstart', handleTouchStart);
-    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
 
     return () => {
       clearInterval(gameInterval);
@@ -120,7 +121,10 @@ export default function SnakeGame() {
   }, []);
 
   return (
-    <div className="container px-4">
+    <div 
+      className="container px-4" 
+      style={{ touchAction: 'none', overscrollBehavior: 'none' }}
+    >
       <div className="text-center mb-5">
         <h1 className="display-5 fw-bolder mb-0">
           <span className="text-gradient d-inline">Greedy Snake</span>
@@ -131,7 +135,12 @@ export default function SnakeGame() {
           ref={canvasRef}
           width="400"
           height="400"
-          style={{ border: '2px solid #ccc', borderRadius: '8px', background: '#fff' }}
+          style={{ 
+            border: '2px solid #ccc', 
+            borderRadius: '8px', 
+            background: '#fff',
+            touchAction: 'none' 
+          }}
         ></canvas>
       </div>
 
@@ -149,16 +158,16 @@ export default function SnakeGame() {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5">注意事項</h1>
+              <h1 className="modal-title fs-5">遊戲說明</h1>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              請使用方向鍵 😊 <br />
-              手機也可以玩了！但小心不要下拉過多變成重新整理 XD <br />
-              建議壓著直接操作
+              請使用方向鍵控制 😊 <br />
+              手機玩家也可以透過滑動螢幕來控制蛇的方向！ <br />
+              已優化滑動體驗，不會再觸發頁面滾動或重新整理。
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">開始遊戲</button>
             </div>
           </div>
         </div>
