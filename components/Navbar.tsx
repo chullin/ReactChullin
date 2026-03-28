@@ -85,6 +85,7 @@ export default function Navbar() {
               </a>
               <ul className={`dropdown-menu dropdown-menu-end tw-border-none tw-shadow-xl tw-rounded-xl tw-p-2 tw-mt-2 tw-bg-white/95 tw-backdrop-blur-lg ${openDropdown === 'playground' ? 'show' : ''}`}>
                 <li><Link className={`dropdown-item tw-rounded-md ${isActive('/snake') ? 'tw-bg-primary/10 tw-text-primary tw-font-bold' : ''}`} href="/snake" onClick={closeMenu}>Snake Game</Link></li>
+                <li><Link className={`dropdown-item tw-rounded-md ${isActive('/vocab-quiz') ? 'tw-bg-primary/10 tw-text-primary tw-font-bold' : ''}`} href="/vocab-quiz" onClick={closeMenu}>Vocab Quiz</Link></li>
                 <li><Link className={`dropdown-item tw-rounded-md ${isActive('/tetris-battle') ? 'tw-bg-red-50 tw-text-red-600 tw-font-bold' : 'tw-text-red-500'}`} href="/tetris-battle" onClick={closeMenu}>Tetris Battle</Link></li>
               </ul>
             </li>
