@@ -117,13 +117,13 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
     return occupied >= 3;
   };
 
-  const rotate = useCallback(() => {
+  const rotate = useCallback((dir: number = 1) => {
     setState(prev => {
       if (!prev.activePiece || prev.isGameOver) return prev;
       
-      const newShape = rotateMatrix(prev.activePiece.shape);
+      const newShape = rotateMatrix(prev.activePiece.shape, dir);
       const startRotation = prev.activePiece.rotation;
-      const endRotation = (startRotation + 1) % 4;
+      const endRotation = (startRotation + dir + 4) % 4;
       
       const kickTable = prev.activePiece.type === 'I' ? WALL_KICKS_I : WALL_KICKS;
       const kicks = kickTable[`${startRotation}-${endRotation}`] || [[0, 0]];

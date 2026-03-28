@@ -27,8 +27,15 @@ export const getPiece = (type: PieceType): Piece => {
   };
 };
 
-export const rotateMatrix = (matrix: number[][]): number[][] => {
-  return matrix[0].map((_, index) => matrix.map(col => col[index]).reverse());
+export const rotateMatrix = (matrix: number[][], dir: number = 1): number[][] => {
+  // Transpose
+  const newMatrix = matrix[0].map((_, index) => matrix.map(col => col[index]));
+  if (dir === 1) {
+    // Clockwise: reverse each row
+    return newMatrix.map(row => row.reverse());
+  }
+  // Counter-Clockwise: reverse the order of rows
+  return newMatrix.reverse();
 };
 
 export const checkCollision = (board: Board, piece: Piece, pos = piece.pos, shape = piece.shape): boolean => {

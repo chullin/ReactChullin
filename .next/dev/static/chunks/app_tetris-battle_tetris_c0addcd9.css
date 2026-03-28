@@ -52,6 +52,10 @@
   margin-top: .5rem;
 }
 
+.tw-mb-1 {
+  margin-bottom: .25rem;
+}
+
 .tw-block {
   display: block;
 }
@@ -411,6 +415,10 @@
 .tw-text-xs {
   font-size: .75rem;
   line-height: 1rem;
+}
+
+.tw-text-\[10px\] {
+  font-size: 10px;
 }
 
 .tw-font-black {

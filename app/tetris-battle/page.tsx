@@ -38,46 +38,87 @@ export default function TetrisBattlePage() {
     }
   }, [bot.state.isGameOver]);
 
+  // DAS (Delayed Auto Shift) state
+  const dasTimers = React.useRef<{ [key: string]: { timeout: NodeJS.Timeout | null, interval: NodeJS.Timeout | null } }>({
+    ArrowLeft: { timeout: null, interval: null },
+    ArrowRight: { timeout: null, interval: null },
+  });
+
+  const stopDAS = (key: string) => {
+    if (dasTimers.current[key]) {
+      if (dasTimers.current[key].timeout) clearTimeout(dasTimers.current[key].timeout!);
+      if (dasTimers.current[key].interval) clearInterval(dasTimers.current[key].interval!);
+      dasTimers.current[key] = { timeout: null, interval: null };
+    }
+  };
+
+  const startDAS = (key: string, moveFn: () => void) => {
+    if (dasTimers.current[key] && (dasTimers.current[key].timeout || dasTimers.current[key].interval)) return;
+    
+    moveFn();
+    dasTimers.current[key].timeout = setTimeout(() => {
+      dasTimers.current[key].interval = setInterval(moveFn, 30);
+    }, 150);
+  };
+
   // Player Controls
   useEffect(() => {
-    if (!isStarted || player.state.isGameOver || bot.state.isGameOver) return;
+    if (!isStarted || player.state.isGameOver || bot.state.isGameOver) {
+      stopDAS('ArrowLeft');
+      stopDAS('ArrowRight');
+      return;
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Filter keys to prevent default behavior
+      const trackedKeys = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' ', 'z', 'Z', 'x', 'X', 'Shift', 'c', 'C'];
+      if (trackedKeys.includes(e.key)) {
+        e.preventDefault();
+      }
+
       switch (e.key) {
         case 'ArrowLeft': 
-          e.preventDefault();
-          player.move(-1, 0); 
+          startDAS('ArrowLeft', () => player.move(-1, 0));
           break;
         case 'ArrowRight': 
-          e.preventDefault();
-          player.move(1, 0); 
+          startDAS('ArrowRight', () => player.move(1, 0));
           break;
         case 'ArrowDown': 
-          e.preventDefault();
           player.move(0, 1); 
           break;
         case 'ArrowUp': 
-          e.preventDefault();
-          player.rotate(); 
+        case 'x':
+        case 'X':
+          player.rotate(1); // CW
+          break;
+        case 'z':
+        case 'Z':
+          player.rotate(-1); // CCW
           break;
         case ' ': 
-          e.preventDefault(); 
           player.hardDrop(); 
           break;
+        case 'Shift':
         case 'c': 
         case 'C': 
-          e.preventDefault();
           player.hold(); 
           break;
       }
-      // Alternate check for C key
-      if (e.code === 'KeyC') {
-        player.hold();
-      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') stopDAS('ArrowLeft');
+      if (e.key === 'ArrowRight') stopDAS('ArrowRight');
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      stopDAS('ArrowLeft');
+      stopDAS('ArrowRight');
+    };
   }, [isStarted, player, bot.state.isGameOver]);
 
   // Game Loop (Gravity)
@@ -103,7 +144,8 @@ export default function TetrisBattlePage() {
         
         // Simulate BOT actions
         // 1. Rotate to targets
-        for (let i = 0; i < bestMove.rotation; i++) bot.rotate();
+        const rotationDiff = (bestMove.rotation - bot.state.activePiece.rotation + 4) % 4;
+        for (let i = 0; i < rotationDiff; i++) bot.rotate(1);
         
         // 2. Move to target X
         const diffX = bestMove.x - bot.state.activePiece.pos.x;
@@ -220,15 +262,16 @@ export default function TetrisBattlePage() {
           <div className="tw-hidden lg:tw-flex tw-flex-col tw-items-center tw-justify-start tw-pt-4 tw-gap-4 tw-flex-shrink-0" style={{ minWidth: '110px' }}>
             <div className="tw-text-4xl tw-font-black tw-text-gray-700 tw-opacity-50">VS</div>
             {/* Controls moved here */}
-            <div className="tw-p-3 tw-bg-gray-800 tw-rounded-xl tw-border tw-border-gray-700 tw-w-full">
-              <h3 className="tw-text-xs tw-font-bold tw-mb-2 tw-text-gray-300 tw-text-center tw-uppercase tw-tracking-wider">Controls</h3>
-              <div className="tw-flex tw-flex-col tw-gap-1.5 tw-text-xs tw-text-gray-400">
-                <div><span className="tw-text-white tw-font-bold">Enter:</span> Start/Retry</div>
+            <div className="tw-p-2 tw-bg-gray-800 tw-rounded-xl tw-border tw-border-gray-700 tw-w-full">
+              <h3 className="tw-text-[10px] tw-font-bold tw-mb-1 tw-text-gray-300 tw-text-center tw-uppercase tw-tracking-wider">Controls</h3>
+              <div className="tw-flex tw-flex-col tw-gap-1 tw-text-[10px] tw-text-gray-400">
+                <div><span className="tw-text-white tw-font-bold">Enter:</span> Start</div>
                 <div><span className="tw-text-white tw-font-bold">← →:</span> Move</div>
-                <div><span className="tw-text-white tw-font-bold">↑:</span> Rotate</div>
+                <div><span className="tw-text-white tw-font-bold">Z:</span> Rotate Left</div>
+                <div><span className="tw-text-white tw-font-bold">X / ↑:</span> Rotate Right</div>
                 <div><span className="tw-text-white tw-font-bold">↓:</span> Soft Drop</div>
                 <div><span className="tw-text-white tw-font-bold">Space:</span> Hard Drop</div>
-                <div><span className="tw-text-white tw-font-bold">C:</span> Hold Piece</div>
+                <div><span className="tw-text-white tw-font-bold">Shift:</span> Hold</div>
               </div>
             </div>
           </div>

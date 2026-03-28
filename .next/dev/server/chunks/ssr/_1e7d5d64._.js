@@ -586,8 +586,15 @@ const getPiece = (type)=>{
         color: __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$Constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["PIECES"][type].color
     };
 };
-const rotateMatrix = (matrix)=>{
-    return matrix[0].map((_, index)=>matrix.map((col)=>col[index]).reverse());
+const rotateMatrix = (matrix, dir = 1)=>{
+    // Transpose
+    const newMatrix = matrix[0].map((_, index)=>matrix.map((col)=>col[index]));
+    if (dir === 1) {
+        // Clockwise: reverse each row
+        return newMatrix.map((row)=>row.reverse());
+    }
+    // Counter-Clockwise: reverse the order of rows
+    return newMatrix.reverse();
 };
 const checkCollision = (board, piece, pos = piece.pos, shape = piece.shape)=>{
     for(let y = 0; y < shape.length; y++){
@@ -1059,12 +1066,12 @@ const useTetris = (onLinesCleared)=>{
         });
         return occupied >= 3;
     };
-    const rotate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])(()=>{
+    const rotate = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((dir = 1)=>{
         setState((prev)=>{
             if (!prev.activePiece || prev.isGameOver) return prev;
-            const newShape = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$gameLogic$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["rotateMatrix"])(prev.activePiece.shape);
+            const newShape = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$gameLogic$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["rotateMatrix"])(prev.activePiece.shape, dir);
             const startRotation = prev.activePiece.rotation;
-            const endRotation = (startRotation + 1) % 4;
+            const endRotation = (startRotation + dir + 4) % 4;
             const kickTable = prev.activePiece.type === 'I' ? __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$Constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["WALL_KICKS_I"] : __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$Constants$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["WALL_KICKS"];
             const kicks = kickTable[`${startRotation}-${endRotation}`] || [
                 [
@@ -1395,44 +1402,101 @@ function TetrisBattlePage() {
     }, [
         bot.state.isGameOver
     ]);
+    // DAS (Delayed Auto Shift) state
+    const dasTimers = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"].useRef({
+        ArrowLeft: {
+            timeout: null,
+            interval: null
+        },
+        ArrowRight: {
+            timeout: null,
+            interval: null
+        }
+    });
+    const stopDAS = (key)=>{
+        if (dasTimers.current[key]) {
+            if (dasTimers.current[key].timeout) clearTimeout(dasTimers.current[key].timeout);
+            if (dasTimers.current[key].interval) clearInterval(dasTimers.current[key].interval);
+            dasTimers.current[key] = {
+                timeout: null,
+                interval: null
+            };
+        }
+    };
+    const startDAS = (key, moveFn)=>{
+        if (dasTimers.current[key] && (dasTimers.current[key].timeout || dasTimers.current[key].interval)) return;
+        moveFn();
+        dasTimers.current[key].timeout = setTimeout(()=>{
+            dasTimers.current[key].interval = setInterval(moveFn, 30);
+        }, 150);
+    };
     // Player Controls
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        if (!isStarted || player.state.isGameOver || bot.state.isGameOver) return;
+        if (!isStarted || player.state.isGameOver || bot.state.isGameOver) {
+            stopDAS('ArrowLeft');
+            stopDAS('ArrowRight');
+            return;
+        }
         const handleKeyDown = (e)=>{
+            // Filter keys to prevent default behavior
+            const trackedKeys = [
+                'ArrowLeft',
+                'ArrowRight',
+                'ArrowDown',
+                'ArrowUp',
+                ' ',
+                'z',
+                'Z',
+                'x',
+                'X',
+                'Shift',
+                'c',
+                'C'
+            ];
+            if (trackedKeys.includes(e.key)) {
+                e.preventDefault();
+            }
             switch(e.key){
                 case 'ArrowLeft':
-                    e.preventDefault();
-                    player.move(-1, 0);
+                    startDAS('ArrowLeft', ()=>player.move(-1, 0));
                     break;
                 case 'ArrowRight':
-                    e.preventDefault();
-                    player.move(1, 0);
+                    startDAS('ArrowRight', ()=>player.move(1, 0));
                     break;
                 case 'ArrowDown':
-                    e.preventDefault();
                     player.move(0, 1);
                     break;
                 case 'ArrowUp':
-                    e.preventDefault();
-                    player.rotate();
+                case 'x':
+                case 'X':
+                    player.rotate(1); // CW
+                    break;
+                case 'z':
+                case 'Z':
+                    player.rotate(-1); // CCW
                     break;
                 case ' ':
-                    e.preventDefault();
                     player.hardDrop();
                     break;
+                case 'Shift':
                 case 'c':
                 case 'C':
-                    e.preventDefault();
                     player.hold();
                     break;
             }
-            // Alternate check for C key
-            if (e.code === 'KeyC') {
-                player.hold();
-            }
+        };
+        const handleKeyUp = (e)=>{
+            if (e.key === 'ArrowLeft') stopDAS('ArrowLeft');
+            if (e.key === 'ArrowRight') stopDAS('ArrowRight');
         };
         window.addEventListener('keydown', handleKeyDown);
-        return ()=>window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+        return ()=>{
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+            stopDAS('ArrowLeft');
+            stopDAS('ArrowRight');
+        };
     }, [
         isStarted,
         player,
@@ -1461,7 +1525,8 @@ function TetrisBattlePage() {
                 const bestMove = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$ai$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["findBestMove"])(bot.state.board, bot.state.activePiece);
                 // Simulate BOT actions
                 // 1. Rotate to targets
-                for(let i = 0; i < bestMove.rotation; i++)bot.rotate();
+                const rotationDiff = (bestMove.rotation - bot.state.activePiece.rotation + 4) % 4;
+                for(let i = 0; i < rotationDiff; i++)bot.rotate(1);
                 // 2. Move to target X
                 const diffX = bestMove.x - bot.state.activePiece.pos.x;
                 if (diffX !== 0) {
@@ -1523,7 +1588,7 @@ function TetrisBattlePage() {
                             children: "TETRIS BATTLE"
                         }, void 0, false, {
                             fileName: "[project]/app/tetris-battle/page.tsx",
-                            lineNumber: 148,
+                            lineNumber: 190,
                             columnNumber: 11
                         }, this),
                         isStarted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1534,7 +1599,7 @@ function TetrisBattlePage() {
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/tetris-battle/page.tsx",
-                            lineNumber: 152,
+                            lineNumber: 194,
                             columnNumber: 13
                         }, this),
                         isStarted && !player.state.isGameOver && !bot.state.isGameOver && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1542,13 +1607,13 @@ function TetrisBattlePage() {
                             children: "● BATTLE IN PROGRESS"
                         }, void 0, false, {
                             fileName: "[project]/app/tetris-battle/page.tsx",
-                            lineNumber: 157,
+                            lineNumber: 199,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/tetris-battle/page.tsx",
-                    lineNumber: 147,
+                    lineNumber: 189,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1562,7 +1627,7 @@ function TetrisBattlePage() {
                                     children: "PLAYER (YOU)"
                                 }, void 0, false, {
                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                    lineNumber: 166,
+                                    lineNumber: 208,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1576,7 +1641,7 @@ function TetrisBattlePage() {
                                                     pieceType: player.state.holdPiece
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 169,
+                                                    lineNumber: 211,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$GameUI$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GameStats"], {
@@ -1586,13 +1651,13 @@ function TetrisBattlePage() {
                                                     isTSpin: player.state.lastMoveTSpin
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 170,
+                                                    lineNumber: 212,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 168,
+                                            lineNumber: 210,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1607,7 +1672,7 @@ function TetrisBattlePage() {
                                                             isPlayer: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 175,
+                                                            lineNumber: 217,
                                                             columnNumber: 19
                                                         }, this),
                                                         player.state.pendingGarbage > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1617,13 +1682,13 @@ function TetrisBattlePage() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 177,
+                                                            lineNumber: 219,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 174,
+                                                    lineNumber: 216,
                                                     columnNumber: 17
                                                 }, this),
                                                 !isStarted && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1635,14 +1700,14 @@ function TetrisBattlePage() {
                                                                 "TETRIS",
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("br", {}, void 0, false, {
                                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                                    lineNumber: 184,
+                                                                    lineNumber: 226,
                                                                     columnNumber: 115
                                                                 }, this),
                                                                 "BATTLE"
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 184,
+                                                            lineNumber: 226,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1651,7 +1716,7 @@ function TetrisBattlePage() {
                                                             children: "START GAME"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 185,
+                                                            lineNumber: 227,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1659,13 +1724,13 @@ function TetrisBattlePage() {
                                                             children: "or press Enter"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 191,
+                                                            lineNumber: 233,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 183,
+                                                    lineNumber: 225,
                                                     columnNumber: 19
                                                 }, this),
                                                 isStarted && (player.state.isGameOver || bot.state.isGameOver) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1676,7 +1741,7 @@ function TetrisBattlePage() {
                                                             children: player.state.isGameOver ? 'GAME\nOVER' : 'YOU\nWIN!'
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 197,
+                                                            lineNumber: 239,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1684,7 +1749,7 @@ function TetrisBattlePage() {
                                                             children: player.state.isGameOver ? 'Bot wins this round' : `Ready for Round ${overallLevel}?`
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 200,
+                                                            lineNumber: 242,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -1693,7 +1758,7 @@ function TetrisBattlePage() {
                                                             children: player.state.isGameOver ? 'RETRY' : 'NEXT ROUND'
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 203,
+                                                            lineNumber: 245,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1701,19 +1766,19 @@ function TetrisBattlePage() {
                                                             children: "or press Enter"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 209,
+                                                            lineNumber: 251,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 196,
+                                                    lineNumber: 238,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 173,
+                                            lineNumber: 215,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1723,24 +1788,24 @@ function TetrisBattlePage() {
                                                 pieceType: player.state.nextPiece
                                             }, void 0, false, {
                                                 fileName: "[project]/app/tetris-battle/page.tsx",
-                                                lineNumber: 214,
+                                                lineNumber: 256,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 213,
+                                            lineNumber: 255,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                    lineNumber: 167,
+                                    lineNumber: 209,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/tetris-battle/page.tsx",
-                            lineNumber: 165,
+                            lineNumber: 207,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1754,22 +1819,22 @@ function TetrisBattlePage() {
                                     children: "VS"
                                 }, void 0, false, {
                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                    lineNumber: 221,
+                                    lineNumber: 263,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "tw-p-3 tw-bg-gray-800 tw-rounded-xl tw-border tw-border-gray-700 tw-w-full",
+                                    className: "tw-p-2 tw-bg-gray-800 tw-rounded-xl tw-border tw-border-gray-700 tw-w-full",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                            className: "tw-text-xs tw-font-bold tw-mb-2 tw-text-gray-300 tw-text-center tw-uppercase tw-tracking-wider",
+                                            className: "tw-text-[10px] tw-font-bold tw-mb-1 tw-text-gray-300 tw-text-center tw-uppercase tw-tracking-wider",
                                             children: "Controls"
                                         }, void 0, false, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 224,
+                                            lineNumber: 266,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "tw-flex tw-flex-col tw-gap-1.5 tw-text-xs tw-text-gray-400",
+                                            className: "tw-flex tw-flex-col tw-gap-1 tw-text-[10px] tw-text-gray-400",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
@@ -1778,14 +1843,14 @@ function TetrisBattlePage() {
                                                             children: "Enter:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 226,
+                                                            lineNumber: 268,
                                                             columnNumber: 22
                                                         }, this),
-                                                        " Start/Retry"
+                                                        " Start"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 226,
+                                                    lineNumber: 268,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1795,31 +1860,48 @@ function TetrisBattlePage() {
                                                             children: "← →:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 227,
+                                                            lineNumber: 269,
                                                             columnNumber: 22
                                                         }, this),
                                                         " Move"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 227,
+                                                    lineNumber: 269,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             className: "tw-text-white tw-font-bold",
-                                                            children: "↑:"
+                                                            children: "Z:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 228,
+                                                            lineNumber: 270,
                                                             columnNumber: 22
                                                         }, this),
-                                                        " Rotate"
+                                                        " Rotate Left"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 228,
+                                                    lineNumber: 270,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            className: "tw-text-white tw-font-bold",
+                                                            children: "X / ↑:"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/app/tetris-battle/page.tsx",
+                                                            lineNumber: 271,
+                                                            columnNumber: 22
+                                                        }, this),
+                                                        " Rotate Right"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/app/tetris-battle/page.tsx",
+                                                    lineNumber: 271,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1829,14 +1911,14 @@ function TetrisBattlePage() {
                                                             children: "↓:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 229,
+                                                            lineNumber: 272,
                                                             columnNumber: 22
                                                         }, this),
                                                         " Soft Drop"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 229,
+                                                    lineNumber: 272,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1846,49 +1928,49 @@ function TetrisBattlePage() {
                                                             children: "Space:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 230,
+                                                            lineNumber: 273,
                                                             columnNumber: 22
                                                         }, this),
                                                         " Hard Drop"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 230,
+                                                    lineNumber: 273,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     children: [
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             className: "tw-text-white tw-font-bold",
-                                                            children: "C:"
+                                                            children: "Shift:"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                                            lineNumber: 231,
+                                                            lineNumber: 274,
                                                             columnNumber: 22
                                                         }, this),
-                                                        " Hold Piece"
+                                                        " Hold"
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 231,
+                                                    lineNumber: 274,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 225,
+                                            lineNumber: 267,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                    lineNumber: 223,
+                                    lineNumber: 265,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/tetris-battle/page.tsx",
-                            lineNumber: 220,
+                            lineNumber: 262,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1899,7 +1981,7 @@ function TetrisBattlePage() {
                                     children: "BOT (AI)"
                                 }, void 0, false, {
                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                    lineNumber: 238,
+                                    lineNumber: 281,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1913,7 +1995,7 @@ function TetrisBattlePage() {
                                                     pieceType: bot.state.holdPiece
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 241,
+                                                    lineNumber: 284,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$tetris$2d$battle$2f$GameUI$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GameStats"], {
@@ -1923,13 +2005,13 @@ function TetrisBattlePage() {
                                                     isTSpin: bot.state.lastMoveTSpin
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 242,
+                                                    lineNumber: 285,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 240,
+                                            lineNumber: 283,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1941,7 +2023,7 @@ function TetrisBattlePage() {
                                                     isPlayer: false
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 245,
+                                                    lineNumber: 288,
                                                     columnNumber: 17
                                                 }, this),
                                                 bot.state.pendingGarbage > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1951,13 +2033,13 @@ function TetrisBattlePage() {
                                                     }
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                                    lineNumber: 247,
+                                                    lineNumber: 290,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 244,
+                                            lineNumber: 287,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1967,41 +2049,41 @@ function TetrisBattlePage() {
                                                 pieceType: bot.state.nextPiece
                                             }, void 0, false, {
                                                 fileName: "[project]/app/tetris-battle/page.tsx",
-                                                lineNumber: 251,
+                                                lineNumber: 294,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/tetris-battle/page.tsx",
-                                            lineNumber: 250,
+                                            lineNumber: 293,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/tetris-battle/page.tsx",
-                                    lineNumber: 239,
+                                    lineNumber: 282,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/tetris-battle/page.tsx",
-                            lineNumber: 237,
+                            lineNumber: 280,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/tetris-battle/page.tsx",
-                    lineNumber: 163,
+                    lineNumber: 205,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/tetris-battle/page.tsx",
-            lineNumber: 145,
+            lineNumber: 187,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/tetris-battle/page.tsx",
-        lineNumber: 144,
+        lineNumber: 186,
         columnNumber: 5
     }, this);
 }
