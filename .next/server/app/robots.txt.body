@@ -1,6 +1,0 @@
-User-Agent: *
-Allow: /
-Disallow: /private/
-Disallow: /api/
-
-Sitemap: https://chullin.vercel.app/sitemap.xml
