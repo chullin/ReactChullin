@@ -43,7 +43,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='zh-Hant'>
+    <html lang='zh-Hant' suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="d-flex flex-column h-100">
+      <body className="d-flex flex-column h-100" suppressHydrationWarning>
         <Script
           src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
           strategy="afterInteractive"

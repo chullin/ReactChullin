@@ -82,14 +82,37 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
   const [correctedOnFirstTry, setCorrectedOnFirstTry] = useState(0);
   const [score, setScore] = useState(0);
   const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
-  
-  const audioCorrect = useRef<HTMLAudioElement | null>(null);
-  const audioWrong = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize Assets
-  useEffect(() => {
-    audioCorrect.current = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3');
-    audioWrong.current = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3');
+  // Web Audio API Synthesis
+  const playTone = useCallback((type: 'correct' | 'wrong') => {
+    if (typeof window === 'undefined') return;
+    
+    const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    if (type === 'correct') {
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, context.currentTime); // A5
+      gainNode.gain.setValueAtTime(0.1, context.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.2);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.2);
+    } else {
+      oscillator.type = 'sawtooth';
+      oscillator.frequency.setValueAtTime(220, context.currentTime); // A3
+      oscillator.frequency.exponentialRampToValueAtTime(110, context.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(0.1, context.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0, context.currentTime + 0.3);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.3);
+    }
+    
+    // Cleanup context after sound finishes
+    setTimeout(() => context.close(), 500);
   }, []);
 
   // Initialize questions
@@ -154,7 +177,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
     setIsAnswering(true);
     
     if (isCorrect) {
-      audioCorrect.current?.play();
+      playTone('correct');
       if (!currentQ.id.includes('retry')) {
         setCorrectedOnFirstTry(prev => prev + 1);
       }
@@ -165,7 +188,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
         advance();
       }, 1000);
     } else {
-      audioWrong.current?.play();
+      playTone('wrong');
       setIsWrong(true);
       
       // Re-queue the wrong word
