@@ -6,8 +6,25 @@
  * 4. 存檔後重新整理網頁即可。
  */
 
+import { elementaryPart1 } from './elementary/elementary1';
+import { elementaryPart2 } from './elementary/elementary2';
+import { elementaryPart3 } from './elementary/elementary3';
+import { elementaryPart4 } from './elementary/elementary4';
+import { elementaryPart5 } from './elementary/elementary5';
+import { elementaryPart6 } from './elementary/elementary6';
+import { elementaryPart7 } from './elementary/elementary7';
+import { elementaryPart8 } from './elementary/elementary8';
+
 export type DifficultyLevel = 
   | 'elementary' 
+  | 'elementary-part-1'
+  | 'elementary-part-2'
+  | 'elementary-part-3'
+  | 'elementary-part-4'
+  | 'elementary-part-5'
+  | 'elementary-part-6'
+  | 'elementary-part-7'
+  | 'elementary-part-8'
   | 'junior' 
   | 'senior4500' 
   | 'senior7000' 
@@ -30,20 +47,14 @@ export interface DifficultyCategory {
 }
 
 export const wordData: DifficultyCategory[] = [
-  {
-    id: 'elementary',
-    title: '簡單 (國小)',
-    description: '基礎生活單字，適合初學者。',
-    icon: 'Baby',
-    color: 'tw-bg-blue-500',
-    words: [
-      { word: "apple", definition: "蘋果" },
-      { word: "banana", definition: "香蕉" },
-      { word: "cat", definition: "貓" },
-      { word: "dog", definition: "狗" },
-      { word: "elephant", definition: "大象" },
-    ]
-  },
+  elementaryPart1,
+  elementaryPart2,
+  elementaryPart3,
+  elementaryPart4,
+  elementaryPart5,
+  elementaryPart6,
+  elementaryPart7,
+  elementaryPart8,
   {
     id: 'junior',
     title: '中等 (國中)',

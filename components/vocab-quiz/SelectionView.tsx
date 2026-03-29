@@ -8,7 +8,14 @@ import {
   Trophy, 
   Briefcase, 
   TrendingUp, 
-  Crown 
+  Crown,
+  Users,
+  Utensils,
+  Trees,
+  MapPin,
+  Activity,
+  Sparkles,
+  Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -20,6 +27,13 @@ const iconMap = {
   Briefcase: Briefcase,
   TrendingUp: TrendingUp,
   Crown: Crown,
+  Users: Users,
+  Utensils: Utensils,
+  Trees: Trees,
+  MapPin: MapPin,
+  Activity: Activity,
+  Sparkles: Sparkles,
+  Clock: Clock,
 };
 
 type SelectionViewProps = {
