@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart7: DifficultyCategory = {
-    "id": "elementary-part-7",
+    "id": "elementary",
     "title": "常用形容詞 (7/8)",
     "description": "涵蓋外觀描述、心理情緒、事物特徵及天氣感受。",
     "icon": "Sparkles",

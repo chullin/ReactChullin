@@ -4,20 +4,29 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { wordData, DifficultyCategory, Word } from '@/data/wordData';
 import SelectionView from './SelectionView';
+import QuizSetupView, { QuizMode } from './QuizSetupView';
 import QuizGame from './QuizGame';
 import ResultView from './ResultView';
 
-export type GameState = 'selection' | 'playing' | 'results';
+export type GameState = 'selection' | 'setup' | 'playing' | 'results';
 
 export default function VocabularyQuiz() {
   const [gameState, setGameState] = useState<GameState>('selection');
   const [selectedCategory, setSelectedCategory] = useState<DifficultyCategory | null>(null);
+  const [quizMode, setQuizMode] = useState<QuizMode>('eng-to-chi');
+  const [questionCount, setQuestionCount] = useState<number>(10);
   const [score, setScore] = useState(0);
 
   const handleSelectCategory = (category: DifficultyCategory) => {
     setSelectedCategory(category);
-    setGameState('playing');
+    setGameState('setup');
     setScore(0);
+  };
+
+  const handleStartQuiz = (mode: QuizMode, count: number) => {
+    setQuizMode(mode);
+    setQuestionCount(count);
+    setGameState('playing');
   };
 
   const handleFinishGame = (finalScore: number) => {
@@ -51,6 +60,22 @@ export default function VocabularyQuiz() {
           </motion.div>
         )}
 
+        {gameState === 'setup' && selectedCategory && (
+          <motion.div
+            key="setup"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <QuizSetupView 
+              category={selectedCategory}
+              onStart={handleStartQuiz}
+              onBack={handleRestart}
+            />
+          </motion.div>
+        )}
+
         {gameState === 'playing' && selectedCategory && (
           <motion.div
             key="playing"
@@ -61,6 +86,8 @@ export default function VocabularyQuiz() {
           >
             <QuizGame 
               category={selectedCategory} 
+              mode={quizMode}
+              totalQuestions={questionCount}
               onFinish={handleFinishGame}
               onBack={handleRestart}
             />

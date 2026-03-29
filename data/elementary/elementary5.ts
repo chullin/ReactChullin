@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart5: DifficultyCategory = {
-    "id": "elementary-part-5",
+    "id": "elementary",
     "title": "空間與移動 (5/8)",
     "description": "包含生活常見場所、交通工具、城市設施以及基本方位詞。",
     "icon": "MapPin",

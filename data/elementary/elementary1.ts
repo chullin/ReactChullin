@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart1: DifficultyCategory = {
-    "id": "elementary-part-1",
+    "id": "elementary",
     "title": "基礎生活 (1/8)",
     "description": "數字、人稱、家庭成員與身體部位。",
     "icon": "Users",

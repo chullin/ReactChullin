@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart8: DifficultyCategory = {
-    "id": "elementary-part-8",
+    "id": "elementary",
     "title": "時間與邏輯關係 (8/8)",
     "description": "包含時間單位、星期、月份、季節以及基礎介係詞與連接詞。",
     "icon": "Clock",

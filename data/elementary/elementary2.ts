@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart2: DifficultyCategory = {
-    "id": "elementary-part-2",
+    "id": "elementary",
     "title": "日常飲食與穿著 (2/8)",
     "description": "涵蓋各類食物、飲品、餐具以及日常衣物鞋襪。",
     "icon": "Utensils",

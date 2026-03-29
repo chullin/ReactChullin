@@ -17,14 +17,6 @@ import { elementaryPart8 } from './elementary/elementary8';
 
 export type DifficultyLevel = 
   | 'elementary' 
-  | 'elementary-part-1'
-  | 'elementary-part-2'
-  | 'elementary-part-3'
-  | 'elementary-part-4'
-  | 'elementary-part-5'
-  | 'elementary-part-6'
-  | 'elementary-part-7'
-  | 'elementary-part-8'
   | 'junior' 
   | 'senior4500' 
   | 'senior7000' 
@@ -47,14 +39,23 @@ export interface DifficultyCategory {
 }
 
 export const wordData: DifficultyCategory[] = [
-  elementaryPart1,
-  elementaryPart2,
-  elementaryPart3,
-  elementaryPart4,
-  elementaryPart5,
-  elementaryPart6,
-  elementaryPart7,
-  elementaryPart8,
+  {
+    id: 'elementary',
+    title: '簡單 (國小)',
+    description: '基礎生活單字，適合初學者（含 800+ 單字）。',
+    icon: 'Baby',
+    color: 'tw-bg-blue-500',
+    words: [
+      ...elementaryPart1.words,
+      ...elementaryPart2.words,
+      ...elementaryPart3.words,
+      ...elementaryPart4.words,
+      ...elementaryPart5.words,
+      ...elementaryPart6.words,
+      ...elementaryPart7.words,
+      ...elementaryPart8.words,
+    ]
+  },
   {
     id: 'junior',
     title: '中等 (國中)',

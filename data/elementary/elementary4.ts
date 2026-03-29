@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart4: DifficultyCategory = {
-    "id": "elementary-part-4",
+    "id": "elementary",
     "title": "校園生活與運動 (4/8)",
     "description": "包含校園場所、文具用品、學習科目及常見的球類運動。",
     "icon": "School",

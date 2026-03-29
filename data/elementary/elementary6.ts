@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart6: DifficultyCategory = {
-    "id": "elementary-part-6",
+    "id": "elementary",
     "title": "常用動詞 (6/8)",
     "description": "涵蓋日常生活動作、感官知覺、心理活動及社交行為。",
     "icon": "Activity",

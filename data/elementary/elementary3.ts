@@ -1,7 +1,7 @@
 import { DifficultyCategory } from '../wordData';
 
 export const elementaryPart3: DifficultyCategory = {
-    "id": "elementary-part-3",
+    "id": "elementary",
     "title": "自然與生物 (3/8)",
     "description": "涵蓋常見動物、昆蟲、大自然景觀及天氣描述。",
     "icon": "Trees",
