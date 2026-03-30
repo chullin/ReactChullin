@@ -1,0 +1,31 @@
+Mismatch! CH size 2 != EN size 1
+CH: [(116, '借入'), (117, '老板')]
+EN: ['bored']
+Mismatch! CH size 1 != EN size 3
+CH: [(118, '兩者都')]
+EN: ['borrow', 'boss', 'both']
+Mismatch! CH size 1 != EN size 2
+CH: [(171, '粉筆')]
+EN: ['chalk', 'cent']
+Mismatch! CH size 1 != EN size 2
+CH: [(155, '(無邊)帽')]
+EN: ['cap', 'cap']
+Mismatch! CH size 1 != EN size 2
+CH: [(322, '除了…之外')]
+EN: ['except', 'everybody']
+Mismatch! CH size 1 != EN size 2
+CH: [(959, '歌曲')]
+EN: ['somebody', 'song']
+Mismatch! CH size 4 != EN size 5
+CH: [(1006, '超級市場'), (1007, '確定的'), (1008, '衝浪'), (1009, '使…驚訝')]
+EN: ['supermarke', 'sure', 'surf', 'surprise', 't']
+Mismatch! CH size 3 != EN size 1
+CH: [(1056, '這個'), (1057, '喉嚨'), (1058, '丟')]
+EN: ['thirteenth']
+Mismatch! CH size 1 != EN size 4
+CH: [(1059, '那些')]
+EN: ['this', 'throat', 'throw', 'those']
+Mismatch! CH size 1 != EN size 2
+CH: [(1035, '第十〈的〉')]
+EN: ['tenth', 'tenth']
+Total pairs generated: 1196

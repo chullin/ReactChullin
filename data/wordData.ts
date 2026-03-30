@@ -6,14 +6,7 @@
  * 4. 存檔後重新整理網頁即可。
  */
 
-import { elementaryPart1 } from './elementary/elementary1';
-import { elementaryPart2 } from './elementary/elementary2';
-import { elementaryPart3 } from './elementary/elementary3';
-import { elementaryPart4 } from './elementary/elementary4';
-import { elementaryPart5 } from './elementary/elementary5';
-import { elementaryPart6 } from './elementary/elementary6';
-import { elementaryPart7 } from './elementary/elementary7';
-import { elementaryPart8 } from './elementary/elementary8';
+import { elementaryAll1200 } from './elementary/elementaryAll1200';
 
 export type DifficultyLevel = 
   | 'elementary' 
@@ -40,21 +33,7 @@ export interface DifficultyCategory {
 
 export const wordData: DifficultyCategory[] = [
   {
-    id: 'elementary',
-    title: '簡單 (國小)',
-    description: '基礎生活單字，適合初學者（含 800+ 單字）。',
-    icon: 'Baby',
-    color: 'tw-bg-blue-500',
-    words: [
-      ...elementaryPart1.words,
-      ...elementaryPart2.words,
-      ...elementaryPart3.words,
-      ...elementaryPart4.words,
-      ...elementaryPart5.words,
-      ...elementaryPart6.words,
-      ...elementaryPart7.words,
-      ...elementaryPart8.words,
-    ]
+    ...elementaryAll1200
   },
   {
     id: 'junior',
