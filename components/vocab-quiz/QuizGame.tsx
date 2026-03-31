@@ -170,8 +170,13 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
     
     if (isCorrect) {
       playTone('correct');
-      const newMastered = new Set(masteredWords).add(currentQ.word);
-      setMasteredWords(newMastered);
+      const newMastered = new Set(masteredWords);
+      
+      // Only grant points if answered correctly on the very first try!
+      if (!currentQ.id.includes('retry')) {
+        newMastered.add(currentQ.word);
+        setMasteredWords(newMastered);
+      }
       
       // Auto-advance for correct answers
       setTimeout(() => {
