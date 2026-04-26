@@ -58,11 +58,11 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
 
     // Get all possible answers in the category for distractors
     const allAnswers = category.words.map(w => 
-      mode === 'eng-to-chi' ? w.chinese : w.english
+      mode === 'eng-to-chi' ? w.definition : w.word
     );
 
     const generatedQuestions: Question[] = selectedWords.map(word => {
-      const correctAnswer = mode === 'eng-to-chi' ? word.chinese : word.english;
+      const correctAnswer = mode === 'eng-to-chi' ? word.definition : word.word;
       
       // Filter out correct answer to get distractors
       let distractors = allAnswers.filter(a => a !== correctAnswer);
@@ -191,7 +191,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
                 
                 <div className="space-y-4">
                   <h2 className={`text-6xl font-black tracking-tight ${mode === 'eng-to-chi' ? 'text-primary' : 'text-indigo-600'}`}>
-                    {mode === 'eng-to-chi' ? currentQuestion.word.english : currentQuestion.word.chinese}
+                    {mode === 'eng-to-chi' ? currentQuestion.word.word : currentQuestion.word.definition}
                   </h2>
                   
                   {mode === 'eng-to-chi' && (
@@ -200,18 +200,14 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
                       size="lg"
                       variant="light"
                       color="primary"
-                      onPress={() => playSound(currentQuestion.word.english)}
+                      onPress={() => playSound(currentQuestion.word.word)}
                       className="hover:bg-blue-50 transition-colors"
                     >
                       <Volume2 size={32} />
                     </Button>
                   )}
                   
-                  {currentQuestion.word.phonetic && mode === 'eng-to-chi' && (
-                    <p className="text-2xl text-gray-400 font-medium italic">
-                      {currentQuestion.word.phonetic}
-                    </p>
-                  )}
+                  {/* Phonetic removed as it doesn't exist in interface */}
                 </div>
               </div>
 
@@ -284,7 +280,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
                          </div>
                        )}
                        <p className="text-gray-500 font-medium">
-                         單字例句：<span className="italic">"{currentQuestion.word.example}"</span>
+                         單字：<span className="italic">"{currentQuestion.word.word}"</span> - {currentQuestion.word.definition}
                        </p>
                     </div>
 
