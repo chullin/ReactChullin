@@ -158,7 +158,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
               color={reachedDailyGoal ? "success" : "primary"}
               className="h-3 shadow-inner bg-gray-100"
               radius="full"
-              isStripe
+              isStriped
             />
           </div>
         </div>
