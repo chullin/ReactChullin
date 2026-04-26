@@ -370,7 +370,7 @@ export default function TetrisBattlePage() {
                 color="primary" 
                 variant="shadow" 
                 className="font-black px-4"
-                startContent={<Badge color="success" content="" shape="circle" size="sm" className="relative -top-0.5" />}
+                startContent={<span className="w-2 h-2 rounded-full bg-success relative -top-0.5" />}
               >
                 ROUND {overallLevel}
               </Chip>
