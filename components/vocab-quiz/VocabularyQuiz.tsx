@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { wordData, DifficultyCategory, Word } from '@/data/wordData';
+import { wordData, DifficultyCategory } from '@/data/wordData';
 import SelectionView from './SelectionView';
 import QuizSetupView, { QuizMode } from './QuizSetupView';
 import QuizGame from './QuizGame';
 import ResultView from './ResultView';
+import { Card } from '@heroui/react';
 
 export type GameState = 'selection' | 'setup' | 'playing' | 'results';
 
@@ -46,27 +47,31 @@ export default function VocabularyQuiz() {
   };
 
   return (
-    <div className="tw-min-h-[600px] tw-w-full tw-max-w-4xl tw-mx-auto tw-p-4 md:tw-p-8">
+    <div className="w-full max-w-4xl mx-auto py-8">
       <AnimatePresence mode="wait">
         {gameState === 'selection' && (
           <motion.div
             key="selection"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.4 }}
           >
-            <SelectionView onSelect={handleSelectCategory} />
+            <SelectionView 
+              onSelect={handleSelectCategory} 
+              modeSwitchPath="/flashcards"
+              modeSwitchText="抽牌背單字模式"
+            />
           </motion.div>
         )}
 
         {gameState === 'setup' && selectedCategory && (
           <motion.div
             key="setup"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.4 }}
           >
             <QuizSetupView 
               category={selectedCategory}
@@ -82,7 +87,7 @@ export default function VocabularyQuiz() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4 }}
           >
             <QuizGame 
               category={selectedCategory} 
@@ -97,10 +102,10 @@ export default function VocabularyQuiz() {
         {gameState === 'results' && selectedCategory && (
           <motion.div
             key="results"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.4 }}
           >
             <ResultView 
               score={score} 

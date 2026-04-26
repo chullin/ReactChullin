@@ -7,8 +7,8 @@ export const metadata = {
 
 export default function VocabQuizPage() {
   return (
-    <main className="tw-bg-gray-50 tw-min-h-screen tw-pt-12 tw-pb-24">
-      <div className="container px-4">
+    <main className="bg-gray-50/50 min-h-screen py-12 px-6">
+      <div className="max-w-7xl mx-auto">
         <VocabularyQuiz />
       </div>
     </main>

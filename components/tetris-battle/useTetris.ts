@@ -1,24 +1,30 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Board, Piece, PieceType, GameState } from './types';
-import { 
-  createEmptyBoard, 
-  generateBag, 
-  getPiece, 
-  checkCollision, 
-  rotateMatrix, 
-  clearLines, 
+import { Board, Piece, PieceType, GameState, SpinType } from './types';
+import {
+  createEmptyBoard,
+  generateBag,
+  getPiece,
+  checkCollision,
+  rotateMatrix,
+  clearLines,
   addGarbageLines,
-  calculateAttack
+  calculateAttack,
+  calculateScore,
+  checkSpin,
 } from './gameLogic';
-import { ROWS, COLS, WALL_KICKS, WALL_KICKS_I } from './Constants';
+import { ROWS, COLS, WALL_KICKS, WALL_KICKS_I, GARBAGE_DELAY_MS } from './Constants';
 
-export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin: boolean) => void) => {
+const NEXT_PREVIEW_COUNT = 3;
+
+export const useTetris = (
+  onLinesCleared: (lines: number, combo: number, spinType: SpinType) => void
+) => {
   const [state, setState] = useState<GameState>({
     board: createEmptyBoard(),
     activePiece: null,
-    nextPiece: 'I',
+    nextPieces: ['I', 'O', 'T'],
     holdPiece: null,
     canHold: true,
     score: 0,
@@ -28,30 +34,61 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
     combo: -1,
     bag: [],
     pendingGarbage: 0,
+    garbageTimer: null,
     lastMoveTSpin: false,
+    lastSpinType: null,
   });
 
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  // Garbage flush timer: after GARBAGE_DELAY_MS, push pending garbage into board
+  useEffect(() => {
+    if (state.pendingGarbage <= 0 || state.garbageTimer === null || state.isGameOver) return;
+
+    const now = Date.now();
+    const elapsed = now - state.garbageTimer;
+    const remaining = GARBAGE_DELAY_MS - elapsed;
+
+    if (remaining <= 0) {
+      // Time's up - push all pending garbage
+      setState(prev => {
+        if (prev.pendingGarbage <= 0) return prev;
+        const newBoard = addGarbageLines(prev.board, prev.pendingGarbage);
+        return { ...prev, board: newBoard, pendingGarbage: 0, garbageTimer: null };
+      });
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setState(prev => {
+        if (prev.pendingGarbage <= 0) return prev;
+        const newBoard = addGarbageLines(prev.board, prev.pendingGarbage);
+        return { ...prev, board: newBoard, pendingGarbage: 0, garbageTimer: null };
+      });
+    }, remaining);
+
+    return () => clearTimeout(timer);
+  }, [state.pendingGarbage, state.garbageTimer, state.isGameOver]);
+
   const spawnPiece = useCallback(() => {
     setState(prev => {
       let newBag = [...prev.bag];
-      if (newBag.length <= 1) {
+      while (newBag.length <= NEXT_PREVIEW_COUNT) {
         newBag = [...newBag, ...generateBag()];
       }
-      
+
       const nextType = newBag.shift()!;
       const piece = getPiece(nextType);
-      
+
       if (checkCollision(prev.board, piece)) {
         return { ...prev, isGameOver: true };
       }
-      
+
       return {
         ...prev,
         activePiece: piece,
-        nextPiece: newBag[0],
+        nextPieces: newBag.slice(0, NEXT_PREVIEW_COUNT),
         bag: newBag,
         canHold: true,
       };
@@ -59,12 +96,15 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
   }, []);
 
   const reset = useCallback((newLevel?: number) => {
-    const initialBag = generateBag();
+    let initialBag = generateBag();
+    while (initialBag.length <= NEXT_PREVIEW_COUNT) {
+      initialBag = [...initialBag, ...generateBag()];
+    }
     const firstType = initialBag.shift()!;
     setState({
       board: createEmptyBoard(),
       activePiece: getPiece(firstType),
-      nextPiece: initialBag[0],
+      nextPieces: initialBag.slice(0, NEXT_PREVIEW_COUNT),
       holdPiece: null,
       canHold: true,
       score: 0,
@@ -74,7 +114,9 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
       combo: -1,
       bag: initialBag,
       pendingGarbage: 0,
+      garbageTimer: null,
       lastMoveTSpin: false,
+      lastSpinType: null,
     });
   }, []);
 
@@ -87,59 +129,41 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
       if (!prev.activePiece || prev.isGameOver) return prev;
       const newPos = { x: prev.activePiece.pos.x + dx, y: prev.activePiece.pos.y + dy };
       if (!checkCollision(prev.board, prev.activePiece, newPos)) {
-        return { ...prev, activePiece: { ...prev.activePiece, pos: newPos }, lastMoveTSpin: false };
+        return { ...prev, activePiece: { ...prev.activePiece, pos: newPos }, lastMoveTSpin: false, lastSpinType: null };
       }
       if (dy > 0) {
-        // Landing
         return landPiece(prev);
       }
-      return { ...prev, lastMoveTSpin: false };
+      return prev;
     });
   }, []);
-
-  const checkTSpin = (board: Board, piece: Piece): boolean => {
-    if (piece.type !== 'T') return false;
-    
-    const corners = [
-      { x: piece.pos.x, y: piece.pos.y },               // Top-left
-      { x: piece.pos.x + 2, y: piece.pos.y },           // Top-right
-      { x: piece.pos.x, y: piece.pos.y + 2 },           // Bottom-left
-      { x: piece.pos.x + 2, y: piece.pos.y + 2 },       // Bottom-right
-    ];
-
-    let occupied = 0;
-    corners.forEach(c => {
-      if (c.x < 0 || c.x >= COLS || c.y >= ROWS || (c.y >= 0 && board[c.y][c.x])) {
-        occupied++;
-      }
-    });
-
-    return occupied >= 3;
-  };
 
   const rotate = useCallback((dir: number = 1) => {
     setState(prev => {
       if (!prev.activePiece || prev.isGameOver) return prev;
-      
+
       const newShape = rotateMatrix(prev.activePiece.shape, dir);
       const startRotation = prev.activePiece.rotation;
       const endRotation = (startRotation + dir + 4) % 4;
-      
+
       const kickTable = prev.activePiece.type === 'I' ? WALL_KICKS_I : WALL_KICKS;
       const kicks = kickTable[`${startRotation}-${endRotation}`] || [[0, 0]];
 
       for (const [dx, dy] of kicks) {
         const newPos = { x: prev.activePiece.pos.x + dx, y: prev.activePiece.pos.y + dy };
         if (!checkCollision(prev.board, prev.activePiece, newPos, newShape)) {
-          const isTSpin = checkTSpin(prev.board, { ...prev.activePiece, pos: newPos, shape: newShape });
-          return { 
-            ...prev, 
-            activePiece: { ...prev.activePiece, pos: newPos, shape: newShape, rotation: endRotation },
-            lastMoveTSpin: isTSpin 
+          const rotatedPiece = { ...prev.activePiece, pos: newPos, shape: newShape, rotation: endRotation };
+          const spinType = checkSpin(prev.board, rotatedPiece);
+          const isTSpin = spinType === 'T';
+          return {
+            ...prev,
+            activePiece: rotatedPiece,
+            lastMoveTSpin: isTSpin,
+            lastSpinType: spinType,
           };
         }
       }
-      
+
       return prev;
     });
   }, []);
@@ -158,25 +182,28 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
   const hold = useCallback(() => {
     setState(prev => {
       if (!prev.activePiece || !prev.canHold || prev.isGameOver) return prev;
-      
+
       let newHold = prev.activePiece.type;
       let newActive: Piece | null = null;
-      let newNext = prev.nextPiece;
+      let newNextPieces = [...prev.nextPieces];
       let newBag = [...prev.bag];
 
       if (prev.holdPiece) {
         newActive = getPiece(prev.holdPiece);
       } else {
-        newActive = getPiece(newNext);
-        if (newBag.length <= 1) newBag = [...newBag, ...generateBag()];
-        newNext = newBag.shift()!;
+        newActive = getPiece(newNextPieces.shift()!);
+        // Refill nextPieces from bag
+        while (newNextPieces.length < NEXT_PREVIEW_COUNT) {
+          if (newBag.length === 0) newBag = generateBag();
+          newNextPieces.push(newBag.shift()!);
+        }
       }
 
       return {
         ...prev,
         activePiece: newActive,
         holdPiece: newHold,
-        nextPiece: newNext,
+        nextPieces: newNextPieces,
         bag: newBag,
         canHold: false,
       };
@@ -184,7 +211,7 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
   }, []);
 
   const landPiece = (prevState: GameState): GameState => {
-    const { board, activePiece, pendingGarbage, combo } = prevState;
+    const { board, activePiece, pendingGarbage, combo, lastSpinType } = prevState;
     if (!activePiece) return prevState;
 
     const newBoard = board.map(row => [...row]);
@@ -201,48 +228,75 @@ export const useTetris = (onLinesCleared: (lines: number, combo: number, isTSpin
     });
 
     const { newBoard: boardAfterClear, linesCleared } = clearLines(newBoard);
-    
-    // Battle logic: Pending Garbage
+
+    // Battle logic: Garbage cancellation
+    // If player clears lines, cancel pending garbage first
     let finalBoard = boardAfterClear;
     let newPendingGarbage = pendingGarbage;
+    let newGarbageTimer = prevState.garbageTimer;
     let newCombo = linesCleared > 0 ? combo + 1 : -1;
 
-    if (linesCleared === 0 && pendingGarbage > 0) {
-      finalBoard = addGarbageLines(boardAfterClear, pendingGarbage);
-      newPendingGarbage = 0;
+    if (linesCleared > 0 && newPendingGarbage > 0) {
+      // Cancel garbage with cleared lines
+      const cancelledLines = Math.min(linesCleared, newPendingGarbage);
+      newPendingGarbage = newPendingGarbage - cancelledLines;
+      if (newPendingGarbage === 0) newGarbageTimer = null;
+    } else if (linesCleared === 0 && newPendingGarbage > 0 && newGarbageTimer !== null) {
+      // No clear - garbage timer keeps running (handled by useEffect flush)
     }
 
     if (linesCleared > 0) {
-      onLinesCleared(linesCleared, newCombo, prevState.lastMoveTSpin);
+      onLinesCleared(linesCleared, newCombo, lastSpinType);
     }
 
-    // Check game over again
+    // Score
+    const earned = calculateScore(linesCleared, prevState.level, lastSpinType, newCombo);
+
+    // Level up every 10 lines
+    const newLines = prevState.lines + linesCleared;
+    const newLevel = Math.floor(newLines / 10) + 1;
+
+    // Check game over
     if (finalBoard[0].some(cell => cell !== null)) {
       return { ...prevState, board: finalBoard, isGameOver: true };
     }
 
-    // Spawn next piece
-    let nextBag = [...prevState.bag];
-    if (nextBag.length <= 1) nextBag = [...nextBag, ...generateBag()];
-    const nextType = nextBag.shift()!;
+    // Spawn next piece from the queue
+    let newNextPieces = [...prevState.nextPieces];
+    let newBag = [...prevState.bag];
+    const nextType = newNextPieces.shift()!;
+
+    while (newNextPieces.length < NEXT_PREVIEW_COUNT) {
+      if (newBag.length === 0) newBag = [...generateBag()];
+      newNextPieces.push(newBag.shift()!);
+    }
+
     const nextPieceObj = getPiece(nextType);
 
     return {
       ...prevState,
       board: finalBoard,
       activePiece: nextPieceObj,
-      nextPiece: nextBag[0],
-      bag: nextBag,
+      nextPieces: newNextPieces,
+      bag: newBag,
       canHold: true,
-      lines: prevState.lines + linesCleared,
-      score: prevState.score + linesCleared * 100 * prevState.level,
+      lines: newLines,
+      score: prevState.score + earned,
+      level: Math.max(prevState.level, newLevel),
       combo: newCombo,
       pendingGarbage: newPendingGarbage,
+      garbageTimer: newGarbageTimer,
+      lastMoveTSpin: false,
+      lastSpinType: null,
     };
   };
 
   const receiveGarbage = useCallback((lines: number) => {
-    setState(prev => ({ ...prev, pendingGarbage: prev.pendingGarbage + lines }));
+    setState(prev => ({
+      ...prev,
+      pendingGarbage: prev.pendingGarbage + lines,
+      garbageTimer: prev.garbageTimer ?? Date.now(), // start timer if not already running
+    }));
   }, []);
 
   return { state, move, rotate, hardDrop, hold, reset, receiveGarbage, spawnPiece, setLevel };

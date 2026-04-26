@@ -2,6 +2,7 @@ import './globals.css';
 import Script from 'next/script';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { Providers } from './providers';
 
 export const metadata = {
     metadataBase: new URL('https://chullin.vercel.app/'),
@@ -43,6 +44,9 @@ export const metadata = {
         index: true,
         follow: true,
     },
+    icons: {
+        icon: '/favicon.ico',
+    },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -60,16 +64,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     rel="stylesheet"
                 />
             </head>
-            <body className="d-flex flex-column h-100" suppressHydrationWarning>
-                <Script
-                    src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
-                    strategy="afterInteractive"
-                />
-                <main className="flex-shrink-0">
+            <body className="min-h-screen bg-white" suppressHydrationWarning>
+                <Providers>
+                    <Script
+                        src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
+                        strategy="afterInteractive"
+                    />
                     <Navbar />
-                    {children}
-                </main>
-                <Footer />
+                    <main>
+                        {children}
+                    </main>
+                    <Footer />
+                </Providers>
             </body>
         </html>
     );

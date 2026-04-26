@@ -86,12 +86,12 @@ const TetrisCanvas: React.FC<Props> = ({ board, activePiece, isPlayer }) => {
   };
 
   return (
-    <div className="tw-relative tw-border-4 tw-border-gray-700 tw-bg-black tw-shadow-2xl tw-rounded-lg tw-overflow-hidden">
+    <div className="relative border-4 border-gray-700 bg-black shadow-2xl rounded-lg overflow-hidden">
       <canvas
         ref={canvasRef}
         width={COLS * BLOCK_SIZE}
         height={ROWS * BLOCK_SIZE}
-        className="tw-block"
+        className="block"
       />
     </div>
   );

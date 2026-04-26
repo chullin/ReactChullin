@@ -7,15 +7,14 @@
  */
 
 import { elementaryAll1200 } from './elementary/elementaryAll1200';
+import { toeic850Plus } from './toeic/toeic850Plus';
 
 export type DifficultyLevel = 
   | 'elementary' 
   | 'junior' 
   | 'senior4500' 
   | 'senior7000' 
-  | 'toeic_brown' 
-  | 'toeic_green' 
-  | 'toeic_blue';
+  | 'toeic_850_plus';
 
 export interface Word {
   word: string;
@@ -78,45 +77,6 @@ export const wordData: DifficultyCategory[] = [
     ]
   },
   {
-    id: 'toeic_brown',
-    title: '多益-棕色 (456分)',
-    description: '商務基本溝通，職場入門。',
-    icon: 'Briefcase',
-    color: 'tw-bg-[#a52a2a]',
-    words: [
-      { word: "appointment", definition: "預約" },
-      { word: "confirm", definition: "確認" },
-      { word: "delivery", definition: "遞送" },
-      { word: "feedback", definition: "回饋" },
-      { word: "invoice", definition: "發票" },
-    ]
-  },
-  {
-    id: 'toeic_green',
-    title: '多益-綠色 (725分)',
-    description: '流利職場交流，專業應對。',
-    icon: 'TrendingUp',
-    color: 'tw-bg-[#008000]',
-    words: [
-      { word: "agenda", definition: "議程" },
-      { word: "budget", definition: "預算" },
-      { word: "compliance", definition: "合規" },
-      { word: "delegate", definition: "委派" },
-      { word: "expansion", definition: "擴張" },
-    ]
-  },
-  {
-    id: 'toeic_blue',
-    title: '多益-藍色 (855分)',
-    description: '高階商務談判，卓越領導。',
-    icon: 'Crown',
-    color: 'tw-bg-[#0000ff]',
-    words: [
-      { word: "acquisition", definition: "收購" },
-      { word: "benchmark", definition: "基準" },
-      { word: "consolidate", definition: "鞏固" },
-      { word: "dividend", definition: "股息" },
-      { word: "innovation", definition: "創新" },
-    ]
+    ...toeic850Plus
   }
 ];

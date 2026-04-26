@@ -1,121 +1,210 @@
-import Link from 'next/link';
+'use client';
+
+import { 
+  Button, 
+  Card, 
+  CardBody, 
+  Chip, 
+  Image, 
+  Link, 
+  Divider 
+} from '@heroui/react';
+import { 
+  Code2, 
+  Cpu, 
+  ArrowRight, 
+  Terminal, 
+  Briefcase, 
+  GraduationCap, 
+  Phone
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Home() {
-    return (
-        <>
-            <header className="py-5">
-                <div className="container px-5 pb-5">
-                    <div className="row gx-5 align-items-center">
-                        <div className="col-xxl-5">
-                            <div className="text-center text-xxl-start">
-                                <div className="badge bg-gradient-primary-to-secondary text-white mb-4">
-                                    <div className="text-uppercase">
-                                        Software &middot; engineer
-                                    </div>
-                                </div>
-                                <div className="fs-3 fw-light text-muted">
-                                    陳憲億( Sian-Yi Chen)
-                                </div>
-                                <h1 className="display-3 fw-bolder mb-5">
-                                    <span className="text-gradient d-inline">I think, therefore I am</span>
-                                </h1>
-                                <div className="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
-                                    <Link
-                                        className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder"
-                                        href="/resume"
-                                    >
-                                        Resume
-                                    </Link>
-                                    <Link
-                                        className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"
-                                        href="/projects"
-                                    >
-                                        Projects
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-xxl-7">
-                            <div className="d-flex justify-content-center mt-5 mt-xxl-0">
-                                <div className="position-relative" style={{ width: '380px', height: '380px' }}>
-                                    {/* Vibrant Gradient Circle Background */}
-                                    <div
-                                        className="position-absolute top-50 start-50 translate-middle rounded-circle shadow-lg"
-                                        style={{
-                                            width: '320px', height: '320px',
-                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                            zIndex: 0
-                                        }}
-                                    ></div>
+  const handleContactAlert = () => {
+    alert('聯絡方式：(+886) 960-967-058');
+  };
 
-                                    {/* Profile Image */}
-                                    <div
-                                        className="position-absolute top-50 start-50 translate-middle overflow-hidden rounded-circle shadow"
-                                        style={{ width: '300px', height: '300px', zIndex: 1, border: '6px solid white' }}
-                                    >
-                                        <img
-                                            className="w-100 h-100"
-                                            src="/assets/profile3.png"
-                                            alt="Joseph Chen Profile"
-                                            style={{ objectFit: 'cover' }}
-                                        />
-                                    </div>
+  return (
+    <div className="bg-white min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-20 pb-32">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full -z-10 opacity-30 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-3xl" />
+        </div>
 
-                                    {/* Floating Card 1 (Top Right - overlaps circle edge) */}
-                                    <div
-                                        className="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center"
-                                        style={{ top: '5%', right: '-22%', zIndex: 2, transform: 'rotate(5deg)', border: '1px solid rgba(0,0,0,0.05)' }}
-                                    >
-                                        <div className="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '42px', height: '42px' }}>
-                                            <i className="bi bi-code-slash fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <div className="fw-bolder fs-6 text-dark lh-1 mb-1">Software</div>
-                                            <div className="text-muted small fw-medium lh-1">Engineer</div>
-                                        </div>
-                                    </div>
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ duration: 0.8 }}
+            className="text-center lg:text-left"
+          >
+            <Chip 
+              variant="flat" 
+              color="primary" 
+              className="mb-6 font-bold uppercase tracking-wider"
+              size="lg"
+            >
+              Software &middot; Engineer
+            </Chip>
+            
+            <h2 className="text-2xl font-medium text-gray-500 mb-2">
+              陳憲億 (Sian-Yi Chen)
+            </h2>
+            
+            <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-tight">
+              <span className="text-gradient">I think,</span><br />
+              therefore I am
+            </h1>
 
-                                    {/* Floating Card 2 (Bottom Left - overlaps circle edge) */}
-                                    <div
-                                        className="position-absolute bg-white rounded-4 shadow-lg p-3 d-flex align-items-center"
-                                        style={{ bottom: '5%', left: '-22%', zIndex: 2, transform: 'rotate(-5deg)', border: '1px solid rgba(0,0,0,0.05)' }}
-                                    >
-                                        <div className="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '42px', height: '42px' }}>
-                                            <i className="bi bi-cpu fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <div className="fw-bolder fs-6 text-dark lh-1 mb-1">Python</div>
-                                            <div className="text-muted small fw-medium lh-1">2+ Years Exp.</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+              <Button
+                as={Link}
+                href="/resume"
+                color="primary"
+                size="lg"
+                className="font-bold px-8 shadow-lg shadow-blue-500/20"
+                endContent={<ArrowRight size={20} />}
+              >
+                View Resume
+              </Button>
+              <Button
+                as={Link}
+                href="/projects"
+                variant="bordered"
+                color="default"
+                size="lg"
+                className="font-bold px-8"
+              >
+                Projects
+              </Button>
+            </div>
+          </motion.div>
+
+          {/* Profile Visual */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex justify-center relative"
+          >
+            <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px]">
+              {/* Animated Background Circle */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full shadow-2xl opacity-10 animate-pulse" />
+              
+              <div className="absolute inset-4 bg-white rounded-full p-2 shadow-xl ring-8 ring-blue-50/50 overflow-hidden">
+                <Image
+                  src="/assets/profile3.png"
+                  alt="Joseph Chen Profile"
+                  className="w-full h-full object-cover rounded-full"
+                  loading="eager"
+                />
+              </div>
+
+              {/* Floating Cards */}
+              <motion.div 
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-4 -right-12 z-20"
+              >
+                <Card className="border-none shadow-2xl bg-white/90 backdrop-blur-sm">
+                  <CardBody className="flex flex-row items-center gap-3 p-3">
+                    <div className="bg-blue-100 text-blue-600 p-2 rounded-xl">
+                      <Code2 size={24} />
                     </div>
-                </div>
-            </header>
-
-            <section className="bg-light">
-                <div className="container px-3">
-                    <div className="row gx-5 justify-content-center">
-                        <div className="col-xxl-8">
-                            <div className="text-center my-5">
-                                <h2 className="display-5 fw-bolder" style={{ marginTop: '20px', marginBottom: '20px' }}>
-                                    <span className="text-gradient d-inline">About Me</span>
-                                </h2>
-                                <p className="lead fw-light">
-                                    Hello~ 🙌 我叫 陳憲億
-                                </p>
-                                <p className="text-muted mb-4 font-color-555">
-                                    2022 年畢業於中正大學資訊工程學碩士晶片系統組，具備 2 年嵌入式系統開發經驗（Raspberry Pi、Nexys 4、Apollo 3）與 Transformer-based TTS 的使用與編寫經驗。
-                                    2023 年任職於 Sound Control Technology，擔任軟韌體研發工程師；而目前在鴻海精密工業擔任軟體開發工程師，負責維護與開發測試管理系統（TMS, Test Management System）、撰寫 iPhone 手機腳本與測試腳本、機械手臂開發，並與美國客戶進行技術溝通。
-                                    擅長 Python，具備 Python 模組化、圖形化介面開發經驗（如 tkinter）。
-                                </p>
-                            </div>
-                        </div>
+                    <div>
+                      <p className="font-bold text-sm leading-none">Software</p>
+                      <p className="text-gray-500 text-xs mt-1">Engineer</p>
                     </div>
+                  </CardBody>
+                </Card>
+              </motion.div>
+
+              <motion.div 
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -bottom-4 -left-12 z-20"
+              >
+                <Card className="border-none shadow-2xl bg-white/90 backdrop-blur-sm">
+                  <CardBody className="flex flex-row items-center gap-3 p-3">
+                    <div className="bg-indigo-100 text-indigo-600 p-2 rounded-xl">
+                      <Cpu size={24} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm leading-none">Python</p>
+                      <p className="text-gray-500 text-xs mt-1">2+ Years Exp.</p>
+                    </div>
+                  </CardBody>
+                </Card>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="bg-gray-50 py-24">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-4xl font-black mb-8 tracking-tight">
+              About <span className="text-gradient">Me</span>
+            </h2>
+            
+            <p className="text-xl text-gray-600 mb-12 font-medium">
+              Hello~ 🙌 我叫 陳憲億
+            </p>
+
+            <Card className="bg-white border-none shadow-xl mb-12">
+              <CardBody className="p-8 md:p-12 text-left leading-relaxed text-gray-600 space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="bg-blue-50 p-2 rounded-lg text-blue-600 mt-1">
+                    <GraduationCap size={20} />
+                  </div>
+                  <p>
+                    2022 年畢業於 <strong>中正大學資訊工程學碩士晶片系統組</strong>，具備 2 年嵌入式系統開發經驗（Raspberry Pi、Nexys 4、Apollo 3）與 Transformer-based TTS 的使用與編寫經驗。
+                  </p>
                 </div>
-            </section>
-        </>
-    );
+
+                <div className="flex items-start gap-4">
+                  <div className="bg-indigo-50 p-2 rounded-lg text-indigo-600 mt-1">
+                    <Briefcase size={20} />
+                  </div>
+                  <p>
+                    曾任職於 <strong>Sound Control Technology</strong> 軟韌體研發工程師，目前於 <strong>鴻海精密工業</strong> 擔任軟體開發工程師，負責維護與開發測試管理系統（TMS）、撰寫 iPhone 手機腳本與測試腳本、機械手臂開發，並與美國客戶進行技術溝通。
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="bg-blue-50 p-2 rounded-lg text-blue-600 mt-1">
+                    <Terminal size={20} />
+                  </div>
+                  <p>
+                    擅長 <strong>Python</strong>，具備 Python 模組化、圖形化介面開發經驗（如 tkinter），致力於打造高效且穩定的軟體解決方案。
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+
+            <Button 
+              color="primary" 
+              variant="flat" 
+              radius="full" 
+              startContent={<Phone size={18} />}
+              onClick={handleContactAlert}
+              className="font-bold"
+            >
+              Get in Touch
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+    </div>
+  );
 }

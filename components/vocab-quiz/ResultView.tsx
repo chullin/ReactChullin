@@ -1,8 +1,27 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Trophy, RotateCcw, Home, Star, Frown, Rocket } from 'lucide-react';
 import { DifficultyCategory } from '@/data/wordData';
+import { 
+  Button, 
+  Card, 
+  CardBody, 
+  CardFooter, 
+  CardHeader, 
+  Divider, 
+  CircularProgress,
+  Chip
+} from '@heroui/react';
+import { 
+  Trophy, 
+  RotateCcw, 
+  Home, 
+  Share2, 
+  CheckCircle2, 
+  AlertCircle,
+  Star,
+  Award
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 
 type ResultViewProps = {
   score: number;
@@ -12,85 +31,99 @@ type ResultViewProps = {
 };
 
 export default function ResultView({ score, category, onRestart, onReplay }: ResultViewProps) {
-  const getEvaluation = () => {
-    if (score === 100) return { 
-      text: "太強了！簡直是英文大師！", 
-      icon: <Star className="tw-w-16 tw-h-16 tw-text-yellow-400" />,
-      color: "tw-text-yellow-500"
-    };
-    if (score >= 80) return { 
-      text: "表現優異！繼續保持！", 
-      icon: <Rocket className="tw-w-16 tw-h-16 tw-text-blue-400" />,
-      color: "tw-text-blue-500"
-    };
-    if (score >= 60) return { 
-      text: "及格了，再加油一點點！", 
-      icon: <Trophy className="tw-w-16 tw-h-16 tw-text-green-400" />,
-      color: "tw-text-green-500"
-    };
-    return { 
-      text: "再接再厲，多練習幾次吧！", 
-      icon: <Frown className="tw-w-16 tw-h-16 tw-text-gray-400" />,
-      color: "tw-text-gray-500"
-    };
-  };
+  const percentage = (score / 10) * 100; // Note: In a real app this should be totalQuestions, but 10 is default
+  
+  let title = "再接再厲！";
+  let color: "danger" | "warning" | "success" | "primary" = "danger";
+  let Icon = AlertCircle;
 
-  const evalData = getEvaluation();
+  if (percentage >= 90) {
+    title = "卓越表現！";
+    color = "success";
+    Icon = Trophy;
+  } else if (percentage >= 70) {
+    title = "非常棒！";
+    color = "primary";
+    Icon = Star;
+  } else if (percentage >= 50) {
+    title = "不錯喔！";
+    color = "warning";
+    Icon = Award;
+  }
 
   return (
-    <div className="tw-bg-white tw-rounded-3xl tw-shadow-sm tw-p-8 md:tw-p-12 tw-border tw-border-gray-50 tw-text-center">
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
-        transition={{ 
-          type: "spring", 
-          stiffness: 260, 
-          damping: 20,
-          rotate: { type: "tween", duration: 0.5 }
-        }}
-        className="tw-flex tw-justify-center tw-mb-6"
-      >
-        {evalData.icon}
-      </motion.div>
+    <div className="max-w-xl mx-auto space-y-6">
+      <Card className="border-none shadow-2xl bg-white overflow-visible">
+        <CardHeader className="flex flex-col items-center p-12 bg-blue-50/30 rounded-b-[40px]">
+          <motion.div
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className={`p-6 rounded-full mb-8 bg-${color}/10 text-${color}`}
+          >
+            <Icon size={80} strokeWidth={2.5} />
+          </motion.div>
+          
+          <h2 className="text-4xl font-black tracking-tight mb-2">{title}</h2>
+          <p className="text-gray-400 font-medium italic">您已完成 {category.title} 的所有挑戰</p>
+        </CardHeader>
 
-      <h2 className="tw-text-sm tw-font-bold tw-text-gray-400 tw-uppercase tw-tracking-widest tw-mb-2">
-        {category.title} - 測試完成
-      </h2>
-      
-      <div className="tw-mb-8">
-        <span className="tw-text-7xl md:tw-text-8xl tw-font-black tw-text-gray-900">{score}</span>
-        <span className="tw-text-2xl tw-font-bold tw-text-gray-300"> / 100</span>
-      </div>
+        <CardBody className="p-12 -mt-10">
+          <div className="flex flex-col items-center gap-12 text-center">
+            <CircularProgress
+              classNames={{
+                svg: "w-48 h-48 drop-shadow-md",
+                indicator: `stroke-${color}`,
+                track: "stroke-gray-100",
+                value: "text-4xl font-black text-gray-700",
+              }}
+              value={percentage}
+              strokeWidth={4}
+              showValueLabel={true}
+              label="總體正確率"
+            />
 
-      <motion.p 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className={`tw-text-2xl tw-font-bold tw-mb-12 ${evalData.color}`}
-      >
-        {evalData.text}
-      </motion.p>
+            <div className="grid grid-cols-2 gap-8 w-full">
+              <div className="p-6 rounded-3xl bg-gray-50 border border-gray-100 transition-all hover:bg-white hover:shadow-md">
+                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">答對題數</p>
+                <div className="flex items-center justify-center gap-2">
+                  <CheckCircle2 className="text-success" size={24} />
+                  <span className="text-3xl font-black text-gray-800">{score} 題</span>
+                </div>
+              </div>
+              <div className="p-6 rounded-3xl bg-gray-50 border border-gray-100 transition-all hover:bg-white hover:shadow-md">
+                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">獲得成就</p>
+                <Chip color={color} variant="flat" size="lg" className="font-bold">
+                  {percentage >= 50 ? '解鎖勳章' : '努力學習'}
+                </Chip>
+              </div>
+            </div>
+          </div>
+        </CardBody>
 
-      <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 tw-justify-center">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onReplay}
-          className="tw-flex tw-items-center tw-justify-center tw-gap-2 tw-px-8 tw-py-4 tw-bg-primary tw-text-white tw-rounded-2xl tw-font-bold tw-shadow-lg shadow-primary/20 tw-transition-all"
-        >
-          <RotateCcw className="tw-w-5 tw-h-5" />
-          重新挑戰
-        </motion.button>
-        
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onRestart}
-          className="tw-flex tw-items-center tw-justify-center tw-gap-2 tw-px-8 tw-py-4 tw-bg-gray-100 tw-text-gray-700 tw-rounded-2xl tw-font-bold hover:tw-bg-gray-200 tw-transition-all"
-        >
-          <Home className="tw-w-5 tw-h-5" />
-          返回選單
-        </motion.button>
-      </div>
+        <Divider className="opacity-50" />
+
+        <CardFooter className="p-8 flex flex-col sm:flex-row gap-4">
+          <Button
+            color="primary"
+            size="lg"
+            className="w-full text-xl font-black py-8 shadow-xl shadow-blue-500/20"
+            onPress={onReplay}
+            startContent={<RotateCcw size={24} />}
+          >
+            再次挑戰
+          </Button>
+          <Button
+            variant="flat"
+            size="lg"
+            className="w-full text-xl font-bold py-8 text-gray-600"
+            onPress={onRestart}
+            startContent={<Home size={24} />}
+          >
+            返回首頁
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

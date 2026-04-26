@@ -1,165 +1,162 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { DifficultyCategory } from '@/data/wordData';
-import { ArrowLeft, Book, Languages, Settings2, Play } from 'lucide-react';
+import { 
+  Button, 
+  Card, 
+  CardBody, 
+  CardHeader, 
+  Divider, 
+  RadioGroup, 
+  Radio, 
+  Slider,
+  Chip
+} from '@heroui/react';
+import { 
+  ChevronLeft, 
+  Play, 
+  Languages, 
+  Hash, 
+  Timer,
+  Globe
+} from 'lucide-react';
 
 export type QuizMode = 'eng-to-chi' | 'chi-to-eng';
 
-interface QuizSetupViewProps {
+type QuizSetupViewProps = {
   category: DifficultyCategory;
   onStart: (mode: QuizMode, count: number) => void;
   onBack: () => void;
-}
+};
 
 export default function QuizSetupView({ category, onStart, onBack }: QuizSetupViewProps) {
   const [mode, setMode] = useState<QuizMode>('eng-to-chi');
   const [count, setCount] = useState<number>(10);
-  const [customCount, setCustomCount] = useState<string>('');
 
-  const handleStart = () => {
-    // Mobile Audio Prime: Initialize context on user gesture
-    if (typeof window !== 'undefined') {
-      try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioCtx();
-        if (ctx.state === 'suspended') {
-          ctx.resume();
-        }
-        // Play a quick silent buffer to 'unlock' audio
-        const oscillator = ctx.createOscillator();
-        const gainNode = ctx.createGain();
-        gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        oscillator.connect(gainNode);
-        gainNode.connect(ctx.destination);
-        oscillator.start();
-        oscillator.stop(ctx.currentTime + 0.001);
-        
-        // Warm up speech
-        window.speechSynthesis.getVoices();
-      } catch (e) {
-        console.error('Audio prime failed', e);
-      }
-    }
-
-    const finalCount = customCount ? parseInt(customCount) : count;
-    if (isNaN(finalCount) || finalCount <= 0) {
-      alert('請輸入有效的題數');
-      return;
-    }
-    onStart(mode, finalCount);
-  };
-
-  const active = {
-    text: category.color.replace('tw-bg-', 'tw-text-'),
-    border: category.color.replace('tw-bg-', 'tw-border-'),
-    bg: category.color.replace('tw-bg-', 'tw-bg-') + ' tw-bg-opacity-10',
-    hover: category.color.replace('tw-bg-', 'tw-bg-') + ' tw-bg-opacity-5',
-    solid: category.color
-  };
+  const maxQuestions = Math.min(category.words.length, 50);
+  const marks = [
+    { value: 5, label: "5" },
+    { value: 10, label: "10" },
+    { value: 20, label: "20" },
+    { value: 30, label: "30" },
+    { value: maxQuestions, label: `${maxQuestions}` },
+  ];
 
   return (
-    <div className="tw-transform tw-scale-[0.9] tw-origin-top tw-bg-white tw-rounded-[2.5rem] tw-shadow-2xl tw-p-8 md:tw-p-10 tw-border tw-border-gray-100 max-w-2xl tw-mx-auto tw-relative tw-overflow-hidden">
-      {/* Background Accent */}
-      <div className={`tw-absolute tw-top-0 tw-right-0 tw-w-32 tw-h-32 ${active.bg} tw-rounded-bl-[100%] tw-z-0`} />
-      
-      <button 
-        onClick={onBack}
-        className={`tw-relative tw-z-10 tw-group tw-flex tw-items-center tw-gap-2 ${active.text} tw-font-black tw-text-sm tw-mb-10 tw-px-5 tw-py-2.5 tw-rounded-2xl ${active.bg} hover:tw-bg-opacity-20 tw-transition-all`}
+    <div className="max-w-2xl mx-auto space-y-6">
+      <Button
+        variant="light"
+        color="default"
+        onPress={onBack}
+        startContent={<ChevronLeft size={18} />}
+        className="font-medium text-gray-500 hover:text-primary transition-colors"
       >
-        <ArrowLeft className="tw-w-5 tw-h-5 group-hover:tw-translate-x-[-3px] tw-transition-transform" />
-        返回類別
-      </button>
+        返回選擇難度
+      </Button>
 
-      <div className="tw-relative tw-z-10 tw-text-center tw-mb-12">
-        <div className={`tw-inline-flex tw-p-6 tw-rounded-[2rem] tw-mb-6 ${active.bg} tw-shadow-inner`}>
-          <Settings2 className={`tw-w-12 tw-h-12 ${active.text}`} />
-        </div>
-        <h2 className="tw-text-4xl md:tw-text-5xl tw-font-black tw-text-gray-900 tw-tracking-tight">測驗設定</h2>
-        <div className={`tw-mt-4 tw-inline-block tw-px-4 tw-py-1.5 tw-rounded-full ${active.bg} ${active.text} tw-text-sm tw-font-black`}>
-          {category.title} 系列
-        </div>
-      </div>
-
-      <div className="tw-relative tw-z-10 tw-space-y-12">
-        {/* Mode Selection */}
-        <div>
-          <label className="tw-block tw-text-xs tw-font-black tw-text-gray-400 tw-uppercase tw-tracking-widest tw-mb-5 tw-flex tw-items-center tw-gap-2">
-            <Languages className="tw-w-4 tw-h-4" /> 學習模式
-          </label>
-          <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-5">
-            <button
-              onClick={() => setMode('eng-to-chi')}
-              className={`tw-p-6 tw-rounded-3xl tw-border-4 tw-transition-all tw-text-left tw-relative tw-overflow-hidden ${
-                mode === 'eng-to-chi' 
-                ? `${active.border} ${active.bg} ${active.text}` 
-                : 'tw-border-gray-50 tw-bg-white tw-text-gray-400 hover:tw-border-gray-100'
-              }`}
-            >
-              <div className="tw-font-black tw-text-2xl tw-mb-1">英 → 中</div>
-              <div className="tw-text-sm tw-font-bold tw-opacity-80">看到單字選意思</div>
-            </button>
-            <button
-              onClick={() => setMode('chi-to-eng')}
-              className={`tw-p-6 tw-rounded-3xl tw-border-4 tw-transition-all tw-text-left tw-relative tw-overflow-hidden ${
-                mode === 'chi-to-eng' 
-                ? `${active.border} ${active.bg} ${active.text}` 
-                : 'tw-border-gray-50 tw-bg-white tw-text-gray-400 hover:tw-border-gray-100'
-              }`}
-            >
-              <div className="tw-font-black tw-text-2xl tw-mb-1">中 → 英</div>
-              <div className="tw-text-sm tw-font-bold tw-opacity-80">看到意思選單字</div>
-            </button>
+      <Card className="border-none shadow-2xl bg-white overflow-visible">
+        <CardHeader className="flex gap-4 p-8 bg-blue-50/50">
+          <div className={`p-3 rounded-2xl ${category.color} bg-opacity-10 text-primary`}>
+            <Globe className={`w-8 h-8 ${category.color.replace('bg-', 'text-')}`} />
           </div>
-        </div>
-
-        {/* Count Selection */}
-        <div>
-          <label className="tw-block tw-text-xs tw-font-black tw-text-gray-400 tw-uppercase tw-tracking-widest tw-mb-5 tw-flex tw-items-center tw-gap-2">
-            <Book className="tw-w-4 tw-h-4" /> 挑戰題數
-          </label>
-          <div className="tw-grid tw-grid-cols-4 tw-gap-4">
-            {[10, 20, 50].map((v) => (
-              <button
-                key={v}
-                onClick={() => { setCount(v); setCustomCount(''); }}
-                className={`tw-py-5 tw-rounded-3xl tw-border-4 tw-font-black tw-text-xl tw-transition-all ${
-                  count === v && !customCount
-                  ? `${active.border} ${active.bg} ${active.text}` 
-                  : 'tw-border-gray-50 tw-bg-white tw-text-gray-400 hover:tw-border-gray-100'
-                }`}
-              >
-                {v}
-              </button>
-            ))}
-            <input
-              type="number"
-              placeholder="自訂"
-              value={customCount}
-              onChange={(e) => {
-                setCustomCount(e.target.value);
-                setCount(0);
+          <div className="flex flex-col">
+            <h2 className="text-3xl font-black tracking-tight">{category.title}</h2>
+            <p className="text-sm text-gray-500 font-medium">設定您的測驗偏好</p>
+          </div>
+          <Chip color="primary" variant="flat" className="ml-auto font-bold">
+            {category.words.length} 單字量
+          </Chip>
+        </CardHeader>
+        
+        <Divider className="opacity-50" />
+        
+        <CardBody className="p-8 space-y-12">
+          {/* Quiz Mode Selection */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <Languages className="text-blue-500" size={24} />
+              <h3 className="text-xl font-bold">測驗模式</h3>
+            </div>
+            
+            <RadioGroup
+              value={mode}
+              onValueChange={(val) => setMode(val as QuizMode)}
+              orientation="horizontal"
+              color="primary"
+              classNames={{
+                wrapper: "gap-6",
               }}
-              className={`tw-w-full tw-py-5 tw-px-4 tw-rounded-3xl tw-border-4 tw-font-black tw-text-xl tw-outline-none tw-transition-all tw-text-center ${
-                customCount 
-                ? `${active.border} ${active.bg} ${active.text}` 
-                : 'tw-border-gray-50 tw-bg-white tw-text-gray-400 focus:tw-border-gray-200'
-              }`}
-            />
+            >
+              <Radio 
+                value="eng-to-chi" 
+                classNames={{
+                  base: "inline-flex m-0 bg-gray-50/50 hover:bg-blue-50/50 items-center justify-between flex-row-reverse cursor-pointer rounded-2xl gap-4 p-4 border-2 border-transparent data-[selected=true]:border-primary transition-all",
+                  label: "font-bold text-gray-700",
+                }}
+              >
+                英文出題 → 中文選答
+              </Radio>
+              <Radio 
+                value="chi-to-eng"
+                classNames={{
+                  base: "inline-flex m-0 bg-gray-50/50 hover:bg-blue-50/50 items-center justify-between flex-row-reverse cursor-pointer rounded-2xl gap-4 p-4 border-2 border-transparent data-[selected=true]:border-primary transition-all",
+                  label: "font-bold text-gray-700",
+                }}
+              >
+                中文出題 → 英文選答
+              </Radio>
+            </RadioGroup>
           </div>
-        </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={handleStart}
-          className={`tw-w-full tw-py-7 ${active.solid} tw-text-white tw-rounded-[2rem] tw-font-black tw-text-3xl tw-flex tw-items-center tw-justify-center tw-gap-5 tw-shadow-2xl tw-shadow-primary/40 hover:tw-brightness-110 tw-transition-all`}
-        >
-          <Play className="tw-w-10 tw-h-10" />
-          開啟測驗
-        </motion.button>
-      </div>
+          {/* Question Count Selection */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <Hash className="text-blue-500" size={24} />
+              <h3 className="text-xl font-bold">題目數量</h3>
+            </div>
+            
+            <div className="px-2 pt-2 pb-10">
+              <Slider 
+                step={1} 
+                maxValue={maxQuestions} 
+                minValue={5} 
+                value={count}
+                onChange={(val) => setCount(val as number)}
+                showSteps={true}
+                marks={marks}
+                color="primary"
+                size="lg"
+                className="max-w-full"
+                classNames={{
+                  label: "font-bold text-gray-600 mb-2",
+                  value: "text-2xl font-black text-primary",
+                }}
+                label="選擇想要挑戰題數"
+              />
+            </div>
+          </div>
+
+          <Button
+            color="primary"
+            size="lg"
+            className="w-full text-xl font-black py-8 shadow-xl shadow-blue-500/20"
+            onPress={() => onStart(mode, count)}
+            startContent={<Play size={24} fill="white" />}
+          >
+            開始測驗
+          </Button>
+        </CardBody>
+      </Card>
+
+      <Card className="bg-blue-50/30 border-none shadow-none">
+        <CardBody className="p-4 flex flex-row items-center gap-4 text-sm text-blue-800">
+          <Timer size={20} className="text-blue-500 shrink-0" />
+          <p className="font-medium">
+            提示：測驗開始後將會計分。答題速度與正確率將會影響您的最終成績表現！
+          </p>
+        </CardBody>
+      </Card>
     </div>
   );
 }

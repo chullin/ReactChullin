@@ -63,8 +63,7 @@ export const PIECES: Record<PieceType, { shape: number[][]; color: string }> = {
   },
 };
 
-// SRS Wall Kicks for J, L, S, T, Z pieces (normalized to [dx, dy] where +y is DOWN)
-// Standard SRS +Y is UP, so we flip the Y values.
+// SRS Wall Kicks for J, L, S, T, Z pieces
 export const WALL_KICKS: Record<string, number[][]> = {
   '0-1': [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
   '1-0': [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
@@ -86,3 +85,10 @@ export const WALL_KICKS_I: Record<string, number[][]> = {
   '3-0': [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
   '0-3': [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
 };
+
+// Garbage cooldown: how long (ms) pending garbage waits before being pushed
+export const GARBAGE_DELAY_MS = 3000;
+
+// Soft drop DAS: press threshold before auto-repeat
+export const SOFT_DROP_DAS_MS = 250;
+export const SOFT_DROP_REPEAT_MS = 50;
