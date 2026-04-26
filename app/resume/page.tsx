@@ -265,7 +265,7 @@ export default function ResumePage() {
                 <h4 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Languages</h4>
                 <div className="flex flex-wrap gap-3">
                   {["Python", "C", "JavaScript"].map(skill => (
-                    <Chip key={skill} variant="shadow" color="white" className="font-bold border-none bg-white text-gray-800 px-4 py-1" size="lg">
+                    <Chip key={skill} variant="shadow" color="default" className="font-bold border-none bg-white text-gray-800 px-4 py-1" size="lg">
                       {skill}
                     </Chip>
                   ))}
