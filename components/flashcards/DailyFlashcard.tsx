@@ -109,13 +109,13 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
     }, 150);
   };
 
-  const handleToggleStar = (e: React.MouseEvent) => {
+  const handleToggleStar = (e: any) => {
     e.stopPropagation();
     const currentlyStarred = toggleStarredWord(currentWord.word);
     setStarredWords(currentlyStarred ? [...starredWords, currentWord.word] : starredWords.filter(w => w !== currentWord.word));
   };
 
-  const speak = useCallback((e: React.MouseEvent, text: string, isChinese: boolean = false) => {
+  const speak = useCallback((e: any, text: string, isChinese: boolean = false) => {
     e.stopPropagation();
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
