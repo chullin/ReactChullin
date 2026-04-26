@@ -49,10 +49,28 @@ export const metadata = {
     },
 };
 
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "陳憲億 Joseph Chen",
+    "url": "https://chullin.vercel.app/",
+    "jobTitle": "Software Engineer",
+    "knowsAbout": ["Python", "AI", "Robotics", "Next.js", "Software Engineering"],
+    "image": "https://chullin.vercel.app/assets/profile3.png",
+    "sameAs": [
+        "https://github.com/chullin",
+        "https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about"
+    ]
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang='zh-Hant' suppressHydrationWarning>
             <head>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link
