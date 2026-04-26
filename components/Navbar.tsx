@@ -45,6 +45,7 @@ export default function Navbar() {
 
   return (
     <HeroNavbar
+      isMenuOpen={isMenuOpen}
       onMenuOpenChange={setIsMenuOpen}
       maxWidth="xl"
       className="bg-white/80 backdrop-blur-md border-b border-gray-100"
@@ -56,7 +57,11 @@ export default function Navbar() {
           className="sm:hidden"
         />
         <NavbarBrand>
-          <Link href="/" className="font-bold text-2xl tracking-tight text-gray-900 hover:opacity-80 transition-opacity">
+          <Link 
+            href="/" 
+            className="font-bold text-2xl tracking-tight text-gray-900 hover:opacity-80 transition-opacity"
+            onClick={() => setIsMenuOpen(false)}
+          >
             Joseph Chen
           </Link>
         </NavbarBrand>
@@ -206,6 +211,7 @@ export default function Navbar() {
               }`}
               href={item.href}
               size="lg"
+              onClick={() => setIsMenuOpen(false)}
             >
               {item.name}
             </Link>
