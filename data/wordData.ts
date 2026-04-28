@@ -19,6 +19,13 @@ export type DifficultyLevel =
 export interface Word {
   word: string;
   definition: string;
+  pos?: string;
+  phonetic?: string;
+  memory_tip?: string;
+  homophonic?: string;
+  sentence?: string;
+  translate?: string;
+  synonyms?: string[];
 }
 
 export interface DifficultyCategory {

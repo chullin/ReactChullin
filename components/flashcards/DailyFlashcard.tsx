@@ -13,7 +13,12 @@ import {
   Trophy,
   Target,
   Hash,
-  Sparkles
+  Sparkles,
+  Book,
+  Brain,
+  Quote,
+  Layers,
+  Mic2
 } from 'lucide-react';
 import { DifficultyCategory } from '@/data/wordData';
 import { getPinyin } from '@/utils/pinyinUtils';
@@ -110,13 +115,17 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
   };
 
   const handleToggleStar = (e: any) => {
-    e.stopPropagation();
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
     const currentlyStarred = toggleStarredWord(currentWord.word);
     setStarredWords(currentlyStarred ? [...starredWords, currentWord.word] : starredWords.filter(w => w !== currentWord.word));
   };
 
   const speak = useCallback((e: any, text: string, isChinese: boolean = false) => {
-    e.stopPropagation();
+    if (e && typeof e.stopPropagation === 'function') {
+      e.stopPropagation();
+    }
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
@@ -207,53 +216,62 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
         >
           {/* Front (English) */}
           <Card className="absolute w-full h-full backface-hidden border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] bg-white rounded-[40px] overflow-hidden">
-            <CardBody className="p-12 flex flex-col items-center justify-center space-y-10">
-              <div className="absolute top-10 left-10 flex items-center gap-2">
-                <div className="bg-blue-50 text-blue-500 font-black px-3 py-1 rounded-lg text-sm">
+            <CardBody className="p-10 flex flex-col items-center justify-between">
+              <div className="w-full flex justify-between items-start">
+                <div className="bg-blue-50 text-blue-500 font-black px-4 py-2 rounded-2xl text-sm border border-blue-100/50">
                    #{currentIndex + 1}
                 </div>
-              </div>
-              
-              <Button
-                isIconOnly
-                variant="light"
-                radius="full"
-                onPress={handleToggleStar}
-                className="absolute top-8 right-8 z-20 group/star"
-              >
-                <Star 
-                  className={`w-10 h-10 transition-all duration-300 ${isStarred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-200 group-hover/star:text-gray-300'}`} 
-                />
-              </Button>
-
-              <div className="text-center space-y-4">
-                <motion.h2 
-                  layoutId={`word-${currentWord.word}`}
-                  className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter"
-                >
-                  {currentWord.word}
-                </motion.h2>
-                <p className="text-2xl text-blue-400 font-bold italic tracking-wide">
-                  {getPhonetic(currentWord.word)}
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center gap-8">
+                
                 <Button
                   isIconOnly
-                  size="lg"
-                  color="primary"
-                  variant="flat"
+                  variant="light"
                   radius="full"
-                  onPress={(e) => speak(e, currentWord.word)}
-                  className="w-20 h-20 bg-blue-50 hover:bg-blue-100 transition-all shadow-inner"
+                  onPress={handleToggleStar}
+                  className="group/star"
                 >
-                  <Volume2 size={36} />
+                  <Star 
+                    className={`w-10 h-10 transition-all duration-300 ${isStarred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-100 group-hover/star:text-gray-300'}`} 
+                  />
                 </Button>
-                
-                <div className="flex items-center gap-2 text-gray-300 font-black animate-bounce text-sm uppercase tracking-[0.2em]">
-                  <RotateCcw size={16} />
-                  Tap to Flip
+              </div>
+
+              <div className="flex-1 flex flex-col items-center justify-center space-y-8 w-full">
+                <div className="text-center space-y-4">
+                  <div className="flex flex-col items-center gap-3">
+                    {currentWord.pos && (
+                      <div className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg shadow-gray-200">
+                        {currentWord.pos}
+                      </div>
+                    )}
+                    <motion.h2 
+                      layoutId={`word-${currentWord.word}`}
+                      className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter"
+                    >
+                      {currentWord.word}
+                    </motion.h2>
+                  </div>
+                  <div className="flex items-center justify-center gap-3">
+                    <p className="text-2xl text-blue-400 font-bold italic tracking-wide">
+                      {currentWord.phonetic || getPhonetic(currentWord.word)}
+                    </p>
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      radius="full"
+                      onPress={(e) => speak(e, currentWord.word)}
+                      className="text-blue-200 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                    >
+                      <Volume2 size={20} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full flex flex-col items-center gap-6 pb-4">
+                <div className="flex items-center gap-3 text-gray-200 font-black text-[10px] uppercase tracking-[0.3em] bg-gray-50/50 px-6 py-2 rounded-full border border-gray-100/50">
+                  <RotateCcw size={12} className="animate-spin-slow" />
+                  Tap to Reveal
                 </div>
               </div>
             </CardBody>
@@ -264,45 +282,109 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
             className="absolute w-full h-full backface-hidden border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] bg-white rounded-[40px] overflow-hidden" 
             style={{ transform: 'rotateY(180deg)' }}
           >
-            <CardBody className="p-12 flex flex-col items-center justify-center space-y-10">
-              <div className="absolute top-10 left-10">
-                <Chip variant="flat" color="secondary" className="font-black px-4" size="lg">定義 Definition</Chip>
-              </div>
-              
-               <Button
-                isIconOnly
-                variant="light"
-                radius="full"
-                onPress={handleToggleStar}
-                className="absolute top-8 right-8 z-20"
-              >
-                <Star className={`w-10 h-10 ${isStarred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-200'}`} />
-              </Button>
-
-              <div className="text-center space-y-4">
-                <h2 className="text-5xl md:text-7xl font-black text-gray-900">
-                  {currentWord.definition}
-                </h2>
-                <p className="text-xl text-gray-400 font-bold">
-                  {getPinyin(currentWord.definition) || '...'}
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center gap-8">
+            <CardBody className="p-10 flex flex-col items-center justify-between">
+              <div className="w-full flex justify-between items-start">
+                <Chip variant="flat" color="secondary" className="font-black px-4 h-9 border border-purple-100/50" size="md">解答 Answer</Chip>
+                
                 <Button
                   isIconOnly
-                  size="lg"
-                  color="secondary"
-                  variant="flat"
+                  variant="light"
                   radius="full"
-                  onPress={(e) => speak(e, currentWord.definition, true)}
-                  className="w-20 h-20 bg-purple-50 hover:bg-purple-100 transition-all shadow-inner"
+                  onPress={handleToggleStar}
                 >
-                  <Volume2 size={36} />
+                  <Star className={`w-8 h-8 ${isStarred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-100'}`} />
                 </Button>
-                
-                <div className="flex items-center gap-2 text-gray-300 font-black animate-bounce text-sm uppercase tracking-[0.2em]">
-                  <RotateCcw size={16} />
+              </div>
+
+              <div className="w-full flex flex-col items-center justify-center flex-1 space-y-8 py-6">
+                <div className="text-center space-y-3">
+                  <h2 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tight">
+                    {currentWord.definition}
+                  </h2>
+                  <div className="flex items-center justify-center gap-3">
+                    <p className="text-xl text-gray-400 font-bold">
+                      {getPinyin(currentWord.definition) || '...'}
+                    </p>
+                    {currentWord.homophonic && (
+                      <div className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-xs font-black border border-amber-100">
+                        諧音: {currentWord.homophonic}
+                      </div>
+                    )}
+                    <Button
+                      isIconOnly
+                      size="sm"
+                      variant="light"
+                      radius="full"
+                      onPress={(e) => speak(e, currentWord.definition, true)}
+                      className="text-purple-200 hover:text-purple-500 hover:bg-purple-50 transition-colors"
+                    >
+                      <Volume2 size={20} />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Info Grid - Modern Stacked Layout */}
+                <div className="w-full max-w-lg space-y-4 px-4">
+                  {currentWord.sentence && (
+                    <div className="bg-blue-50/30 p-5 rounded-[2rem] border border-blue-100/50 space-y-2 group/sentence hover:bg-blue-50/50 transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className="bg-blue-500 text-white p-1.5 rounded-lg">
+                          <Quote size={12} fill="currentColor" />
+                        </div>
+                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Example Sentence</p>
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm md:text-base font-bold text-gray-800 leading-relaxed italic group-hover/sentence:text-blue-900 transition-colors">
+                          "{currentWord.sentence}"
+                        </p>
+                        {currentWord.translate && (
+                          <p className="text-xs md:text-sm font-bold text-gray-400 border-t border-blue-100/30 pt-2">
+                            {currentWord.translate}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {currentWord.memory_tip && (
+                      <div className="bg-purple-50/30 p-5 rounded-[2rem] border border-purple-100/50 space-y-2 hover:bg-purple-50/50 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-purple-500 text-white p-1.5 rounded-lg">
+                            <Brain size={12} />
+                          </div>
+                          <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Memory Tip</p>
+                        </div>
+                        <p className="text-xs font-bold text-purple-900 leading-relaxed">
+                          {currentWord.memory_tip}
+                        </p>
+                      </div>
+                    )}
+
+                    {currentWord.synonyms && currentWord.synonyms.length > 0 && (
+                      <div className="bg-emerald-50/30 p-5 rounded-[2rem] border border-emerald-100/50 space-y-2 hover:bg-emerald-50/50 transition-colors">
+                        <div className="flex items-center gap-2">
+                          <div className="bg-emerald-500 text-white p-1.5 rounded-lg">
+                            <Layers size={12} />
+                          </div>
+                          <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Synonyms</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          {currentWord.synonyms.map(syn => (
+                            <span key={syn} className="px-2 py-0.5 bg-white border border-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black shadow-sm">
+                              {syn}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full flex flex-col items-center gap-4 pb-4">
+                <div className="flex items-center gap-3 text-gray-200 font-black text-[10px] uppercase tracking-[0.3em] bg-gray-50/50 px-6 py-2 rounded-full border border-gray-100/50">
+                  <RotateCcw size={12} className="animate-spin-slow" />
                   Tap to Flip
                 </div>
               </div>
