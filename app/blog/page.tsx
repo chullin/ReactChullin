@@ -24,6 +24,26 @@ import { motion } from 'framer-motion';
 export default function BlogPage() {
   const posts = [
     {
+      title: "LeetCode Python 踩坑紀錄",
+      subtitle: "那些刷題時讓我卡關的 Python 細節，整理給自己也給你",
+      date: "April 30, 2026",
+      author: "Joseph Chen",
+      type: "Internal",
+      href: "/blog/leetcode-python-pitfalls",
+      isExternal: false,
+      category: "Algorithm"
+    },
+    {
+      title: "用 React + Next.js 打造個人作品集",
+      subtitle: "從零開始，到 Vercel 部署上線的完整過程",
+      date: "March 2026",
+      author: "Joseph Chen",
+      type: "Internal",
+      href: "/blog/building-react-portfolio",
+      isExternal: false,
+      category: "Web Dev"
+    },
+    {
       title: "錄製音檔、安裝 TensorFlow、設置 Python 虛擬環境",
       subtitle: "請確保您已經安裝了適當的 GPU 驅動程序，並且您的 GPU 支持 CUDA",
       date: "December 16, 2023",

@@ -20,7 +20,7 @@ import {
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-export default function BlogPostPage() {
+export default function ManMustExplorePage() {
   return (
     <div className="bg-white min-h-screen">
       {/* Page Header / Hero */}

@@ -108,7 +108,8 @@ export default function VocabularyQuiz() {
             transition={{ duration: 0.4 }}
           >
             <ResultView 
-              score={score} 
+              score={score}
+              totalQuestions={questionCount}
               category={selectedCategory}
               onRestart={handleRestart}
               onReplay={handleReplay}
