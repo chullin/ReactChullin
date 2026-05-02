@@ -72,7 +72,7 @@ bad
 badminton
 61. 麵包店
 bakery
-62. 陽台
+62. 陽臺
 balcony
 63. 球
 ball
@@ -218,7 +218,7 @@ bookstore
 113. 感到厭煩的
 bored
 116. 借入
-117. 老板
+117. 老闆
 bored
 118. 兩者都
 borrow
@@ -1670,7 +1670,7 @@ ROC
 room
 roller-
 rope
-851. 划(船)
+851. 劃(船)
 row
 skate/blade
 852. 規則
@@ -2237,7 +2237,7 @@ umbrella
 uncle
 1113. 在…之下
 under
-1114. 了解
+1114. 瞭解
 understand
 1116. 制服
 1117. 直到

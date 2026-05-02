@@ -337,7 +337,7 @@ export default function SnakeGame() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h1 className="text-5xl font-black tracking-tight text-gradient mb-2">贪吃蛇</h1>
+            <h1 className="text-5xl font-black tracking-tight text-gradient mb-2">貪吃蛇</h1>
             <p className="text-gray-500 font-medium">經典遊戲，全新體驗</p>
           </motion.div>
         </div>

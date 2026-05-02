@@ -138,7 +138,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
   if (!mounted || !currentWord) return null;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-4 md:space-y-8 px-2 md:px-0">
       {/* Header Controls */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
         <div className="space-y-4 flex-1">
@@ -146,26 +146,26 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
             variant="light"
             color="default"
             onPress={onBack}
-            startContent={<ArrowLeft size={18} />}
-            className="font-bold text-gray-500 hover:text-primary transition-colors px-0"
+            startContent={<ArrowLeft size={16} />}
+            className="font-bold text-gray-400 hover:text-primary transition-colors px-0 h-8 min-w-0"
           >
             返回選擇等級
           </Button>
           
-          <div className="space-y-2">
+          <div className="space-y-1 md:space-y-2">
             <div className="flex justify-between items-end">
-              <div className="flex items-center gap-2">
-                <Target className="text-primary" size={20} />
-                <h3 className="font-black text-gray-900 leading-none">今日學習目標</h3>
+              <div className="flex items-center gap-1.5">
+                <Target className="text-primary" size={16} />
+                <h3 className="font-black text-gray-900 leading-none text-sm md:text-base">今日學習目標</h3>
               </div>
-              <p className="text-xs font-black text-gray-400 tracking-widest uppercase">
+              <p className="text-[10px] md:text-xs font-black text-gray-400 tracking-widest uppercase">
                 {completedToday} / {dailyGoal || '∞'} 字
               </p>
             </div>
             <Progress 
               value={(completedToday / dailyGoal) * 100} 
               color={reachedDailyGoal ? "success" : "primary"}
-              className="h-3 shadow-inner bg-gray-100"
+              className="h-2 md:h-3 shadow-inner bg-gray-100"
               radius="full"
               isStriped
             />
@@ -178,9 +178,9 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
             variant="flat"
             onPress={onOpen}
             radius="full"
-            className="bg-white shadow-sm border border-gray-100 hover:bg-gray-50 w-12 h-12"
+            className="bg-white shadow-sm border border-gray-100 hover:bg-gray-50 w-10 h-10 md:w-12 md:h-12"
           >
-            <Settings2 size={24} className="text-gray-400" />
+            <Settings2 size={20} className="text-gray-400" />
           </Button>
         </div>
       </div>
@@ -208,7 +208,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
       </AnimatePresence>
 
       {/* Main Flashcard Container */}
-      <div className="relative w-full h-[500px] perspective-[1500px] cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}>
+      <div className="relative w-full h-[450px] md:h-[500px] perspective-[1500px] cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}>
         <motion.div
           className="w-full h-full relative preserve-3d"
           animate={{ rotateY: isFlipped ? 180 : 0 }}
@@ -216,9 +216,9 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
         >
           {/* Front (English) */}
           <Card className="absolute w-full h-full backface-hidden border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] bg-white rounded-[40px] overflow-hidden">
-            <CardBody className="p-10 flex flex-col items-center justify-between">
+            <CardBody className="p-6 md:p-10 flex flex-col items-center justify-between">
               <div className="w-full flex justify-between items-start">
-                <div className="bg-blue-50 text-blue-500 font-black px-4 py-2 rounded-2xl text-sm border border-blue-100/50">
+                <div className="bg-blue-50 text-blue-500 font-black px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-xs md:text-sm border border-blue-100/50">
                    #{currentIndex + 1}
                 </div>
                 
@@ -230,28 +230,28 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                   className="group/star"
                 >
                   <Star 
-                    className={`w-10 h-10 transition-all duration-300 ${isStarred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-100 group-hover/star:text-gray-300'}`} 
+                    className={`w-8 h-8 md:w-10 md:h-10 transition-all duration-300 ${isStarred ? 'fill-yellow-400 text-yellow-400 scale-110' : 'text-gray-100 group-hover/star:text-gray-300'}`} 
                   />
                 </Button>
               </div>
 
               <div className="flex-1 flex flex-col items-center justify-center space-y-8 w-full">
                 <div className="text-center space-y-4">
-                  <div className="flex flex-col items-center gap-3">
+                  <div className="flex flex-col items-center gap-2 md:gap-3">
                     {currentWord.pos && (
-                      <div className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-[10px] font-black tracking-[0.2em] uppercase shadow-lg shadow-gray-200">
+                      <div className="px-3 py-1 md:px-4 md:py-1.5 bg-gray-900 text-white rounded-full text-[9px] md:text-[10px] font-black tracking-[0.2em] uppercase shadow-lg shadow-gray-200">
                         {currentWord.pos}
                       </div>
                     )}
                     <motion.h2 
                       layoutId={`word-${currentWord.word}`}
-                      className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter"
+                      className="text-5xl md:text-8xl font-black text-gray-900 tracking-tighter"
                     >
                       {currentWord.word}
                     </motion.h2>
                   </div>
                   <div className="flex items-center justify-center gap-3">
-                    <p className="text-2xl text-blue-400 font-bold italic tracking-wide">
+                    <p className="text-xl md:text-2xl text-blue-400 font-bold italic tracking-wide">
                       {currentWord.phonetic || getPhonetic(currentWord.word)}
                     </p>
                     <Button
@@ -282,9 +282,9 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
             className="absolute w-full h-full backface-hidden border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] bg-white rounded-[40px] overflow-hidden" 
             style={{ transform: 'rotateY(180deg)' }}
           >
-            <CardBody className="p-10 flex flex-col items-center justify-between">
+            <CardBody className="p-6 md:p-10 flex flex-col items-center justify-between">
               <div className="w-full flex justify-between items-start">
-                <Chip variant="flat" color="secondary" className="font-black px-4 h-9 border border-purple-100/50" size="md">解答 Answer</Chip>
+                <Chip variant="flat" color="secondary" className="font-black px-3 h-8 md:px-4 md:h-9 border border-purple-100/50" size="sm md:md">解答 Answer</Chip>
                 
                 <Button
                   isIconOnly
@@ -296,17 +296,17 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                 </Button>
               </div>
 
-              <div className="w-full flex flex-col items-center justify-center flex-1 space-y-8 py-6">
-                <div className="text-center space-y-3">
-                  <h2 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tight">
+              <div className="w-full flex flex-col items-center justify-center flex-1 space-y-4 md:space-y-8 py-4 md:py-6 overflow-y-auto no-scrollbar">
+                <div className="text-center space-y-2 md:space-y-3">
+                  <h2 className="text-4xl md:text-7xl font-black text-gray-900 tracking-tight">
                     {currentWord.definition}
                   </h2>
                   <div className="flex items-center justify-center gap-3">
-                    <p className="text-xl text-gray-400 font-bold">
+                    <p className="text-lg md:text-xl text-gray-400 font-bold">
                       {getPinyin(currentWord.definition) || '...'}
                     </p>
                     {currentWord.homophonic && (
-                      <div className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-xs font-black border border-amber-100">
+                      <div className="px-2 py-0.5 md:px-3 md:py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] md:text-xs font-black border border-amber-100">
                         諧音: {currentWord.homophonic}
                       </div>
                     )}
@@ -324,21 +324,21 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                 </div>
 
                 {/* Info Grid - Modern Stacked Layout */}
-                <div className="w-full max-w-lg space-y-4 px-4">
+                <div className="w-full max-w-lg space-y-3 md:space-y-4 px-2 md:px-4">
                   {currentWord.sentence && (
-                    <div className="bg-blue-50/30 p-5 rounded-[2rem] border border-blue-100/50 space-y-2 group/sentence hover:bg-blue-50/50 transition-colors">
+                    <div className="bg-blue-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-blue-100/50 space-y-1 md:space-y-2 group/sentence hover:bg-blue-50/50 transition-colors">
                       <div className="flex items-center gap-2">
-                        <div className="bg-blue-500 text-white p-1.5 rounded-lg">
-                          <Quote size={12} fill="currentColor" />
+                        <div className="bg-blue-500 text-white p-1 rounded-lg">
+                          <Quote size={10} fill="currentColor" />
                         </div>
-                        <p className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Example Sentence</p>
+                        <p className="text-[9px] md:text-[10px] font-black text-blue-400 uppercase tracking-widest">Example Sentence</p>
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-sm md:text-base font-bold text-gray-800 leading-relaxed italic group-hover/sentence:text-blue-900 transition-colors">
+                      <div className="space-y-1 md:space-y-2">
+                        <p className="text-xs md:text-base font-bold text-gray-800 leading-relaxed italic group-hover/sentence:text-blue-900 transition-colors">
                           "{currentWord.sentence}"
                         </p>
                         {currentWord.translate && (
-                          <p className="text-xs md:text-sm font-bold text-gray-400 border-t border-blue-100/30 pt-2">
+                          <p className="text-[10px] md:text-sm font-bold text-gray-400 border-t border-blue-100/30 pt-1.5 md:pt-2">
                             {currentWord.translate}
                           </p>
                         )}
@@ -346,32 +346,32 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     {currentWord.memory_tip && (
-                      <div className="bg-purple-50/30 p-5 rounded-[2rem] border border-purple-100/50 space-y-2 hover:bg-purple-50/50 transition-colors">
+                      <div className="bg-purple-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-purple-100/50 space-y-1 md:space-y-2 hover:bg-purple-50/50 transition-colors">
                         <div className="flex items-center gap-2">
-                          <div className="bg-purple-500 text-white p-1.5 rounded-lg">
-                            <Brain size={12} />
+                          <div className="bg-purple-500 text-white p-1 rounded-lg">
+                            <Brain size={10} />
                           </div>
-                          <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Memory Tip</p>
+                          <p className="text-[9px] md:text-[10px] font-black text-purple-400 uppercase tracking-widest">Memory Tip</p>
                         </div>
-                        <p className="text-xs font-bold text-purple-900 leading-relaxed">
+                        <p className="text-[10px] md:text-xs font-bold text-purple-900 leading-relaxed">
                           {currentWord.memory_tip}
                         </p>
                       </div>
                     )}
 
                     {currentWord.synonyms && currentWord.synonyms.length > 0 && (
-                      <div className="bg-emerald-50/30 p-5 rounded-[2rem] border border-emerald-100/50 space-y-2 hover:bg-emerald-50/50 transition-colors">
+                      <div className="bg-emerald-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-emerald-100/50 space-y-1 md:space-y-2 hover:bg-emerald-50/50 transition-colors">
                         <div className="flex items-center gap-2">
-                          <div className="bg-emerald-500 text-white p-1.5 rounded-lg">
-                            <Layers size={12} />
+                          <div className="bg-emerald-500 text-white p-1 rounded-lg">
+                            <Layers size={10} />
                           </div>
-                          <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Synonyms</p>
+                          <p className="text-[9px] md:text-[10px] font-black text-emerald-400 uppercase tracking-widest">Synonyms</p>
                         </div>
-                        <div className="flex flex-wrap gap-2 pt-1">
+                        <div className="flex flex-wrap gap-1 md:gap-2 pt-0.5">
                           {currentWord.synonyms.map(syn => (
-                            <span key={syn} className="px-2 py-0.5 bg-white border border-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black shadow-sm">
+                            <span key={syn} className="px-1.5 py-0.5 bg-white border border-emerald-100 text-emerald-600 rounded-md text-[9px] md:text-[10px] font-black shadow-sm">
                               {syn}
                             </span>
                           ))}
@@ -394,7 +394,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex justify-center items-center gap-6">
+      <div className="flex justify-center items-center gap-4 md:gap-6">
         <Button
           isIconOnly
           size="lg"
@@ -402,9 +402,9 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
           radius="full"
           isDisabled={currentIndex === 0}
           onPress={handlePrev}
-          className="w-16 h-16 bg-white border border-gray-100 shadow-sm"
+          className="w-12 h-12 md:w-16 md:h-16 bg-white border border-gray-100 shadow-sm"
         >
-          <ArrowLeft size={28} className={currentIndex === 0 ? 'text-gray-200' : 'text-gray-400'} />
+          <ArrowLeft size={20} className={currentIndex === 0 ? 'text-gray-200' : 'text-gray-400'} />
         </Button>
         
         <Button
@@ -412,8 +412,8 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
           size="lg"
           radius="full"
           onPress={handleNext}
-          className="px-12 py-8 text-2xl font-black shadow-xl shadow-blue-500/20"
-          endContent={<ArrowRight size={28} />}
+          className="px-8 md:px-12 h-12 md:h-16 text-lg md:text-2xl font-black shadow-xl shadow-blue-500/20 flex-1 md:flex-none"
+          endContent={<ArrowRight size={24} />}
         >
           下一個
         </Button>

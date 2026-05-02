@@ -80,7 +80,7 @@ export default function ResumePage() {
       logo: "/assets/NQU.png",
       details: {
         lab: "計算智能與人機交互實驗室 CI",
-        advisor: "趙于翔 副教授",
+        advisor: "趙於翔 副教授",
         project: {
           title: "以 LoRa 為基礎之失智老人輔助裝置設計",
           link: "https://www.airitilibrary.com/Article/Detail/P20191126001-201911-201911260014-201911260014-223-226"

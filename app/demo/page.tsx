@@ -91,7 +91,7 @@ export default function DemoPage() {
             </Chip>
             <h1 className="text-5xl font-black tracking-tight text-gray-900 mt-6 mb-4">🎬 實作展示中心</h1>
             <p className="text-gray-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              匯集了各種技術研究、專案演示與多媒體工具的展示平台。
+              匯集了各種技術研究、專案演示與多媒體工具的展示平臺。
             </p>
           </motion.div>
         </div>

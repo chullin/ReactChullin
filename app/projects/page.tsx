@@ -30,7 +30,7 @@ export default function ProjectsPage() {
         "使用 Python 和 Tkinter 開發 GUI 介面，實現自動化測試和設置測試參數。",
         "控制 Raspberry Pi 啟動、停止、收集數據，並整合硬體設備。",
         "使用 UART 和 I2C 與後端通訊，達成高效的指令發送與接收。",
-        "負責測試機台的長期維護與性能優化。"
+        "負責測試機臺的長期維護與性能優化。"
       ],
       image: "/assets/Tester.png",
       tags: ["Python", "Tkinter", "Raspberry Pi", "Hardware Control"],
@@ -40,7 +40,7 @@ export default function ProjectsPage() {
       title: "Study of Transformer-based TTS and Embedded Implementation",
       description: "研究 Transformer 架構在語音合成 (TTS) 領域的應用。利用少量語料對特定人士進行微調訓練，使合成音色與目標對象相似度高達 90%，並成功將複雜模型移植至資源有限的嵌入式系統中。",
       responsibilities: [
-        "基於 Linux 平台與 PyTorch 框架進行模型訓練與研究。",
+        "基於 Linux 平臺與 PyTorch 框架進行模型訓練與研究。",
         "將 Python 訓練完成的參數搬移至自行開發的 C 語言版本 Transformer 中。",
         "優化嵌入式系統上的運算效率，達成即時語音合成。"
       ],
