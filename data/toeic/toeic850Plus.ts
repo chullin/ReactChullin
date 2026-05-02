@@ -628,6 +628,165 @@ export const toeic850Plus: DifficultyCategory = {
             sentence: "The workers are stacking bricks to build a wall.",
             translate: "工人們正在堆疊磚塊以建造一道牆。"
         },
-
+        {
+            word: "machinery",
+            pos: "n.",
+            phonetic: "/məˈʃiːnəri/",
+            definition: "機器(不可數、機器、機械裝置的總稱)",
+            memory_tip: "發音像「抹騎士你」，抹去機器上的灰塵的騎士你。",
+            homophonic: "美希你瑞",
+            sentence: "The factory uses heavy machinery to produce cars.",
+            translate: "這家工廠使用重型機械生產汽車。"
+        },
+        {
+            word: "lift",
+            pos: "v.",
+            phonetic: "/lɪft/",
+            definition: "舉起；提升；搭便車",
+            memory_tip: "用手رفع (Lift) 重物",
+            homophonic: "立夫",
+            sentence: "Please lift the box with your legs.",
+            translate: "請用腿舉起箱子。"
+        },
+        {
+            word: "hand out",
+            pos: "v.",
+            phonetic: "/hænd aʊt/",
+            definition: "分發",
+            memory_tip: "把手 (hand) 伸出去分 (out)",
+            homophonic: "漢道特",
+            sentence: "The teacher handed out the worksheets.",
+            translate: "老師分發了工作表。"
+        },
+        {
+            word: "railing",
+            pos: "n.",
+            phonetic: "/ˈreɪlɪŋ/",
+            definition: "欄杆",
+            memory_tip: " rail (軌道) + ing -> 軌道狀的欄杆",
+            homophonic: "瑞林",
+            sentence: "Please hold onto the railing when going upstairs.",
+            translate: "上下樓梯時請扶著欄杆。"
+        },
+        {
+            word: "sweep",
+            pos: "v.",
+            phonetic: "/swiːp/",
+            definition: "掃；打掃",
+            memory_tip: "用掃把（S）揮（Weep）出灰塵",
+            homophonic: "睡飛",
+            sentence: "She is sweeping the floor with a broom.",
+            translate: "她正在用掃把掃地。"
+        },
+        {
+            word: "wiping down",
+            pos: "v.",
+            phonetic: "/ˈwaɪpɪŋ daʊn/",
+            definition: "擦拭（表面）",
+            memory_tip: "wipe (擦) + down (向下) -> 由上往下擦拭",
+            homophonic: "歪冰蛋",
+            sentence: "He is wiping down the table after the meal.",
+            translate: "飯後他正在擦拭桌子。"
+        },
+        {
+            word: "crouching",
+            pos: "v.",
+            phonetic: "/ˈkraʊtʃɪŋ/",
+            definition: "蹲著",
+            memory_tip: "蹲下來，發出 '叩銃' (crouch) 的聲音",
+            homophonic: "扣觸景",
+            sentence: "The gardener is crouching to plant the flowers.",
+            translate: "園丁正蹲著種植花朵。"
+        },
+        {
+            word: "grab",
+            pos: "v.",
+            phonetic: "/ɡræb/",
+            definition: "抓；拿取",
+            memory_tip: "抓著 (Grab) 它！",
+            homophonic: "割拉不",
+            sentence: "She is grabbing a bag from the shelf.",
+            translate: "她正從架子上拿一個袋子。"
+        },
+        {
+            word: "bending over",
+            pos: "v.",
+            phonetic: "/ˈbendɪŋ ˈoʊvər/",
+            definition: "彎腰",
+            memory_tip: "bend (彎曲) + over (越過) -> 彎著腰過去",
+            homophonic: "本丁歐我",
+            sentence: "The woman is bending over to pick up the keys.",
+            translate: "那個女人正彎腰撿起鑰匙。"
+        },
+        {
+            word: "bending down",
+            pos: "v.",
+            phonetic: "/ˈbendɪŋ daʊn/",
+            definition: "彎腰向下",
+            memory_tip: "bend (彎曲) + down (向下) -> 彎著腰向下",
+            homophonic: "本丁蛋",
+            sentence: "The man is bending down to tie his shoe.",
+            translate: "那個男人正彎腰綁鞋帶。"
+        },
+        {
+            word: "saw",
+            pos: "v., n.",
+            phonetic: "/sɔː/",
+            definition: "鋸；看見",
+            memory_tip: "鋸木頭時發出『嘶～』(Saw) 的聲音",
+            homophonic: "掃",
+            sentence: "The carpenter is sawing the wood.",
+            translate: "木匠正在鋸木頭。"
+        },
+        {
+            word: "pillow",
+            pos: "n.",
+            phonetic: "/ˈpɪloʊ/",
+            definition: "枕頭",
+            memory_tip: "pillow (枕頭) 睡在pillow 上",
+            homophonic: "pí luó",
+            sentence: "She is resting her head on the pillow.",
+            translate: "她正將頭靠在枕頭上。"
+        },
+        {
+            word: "napkins",
+            pos: "n.",
+            phonetic: "/ˈnæpkɪnz/",
+            definition: "餐巾紙",
+            memory_tip: "nap (小睡) + kins (親戚) -> 在餐巾紙上睡覺",
+            homophonic: "那pk因子",
+            sentence: "She is wiping her mouth with a napkin.",
+            translate: "她正用餐巾紙擦嘴。"
+        },
+        {
+            word: "tent",
+            pos: "n.",
+            phonetic: "/tent/",
+            definition: "帳篷",
+            memory_tip: "tent (帳篷) 睡在 tent 上",
+            homophonic: "特恩特",
+            sentence: "They are setting up a tent for camping.",
+            translate: "他們正在搭帳篷露營。"
+        },
+        {
+            word: "set up",
+            pos: "v.",
+            phonetic: "/set ʌp/",
+            definition: "設立；建立",
+            memory_tip: "set (設定) + up (向上) -> 設立起來",
+            homophonic: "設特啊普",
+            sentence: "The company is setting up a new branch.",
+            translate: "這家公司正在設立一個新分公司。"
+        },
+        {
+            word: "set out",
+            pos: "v.",
+            phonetic: "/set aʊt/",
+            definition: "開始；出發；擺放",
+            memory_tip: "set (設定) + out (出去) -> 開始行動",
+            homophonic: "設套特",
+            sentence: "She set out on a journey to the mountains.",
+            translate: "她出發去爬山。"
+        }
     ]
 };
