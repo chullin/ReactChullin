@@ -64,7 +64,7 @@ export default function FlashcardApp() {
           >
             <div className="text-center space-y-4">
               <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">選擇學習模式</h2>
-              <p className="text-gray-500 font-bold">您想要如何練習 {selectedCategory.name}？</p>
+              <p className="text-gray-500 font-bold">您想要如何練習 {selectedCategory.title}？</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">

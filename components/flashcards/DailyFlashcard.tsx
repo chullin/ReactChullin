@@ -284,7 +284,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
           >
             <CardBody className="p-6 md:p-10 flex flex-col items-center justify-between">
               <div className="w-full flex justify-between items-start">
-                <Chip variant="flat" color="secondary" className="font-black px-3 h-8 md:px-4 md:h-9 border border-purple-100/50" size="sm md:md">解答 Answer</Chip>
+                <Chip variant="flat" color="secondary" className="font-black px-3 h-8 md:px-4 md:h-9 border border-purple-100/50" size="sm">解答 Answer</Chip>
                 
                 <Button
                   isIconOnly
