@@ -43,7 +43,7 @@ export default function SnakeGame() {
   const [isGameOver, setIsGameOver] = useState(false);
   const speedRef = useRef(150);
 
-  const gridSize = 20;
+  const gridSize = 40; // Increased from 20 for higher resolution
 
   const resetGame = useCallback(() => {
     snakeRef.current = [{ x: 10, y: 10 }];
@@ -138,10 +138,10 @@ export default function SnakeGame() {
         
         // Draw Fuse
         ctx.strokeStyle = '#f97316'; // orange-500
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 3; // Increased for resolution
         ctx.beginPath();
-        ctx.moveTo(bX, bY - 5);
-        ctx.lineTo(bX + 5, bY - 10);
+        ctx.moveTo(bX, bY - gridSize / 4);
+        ctx.lineTo(bX + gridSize / 4, bY - gridSize / 2);
         ctx.stroke();
       });
 
@@ -151,11 +151,11 @@ export default function SnakeGame() {
         ctx.fillStyle = isHead ? '#3b82f6' : '#60a5fa'; // blue-500 / blue-400
         
         // Rounded rectangle for snake segments
-        const r = 4;
-        const x = segment.x * gridSize + 1;
-        const y = segment.y * gridSize + 1;
-        const w = gridSize - 2;
-        const h = gridSize - 2;
+        const r = gridSize / 5;
+        const x = segment.x * gridSize + 2; // Adjusted padding
+        const y = segment.y * gridSize + 2;
+        const w = gridSize - 4;
+        const h = gridSize - 4;
         
         ctx.beginPath();
         ctx.moveTo(x + r, y);
@@ -169,14 +169,17 @@ export default function SnakeGame() {
         // Draw eyes on head
         if (isHead) {
           ctx.fillStyle = 'white';
-          const eyeSize = 3;
+          const eyeSize = gridSize / 7;
           const { dx, dy } = directionRef.current;
           
           let eyeX1, eyeY1, eyeX2, eyeY2;
-          if (dy === -1) { eyeX1 = x + 5; eyeY1 = y + 5; eyeX2 = x + 15; eyeY2 = y + 5; }
-          else if (dy === 1) { eyeX1 = x + 5; eyeY1 = y + 15; eyeX2 = x + 15; eyeY2 = y + 15; }
-          else if (dx === -1) { eyeX1 = x + 5; eyeY1 = y + 5; eyeX2 = x + 5; eyeY2 = y + 15; }
-          else { eyeX1 = x + 15; eyeY1 = y + 5; eyeX2 = x + 15; eyeY2 = y + 15; }
+          const offset1 = gridSize * 0.25;
+          const offset2 = gridSize * 0.75;
+
+          if (dy === -1) { eyeX1 = x + offset1; eyeY1 = y + offset1; eyeX2 = x + offset2; eyeY2 = y + offset1; }
+          else if (dy === 1) { eyeX1 = x + offset1; eyeY1 = y + offset2; eyeX2 = x + offset2; eyeY2 = y + offset2; }
+          else if (dx === -1) { eyeX1 = x + offset1; eyeY1 = y + offset1; eyeX2 = x + offset1; eyeY2 = y + offset2; }
+          else { eyeX1 = x + offset2; eyeY1 = y + offset1; eyeX2 = x + offset2; eyeY2 = y + offset2; }
           
           ctx.beginPath(); ctx.arc(eyeX1, eyeY1, eyeSize, 0, Math.PI * 2); ctx.fill();
           ctx.beginPath(); ctx.arc(eyeX2, eyeY2, eyeSize, 0, Math.PI * 2); ctx.fill();
@@ -330,8 +333,8 @@ export default function SnakeGame() {
   };
 
   return (
-    <div className="bg-gray-50/30 min-h-screen py-16 px-6">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="bg-gray-50/30 min-h-screen py-12 px-6 flex flex-col justify-center items-center">
+      <div className="max-w-5xl w-full mx-auto space-y-8">
         <div className="text-center space-y-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -342,15 +345,15 @@ export default function SnakeGame() {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 items-start">
           {/* Game Canvas */}
-          <Card className="border-none shadow-2xl bg-white p-4">
-            <CardBody className="p-0 flex items-center justify-center relative bg-gray-50 rounded-xl overflow-hidden aspect-square border-4 border-gray-100">
+          <Card className="border-none shadow-2xl bg-white p-2 sm:p-4 overflow-hidden">
+            <CardBody className="p-0 flex items-center justify-center relative bg-gray-50 rounded-xl overflow-hidden aspect-square border-4 border-gray-100 max-h-[60vh] md:max-h-none">
                <canvas
                 ref={canvasRef}
-                width="400"
-                height="400"
-                className="w-full h-full max-w-[500px]"
+                width="800"
+                height="800"
+                className="w-full h-full object-contain"
                 style={{ touchAction: 'none' }}
               />
               
@@ -380,54 +383,90 @@ export default function SnakeGame() {
 
           {/* Stats & Controls */}
           <div className="space-y-6">
-            <Card className="border-none shadow-sm bg-white">
-              <CardHeader className="flex gap-3">
-                <Trophy className="text-yellow-500" />
+            <Card className="border-none shadow-lg bg-white overflow-hidden">
+              <CardHeader className="flex gap-3 bg-gray-50/50 py-4">
+                <Trophy className="text-yellow-500" size={20} />
                 <p className="text-lg font-black tracking-tight">遊戲數據</p>
               </CardHeader>
               <Divider />
-              <CardBody className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500 font-bold">目前得分</span>
-                  <Chip color="primary" variant="flat" className="font-black text-xl px-4 py-3 h-auto">
+              <CardBody className="space-y-6 py-6">
+                <div className="flex justify-between items-center bg-primary-50 p-3 rounded-2xl">
+                  <span className="text-primary-700 font-bold ml-2">目前得分</span>
+                  <Chip color="primary" variant="shadow" className="font-black text-xl px-4 py-3 h-auto">
                     {score}
                   </Chip>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-500 font-bold">最高紀錄</span>
-                  <span className="font-black text-2xl text-gray-700">{highScore}</span>
+                <div className="flex justify-between items-center px-2">
+                  <div className="flex flex-col">
+                    <span className="text-gray-400 text-xs font-bold uppercase tracking-wider">High Score</span>
+                    <span className="font-black text-3xl text-gray-700">{highScore}</span>
+                  </div>
+                  <div className="bg-yellow-100 p-2 rounded-xl">
+                    <Trophy className="text-yellow-600" size={24} />
+                  </div>
                 </div>
               </CardBody>
             </Card>
 
-            <Card className="border-none shadow-sm bg-white">
-              <CardHeader className="flex gap-3">
-                <Gamepad2 className="text-blue-500" />
+            <Card className="border-none shadow-lg bg-white overflow-hidden">
+              <CardHeader className="flex gap-3 bg-gray-50/50 py-4">
+                <Gamepad2 className="text-blue-500" size={20} />
                 <p className="text-lg font-black tracking-tight">操作面板</p>
               </CardHeader>
               <Divider />
-              <CardBody className="p-8">
-                <div className="grid grid-cols-3 gap-2">
-                  <div />
-                  <Button isIconOnly variant="flat" color="primary" onPress={() => handleManualControl('UP')} className="h-16 w-16">
-                    <ArrowUp />
-                  </Button>
-                  <div />
-                  <Button isIconOnly variant="flat" color="primary" onPress={() => handleManualControl('LEFT')} className="h-16 w-16">
-                    <ArrowLeft />
-                  </Button>
-                  <Button isIconOnly variant="flat" color="primary" onPress={() => handleManualControl('DOWN')} className="h-16 w-16">
-                    <ArrowDown />
-                  </Button>
-                  <Button isIconOnly variant="flat" color="primary" onPress={() => handleManualControl('RIGHT')} className="h-16 w-16">
-                    <ArrowRight />
-                  </Button>
+              <CardBody className="p-6">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="grid grid-cols-3 gap-3 p-4 bg-gray-50 rounded-3xl shadow-inner">
+                    <div />
+                    <Button 
+                      isIconOnly 
+                      variant="shadow" 
+                      color="primary" 
+                      onPress={() => handleManualControl('UP')} 
+                      className="h-16 w-16 text-white rounded-2xl"
+                    >
+                      <ArrowUp size={28} strokeWidth={3} />
+                    </Button>
+                    <div />
+                    
+                    <Button 
+                      isIconOnly 
+                      variant="shadow" 
+                      color="primary" 
+                      onPress={() => handleManualControl('LEFT')} 
+                      className="h-16 w-16 text-white rounded-2xl"
+                    >
+                      <ArrowLeft size={28} strokeWidth={3} />
+                    </Button>
+                    <Button 
+                      isIconOnly 
+                      variant="shadow" 
+                      color="primary" 
+                      onPress={() => handleManualControl('DOWN')} 
+                      className="h-16 w-16 text-white rounded-2xl"
+                    >
+                      <ArrowDown size={28} strokeWidth={3} />
+                    </Button>
+                    <Button 
+                      isIconOnly 
+                      variant="shadow" 
+                      color="primary" 
+                      onPress={() => handleManualControl('RIGHT')} 
+                      className="h-16 w-16 text-white rounded-2xl"
+                    >
+                      <ArrowRight size={28} strokeWidth={3} />
+                    </Button>
+                  </div>
                 </div>
-                <div className="mt-8 pt-6 border-t border-gray-100 flex items-start gap-3">
-                  <Info className="text-gray-400 shrink-0" size={18} />
+                
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Info className="text-blue-400" size={16} />
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">遊戲提示</span>
+                  </div>
                   <p className="text-xs text-gray-400 font-medium leading-relaxed">
-                    電腦玩家：使用鍵盤方向鍵控制方向。<br />
-                    手機玩家：滑動遊戲畫面或點擊方向按鈕。
+                    電腦玩家：使用鍵盤方向鍵控制。<br />
+                    手機玩家：滑動螢幕或使用上方按鈕。
                   </p>
                 </div>
               </CardBody>
