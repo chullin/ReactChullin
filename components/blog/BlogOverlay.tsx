@@ -68,6 +68,8 @@ export default function BlogOverlay({ children }: { children: React.ReactNode })
       setIsBookmarked(true);
     }
     localStorage.setItem('blogBookmarks', JSON.stringify(newBookmarks));
+    // Dispatch custom event for other components to listen to
+    window.dispatchEvent(new Event('bookmarkChange'));
   };
 
   const shareToLine = () => {
