@@ -21,9 +21,10 @@ import {
   Compass,
   ChevronDown,
   ChevronUp,
+  Bookmark,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type Post = {
   title: string;
@@ -144,8 +145,14 @@ const series: Series[] = [
         href: '/blog/leetcode-ep01-two-sum', isExternal: false, ep: 'EP.01',
       },
       {
+        title: 'Python 算法學習復盤：投票、鏈表與 Top-K',
+        subtitle: 'Boyer-Moore 投票演算法、dummy_head 模式、Heap vs 桶排序 — 從七段對話整理的深度解析',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/leetcode-python-review', isExternal: false,
+      },
+      {
         title: 'LeetCode Python 踩坑紀錄',
-        subtitle: '那些刷題時讓我卡關的 Python 細節，整理給自己也給你',
+        subtitle: '那些刷題時讓我卡關的 Python 細節，整理給自己也給你（#1–#7 持續更新）',
         date: 'April 30, 2026', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/leetcode-python-pitfalls', isExternal: false,
       },
@@ -162,6 +169,54 @@ const series: Series[] = [
     comingSoon: ['HeroUI 元件庫使用心得', 'Next.js App Router 深度解析'],
     posts: [
       {
+        title: 'Vercel 部署上線 push 一下，全世界都能看到',
+        subtitle: 'GitHub + Vercel，免費、自動化、有預覽 URL， 這就是 chullin.vercel.app 的部署方式',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep08-vercel-deploy', isExternal: false, ep: 'EP.08',
+      },
+      {
+        title: 'Framer Motion 讓頁面元素動起來',
+        subtitle: '我的網頁所有滑入、淡出、滾動觸發動畫都靠它， 幾行程式碼就能讓靜態頁面瞬間有生命感',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep07-framer-motion', isExternal: false, ep: 'EP.07',
+      },
+      {
+        title: 'HeroUI 元件庫 現成 UI 積木，快速建出美觀介面',
+        subtitle: 'Card、Button、Chip、Divider — 我的網頁所有 UI 元件都來自這裡， 安裝一次，直接拿來用',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep06-heroui', isExternal: false, ep: 'EP.06',
+      },
+      {
+        title: 'Tailwind CSS 不再寫 CSS 檔，class 就是樣式',
+        subtitle: '我的個人網頁沒有任何手寫的 .css 檔案（除了全域設定）， 所有樣式都寫在 className 裡面',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep05-tailwind', isExternal: false, ep: 'EP.05',
+      },
+      {
+        title: 'React 核心概念 Component、JSX、Props、State',
+        subtitle: '看懂我的個人網頁每一行程式碼的關鍵 用你已經看過的實際程式碼來說明',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep04-react-component', isExternal: false, ep: 'EP.04',
+      },
+      {
+        title: '認識 Next.js 專案結構 每個資料夾都有它的職責',
+        subtitle: '打開 VS Code 看到一堆資料夾和檔案不知道從哪裡下手？ 這篇帶你一個一個搞清楚它們的用途',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep03-project-structure', isExternal: false, ep: 'EP.03',
+      },
+      {
+        title: '開發環境建置 從零到跑起第一個畫面',
+        subtitle: '安裝 Node.js、設定 VS Code、建立 Next.js 專案， 讓你的電腦能跑和我的個人網頁一樣的技術棧',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep02-setup-env', isExternal: false, ep: 'EP.02',
+      },
+      {
+        title: '什麼是現代網頁開發？ 從 HTML 到 React 的演進',
+        subtitle: '在動手寫第一行程式碼之前，先搞清楚這些名詞： HTML、CSS、JavaScript、React、Next.js 之間的關係',
+        date: '2024', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev-ep01-modern-web', isExternal: false, ep: 'EP.01',
+      },
+      {
         title: '用 React + Next.js 打造個人作品集',
         subtitle: '從零開始，到 Vercel 部署上線的完整過程',
         date: 'March 2026', author: 'Joseph Chen', type: 'Internal',
@@ -177,8 +232,33 @@ const series: Series[] = [
     bgColor: 'bg-amber-50',
     chipColor: 'warning',
     description: '深入 JS 核心概念：閉包、非同步、原型鏈與現代語法。',
-    comingSoon: ['Event Loop 完整圖解', 'Promise vs async/await', '閉包與作用域'],
-    posts: [],
+    comingSoon: [],
+    posts: [
+      {
+        title: 'Promise vs async/await：非同步 JS 的現代寫法',
+        subtitle: '從 Callback Hell 到 Promise 鏈，再到 async/await，搞懂陷阱與最佳實踐',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/js-promise-async', isExternal: false,
+      },
+      {
+        title: 'Event Loop 完整圖解：JS 如何做到「非同步」',
+        subtitle: 'Call Stack、Microtask Queue、Macrotask Queue，用互動圖解說清楚執行順序',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/js-event-loop', isExternal: false,
+      },
+      {
+        title: '閉包與作用域：JS 最核心的底層機制',
+        subtitle: 'var/let/const 差異、作用域鏈、閉包形成原理與 var+迴圈的經典陷阱',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/js-closure-scope', isExternal: false,
+      },
+      {
+        title: 'JS 算法學習復盤 閉包、高階函式與那些坑',
+        subtitle: '從 LeetCode 30 Days of JavaScript 學習紀錄出發， 整理那些讓我卡關最久、理解最深的 JS 核心觀念',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/js-30days-learning-review', isExternal: false,
+      },
+    ],
   },
   {
     id: 'other',
@@ -273,7 +353,7 @@ function SeriesSection({ s, index }: { s: Series; index: number }) {
   const [expanded, setExpanded] = useState(false);
 
   const visiblePosts = hasMany && !expanded ? s.posts.slice(0, PREVIEW_COUNT) : s.posts;
-  const isEpSeries = s.id === 'leetcode';
+  const isEpSeries = s.id === 'leetcode' || s.id === 'web';
 
   return (
     <motion.section
@@ -351,6 +431,16 @@ function SeriesSection({ s, index }: { s: Series; index: number }) {
 
 export default function BlogPage() {
   const totalPosts = series.reduce((acc, s) => acc + s.posts.length, 0);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    const savedBookmarks = JSON.parse(localStorage.getItem('blogBookmarks') || '[]');
+    if (savedBookmarks.length > 0) {
+      const allPosts = series.flatMap(s => s.posts);
+      const matched = savedBookmarks.map((href: string) => allPosts.find(p => p.href === href)).filter(Boolean) as Post[];
+      setBookmarkedPosts(matched);
+    }
+  }, []);
 
   return (
     <div className="bg-gray-50/30 min-h-screen pt-20 pb-32">
@@ -395,6 +485,25 @@ export default function BlogPage() {
             </a>
           ))}
         </motion.div>
+
+        {/* Bookmarks Section */}
+        {bookmarkedPosts.length > 0 && (
+          <div className="space-y-16">
+            <SeriesSection 
+              index={0}
+              s={{
+                id: 'bookmarks',
+                label: '我的收藏',
+                icon: <Bookmark size={22} />,
+                color: 'text-red-500',
+                bgColor: 'bg-red-50',
+                chipColor: 'danger',
+                description: '你儲存在這個瀏覽器中的文章',
+                posts: bookmarkedPosts
+              }} 
+            />
+          </div>
+        )}
 
         {/* Series Sections */}
         <div className="space-y-16">

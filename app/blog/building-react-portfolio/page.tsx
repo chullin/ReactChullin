@@ -8,17 +8,7 @@ import {
   Link as HeroLink,
   Chip,
 } from '@heroui/react';
-import {
-  Calendar,
-  User,
-  ArrowLeft,
-  Bookmark,
-  Share2,
-  Globe,
-  Quote,
-  Layers,
-  Rocket,
-} from 'lucide-react';
+import { Calendar, User, ArrowLeft, Bookmark, Share2, Globe, Quote, Layers, Rocket, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -103,13 +93,9 @@ export default function BuildingReactPortfolioPage() {
             >
               Back to Blog
             </Button>
-            <div className="flex gap-2">
-              <Button isIconOnly variant="flat" radius="full" color="default">
-                <Bookmark size={18} />
-              </Button>
-              <Button isIconOnly variant="flat" radius="full" color="default">
-                <Share2 size={18} />
-              </Button>
+            <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
+              <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
+              <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
             </div>
           </div>
 

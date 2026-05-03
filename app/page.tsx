@@ -16,7 +16,8 @@ import {
   Terminal, 
   Briefcase, 
   GraduationCap, 
-  Phone
+  Phone,
+  BookOpen
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -59,16 +60,27 @@ export default function Home() {
               therefore I am
             </h1>
 
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
               <Button
                 as={Link}
                 href="/resume"
                 color="primary"
                 size="lg"
-                className="font-bold px-8 shadow-lg shadow-blue-500/20"
+                className="font-bold px-8 shadow-lg shadow-blue-500/20 w-full sm:w-auto"
                 endContent={<ArrowRight size={20} />}
               >
                 View Resume
+              </Button>
+              <Button
+                as={Link}
+                href="/blog"
+                variant="flat"
+                color="primary"
+                size="lg"
+                className="font-bold px-8 w-full sm:w-auto"
+                startContent={<BookOpen size={18} />}
+              >
+                Read Blog
               </Button>
               <Button
                 as={Link}
@@ -76,7 +88,7 @@ export default function Home() {
                 variant="bordered"
                 color="default"
                 size="lg"
-                className="font-bold px-8"
+                className="font-bold px-8 w-full sm:w-auto"
               >
                 Projects
               </Button>

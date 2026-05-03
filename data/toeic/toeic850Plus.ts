@@ -787,6 +787,66 @@ export const toeic850Plus: DifficultyCategory = {
             homophonic: "設套特",
             sentence: "She set out on a journey to the mountains.",
             translate: "她出發去爬山。"
-        }
+        },
+        {
+            word: "ego",
+            pos: "n.",
+            phonetic: "/ˈiːɡoʊ/",
+            definition: "自我；自尊",
+            memory_tip: "ego (自我) 是自大的",
+            homophonic: "伊狗",
+            sentence: "He has a big ego.",
+            translate: "他非常自大。"
+        },
+        {
+            word: "arrested",
+            pos: "v.",
+            phonetic: "/əˈrestɪd/",
+            definition: "被逮捕；被捕",
+            memory_tip: "arrest (逮捕) + ed (過去式) -> 被逮捕了",
+            homophonic: "啊瑞斯提德",
+            sentence: "The suspect was arrested by the police.",
+            translate: "嫌疑犯被警方逮捕了。"
+        },
+        {
+            word: "suspect",
+            pos: "n.",
+            phonetic: "/ˈsʌspekt/",
+            definition: "嫌疑犯",
+            memory_tip: "sus (下面) + pect (看) -> 在下面看你，鬼鬼祟祟的嫌疑犯",
+            homophonic: "薩斯派克特",
+            sentence: "The suspect was arrested by the police.",
+            translate: "嫌疑犯被警方逮捕了。"
+        },
+        {
+            word: "crime",
+            pos: "n.",
+            phonetic: "/kraɪm/",
+            definition: "犯罪",
+            memory_tip: "crime (犯罪) 是非法的",
+            homophonic: "克拉姆",
+            sentence: "The police are investigating the crime.",
+            translate: "警方正在調查這起犯罪。"
+        },
+        {
+            word: "in a pile",
+            pos: "v.",
+            phonetic: "/ɪn ə paɪl/",
+            definition: "堆疊在一起",
+            memory_tip: "in (在) + a (一個) + pile (堆) -> 堆疊在一起",
+            homophonic: "一内 pio",
+            sentence: "The books are in a pile on the table.",
+            translate: "書堆疊在桌子上。"
+        },
+        {
+            word: "compliment",
+            pos: "v.",
+            phonetic: "/ˈkɑːmplɪmənt/",
+            definition: "讚美",
+            memory_tip: "compliment (讚美) 讓我心花怒放",
+            homophonic: "空ぷle門特",
+            sentence: "She complimented him on his new haircut.",
+            translate: "她稱讚他的新髮型。"
+        },
     ]
 };

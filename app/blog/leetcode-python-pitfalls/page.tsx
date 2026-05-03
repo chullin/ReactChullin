@@ -8,17 +8,7 @@ import {
   Link as HeroLink,
   Chip,
 } from '@heroui/react';
-import {
-  Calendar,
-  User,
-  ArrowLeft,
-  Bookmark,
-  Share2,
-  Code2,
-  Quote,
-  AlertTriangle,
-  CheckCircle,
-} from 'lucide-react';
+import { Calendar, User, ArrowLeft, Bookmark, Share2, Code2, Quote, AlertTriangle, CheckCircle, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -126,13 +116,9 @@ export default function LeetcodePythonPitfallsPage() {
             >
               Back to Blog
             </Button>
-            <div className="flex gap-2">
-              <Button isIconOnly variant="flat" radius="full" color="default">
-                <Bookmark size={18} />
-              </Button>
-              <Button isIconOnly variant="flat" radius="full" color="default">
-                <Share2 size={18} />
-              </Button>
+            <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
+              <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
+              <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
             </div>
           </div>
 
@@ -250,6 +236,103 @@ while p1 >= 0 and p2 >= 0:
               </p>
             </div>
 
+            {/* Section 5 */}
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <div className="w-8 h-1.5 bg-blue-500 rounded-full" />
+                #5　dict.get(key, default) 防 KeyError
+              </h2>
+              <p>
+                在用 HashMap 計數時，第一次出現的 key 如果直接 <code>count[char] += 1</code>，
+                會因為 key 不存在而拋出 KeyError。常見的解法有三種：
+              </p>
+              <CodeBlock code={`# ❌ 直接操作不存在的 key → KeyError
+count = {}
+for char in s:
+    count[char] += 1  # 第一次出現時 key 不存在，報錯！`} />
+              <CodeBlock code={`# ✅ 方法 1：dict.get(key, default)
+count = {}
+for char in s:
+    count[char] = count.get(char, 0) + 1
+# .get(char, 0) 的意思是：「取 count[char] 的值，如果不存在就回傳 0」
+
+# ✅ 方法 2：defaultdict(int)
+from collections import defaultdict
+count = defaultdict(int)  # key 不存在時自動建立，預設值為 0
+for char in s:
+    count[char] += 1
+
+# ✅ 方法 3：Counter（一行搞定）
+from collections import Counter
+count = Counter(s)  # 直接建好全部的計數`} />
+              <Callout type="tip">
+                三種方法的語意相同，選擇看情境：<br />
+                <strong>Counter</strong> 最簡潔，適合「一次性計算整個字串/陣列的頻率」。<br />
+                <strong>defaultdict</strong> 適合「邊遍歷邊更新，還要做分組」（如 Group Anagrams）。<br />
+                <strong>dict.get</strong> 不需要 import，適合在受限環境或想明確控制邏輯時使用。
+              </Callout>
+            </div>
+
+            {/* Section 6 */}
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <div className="w-8 h-1.5 bg-blue-500 rounded-full" />
+                #6　range(nums) 忘記 len()
+              </h2>
+              <p>
+                在寫 Two Pointer 的 for 迴圈時，我犯過一個很低級的錯——把 list 本身傳給 <code>range()</code>：
+              </p>
+              <CodeBlock code={`# ❌ range() 需要整數，不能傳 list
+for fast in range(1, nums):
+    ...
+# TypeError: 'list' object cannot be interpreted as an integer`} />
+              <CodeBlock code={`# ✅ 取 list 的長度再傳給 range()
+for fast in range(1, len(nums)):
+    ...`} />
+              <Callout type="warning">
+                這種錯誤 Python 會立刻拋出 <code>TypeError</code>，所以不難找到。
+                但它說明了一個思維習慣問題：在 Python 裡 <code>range(len(arr))</code> 幾乎是固定搭配，
+                把它當成一個整體記住。
+              </Callout>
+            </div>
+
+            {/* Section 7 */}
+            <div className="space-y-4">
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
+                <div className="w-8 h-1.5 bg-blue-500 rounded-full" />
+                #7　Counter 迭代順序 ≠ 頻率排序
+              </h2>
+              <p>
+                做 #347 Top K Frequent Elements 時，我以為迭代 Counter 就能按頻率由高到低取得元素，
+                結果取到的是插入順序（Python 3.7+ dict 的預設行為），完全不是我要的結果。
+              </p>
+              <CodeBlock code={`from collections import Counter
+
+nums = [1, 1, 1, 2, 2, 3]
+count = Counter(nums)
+
+# Counter({'1': 3, '2': 2, '3': 1})  ← 印出來看起來是按頻率排
+# 但這只是顯示格式，不代表迭代順序！
+
+# ❌ 直接迭代取前 k 個
+result = []
+for num in count:     # 迭代順序是插入順序，不是頻率
+    result.append(num)
+    if len(result) == k:
+        break
+# 結果：取到的是最先出現的 k 個，不是頻率最高的 k 個！`} />
+              <CodeBlock code={`# ✅ 正確做法 1：most_common(k) 按頻率由高到低
+[num for num, _ in count.most_common(k)]
+
+# ✅ 正確做法 2：heapq.nlargest（O(n log k)，更快）
+import heapq
+heapq.nlargest(k, count.keys(), key=lambda x: count[x])`} />
+              <Callout type="warning">
+                <code>Counter</code> 的 <code>most_common()</code> 才是按頻率排序的正確方法。
+                如果不傳參數，會回傳全部元素按頻率排序的 list；傳入 k 只回傳前 k 個，效率更高。
+              </Callout>
+            </div>
+
             {/* Quote */}
             <Card className="bg-blue-50/50 border-none shadow-none my-12">
               <CardBody className="p-10 relative overflow-hidden">
@@ -279,8 +362,13 @@ while p1 >= 0 and p2 >= 0:
                   { no: '53', title: 'Maximum Subarray', ways: 2 },
                   { no: '27', title: 'Remove Element', ways: 1 },
                   { no: '217', title: 'Contains Duplicate', ways: 1 },
+                  { no: '242', title: 'Valid Anagram', ways: 2 },
+                  { no: '49', title: 'Group Anagrams', ways: 2 },
                   { no: '2', title: 'Add Two Numbers', ways: 1 },
-                  { no: '169', title: 'Majority Element', ways: 1 },
+                  { no: '26', title: 'Remove Duplicates from Sorted Array', ways: 2 },
+                  { no: '169', title: 'Majority Element', ways: 3 },
+                  { no: '229', title: 'Majority Element II', ways: 2 },
+                  { no: '347', title: 'Top K Frequent Elements', ways: 3 },
                 ].map((item) => (
                   <div key={item.no} className="flex items-center gap-3 bg-gray-50 rounded-2xl px-5 py-4">
                     <span className="text-xs font-black text-gray-400 w-8">#{item.no}</span>
