@@ -356,12 +356,12 @@ systemctl start ollama`,
             <p className="text-sm text-gray-500 mt-1">從工廠內網 LLM 說起</p>
             <ArrowLeft size={18} className="mt-3 text-gray-400 group-hover:text-purple-500 transition-colors" />
           </Link>
-          <div className="bg-gray-50 rounded-2xl p-6 opacity-50 text-right">
+          <Link href="/blog/ai/ep03-dify-orchestration" className="group block bg-gray-50 hover:bg-indigo-50 transition-colors rounded-2xl p-6 text-right">
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">下一篇</p>
-            <p className="font-black text-gray-400">EP.03 — Dify 平台部署</p>
-            <p className="text-sm text-gray-400 mt-1">即將推出</p>
-            <ArrowRight size={18} className="ml-auto mt-3 text-gray-300" />
-          </div>
+            <p className="font-black text-gray-900 group-hover:text-indigo-600 transition-colors">EP.03 — Dify 工作流程設計</p>
+            <p className="text-sm text-gray-500 mt-1">打造可控的 AI Agent</p>
+            <ArrowRight size={18} className="ml-auto mt-3 text-gray-300 group-hover:text-indigo-500 transition-colors" />
+          </Link>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap pt-4">

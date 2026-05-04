@@ -418,12 +418,12 @@ def auto_targeting(camera_index=0):
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">上一篇</p>
             <p className="font-black text-gray-400">這是系列第一篇</p>
           </div>
-          <div className="bg-gray-50 rounded-2xl p-6 opacity-50 text-right">
+          <Link href="/blog/python/ep08-pytorch-basics" className="group block bg-gray-50 hover:bg-emerald-50 transition-colors rounded-2xl p-6 text-right">
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">下一篇</p>
-            <p className="font-black text-gray-400">EP.02 — Python Tkinter GUI 開發</p>
-            <p className="text-sm text-gray-400 mt-1">即將推出</p>
-            <ArrowRight size={18} className="ml-auto mt-3 text-gray-300" />
-          </div>
+            <p className="font-black text-gray-900 group-hover:text-emerald-600 transition-colors">EP.08 — PyTorch 入門</p>
+            <p className="text-sm text-gray-500 mt-1">Tensor 操作與訓練迴圈</p>
+            <ArrowRight size={18} className="ml-auto mt-3 text-gray-300 group-hover:text-emerald-500 transition-colors" />
+          </Link>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap pt-4">

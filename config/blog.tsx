@@ -1,4 +1,4 @@
-import { Code2, Cpu, Zap, Globe, Compass } from 'lucide-react';
+import { Code2, Cpu, Zap, Globe, Compass, Database, Settings } from 'lucide-react';
 import React from 'react';
 
 export type Post = {
@@ -32,9 +32,21 @@ export const series: Series[] = [
     color: 'text-purple-600',
     bgColor: 'bg-purple-50',
     chipColor: 'secondary',
-    description: '從鴻海深圳廠的實戰經驗出發，記錄如何在隔離網路中部署大型語言模型。',
-    comingSoon: ['EP.03 — Dify 平台部署'],
+    description: '從鴻海深圳廠的實戰經驗出發，記錄如何在隔離網路中部署 Ollama 大型語言模型。',
+    comingSoon: ['EP.05 — RAG 進階：多向量檢索與重排序'],
     posts: [
+      {
+        title: 'EP.04 — Transformer & TTS：語音合成架構原理，從 Encoder-Decoder 到嵌入式推論',
+        subtitle: '解析如何讓機器說出自然人聲：從聲學模型到聲碼器的完整技術拆解',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/ai/ep04-transformer-tts', isExternal: false, ep: 'EP.04',
+      },
+      {
+        title: 'EP.03 — Dify 工作流程設計：在本地 LLM 前加上 Orchestration 層，打造可控的 AI Agent',
+        subtitle: '單純的 Chat 已經不夠了：透過 Dify 的編排能力，在本地 LLM 上層建構穩定的業務邏輯流程',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/ai/ep03-dify-orchestration', isExternal: false, ep: 'EP.03',
+      },
       {
         title: 'EP.02 — Ollama 本地 LLM 部署全攻略',
         subtitle: '含離線環境搬檔教學：從安裝到第一個推論，解決離線環境模型下載難題',
@@ -57,8 +69,20 @@ export const series: Series[] = [
     bgColor: 'bg-green-50',
     chipColor: 'success',
     description: '利用 Python 解決工廠自動化難題：影像辨識、機械手臂控制與系統整合。',
-    comingSoon: ['EP.02 — Python Tkinter GUI 開發'],
+    comingSoon: ['EP.10 — Pandas 與資料處理實戰'],
     posts: [
+      {
+        title: 'EP.09 — Tkinter GUI 開發：事件驅動設計、元件配置、與 Raspberry Pi 的自動化測試應用',
+        subtitle: '將腳本轉化為工具：利用 Python 內建庫建構視窗介面，實現產線自動化控制中心',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/python/ep09-tkinter-gui', isExternal: false, ep: 'EP.09',
+      },
+      {
+        title: 'EP.08 — PyTorch 入門：Tensor 操作、autograd、訓練迴圈，AI 工程師必備基礎',
+        subtitle: '進入深度學習的世界：掌握 PyTorch 的核心機制，從基礎運算到訓練第一個神經網路',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/python/ep08-pytorch-basics', isExternal: false, ep: 'EP.08',
+      },
       {
         title: 'EP.01 — OpenCV + 機械手臂',
         subtitle: '電腦視覺自動定位系統實戰：從影像辨識到 XY 軸座標轉換的完整技術拆解',
@@ -75,8 +99,20 @@ export const series: Series[] = [
     bgColor: 'bg-blue-50',
     chipColor: 'primary',
     description: '從 HashMap 到圖論，20 個主題帶你系統性地建立演算法思維。',
-    comingSoon: ['EP.21 — 即將推出'],
+    comingSoon: ['EP.23 — 即將推出'],
     posts: [
+      {
+        title: 'EP.22 — Math：數學解題技巧',
+        subtitle: '#9 Palindrome Number · #50 Pow(x, n) · #202 Happy Number · #204 Count Primes',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/leetcode/ep22-math', isExternal: false, ep: 'EP.22',
+      },
+      {
+        title: 'EP.21 — Bit Manipulation：位元操作的魔法',
+        subtitle: '#191 Number of 1 Bits · #338 Counting Bits · #268 Missing Number · #136 Single Number',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/leetcode/ep21-bit-manipulation', isExternal: false, ep: 'EP.21',
+      },
       {
         title: 'EP.20 — Heap：永遠能找到最大或最小',
         subtitle: '#215 Kth Largest Element · #347 Top K Frequent · #295 Find Median from Data Stream',
@@ -219,52 +255,70 @@ export const series: Series[] = [
     bgColor: 'bg-violet-50',
     chipColor: 'secondary',
     description: '從無到有建立個人作品集，記錄技術選型、踩坑與部署的完整過程。',
-    comingSoon: ['HeroUI 元件庫使用心得', 'Next.js App Router 深度解析'],
+    comingSoon: ['EP.12 — HeroUI 元件庫使用心得'],
     posts: [
       {
-        title: 'Vercel 部署上線 push 一下，全世界都能看到',
+        title: 'EP.11 — Bootstrap 入門：Grid 系統、元件庫、與 Tailwind 的設計哲學比較',
+        subtitle: '曾經統治前端世界的 CSS 框架皇者，從快速原型開發到現代實務中的定位',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev/ep11-bootstrap-basics', isExternal: false, ep: 'EP.11',
+      },
+      {
+        title: 'EP.10 — HTML/CSS 核心概念：Box Model、Flexbox、Grid、RWD，前端面試最常考的基礎題',
+        subtitle: '徹底搞懂現代網頁佈局的底層機制，從盒模型到響應式設計實戰',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev/ep10-html-css-basics', isExternal: false, ep: 'EP.10',
+      },
+      {
+        title: 'EP.09 — 部落格導覽與搜尋系統實戰',
+        subtitle: '結構設計、雙層搜尋演算法與 IntersectionObserver 滾動追蹤',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/web-dev/ep09-advanced-nav', isExternal: false, ep: 'EP.09',
+      },
+      {
+        title: 'EP.08 — Vercel 部署上線 push 一下，全世界都能看到',
         subtitle: 'GitHub + Vercel，免費、自動化、有預覽 URL， 這就是 chullin.vercel.app 的部署方式',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep08-vercel-deploy', isExternal: false, ep: 'EP.08',
       },
       {
-        title: 'Framer Motion 讓頁面元素動起來',
+        title: 'EP.07 — Framer Motion 讓頁面元素動起來',
         subtitle: '我的網頁所有滑入、淡出、滾動觸發動畫都靠它， 幾行程式碼就能讓靜態頁面瞬間有生命感',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep07-framer-motion', isExternal: false, ep: 'EP.07',
       },
       {
-        title: 'HeroUI 元件庫 現成 UI 積木，快速建出美觀介面',
+        title: 'EP.06 — HeroUI 元件庫 現成 UI 積木，快速建出美觀介面',
         subtitle: 'Card、Button、Chip、Divider — 我的網頁所有 UI 元件都來自這裡， 安裝一次，直接拿來用',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep06-heroui', isExternal: false, ep: 'EP.06',
       },
       {
-        title: 'Tailwind CSS 不再寫 CSS 檔，class 就是樣式',
+        title: 'EP.05 — Tailwind CSS 不再寫 CSS 檔，class 就是樣式',
         subtitle: '我的個人網頁沒有任何手寫的 .css 檔案（除了全域設定）， 所有樣式都寫在 className 裡面',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep05-tailwind', isExternal: false, ep: 'EP.05',
       },
       {
-        title: 'React 核心概念 Component、JSX、Props、State',
+        title: 'EP.04 — React 核心概念 Component、JSX、Props、State',
         subtitle: '看懂我的個人網頁每一行程式碼的關鍵 用你已經看過的實際程式碼來說明',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep04-react-component', isExternal: false, ep: 'EP.04',
       },
       {
-        title: '認識 Next.js 專案結構 每個資料夾都有它的職責',
+        title: 'EP.03 — 認識 Next.js 專案結構 每個資料夾都有它的職責',
         subtitle: '打開 VS Code 看到一堆資料夾 and 檔案不知道從哪裡下手？ 這篇帶你一個一個搞清楚它們的用途',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep03-project-structure', isExternal: false, ep: 'EP.03',
       },
       {
-        title: '開發環境建置 從零到跑起第一個畫面',
+        title: 'EP.02 — 開發環境建置 從零到跑起第一個畫面',
         subtitle: '安裝 Node.js、設定 VS Code、建立 Next.js 專案， 讓你的電腦能跑和我的個人網頁一樣的技術棧',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep02-setup-env', isExternal: false, ep: 'EP.02',
       },
       {
-        title: '什麼是現代網頁開發？ 從 HTML 到 React 的演進',
+        title: 'EP.01 — 什麼是現代網頁開發？ 從 HTML 到 React 的演進',
         subtitle: '在動手寫第一行程式碼之前，先搞清楚這些名詞： HTML、CSS、JavaScript、React、Next.js 之間的關係',
         date: '2024', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/web-dev/ep01-modern-web', isExternal: false, ep: 'EP.01',
@@ -310,6 +364,84 @@ export const series: Series[] = [
         subtitle: '從 LeetCode 30 Days of JavaScript 學習紀錄出發， 整理那些讓我卡關最久、理解最深的 JS 核心觀念',
         date: '2026', author: 'Joseph Chen', type: 'Internal',
         href: '/blog/js/30days-learning-review', isExternal: false,
+      },
+    ],
+  },
+  {
+    id: 'backend',
+    label: '後端語言',
+    icon: <Database size={22} />,
+    color: 'text-slate-700',
+    bgColor: 'bg-slate-50',
+    chipColor: 'default',
+    description: '從底層 C 語言到現代化 C# / .NET 框架，建立紮實的後端開發與面試競爭力。',
+    comingSoon: ['EP.03 — Java Spring Boot 入門'],
+    posts: [
+      {
+        title: 'EP.02 — C# 與 ASP.NET 基礎：型別系統、LINQ、Web API 設計，.NET 工程師面試題',
+        subtitle: '現代化企業開發的首選：從強型別語言特性到高性能 Web API 的建構藝術',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/backend/ep02-csharp-aspnet', isExternal: false, ep: 'EP.02',
+      },
+      {
+        title: 'EP.01 — C 語言面試必備：指標、記憶體管理、常見 Coding 題解析',
+        subtitle: '深入計算機底層：掌握 C 語言最核心的靈魂，應對韌體與後端效能開發的面試挑戰',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/backend/ep01-c-basics', isExternal: false, ep: 'EP.01',
+      },
+    ],
+  },
+  {
+    id: 'embedded',
+    label: '嵌入式與系統',
+    icon: <Cpu size={22} />,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    chipColor: 'warning',
+    description: '從 Linux 底層指令到硬體通訊協定，記錄嵌入式開發與系統自動化的核心技術。',
+    comingSoon: ['EP.04 — Docker 容器化與嵌入式部署'],
+    posts: [
+      {
+        title: 'EP.03 — UART & I2C 通訊協定：嵌入式硬體溝通原理，Python 實作與面試常考題',
+        subtitle: '硬體工程師與軟體工程師的共同語言：掌握 UART 與 I2C 的底層機制與除錯技巧',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/embedded/ep03-uart-i2c', isExternal: false, ep: 'EP.03',
+      },
+      {
+        title: 'EP.02 — Shell Script 入門：變數、迴圈、條件判斷，10 個讓工作自動化的腳本模板',
+        subtitle: '告別重複勞動：掌握 Bash 腳本核心語法，打造高效的自動化開發環境',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/embedded/ep02-shell-script', isExternal: false, ep: 'EP.02',
+      },
+      {
+        title: 'EP.01 — Linux 基礎指令：檔案操作、權限、cron、process，嵌入式工程師必知的 20 個指令',
+        subtitle: '進入 Linux 世界的第一步：從檔案管理到系統監控，掌握最核心的命令列工具',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/embedded/ep01-linux-basics', isExternal: false, ep: 'EP.01',
+      },
+    ],
+  },
+  {
+    id: 'workflow',
+    label: '工具與開發流程',
+    icon: <Settings size={22} />,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    chipColor: 'primary',
+    description: '從版本控制到容器化部署，掌握工程師必備的現代開發工具鏈。',
+    comingSoon: ['EP.03 — CI/CD 自動化部署實戰'],
+    posts: [
+      {
+        title: 'EP.02 — Docker 入門：Image、Container、Compose 一次搞懂，面試必備概念',
+        subtitle: '環境一致性的終極解決方案：從建構映像檔到多容器編排的完整指南',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/workflow/ep02-docker-basics', isExternal: false, ep: 'EP.02',
+      },
+      {
+        title: 'EP.01 — Git 入門到實戰：commit / branch / rebase 原理，面試最常考的 10 題',
+        subtitle: '不只是存檔：掌握版本控制的底層邏輯，應對團隊協作中的各種挑戰',
+        date: '2026', author: 'Joseph Chen', type: 'Internal',
+        href: '/blog/workflow/ep01-git-basics', isExternal: false, ep: 'EP.01',
       },
     ],
   },

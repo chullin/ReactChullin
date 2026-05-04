@@ -7,6 +7,7 @@ import {
   Link,
   Divider,
   Chip,
+  Input,
 } from '@heroui/react';
 import {
   Calendar,
@@ -18,6 +19,7 @@ import {
   ChevronDown,
   ChevronUp,
   Bookmark,
+  Search,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -85,12 +87,13 @@ function PostCard({ post }: { post: Post }) {
   );
 }
 
-function SeriesSection({ s, index }: { s: Series; index: number }) {
+function SeriesSection({ s, index, isSearching }: { s: Series; index: number; isSearching?: boolean }) {
   const PREVIEW_COUNT = 5;
   const hasMany = s.posts.length > PREVIEW_COUNT;
   const [expanded, setExpanded] = useState(false);
 
-  const visiblePosts = hasMany && !expanded ? s.posts.slice(0, PREVIEW_COUNT) : s.posts;
+  // When searching, we show all matching posts instead of collapsing
+  const visiblePosts = (hasMany && !expanded && !isSearching) ? s.posts.slice(0, PREVIEW_COUNT) : s.posts;
   const isEpSeries = s.id === 'leetcode' || s.id === 'web';
 
   return (
@@ -169,6 +172,7 @@ function SeriesSection({ s, index }: { s: Series; index: number }) {
 
 export default function BlogPage() {
   const totalPosts = series.reduce((acc, s) => acc + s.posts.length, 0);
+  const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
 
   useEffect(() => {
@@ -179,6 +183,26 @@ export default function BlogPage() {
       setBookmarkedPosts(matched);
     }
   }, []);
+
+  const filteredSeries = series.map(s => {
+    const isSeriesMatch = s.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         s.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // If series matches, show all its posts. Otherwise, filter posts by title/subtitle.
+    const filteredPosts = isSeriesMatch 
+      ? s.posts 
+      : s.posts.filter(p => 
+          p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          p.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+
+    return { ...s, posts: filteredPosts };
+  }).filter(s => s.posts.length > 0);
+
+  const filteredBookmarks = bookmarkedPosts.filter(p => 
+    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    p.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="bg-gray-50/30 min-h-screen pt-20 pb-32">
@@ -208,6 +232,30 @@ export default function BlogPage() {
           </div>
         </motion.div>
 
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="relative max-w-xl mx-auto"
+        >
+          <Input
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            placeholder="搜尋文章、類別或技術關鍵字 (如: Tailwind, Ollama)..."
+            radius="2xl"
+            size="lg"
+            variant="flat"
+            className="group"
+            classNames={{
+              inputWrapper: "bg-white shadow-sm border-gray-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300",
+              input: "font-medium text-gray-700",
+            }}
+            startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
+            isClearable
+          />
+        </motion.div>
+
         {/* Stats Bar */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -219,16 +267,17 @@ export default function BlogPage() {
             <a key={s.id} href={`#${s.id}`} className={`${s.bgColor} rounded-2xl p-4 flex flex-col gap-1 hover:shadow-md transition-shadow`}>
               <div className={`${s.color}`}>{s.icon}</div>
               <p className="text-lg font-black text-gray-800">{s.posts.length}</p>
-              <p className="text-[10px] font-bold text-gray-400 leading-tight">{s.label}</p>
+              <p className="text-[10px] font-bold text-gray-400 leading-tight truncate">{s.label}</p>
             </a>
           ))}
         </motion.div>
 
         {/* Bookmarks Section */}
-        {bookmarkedPosts.length > 0 && (
+        {filteredBookmarks.length > 0 && (
           <div className="space-y-16">
             <SeriesSection 
               index={0}
+              isSearching={searchQuery !== ''}
               s={{
                 id: 'bookmarks',
                 label: '我的收藏',
@@ -237,7 +286,7 @@ export default function BlogPage() {
                 bgColor: 'bg-red-50',
                 chipColor: 'danger',
                 description: '你儲存在這個瀏覽器中的文章',
-                posts: bookmarkedPosts
+                posts: filteredBookmarks
               }} 
             />
           </div>
@@ -245,11 +294,28 @@ export default function BlogPage() {
 
         {/* Series Sections */}
         <div className="space-y-16">
-          {series.map((s, i) => (
-            <div key={s.id} id={s.id}>
-              <SeriesSection s={s} index={i} />
+          {filteredSeries.length > 0 ? (
+            filteredSeries.map((s, i) => (
+              <div key={s.id} id={s.id}>
+                <SeriesSection s={s} index={i} isSearching={searchQuery !== ''} />
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-20 space-y-4">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                <Search size={32} className="text-gray-300" />
+              </div>
+              <p className="text-gray-400 font-bold text-lg italic">找不到與「{searchQuery}」相關的文章</p>
+              <Button 
+                variant="light" 
+                color="primary" 
+                className="font-bold"
+                onClick={() => setSearchQuery('')}
+              >
+                清除搜尋
+              </Button>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Footer CTA */}

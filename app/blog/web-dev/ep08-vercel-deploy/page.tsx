@@ -396,11 +396,11 @@ git push origin main  # ← 這才更新正式網站`} />
             <p className="font-black text-gray-900 group-hover:text-blue-600 transition-colors">EP.07 — Framer Motion</p>
             <p className="text-sm text-gray-500 mt-1">讓頁面元素動起來</p>
           </Link>
-          <Link href="/blog" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6 text-right">
-            <p className="text-xs font-bold text-gray-400 uppercase mb-1">系列結束</p>
-            <p className="font-black text-gray-900 group-hover:text-blue-600 transition-colors">回到部落格</p>
-            <p className="text-sm text-gray-500 mt-1">查看所有文章</p>
-            <ArrowRight size={18} className="ml-auto mt-3 text-gray-400 group-hover:text-blue-500 transition-colors" />
+          <Link href="/blog/web-dev/ep09-advanced-nav" className="group block bg-gray-50 hover:bg-indigo-50 transition-colors rounded-2xl p-6 text-right">
+            <p className="text-xs font-bold text-gray-400 uppercase mb-1">下一篇</p>
+            <p className="font-black text-gray-900 group-hover:text-indigo-600 transition-colors">EP.09 — 導航與搜尋系統</p>
+            <p className="text-sm text-gray-500 mt-1">結構設計、搜尋演算法與滾動追蹤</p>
+            <ArrowRight size={18} className="ml-auto mt-3 text-gray-400 group-hover:text-indigo-500 transition-colors" />
           </Link>
         </div>
 
