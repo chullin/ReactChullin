@@ -243,7 +243,7 @@ export default function BlogPage() {
             value={searchQuery}
             onValueChange={setSearchQuery}
             placeholder="搜尋文章、類別或技術關鍵字 (如: Tailwind, Ollama)..."
-            radius="2xl"
+            radius="lg"
             size="lg"
             variant="flat"
             className="group"
