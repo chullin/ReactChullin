@@ -6,4 +6,4 @@ build/
 *.local
 .venv/
 __pycache__/
-*.pyc
+*.pycapp/blog/改動頁面/
