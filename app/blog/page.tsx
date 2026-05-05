@@ -94,7 +94,7 @@ function SeriesSection({ s, index, isSearching }: { s: Series; index: number; is
 
   // When searching, we show all matching posts instead of collapsing
   const visiblePosts = (hasMany && !expanded && !isSearching) ? s.posts.slice(0, PREVIEW_COUNT) : s.posts;
-  const isEpSeries = s.id === 'leetcode' || s.id === 'web';
+  const isEpSeries = ['leetcode', 'web', 'ai', 'embedded', 'python', 'lang'].includes(s.id);
 
   return (
     <motion.section
