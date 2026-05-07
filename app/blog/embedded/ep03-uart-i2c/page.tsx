@@ -4,22 +4,11 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
 /* ─── Inline Components ─────────────────────────────────────── */
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
+
 
 const InfoBox = ({
   color,
@@ -216,7 +205,7 @@ export default function EmbeddedEP03Page() {
             安裝後幾行程式碼就能與設備通訊：
           </p>
 
-          <CodeBlock
+          <CodeBlock lang="python"
             title="pyserial 基本使用"
             code={`import serial
 import time
@@ -347,7 +336,7 @@ ser.close()`}
             透過地址與暫存器編號讀寫設備：
           </p>
 
-          <CodeBlock
+          <CodeBlock lang="python"
             title="smbus2 基本使用"
             code={`import smbus2
 

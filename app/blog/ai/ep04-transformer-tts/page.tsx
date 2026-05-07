@@ -4,20 +4,9 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, Clock, Eye, Quote, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
+
 
 const qaList = [
   {
@@ -456,7 +445,7 @@ export default function AiEP04Page() {
             <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono text-indigo-700 text-sm">map_location='cpu'</code>{' '}
             讓在 GPU 訓練的模型可以在無 GPU 環境載入。
           </p>
-          <CodeBlock code={inferenceCode} title="inference.py" />
+          <CodeBlock lang="python" code={inferenceCode} title="inference.py" />
         </section>
 
         <Divider className="opacity-30" />

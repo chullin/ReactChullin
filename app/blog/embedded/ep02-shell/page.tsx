@@ -7,21 +7,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-/* ─── Inline CodeBlock ─── */
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-xl overflow-hidden shadow-lg my-4 font-mono text-sm">
-    <div className="flex items-center gap-1.5 bg-[#1e1e1e] px-4 py-2.5 border-b border-white/10">
-      <span className="w-3 h-3 rounded-full bg-[#ff5f57] inline-block" />
-      <span className="w-3 h-3 rounded-full bg-[#febc2e] inline-block" />
-      <span className="w-3 h-3 rounded-full bg-[#28c840] inline-block" />
-      {title && <span className="ml-3 text-gray-400 text-xs">{title}</span>}
-    </div>
-    <div className="bg-[#0d1117] p-5 overflow-x-auto">
-      <pre className="text-green-400 leading-relaxed whitespace-pre">{code}</pre>
-    </div>
-  </div>
-);
+
 
 /* ─── Section Heading ─── */
 const SectionHeading = ({ color, children }: { color: string; children: React.ReactNode }) => (
@@ -67,7 +55,7 @@ const ScriptCard = ({
       </div>
       <p className="font-black text-gray-900">{title}</p>
     </div>
-    <CodeBlock code={code} />
+    <CodeBlock lang="bash" code={code} />
   </div>
 );
 
@@ -153,7 +141,7 @@ export default function EmbeddedEP02Page() {
                 Shell Script 就是把一連串的 Linux 指令寫進一個 <code className="bg-gray-100 px-2 py-0.5 rounded text-sm font-mono">.sh</code> 檔案，讓它自動依序執行。不需要編譯，直接由 shell（通常是 bash）解讀執行。
               </p>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="hello.sh — 第一個 Shell Script"
                 code={`#!/bin/bash
 # shebang：告訴系統用 bash 來執行這個檔案
@@ -194,7 +182,7 @@ echo "目前目錄：$(pwd)"`}
                 ))}
               </div>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="terminal — 執行流程"
                 code={`# 建立腳本
 nano hello.sh
@@ -226,7 +214,7 @@ bash hello.sh`}
                 <InfoBox color="yellow">
                   <strong>重要：</strong>等號兩側不能有空格！<code className="font-mono">NAME = "Joseph"</code> 是錯的，<code className="font-mono">NAME="Joseph"</code> 才是對的。
                 </InfoBox>
-                <CodeBlock
+                <CodeBlock lang="bash"
                   title="variables.sh — 變數基礎"
                   code={`#!/bin/bash
 
@@ -260,7 +248,7 @@ echo "今天是 $TODAY，在 $HOSTNAME 上執行"`}
                   <span className="w-5 h-5 rounded bg-slate-600 text-white flex items-center justify-center text-[10px] font-black">B</span>
                   條件判斷
                 </p>
-                <CodeBlock
+                <CodeBlock lang="bash"
                   title="conditions.sh — if/elif/else"
                   code={`#!/bin/bash
 
@@ -336,7 +324,7 @@ fi
                   <span className="w-5 h-5 rounded bg-slate-600 text-white flex items-center justify-center text-[10px] font-black">C</span>
                   迴圈
                 </p>
-                <CodeBlock
+                <CodeBlock lang="bash"
                   title="loops.sh — for / while"
                   code={`#!/bin/bash
 
@@ -378,7 +366,7 @@ done < /etc/hosts`}
                   <span className="w-5 h-5 rounded bg-slate-600 text-white flex items-center justify-center text-[10px] font-black">D</span>
                   函數定義與呼叫
                 </p>
-                <CodeBlock
+                <CodeBlock lang="bash"
                   title="functions.sh — 函數"
                   code={`#!/bin/bash
 
@@ -677,7 +665,7 @@ exit 1`}
 
               <p>Shell Script 最難的不是邏輯，而是各種隱藏的「空白問題」和靜默失敗。這幾個技巧可以幫你快速定位問題：</p>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="debug.sh — set -e 與 set -x"
                 code={`#!/bin/bash
 set -e    # 遇到任何指令錯誤（exit code != 0）立即停止整個腳本
@@ -705,7 +693,7 @@ echo "備份完成"
                   <code className="font-mono"> rm $FILE</code> 等於 <code className="font-mono">rm my file.txt</code>（兩個參數），
                   但 <code className="font-mono">rm "$FILE"</code> 才是正確的（一個參數）。
                 </InfoBox>
-                <CodeBlock
+                <CodeBlock lang="bash"
                   title="quotes.sh — 變數引號的重要性"
                   code={`#!/bin/bash
 
@@ -822,7 +810,7 @@ EOF`,
                   <CardBody className="p-6 space-y-3">
                     <p className="font-black text-gray-900 text-base">{item.q}</p>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.a}</p>
-                    {item.code && <CodeBlock code={item.code} />}
+                    {item.code && <CodeBlock lang="bash" code={item.code} />}
                   </CardBody>
                 </Card>
               ))}

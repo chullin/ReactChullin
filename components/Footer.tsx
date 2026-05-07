@@ -7,7 +7,7 @@ export default function Footer() {
   const socialLinks = [
     { icon: "bi-person-circle", href: "https://www.cake.me/s--g59SDSH82OEybvapXS0q5A--/fg6ts15", label: "Cake" },
     { icon: "bi-github", href: "https://github.com/chullin", label: "GitHub" },
-    { icon: "bi-facebook", href: "https://www.facebook.com/profile.php?id=100002930302460", label: "Facebook" },
+    { icon: "bi-linkedin", href: "https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en", label: "LinkedIn" },
   ];
 
   return (
@@ -39,18 +39,6 @@ export default function Footer() {
                 <i className={`bi ${social.icon} text-xl`}></i>
               </Button>
             ))}
-            <Button
-              isIconOnly
-              as={Link}
-              href="#"
-              onPress={() => alert('聯絡方式：(+886) 960-967-058')}
-              variant="flat"
-              color="primary"
-              radius="full"
-              className="bg-primary/5 hover:bg-primary/10"
-            >
-              <Phone size={20} />
-            </Button>
             <Button
               isIconOnly
               as={Link}

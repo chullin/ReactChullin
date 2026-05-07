@@ -40,13 +40,13 @@ const CompareBlock = ({ bad, good, badLabel, goodLabel, note }: {
         <div className="bg-red-800 px-4 py-2">
           <span className="text-red-200 text-xs font-mono font-bold">{badLabel ?? '❌ 有問題'}</span>
         </div>
-        <pre className="bg-red-950 text-red-300 font-mono text-sm px-4 py-4 overflow-x-auto whitespace-pre leading-relaxed">{bad}</pre>
+        <CodeBlock minimal lang="javascript" code={bad} />
       </div>
       <div className="rounded-xl overflow-hidden">
         <div className="bg-green-800 px-4 py-2">
           <span className="text-green-200 text-xs font-mono font-bold">{goodLabel ?? '✅ 正確做法'}</span>
         </div>
-        <pre className="bg-green-950 text-green-300 font-mono text-sm px-4 py-4 overflow-x-auto whitespace-pre leading-relaxed">{good}</pre>
+        <CodeBlock minimal lang="javascript" code={good} />
       </div>
     </div>
     {note && <p className="text-sm text-gray-600 bg-gray-50 rounded-xl px-4 py-3 leading-relaxed">{note}</p>}
@@ -176,7 +176,7 @@ export default function JSClosureScopePage() {
                       <p className="text-xs text-gray-400 font-mono">{s.en}</p>
                     </div>
                     <p className="text-sm text-gray-600 leading-relaxed">{s.desc}</p>
-                    <pre className="bg-gray-900 text-green-400 font-mono text-xs p-3 rounded-xl overflow-x-auto whitespace-pre">{s.example}</pre>
+                    <CodeBlock minimal lang="javascript" code={s.example} />
                   </CardBody>
                 </Card>
               </motion.div>

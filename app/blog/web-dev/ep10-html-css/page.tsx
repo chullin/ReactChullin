@@ -4,22 +4,11 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
 /* ─── Inline Components ─────────────────────────────────────── */
 
-const CodeBlock = ({ title, code }: { title?: string; code: string }) => (
-  <div className="rounded-2xl overflow-hidden shadow-lg my-4">
-    <div className="bg-gray-800 px-4 py-2.5 flex items-center gap-2">
-      <span className="w-3 h-3 rounded-full bg-red-400" />
-      <span className="w-3 h-3 rounded-full bg-yellow-400" />
-      <span className="w-3 h-3 rounded-full bg-green-400" />
-      {title && <span className="ml-3 text-gray-400 text-xs font-mono">{title}</span>}
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-xs p-5 overflow-x-auto leading-relaxed whitespace-pre">
-      {code}
-    </pre>
-  </div>
-);
+
 
 const InfoBox = ({ color, title, children }: { color: 'blue' | 'amber' | 'green' | 'orange'; title: string; children: React.ReactNode }) => {
   const styles = {
@@ -101,7 +90,7 @@ export default function WebDevEP10Page() {
             語意化（Semantic HTML）的核心概念：用<strong>有意義的標籤</strong>取代萬用的 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono text-sm">div</code>。
             好處是提升 SEO、無障礙性（Accessibility），讓程式碼更易讀。
           </p>
-          <CodeBlock
+          <CodeBlock lang="html"
             title="語意化 vs 非語意化"
             code={`<!-- ❌ 非語意化：滿版 div，不知道每塊是什麼 -->
 <div class="header"> ... </div>
@@ -186,7 +175,7 @@ export default function WebDevEP10Page() {
             <p className="mt-2 font-medium">幾乎所有現代專案都會在全局設定 <code>* {'{'} box-sizing: border-box {'}'}</code></p>
           </InfoBox>
 
-          <CodeBlock
+          <CodeBlock lang="html"
             title="box-sizing 差異示範"
             code={`/* content-box（預設）：實際渲染寬度 = 200 + 20 + 20 = 240px */
 .box-content {
@@ -281,7 +270,7 @@ export default function WebDevEP10Page() {
             Grid 是<strong>二維排版</strong>工具，同時控制列（rows）與欄（columns）。適合整體頁面佈局或複雜的表格式排列。
           </p>
 
-          <CodeBlock
+          <CodeBlock lang="html"
             title="Grid 核心語法"
             code={`/* 3 欄等寬 Grid */
 .container {
@@ -363,7 +352,7 @@ export default function WebDevEP10Page() {
             ))}
           </div>
 
-          <CodeBlock
+          <CodeBlock lang="html"
             title="Specificity 計算範例"
             code={`/* Specificity: (0,0,0,1) → 最低 */
 p { color: black; }
@@ -401,7 +390,7 @@ p { color: purple !important; }`}
             核心工具是 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono text-sm">@media query</code>。
           </p>
 
-          <CodeBlock
+          <CodeBlock lang="html"
             title="Mobile-First 設計原則"
             code={`/* 1. Viewport meta tag（HTML head 必加） */
 <meta name="viewport" content="width=device-width, initial-scale=1">

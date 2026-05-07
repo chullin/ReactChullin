@@ -338,7 +338,7 @@ export default function RootLayout({ children }) {
               <div key={name} className="bg-gray-50 rounded-2xl p-5 space-y-2">
                 <p className="font-black text-violet-700">{name}</p>
                 <p className="text-gray-600 text-xs leading-relaxed">{desc}</p>
-                <code className="block bg-gray-800 text-green-400 rounded-lg p-2 font-mono text-[11px] whitespace-pre overflow-x-auto">{code}</code>
+                <CodeBlock minimal lang="javascript" code={code} />
               </div>
             ))}
           </div>

@@ -4,20 +4,9 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
+
 
 export default function PythonEP03Page() {
   return (
@@ -119,7 +108,7 @@ export default function PythonEP03Page() {
           <p className="text-gray-700 leading-relaxed">
             所有 Tkinter 程式的骨架都一樣：建立 root window → 加入 Widget → 呼叫 mainloop() 進入事件迴圈。
           </p>
-          <CodeBlock
+          <CodeBlock lang="python"
             title="basic_window.py"
             code={`import tkinter as tk
 from tkinter import ttk  # themed widgets（外觀更好看）
@@ -181,7 +170,7 @@ print("視窗已關閉，程式結束")  # mainloop() 結束後才執行到這�
             </table>
           </div>
 
-          <CodeBlock
+          <CodeBlock lang="python"
             title="grid_layout.py"
             code={`import tkinter as tk
 from tkinter import ttk
@@ -244,7 +233,7 @@ root.mainloop()`}
             </table>
           </div>
 
-          <CodeBlock
+          <CodeBlock lang="python"
             title="widgets_demo.py"
             code={`import tkinter as tk
 from tkinter import ttk
@@ -325,7 +314,7 @@ root.mainloop()`}
           <p className="text-gray-700 leading-relaxed">
             以下是在 SCT 類似場景的簡化版本：選擇測試項目 → 點開始 → 背景執行測試（不凍結 UI）→ 結果顯示在 Text widget。
           </p>
-          <CodeBlock
+          <CodeBlock lang="python"
             title="test_gui.py"
             code={`import tkinter as tk
 from tkinter import ttk

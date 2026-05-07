@@ -4,22 +4,11 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
 /* ─── Inline Components ─────────────────────────────────────── */
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
+
 
 const InfoBox = ({
   color,
@@ -174,7 +163,7 @@ export default function WebDevEP11Page() {
             </div>
           </div>
 
-          <CodeBlock
+          <CodeBlock lang="html"
             title="Bootstrap Grid 基本語法"
             code={`<!-- 三層結構：container > row > col -->
 <div class="container">
@@ -297,7 +286,7 @@ export default function WebDevEP11Page() {
             <Card className="border-0 shadow-sm">
               <CardBody className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Navbar</p>
-                <CodeBlock
+                <CodeBlock lang="html"
                   title="navbar"
                   code={`<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
@@ -323,7 +312,7 @@ export default function WebDevEP11Page() {
             <Card className="border-0 shadow-sm">
               <CardBody className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Button</p>
-                <CodeBlock
+                <CodeBlock lang="html"
                   title="btn"
                   code={`<!-- 實心按鈕 -->
 <button class="btn btn-primary">送出</button>
@@ -345,7 +334,7 @@ export default function WebDevEP11Page() {
             <Card className="border-0 shadow-sm">
               <CardBody className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Card</p>
-                <CodeBlock
+                <CodeBlock lang="html"
                   title="card"
                   code={`<div class="card" style="width: 18rem;">
   <img src="..." class="card-img-top" alt="...">
@@ -363,7 +352,7 @@ export default function WebDevEP11Page() {
             <Card className="border-0 shadow-sm">
               <CardBody className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Badge &amp; Alert</p>
-                <CodeBlock
+                <CodeBlock lang="html"
                   title="badge / alert"
                   code={`<!-- Badge：行內標籤 -->
 <span class="badge bg-success">完成</span>

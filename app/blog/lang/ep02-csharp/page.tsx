@@ -4,20 +4,8 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
 
 export default function LangEP02Page() {
   return (
@@ -136,6 +124,7 @@ export default function LangEP02Page() {
             C# 語法現代、簡潔，有幾個特色是面試常考、日常也常用的，熟悉它們能讓程式碼更安全、更易讀：
           </p>
           <CodeBlock
+            lang="csharp"
             title="csharp_syntax.cs"
             code={`// ── var 型別推斷（靜態，不是動態！）────────────────────────
 var name = "Joseph";      // 編譯器推斷為 string，之後不能改型別
@@ -190,6 +179,7 @@ public class Person {
           </div>
 
           <CodeBlock
+            lang="csharp"
             title="linq_demo.cs"
             code={`using System;
 using System.Collections.Generic;
@@ -281,6 +271,7 @@ record Student(string Name, double GPA, string Major);`}
           </div>
 
           <CodeBlock
+            lang="csharp"
             title="async_controller.cs"
             code={`using Microsoft.AspNetCore.Mvc;
 
@@ -339,6 +330,7 @@ public class UserService : IUserService {
             ASP.NET Core 的 Web API 採用 MVC 架構，Controller 負責處理 HTTP 請求。以下是一個完整的 CRUD Controller 骨架：
           </p>
           <CodeBlock
+            lang="csharp"
             title="ProductsController.cs"
             code={`[ApiController]
 [Route("api/[controller]")]                        // 路由：api/products
@@ -436,6 +428,7 @@ public record UpdateProductDto(string? Name, decimal? Price);`}
           </div>
 
           <CodeBlock
+            lang="csharp"
             title="Program.cs"
             code={`var builder = WebApplication.CreateBuilder(args);
 

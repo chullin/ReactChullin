@@ -4,20 +4,9 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, Clock, Eye, Quote, ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
+
 
 const nodeTypes = [
   { label: 'Start', color: 'bg-emerald-100 border-emerald-300 text-emerald-800', desc: '工作流的起點，定義輸入變數與使用者傳入的資料格式。' },
@@ -379,7 +368,7 @@ export default function AiEP03Page() {
             以下是 docker-compose.yml 的核心片段：
           </p>
 
-          <CodeBlock code={dockerComposeCode} title="docker-compose.yml（重點片段）" />
+          <CodeBlock lang="json" code={dockerComposeCode} title="docker-compose.yml（重點片段）" />
 
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
             <p className="font-black text-amber-800">離線部署注意事項</p>
@@ -422,7 +411,7 @@ export default function AiEP03Page() {
             ))}
           </div>
 
-          <CodeBlock code={systemPromptCode} title="system-prompt-template.txt" />
+          <CodeBlock lang="json" code={systemPromptCode} title="system-prompt-template.txt" />
 
           <p className="text-gray-600 text-sm leading-relaxed">
             注意 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono text-purple-700">{'{{context}}'}</code> 和{' '}

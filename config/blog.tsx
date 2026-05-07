@@ -99,6 +99,10 @@ export const series: Series[] = [
     description: '在隔離網路環境部署本地 LLM — Ollama、Dify、Transformer TTS 完整實戰。',
     comingSoon: [],
     posts: [
+      { title: 'EP.08 — 從 Transformer 延伸到 ChatGPT', subtitle: 'BERT、GPT、LLM 的演進史 — 從語音合成到通用語言智慧的跨越', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep08-transformer-to-gpt', isExternal: false, ep: 'EP.08' },
+      { title: 'EP.07 — Fine-tuning 實戰：LoRA 與 Adapter', subtitle: '加上 ASR 語音辨識基礎與 Whisper 微調 — 參數高效微調 (PEFT) 的優雅方案', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep07-finetune-lora', isExternal: false, ep: 'EP.07' },
+      { title: 'EP.06 — 嵌入式落地實戰', subtitle: '模型壓縮、量化與邊緣部署 — Pruning、Quantization、Knowledge Distillation 原理與實戰', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep06-tts-edge-deploy', isExternal: false, ep: 'EP.06' },
+      { title: 'EP.05 — 聲碼器演進與端到端 TTS', subtitle: 'Tacotron2、FastSpeech2、WaveNet、HiFi-GAN、VITS——五大模型核心邏輯與端到端架構', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep05-tts-models', isExternal: false, ep: 'EP.05' },
       { title: 'EP.04 — Transformer & TTS：語音合成架構原理', subtitle: 'Encoder-Decoder、Attention Mechanism、從論文到嵌入式推論 — 碩士論文主題精華', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep04-transformer-tts', isExternal: false, ep: 'EP.04' },
       { title: 'EP.03 — Dify 工作流程設計：在本地 LLM 前加 Orchestration 層', subtitle: 'No-code AI Pipeline、Knowledge Base、Agent 串接 — 打造可控的企業級 AI 應用', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep03-dify', isExternal: false, ep: 'EP.03' },
       { title: 'EP.02 — Ollama 本地 LLM 部署全攻略', subtitle: '含離線環境搬檔教學 — 下載 .tar、複製到目標機、systemd 服務設定', date: '2026', author: 'Joseph Chen', href: '/blog/ai/ep02-ollama-local-llm', isExternal: false, ep: 'EP.02' },

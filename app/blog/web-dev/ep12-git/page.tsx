@@ -4,21 +4,10 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, GitBranch, GitMerge, GitCommit } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
 /* ── Inline CodeBlock ───────────────────────────────────────────── */
-const CodeBlock = ({ title, code }: { title?: string; code: string }) => (
-  <div className="rounded-2xl overflow-hidden shadow-md my-2">
-    <div className="bg-[#1e1e1e] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
-      <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-      <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-      <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-      {title && <span className="ml-2 text-[11px] text-gray-400 font-mono">{title}</span>}
-    </div>
-    <pre className="bg-[#1a1a1a] px-5 py-4 overflow-x-auto">
-      <code className="text-[13px] text-green-400 font-mono leading-relaxed whitespace-pre">{code}</code>
-    </pre>
-  </div>
-);
+
 
 /* ── ConceptBadge ───────────────────────────────────────────────── */
 const ConceptBadge = ({ label, color = 'blue' }: { label: string; color?: string }) => {
@@ -252,7 +241,7 @@ export default function WebDevEP12Page() {
             </div>
           </div>
 
-          <CodeBlock title="merge vs rebase — 實際指令" code={`# merge：在 main 上把 feat 合進來
+          <CodeBlock lang="bash" title="merge vs rebase — 實際指令" code={`# merge：在 main 上把 feat 合進來
 git checkout main
 git merge feat
 # → 產生 merge commit，保留分岔歷史
@@ -287,7 +276,7 @@ git rebase -i HEAD~3
               <p className="text-amber-700 text-sm">當你 <code className="bg-amber-100 px-1 rounded">git checkout &lt;commit-hash&gt;</code> 時，HEAD 脫離 branch，進入「遊離」狀態。此時 commit 不屬於任何 branch，切換後會遺失。</p>
             </div>
           </div>
-          <CodeBlock title="HEAD 相關指令" code={`git log --oneline        # 看 HEAD 指向哪
+          <CodeBlock lang="bash" title="HEAD 相關指令" code={`git log --oneline        # 看 HEAD 指向哪
 git checkout abc1234     # 進入 detached HEAD（只是查看）
 git checkout -b new-feat # 從 detached HEAD 建新 branch，救回改動
 git checkout main        # 回到正常狀態`} />

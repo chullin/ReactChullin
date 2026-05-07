@@ -159,7 +159,7 @@ export default function LeetcodeEP14Page() {
                   <div className="w-7 h-7 rounded-full bg-orange-500 text-white flex items-center justify-center font-black text-sm flex-shrink-0 mt-0.5">{step}</div>
                   <div className="flex-1">
                     <p className="font-bold text-gray-900 mb-1">{title}</p>
-                    <code className="block bg-gray-800 text-green-400 rounded-xl p-3 font-mono text-xs">{code}</code>
+                    <CodeBlock minimal lang="javascript" code={code} />
                   </div>
                 </div>
               ))}

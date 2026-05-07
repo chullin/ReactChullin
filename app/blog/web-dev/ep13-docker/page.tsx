@@ -4,21 +4,10 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowLeft, Quote, Clock, Eye, Box, Layers, Terminal } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
 /* ── Inline CodeBlock ───────────────────────────────────────────── */
-const CodeBlock = ({ title, code }: { title?: string; code: string }) => (
-  <div className="rounded-2xl overflow-hidden shadow-md my-2">
-    <div className="bg-[#1e1e1e] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
-      <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-      <span className="w-3 h-3 rounded-full bg-[#febc2e]" />
-      <span className="w-3 h-3 rounded-full bg-[#28c840]" />
-      {title && <span className="ml-2 text-[11px] text-gray-400 font-mono">{title}</span>}
-    </div>
-    <pre className="bg-[#1a1a1a] px-5 py-4 overflow-x-auto">
-      <code className="text-[13px] text-green-400 font-mono leading-relaxed whitespace-pre">{code}</code>
-    </pre>
-  </div>
-);
+
 
 /* ── ConceptBadge ───────────────────────────────────────────────── */
 const ConceptBadge = ({ label, color = 'slate' }: { label: string; color?: string }) => {
@@ -303,7 +292,7 @@ export default function WebDevEP13Page() {
           <p className="text-gray-700 leading-relaxed">
             Dockerfile 的每一行指令都會建立一個 layer。以下是最常用的關鍵字：
           </p>
-          <CodeBlock title="Dockerfile — Node.js 應用範例" code={`# FROM：指定 base image（起點）
+          <CodeBlock lang="dockerfile" title="Dockerfile — Node.js 應用範例" code={`# FROM：指定 base image（起點）
 FROM node:18-alpine
 
 # WORKDIR：設定容器內的工作目錄
@@ -363,7 +352,7 @@ CMD ["node", "server.js"]`} />
           <p className="text-gray-700 leading-relaxed">
             實際專案往往有前端、後端、資料庫三個服務。docker-compose 讓你用一個 YAML 檔宣告所有服務，一行指令全部啟動。
           </p>
-          <CodeBlock title="docker-compose.yml — 前後端 + PostgreSQL" code={`version: '3.8'
+          <CodeBlock lang="dockerfile" title="docker-compose.yml — 前後端 + PostgreSQL" code={`version: '3.8'
 
 services:
   # ── 前端（Next.js）
@@ -398,7 +387,7 @@ services:
 
 volumes:
   postgres_data:`} />
-          <CodeBlock title="常用 compose 指令" code={`docker compose up -d        # 背景啟動所有服務
+          <CodeBlock lang="dockerfile" title="常用 compose 指令" code={`docker compose up -d        # 背景啟動所有服務
 docker compose down          # 停止並移除 Container
 docker compose logs -f       # 追蹤所有服務的日誌
 docker compose ps            # 查看所有服務狀態
@@ -416,7 +405,7 @@ docker compose build         # 重新 build 所有 Image`} />
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 space-y-3">
               <p className="font-black text-blue-900 flex items-center gap-2"><Terminal size={15} />Named Volume</p>
-              <CodeBlock title="" code={`# docker-compose.yml
+              <CodeBlock lang="dockerfile" title="" code={`# docker-compose.yml
 volumes:
   - mydata:/app/data
 
@@ -430,7 +419,7 @@ volumes:
             </div>
             <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5 space-y-3">
               <p className="font-black text-amber-900 flex items-center gap-2"><Terminal size={15} />Bind Mount</p>
-              <CodeBlock title="" code={`# docker-compose.yml
+              <CodeBlock lang="dockerfile" title="" code={`# docker-compose.yml
 volumes:
   - ./src:/app/src
 

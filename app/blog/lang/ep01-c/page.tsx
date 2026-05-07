@@ -4,20 +4,8 @@ import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import { Calendar, User, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-2xl overflow-hidden my-6 shadow-lg">
-    <div className="flex items-center justify-between bg-gray-800 px-5 py-3">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-red-500" />
-        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-        <div className="w-3 h-3 rounded-full bg-green-500" />
-      </div>
-      <span className="text-gray-400 text-xs font-mono">{title ?? 'code'}</span>
-    </div>
-    <pre className="bg-gray-900 text-green-400 font-mono text-sm p-6 overflow-x-auto leading-relaxed whitespace-pre">{code}</pre>
-  </div>
-);
 
 export default function LangEP01Page() {
   return (
@@ -156,6 +144,7 @@ export default function LangEP01Page() {
           </div>
 
           <CodeBlock
+            lang="c"
             title="pointer_basics.c"
             code={`#include <stdio.h>
 
@@ -239,6 +228,7 @@ int main() {
           </div>
 
           <CodeBlock
+            lang="c"
             title="heap_memory.c"
             code={`#include <stdio.h>
 #include <stdlib.h>
@@ -295,6 +285,7 @@ int main() {
             struct 是 C 語言的自訂複合型別，把相關的資料打包在一起。C++ 的 class、Python 的 dataclass 概念都源自這裡。
           </p>
           <CodeBlock
+            lang="c"
             title="struct_demo.c"
             code={`#include <stdio.h>
 #include <string.h>

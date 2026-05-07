@@ -7,22 +7,9 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import CodeBlock from '@/components/blog/CodeBlock';
 
-/* ─── Inline CodeBlock ─── */
-const CodeBlock = ({ code, title }: { code: string; title?: string }) => (
-  <div className="rounded-xl overflow-hidden shadow-lg my-4 font-mono text-sm">
-    {/* macOS traffic lights */}
-    <div className="flex items-center gap-1.5 bg-[#1e1e1e] px-4 py-2.5 border-b border-white/10">
-      <span className="w-3 h-3 rounded-full bg-[#ff5f57] inline-block" />
-      <span className="w-3 h-3 rounded-full bg-[#febc2e] inline-block" />
-      <span className="w-3 h-3 rounded-full bg-[#28c840] inline-block" />
-      {title && <span className="ml-3 text-gray-400 text-xs">{title}</span>}
-    </div>
-    <div className="bg-[#0d1117] p-5 overflow-x-auto">
-      <pre className="text-green-400 leading-relaxed whitespace-pre">{code}</pre>
-    </div>
-  </div>
-);
+
 
 /* ─── Section Heading ─── */
 const SectionHeading = ({ color, children }: { color: string; children: React.ReactNode }) => (
@@ -186,7 +173,7 @@ export default function EmbeddedEP01Page() {
                 </table>
               </div>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="terminal — 常見操作範例"
                 code={`# 找出 7 天前的 log 並刪除
 find /var/log -name "*.log" -mtime +7 -exec rm {} \\;
@@ -259,7 +246,7 @@ ls -lhS`}
                 </table>
               </div>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="terminal — 權限操作"
                 code={`# 給腳本執行權限
 chmod +x deploy.sh
@@ -320,7 +307,7 @@ sudo systemctl restart nginx`}
                 ))}
               </div>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="terminal — 三劍客組合技"
                 code={`# 找出 access.log 中 500 錯誤的 IP，並計算次數
 grep "500" access.log | awk '{print $1}' | sort | uniq -c | sort -rn
@@ -342,7 +329,7 @@ awk -F',' '{print $2}' data.csv`}
 
               <p>在嵌入式或伺服器環境，你常常需要確認哪個 process 在佔用 CPU/記憶體、強制結束某個卡住的程式。</p>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="terminal — process 管理"
                 code={`# 列出所有執行中的 process（含完整路徑）
 ps aux
@@ -433,7 +420,7 @@ bg`}
                 </table>
               </div>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="crontab -e — 每天凌晨 2 點備份"
                 code={`# 每天凌晨 2:00 執行備份腳本，輸出導到 log
 0 2 * * * /home/pi/scripts/backup.sh >> /var/log/backup.log 2>&1
@@ -456,7 +443,7 @@ crontab -r`}
                 常用網路指令
               </SectionHeading>
 
-              <CodeBlock
+              <CodeBlock lang="bash"
                 title="terminal — 網路操作"
                 code={`# 測試連線是否通
 ping -c 4 8.8.8.8
@@ -532,7 +519,7 @@ screen -r mySession  # 重新連回`,
                   <CardBody className="p-6 space-y-3">
                     <p className="font-black text-gray-900 text-base">{item.q}</p>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.a}</p>
-                    {item.code && <CodeBlock code={item.code} />}
+                    {item.code && <CodeBlock lang="bash" code={item.code} />}
                   </CardBody>
                 </Card>
               ))}

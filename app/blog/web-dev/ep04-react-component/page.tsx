@@ -27,7 +27,7 @@ const Comparison = ({ left, right, leftLabel, rightLabel }: { left: string; righ
     <div>
       <p className="text-xs font-black text-green-500 uppercase mb-2">{rightLabel}</p>
       <div className="rounded-2xl overflow-hidden shadow">
-        <pre className="bg-gray-900 text-green-400 font-mono text-xs p-5 overflow-x-auto leading-relaxed whitespace-pre">{right}</pre>
+        <CodeBlock minimal lang="javascript" code={right} />
       </div>
     </div>
   </div>
