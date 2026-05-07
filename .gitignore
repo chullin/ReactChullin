@@ -6,4 +6,5 @@ build/
 *.local
 .venv/
 __pycache__/
-*.pycapp/blog/改動頁面/
+*.pyc
+app/blog/改動頁面/
