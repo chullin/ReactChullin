@@ -165,6 +165,19 @@ export default function AIEP07() {
               </table>
             </div>
           </div>
+
+          <div className="bg-indigo-50 rounded-2xl p-5 border border-indigo-100">
+            <p className="font-black text-indigo-800 mb-2 text-sm">為什麼 LoRA 可以合併但 Adapter 不行？</p>
+            <p className="text-sm text-indigo-700 leading-relaxed mb-3">
+              LoRA 的更新量 <strong>ΔW = B×A</strong> 是一個與原始權重形狀相同的矩陣，可以直接加回去：
+              W' = W₀ + B×A。部署時只需要一個普通的 Linear 層，沒有任何額外模組。
+            </p>
+            <p className="text-sm text-indigo-700 leading-relaxed">
+              Adapter 的瓶頸網路（Down-project → ReLU → Up-project）是<strong>串聯在 Transformer 層後面</strong>的獨立模組，
+              它的輸出不是一個「加法更新」，而是一次非線性變換——無法線性合併回原始權重。
+              因此推理時每次都要額外執行這個模組，產生固定的推理開銷（延遲 +2–5ms/層）。
+            </p>
+          </div>
         </section>
 
         <Divider className="opacity-30" />
@@ -396,6 +409,20 @@ model = AutoModelForCausalLM.from_pretrained(
 model = prepare_model_for_kbit_training(model)
 # 接著套用 LoRA config，同前...`}
           />
+
+          <div className="bg-red-50 rounded-2xl p-5 border border-red-100">
+            <p className="font-black text-red-800 mb-2 text-sm">⚠️ QLoRA 的部署限制：4-bit 模型無法直接合併</p>
+            <p className="text-sm text-red-700 leading-relaxed mb-2">
+              一般 LoRA 訓練後可以用 <code className="bg-red-100 px-1 rounded font-mono text-xs">model.merge_and_unload()</code> 把
+              B×A 合併回 W₀，得到一個普通的全精度模型，方便直接部署。
+            </p>
+            <p className="text-sm text-red-700 leading-relaxed">
+              QLoRA 的 W₀ 是以 NF4 4-bit 格式儲存的——若直接呼叫 merge_and_unload()，
+              會把 LoRA 更新加到量化後的低精度 W₀ 上，導致精度損失放大。
+              正確做法是先把 W₀ 反量化回 float16，完成合併後再重新量化；
+              或以 <strong>LoRA adapter 分開部署</strong>（不合併），載入時動態套用，保留最大彈性。
+            </p>
+          </div>
         </section>
 
         <Divider className="opacity-30" />

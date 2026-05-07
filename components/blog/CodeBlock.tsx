@@ -6,13 +6,15 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 interface CodeBlockProps {
   code: string;
   title?: string;
+  filename?: string; // Alias for title
   lang?: string;
   language?: string; // For compatibility
   minimal?: boolean; // New prop for small snippets
 }
 
-const CodeBlock = ({ code, title, lang, language, minimal = false }: CodeBlockProps) => {
+const CodeBlock = ({ code, title, filename, lang, language, minimal = false }: CodeBlockProps) => {
   const displayLang = lang || language || 'bash';
+  const displayTitle = title || filename;
   return (
     <div className={`rounded-2xl overflow-hidden my-6 shadow-xl border border-gray-800/50 group ${minimal ? 'my-2' : 'my-8'}`}>
       {!minimal && (
@@ -23,7 +25,7 @@ const CodeBlock = ({ code, title, lang, language, minimal = false }: CodeBlockPr
             <div className="w-3.5 h-3.5 rounded-full bg-[#27c93f] shadow-sm shadow-green-900/20" />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-gray-500 text-[10px] font-black tracking-[0.2em] uppercase">{title ?? displayLang}</span>
+            <span className="text-gray-500 text-[10px] font-black tracking-[0.2em] uppercase">{displayTitle ?? displayLang}</span>
           </div>
         </div>
       )}

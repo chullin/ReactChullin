@@ -60,6 +60,41 @@ export default function AIEP05() {
           </Card>
         </motion.section>
 
+        {/* Mel 頻譜先備知識 */}
+        <section className="space-y-4">
+          <div className="bg-indigo-50 rounded-2xl p-6 border border-indigo-100">
+            <p className="font-black text-indigo-800 mb-3 text-sm">📖 先備知識：Mel 頻譜（Mel Spectrogram）是什麼？</p>
+            <p className="text-indigo-700 text-sm leading-relaxed mb-3">
+              TTS 的核心流程 is 「文字 → Mel 頻譜 → 波形」，這篇介紹的每個模型都圍繞這條管線做設計。
+              Mel 頻譜是音頻的壓縮表示：X 軸是時間，Y 軸是頻率（按人耳感知的 Mel 尺度排列），
+              顏色深淺代表能量強度——可以把它想像成把聲音拍成一張「熱力圖」。
+            </p>
+            <p className="text-indigo-700 text-sm leading-relaxed mb-4">
+              <strong>為什麼不直接處理原始波形？</strong>
+              原始音頻（24kHz）每秒有 24,000 個採樣點，資訊冗餘極高且難以學習。
+              Mel 頻譜把 30 秒音頻壓縮到 3,000 幀 × 80 頻道，更接近人耳實際感知聲音的方式，
+              是 Tacotron2、FastSpeech2、Whisper 共同採用的中間表示格式。
+            </p>
+            <div className="grid sm:grid-cols-3 gap-3 text-xs text-center">
+              <div className="bg-red-50 rounded-xl p-3">
+                <p className="font-black text-red-700">原始波形</p>
+                <p className="text-red-600 mt-1 font-bold">24,000 數字/秒</p>
+                <p className="text-red-500 mt-0.5">資訊冗餘，難直接學習</p>
+              </div>
+              <div className="bg-indigo-100 rounded-xl p-3">
+                <p className="font-black text-indigo-800">Mel 頻譜</p>
+                <p className="text-indigo-700 mt-1 font-bold">100 幀/秒 × 80 bins</p>
+                <p className="text-indigo-600 mt-0.5">TTS 聲學模型的標準格式</p>
+              </div>
+              <div className="bg-green-50 rounded-xl p-3">
+                <p className="font-black text-green-700">重建波形</p>
+                <p className="text-green-600 mt-1 font-bold">聲碼器合成輸出</p>
+                <p className="text-green-500 mt-0.5">最終播放的音頻</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* 演進時間軸 */}
         <section className="space-y-6">
           <div className="flex items-center gap-3">
@@ -514,6 +549,16 @@ total_loss = (
           <div className="flex items-center gap-3">
             <Layers className="text-gray-600" />
             <h2 className="text-3xl font-black text-gray-900">五大模型完整對比</h2>
+          </div>
+
+          <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
+            <p className="font-black text-amber-800 mb-2 text-sm">📊 MOS（Mean Opinion Score）是什麼？</p>
+            <p className="text-sm text-amber-700 leading-relaxed">
+              MOS 是語音品質的主觀評分標準，由真人聽眾評分（範圍 1–5 分，5 分最好）。
+              因為 TTS 的目標是「聽起來像人聲」，客觀指標（如 SNR 信噪比）難以完整衡量主觀自然度，
+              因此業界以 MOS 作為音質比較的基準。<strong>4.0 以上</strong>即達到接近自然人聲的水準；
+              VITS 的 4.7 已在部分評估中超過真人語音錄音的得分。
+            </p>
           </div>
 
           <div className="overflow-x-auto">
