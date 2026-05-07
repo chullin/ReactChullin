@@ -15,11 +15,11 @@ export default function HomeAbout() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-4xl font-black mb-8 tracking-tight">
-            About <span className="text-gradient">Me</span>
+            關於 <span className="text-gradient">陳憲億 Joseph Chen</span>
           </h2>
           
           <p className="text-xl text-gray-600 mb-12 font-medium">
-            Hello~ 🙌 我叫 陳憲億
+            你好！我是<strong>陳憲億（Joseph Chen）</strong>，目前在 <strong>Foxconn (鴻海)</strong> 擔任 Software Engineer。
           </p>
 
           <Card className="bg-white border-none shadow-xl mb-12">
@@ -29,7 +29,7 @@ export default function HomeAbout() {
                   <GraduationCap size={20} />
                 </div>
                 <p>
-                  2022 年畢業於 <strong>中正大學資訊工程學碩士晶片系統組</strong>，具備 2 年嵌入式系統開發經驗（Raspberry Pi、Nexys 4、Apollo 3）與 Transformer-based TTS 的使用與編寫經驗。
+                  畢業於 <strong>國立中央大學機械工程碩士（自動化組）</strong>，專注於智慧系統與自動化解決方案。
                 </p>
               </div>
 

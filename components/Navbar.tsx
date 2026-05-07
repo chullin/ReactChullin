@@ -27,6 +27,7 @@ export default function Navbar() {
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
   const portfolioLinks = [
+    { name: 'About', href: '/about' },
     { name: 'Resume', href: '/resume' },
     { name: 'Projects', href: '/projects' },
     { name: 'Blog', href: '/blog' },

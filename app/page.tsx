@@ -3,14 +3,14 @@ import HomeHero from '@/components/home/HomeHero';
 import HomeAbout from '@/components/home/HomeAbout';
 
 export const metadata: Metadata = {
-  title: 'Joseph Chen (陳憲億) - Software Engineer',
-  description: 'Software Engineer specializing in Python, AI, and Embedded Systems. View my portfolio, resume, and blog.',
-  keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'Python', 'AI', 'Embedded Systems', 'Portfolio'],
+  title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
+  description: '陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。這是在 Vercel 上的個人作品集與技術部落格。',
+  keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'Foxconn', 'AI', 'React', 'Python', 'Portfolio', '系統設計'],
   openGraph: {
-    title: 'Joseph Chen (陳憲億) - Software Engineer',
-    description: 'Software Engineer specializing in Python, AI, and Embedded Systems. View my portfolio, resume, and blog.',
-    url: 'https://react-chullin.vercel.app', // Update with actual domain if different
-    siteName: 'Joseph Chen Portfolio',
+    title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
+    description: '陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。',
+    url: 'https://chullin.vercel.app',
+    siteName: '陳憲億 Joseph Chen Portfolio',
     images: [
       {
         url: '/assets/profile3.png',

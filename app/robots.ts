@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/private/', '/api/'], // Standard practice
+      disallow: ['/api/', '/_next/', '/static/'],
     },
     sitemap: 'https://chullin.vercel.app/sitemap.xml',
   };

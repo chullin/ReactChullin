@@ -6,11 +6,11 @@ import { Providers } from './providers';
 
 export const metadata = {
     metadataBase: new URL('https://chullin.vercel.app/'),
-    title: '陳憲億 Joseph Chen | Software Engineer | AI & Robotics',
-    description: 'Software Engineer specializing in Python, AI, and Robotics. Explore Joseph Chen（陳憲億） portfolio and projects.',
-    keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'AI', 'Robotics', 'Python', 'Next.js', 'Portfolio'],
-    authors: [{ name: 'Joseph Chen' }],
-    creator: 'Joseph Chen',
+    title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
+    description: '陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。分享技術筆記與開發心得。',
+    keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'AI Developer', 'Foxconn', '鴻海', 'Python', 'React', '系統開發', '自動化'],
+    authors: [{ name: '陳憲億 Joseph Chen' }],
+    creator: '陳憲億 Joseph Chen',
     // 加入 Google Search Console 驗證碼
     verification: {
         google: 'Tmye4gYSZJvx8O85kCLZrOhKl52Adtlg5Ntr-qAVMAM',
@@ -19,9 +19,9 @@ export const metadata = {
         type: 'website',
         locale: 'zh_TW',
         url: 'https://chullin.vercel.app/',
-        title: '陳憲億 Joseph Chen | Software Engineer | AI & Robotics',
-        description: 'Software Engineer | Python | AI | Robotics | Joseph Chen 陳憲億 Portfolio',
-        siteName: 'Joseph Chen Portfolio',
+        title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
+        description: '陳憲億（Joseph Chen）的個人品牌網站。分享 AI、React、Python 與系統開發技術。',
+        siteName: '陳憲億 Joseph Chen Portfolio',
         images: [
             {
                 url: '/assets/profile3.png',
@@ -52,13 +52,20 @@ export const metadata = {
 const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": "陳憲億 Joseph Chen",
+    "name": "陳憲億",
+    "alternateName": "Joseph Chen",
     "url": "https://chullin.vercel.app/",
     "jobTitle": "Software Engineer",
-    "knowsAbout": ["Python", "AI", "Robotics", "Next.js", "Software Engineering"],
+    "worksFor": {
+        "@type": "Organization",
+        "name": "Foxconn"
+    },
+    "description": "陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。",
+    "knowsAbout": ["Python", "AI", "React", "Next.js", "System Design", "Automation"],
     "image": "https://chullin.vercel.app/assets/profile3.png",
     "sameAs": [
         "https://github.com/chullin",
+        "https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en",
         "https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about"
     ]
 };

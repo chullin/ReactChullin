@@ -25,17 +25,16 @@ export default function HomeHero() {
             className="mb-6 font-bold uppercase tracking-wider"
             size="lg"
           >
-            Software &middot; Engineer
+            Software Engineer @ Foxconn
           </Chip>
           
-          <h2 className="text-2xl font-medium text-gray-500 mb-2">
-            陳憲億 (Sian-Yi Chen)
-          </h2>
-          
-          <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-tight">
-            <span className="text-gradient">I think,</span><br />
-            therefore I am
+          <h1 className="text-5xl lg:text-7xl font-black mb-4 leading-tight">
+            陳憲億 <span className="text-gradient">Joseph Chen</span>
           </h1>
+          
+          <p className="text-xl lg:text-2xl text-gray-500 mb-8 font-medium">
+            Software Engineer & AI Developer
+          </p>
 
           <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
             <Button
