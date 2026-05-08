@@ -65,7 +65,7 @@ export default function NetworkEP01() {
 
           <div className="space-y-2">
             {[
-              { step: '①', title: 'DNS 解析', desc: '把 chullin.vercel.app 翻譯成 IP 位址（如 76.76.21.21）', time: '~50ms（無快取）', color: 'bg-sky-100 text-sky-800' },
+              { step: '①', title: 'DNS 解析', desc: '把 chullin.tw 翻譯成 IP 位址（如 76.76.21.21）', time: '~50ms（無快取）', color: 'bg-sky-100 text-sky-800' },
               { step: '②', title: 'TCP 三向握手', desc: '與伺服器建立可靠的連線（SYN → SYN-ACK → ACK）', time: '1× RTT', color: 'bg-blue-100 text-blue-800' },
               { step: '③', title: 'TLS 握手（HTTPS）', desc: '協商加密方式、驗證憑證、交換金鑰', time: '1–2× RTT', color: 'bg-indigo-100 text-indigo-800' },
               { step: '④', title: 'HTTP 請求', desc: '發送 GET / POST 請求，帶上 Headers（Cookie、Accept-Language 等）', time: '1× RTT', color: 'bg-violet-100 text-violet-800' },
@@ -100,13 +100,13 @@ export default function NetworkEP01() {
             <p className="font-black text-sky-800 mb-4 text-sm">DNS 查詢流程（無快取情況）</p>
             <div className="space-y-2 text-sm">
               {[
-                ['瀏覽器', '問 OS：chullin.vercel.app 的 IP 是多少？'],
+                ['瀏覽器', '問 OS：chullin.tw 的 IP 是多少？'],
                 ['OS', '問 ISP DNS Server（遞迴解析器）'],
                 ['ISP DNS', '問根名稱伺服器（Root）：.app 在哪？'],
                 ['Root', '回答：.app 的 TLD Server 在這裡'],
                 ['ISP DNS', '問 .app TLD Server：vercel.app 在哪？'],
                 ['TLD', '回答：vercel.app 的權威 DNS 在這裡'],
-                ['ISP DNS', '問 Vercel 的權威 DNS：chullin.vercel.app 的 IP？'],
+                ['ISP DNS', '問 Vercel 的權威 DNS：chullin.tw 的 IP？'],
                 ['Vercel DNS', '回答：76.76.21.21（並設定 TTL，例如 300s）'],
                 ['ISP DNS', '快取結果並回傳給 OS，OS 再回傳給瀏覽器'],
               ].map(([from, msg], i) => (

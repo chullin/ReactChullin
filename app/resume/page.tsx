@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '線上履歷 Resume | 陳憲億 Joseph Chen',
     description: '陳憲億（Joseph Chen）的個人履歷。探索我的工作經驗、學歷背景與技術專長。',
-    url: 'https://chullin.vercel.app/resume',
+    url: 'https://chullin.tw/resume',
     siteName: '陳憲億 Joseph Chen Portfolio',
     images: [
       {

@@ -30,7 +30,7 @@ export default function WebDevEP09() {
             </h1>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl">
               如何建立一個可擴充的配置系統？如何實作高效的即時搜尋與滾動追蹤目錄？
-              本篇將深度拆解 chullin.vercel.app 的導航架構。
+              本篇將深度拆解 chullin.tw 的導航架構。
             </p>
             <div className="flex items-center gap-6 text-blue-200 text-sm flex-wrap">
               <span className="flex items-center gap-1.5"><User size={14} /> Joseph Chen</span>

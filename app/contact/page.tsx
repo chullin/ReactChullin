@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '聯絡方式 Contact | 陳憲億 Joseph Chen',
     description: '期待與您的合作！歡迎透過電子郵件或 LinkedIn 與我聯繫。',
-    url: 'https://chullin.vercel.app/contact',
+    url: 'https://chullin.tw/contact',
     siteName: '陳憲億 Joseph Chen Portfolio',
     images: [
       {

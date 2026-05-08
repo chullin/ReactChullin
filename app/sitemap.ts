@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://chullin.vercel.app';
+  const baseUrl = 'https://chullin.tw';
   const lastModified = new Date().toISOString();
 
   // 靜態頁面

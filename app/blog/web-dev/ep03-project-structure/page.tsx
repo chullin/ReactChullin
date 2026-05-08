@@ -125,7 +125,7 @@ export default function WebDevEP03Page() {
 
           <FileTree items={[
             { indent: 0, name: 'app/', type: 'folder' },
-            { indent: 1, name: 'page.tsx', type: 'file', desc: '首頁 → chullin.vercel.app/', highlight: true },
+            { indent: 1, name: 'page.tsx', type: 'file', desc: '首頁 → chullin.tw/', highlight: true },
             { indent: 1, name: 'layout.tsx', type: 'file', desc: '全站共用的外殼（Navbar、Footer）', highlight: true },
             { indent: 1, name: 'globals.css', type: 'file', desc: '全域 CSS，設定字型、顏色等' },
             { indent: 1, name: 'blog/', type: 'folder' },
@@ -320,7 +320,7 @@ export default function Navbar() {
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">我的個人網頁完整結構</h2>
           <p className="text-gray-700 leading-relaxed">
-            做為參考，以下是我的個人網頁（chullin.vercel.app）的 app/ 結構，
+            做為參考，以下是我的個人網頁（chullin.tw）的 app/ 結構，
             每個資料夾對應一個功能頁面：
           </p>
           <FileTree items={[

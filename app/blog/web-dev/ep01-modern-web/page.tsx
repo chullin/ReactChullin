@@ -238,7 +238,7 @@ export default function WebDevEP01Page() {
               year: '現在',
               title: '我的個人網頁用的版本',
               desc: 'Next.js 16 + React 19 + TypeScript + Tailwind CSS + HeroUI + Framer Motion + Vercel 部署。這整個系列會一步步拆解每一塊。',
-              badge: 'chullin.vercel.app',
+              badge: 'chullin.tw',
             },
           ]} />
 

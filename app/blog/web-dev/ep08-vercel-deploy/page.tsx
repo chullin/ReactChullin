@@ -47,7 +47,7 @@ export default function WebDevEP08Page() {
             </h1>
             <p className="text-gray-400 text-lg font-medium max-w-2xl mx-auto">
               GitHub + Vercel，免費、自動化、有預覽 URL，<br />
-              這就是 chullin.vercel.app 的部署方式
+              這就是 chullin.tw 的部署方式
             </p>
           </motion.div>
         </div>
@@ -219,7 +219,7 @@ git push -u origin main`} />
               ))}
             </div>
             <Callout type="tip">
-              建置完成後，Vercel 會給你一個 URL，格式是 <code>專案名稱.vercel.app</code>。我的是 <code>chullin.vercel.app</code>。<strong>這個 URL 是永久的，馬上可以分享給別人。</strong>
+              建置完成後，Vercel 會給你一個 URL，格式是 <code>專案名稱.vercel.app</code>。我的是 <code>chullin.tw</code>。<strong>這個 URL 是永久的，馬上可以分享給別人。</strong>
             </Callout>
           </Step>
 

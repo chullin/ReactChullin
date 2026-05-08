@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
     description: '陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。',
-    url: 'https://chullin.vercel.app',
+    url: 'https://chullin.tw',
     siteName: '陳憲億 Joseph Chen Portfolio',
     images: [
       {
