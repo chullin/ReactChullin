@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { Providers } from './providers';
 
 export const metadata = {
-    metadataBase: new URL('https://chullin.vercel.app/'),
+    metadataBase: new URL('https://chullin.vercel.app'),
     title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
     description: '陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。分享技術筆記與開發心得。',
     keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'AI Developer', 'Foxconn', '鴻海', 'Python', 'React', '系統開發', '自動化'],
@@ -38,7 +38,7 @@ export const metadata = {
         images: ['/assets/profile3.png'],
     },
     alternates: {
-        canonical: 'https://chullin.vercel.app/',
+        canonical: 'https://chullin.vercel.app',
     },
     robots: {
         index: true,

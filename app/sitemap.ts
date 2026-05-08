@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://chullin.vercel.app';
+  const lastModified = new Date().toISOString();
 
   // 靜態頁面
   const routes = [
@@ -17,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/vocab-quiz',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
+    lastModified,
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1 : 0.8,
   }));
@@ -36,7 +37,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/web-dev/ep11-bootstrap-basics',
   ].map((post) => ({
     url: `${baseUrl}${post}`,
-    lastModified: new Date(),
+    lastModified,
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }));
