@@ -314,7 +314,7 @@ function Chat() {
   // 加入特定房間
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
-    console.log(\`User joined room: \${roomId}\`);
+    console.log(\\`User joined room: \\${roomId}\\`);
   });
 
   // 只傳送訊息給該房間的人

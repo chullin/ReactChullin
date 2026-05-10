@@ -95,7 +95,8 @@ export default function WebDevEP21() {
             為了讓 UserProfile 拿到 user，你必須讓每一層都接收並往下傳：
           </p>
 
-          <CodeBlock language="tsx">{`// App.tsx — 資料的源頭
+          <CodeBlock language="tsx">
+{` // App.tsx — 資料的源頭
 function App() {
   const [user, setUser] = useState({ name: 'Joseph', email: 'fg6ts15@gmail.com' });
 
@@ -127,7 +128,8 @@ function Sidebar({ user }: { user: User }) {
 // UserProfile.tsx — 真正用到 user 的元件
 function UserProfile({ user }: { user: User }) {
   return <div>{user.name}</div>;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-red-400">
             <CardBody className="p-6">
@@ -192,7 +194,8 @@ function UserProfile({ user }: { user: User }) {
             加上一個最佳實踐：把 useContext 封裝成自訂 Hook：
           </p>
 
-          <CodeBlock language="tsx">{`// context/UserContext.tsx
+          <CodeBlock language="tsx">
+{` // context/UserContext.tsx
 import { createContext, useContext, useState } from 'react';
 
 type User = {
@@ -231,14 +234,16 @@ export function useUser() {
   }
   return context;
 }
-`}</CodeBlock>
+ `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
             有了這個 Context，原本四層都要傳遞 props 的問題消失了。
             UserProfile 直接「收聽廣播」就好：
           </p>
 
-          <CodeBlock language="tsx">{`// App.tsx — 用 Provider 包住整個 app
+          <CodeBlock language="tsx">
+{` // App.tsx — 用 Provider 包住整個 app
 function App() {
   return (
     <UserProvider>
@@ -272,7 +277,8 @@ function UserProfile() {
 
   if (!user) return <div>未登入</div>;
   return <div>{user.name}</div>;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -295,7 +301,8 @@ function UserProfile() {
             讓我們寫一個完整的 ThemeContext，包含持久化到 localStorage：
           </p>
 
-          <CodeBlock language="tsx">{`// context/ThemeContext.tsx
+          <CodeBlock language="tsx">
+{` // context/ThemeContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -341,14 +348,16 @@ export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) throw new Error('useTheme must be used within ThemeProvider');
   return context;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
             任何元件都可以直接使用 <code className="bg-gray-100 text-orange-700 px-1.5 py-0.5 rounded font-mono">useTheme</code>，
             完全不需要 props 傳遞：
           </p>
 
-          <CodeBlock language="tsx">{`// 可以放在 app 的任何地方，不管層級多深
+          <CodeBlock language="tsx">
+{` // 可以放在 app 的任何地方，不管層級多深
 function ThemeToggleButton() {
   const { theme, toggleTheme } = useTheme();
 
@@ -377,7 +386,8 @@ function Header() {
 function DeepNestedComponent() {
   const { theme } = useTheme();
   return <div className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>...</div>;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-amber-400">
             <CardBody className="p-5">
@@ -414,7 +424,8 @@ function DeepNestedComponent() {
             它們都需要在 layout 中組合起來。Provider 的巢狀順序有個慣例：
           </p>
 
-          <CodeBlock language="tsx">{`// app/layout.tsx
+          <CodeBlock language="tsx">
+{` // app/layout.tsx
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UserProvider } from '@/context/UserContext';
 import { CartProvider } from '@/context/CartContext';
@@ -440,7 +451,8 @@ export default function RootLayout({
       </body>
     </html>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg bg-gradient-to-r from-orange-50 to-amber-50">
             <CardBody className="p-6">
@@ -478,7 +490,8 @@ export default function RootLayout({
             如果 Provider 巢狀太多，可以建立一個 <code className="bg-gray-100 text-orange-700 px-1.5 py-0.5 rounded font-mono">AppProviders</code> 元件來整理：
           </p>
 
-          <CodeBlock language="tsx">{`// providers/AppProviders.tsx — 把所有 Provider 整合在一起
+          <CodeBlock language="tsx">
+{` // providers/AppProviders.tsx — 把所有 Provider 整合在一起
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
@@ -500,7 +513,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -530,7 +544,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <strong>Context 的 value 只要改變，所有呼叫了 useContext 的元件都會重新渲染</strong>，
                 無論它們用到的是不是那個改變的值。
               </p>
-              <CodeBlock language="tsx">{`// ❌ 壞做法：把不相關的狀態混在同一個 Context
+              <CodeBlock language="tsx">
+{` // ❌ 壞做法：把不相關的狀態混在同一個 Context
 const AppContext = createContext({
   count: 0,      // 每秒更新一次的計數器
   user: null,    // 幾乎不變
@@ -539,7 +554,8 @@ const AppContext = createContext({
 
 // 每次 count 變化（每秒一次）：
 // → 所有用到 AppContext 的元件都重新渲染
-// → 即使元件只用到 user，根本不在乎 count！`}</CodeBlock>
+// → 即使元件只用到 user，根本不在乎 count！ `}
+</CodeBlock>
             </CardBody>
           </Card>
 
@@ -547,7 +563,8 @@ const AppContext = createContext({
             解法是：<strong>依據更新頻率，把 Context 拆分成多個獨立的 Context</strong>。
           </p>
 
-          <CodeBlock language="tsx">{`// ✅ 好做法：按更新頻率拆分
+          <CodeBlock language="tsx">
+{` // ✅ 好做法：按更新頻率拆分
 const CountContext = createContext(0);        // 高頻更新 → 單獨隔離
 const UserContext = createContext(null);      // 低頻更新 → 獨立管理
 const ThemeContext = createContext('light');  // 極低頻 → 獨立管理
@@ -555,7 +572,8 @@ const ThemeContext = createContext('light');  // 極低頻 → 獨立管理
 // 現在：
 // count 每秒更新 → 只有 useContext(CountContext) 的元件重渲染
 // UserProfile 用 UserContext → 完全不受 count 影響
-// ThemeToggle 用 ThemeContext → 同樣不受 count 影響`}</CodeBlock>
+// ThemeToggle 用 ThemeContext → 同樣不受 count 影響 `}
+</CodeBlock>
 
           {/* 比較表格 */}
           <Card className="border-0 shadow-lg">
@@ -798,7 +816,7 @@ const ThemeContext = createContext('light');  // 極低頻 → 獨立管理
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle size={16} className="text-orange-400 shrink-0 mt-0.5" />
-                  <span>Provider 巢狀：從最不常變的放外層（Theme > User > Cart）</span>
+                  <span>Provider 巢狀：從最不常變的放外層（Theme &gt; User &gt; Cart）</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle size={16} className="text-orange-400 shrink-0 mt-0.5" />

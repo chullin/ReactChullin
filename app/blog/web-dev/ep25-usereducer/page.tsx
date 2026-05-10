@@ -78,7 +78,8 @@ export default function WebDevEP25() {
             先看一個具體的例子：用 useState 管理購物車，看看這有多痛苦。
           </p>
 
-          <CodeBlock language="tsx">{`function Cart() {
+          <CodeBlock language="tsx">
+{` function Cart() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +111,8 @@ export default function WebDevEP25() {
     }
   };
   const clearCart = () => { /* ... */ };
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 border-l-4 border-red-500">
             <CardBody className="p-6">
@@ -222,7 +224,8 @@ export default function WebDevEP25() {
             在 TypeScript 中，用聯合型別（Union Type）定義所有可能的 action，讓 reducer 裡的 switch 可以做到完整的型別推導。
           </p>
 
-          <CodeBlock language="tsx">{`// Action 的型別定義（TypeScript 聯合型別）
+          <CodeBlock language="tsx">
+{` // Action 的型別定義（TypeScript 聯合型別）
 type CartAction =
   | { type: 'ADD_ITEM'; payload: Product }
   | { type: 'REMOVE_ITEM'; payload: { id: string } }
@@ -247,7 +250,8 @@ const initialState: CartState = {
   error: null,
   discount: 0,
   couponCode: '',
-};`}</CodeBlock>
+}; `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md mt-6 bg-gradient-to-r from-indigo-50 to-blue-50">
             <CardBody className="p-6">
@@ -285,7 +289,8 @@ const initialState: CartState = {
             所有的更新邏輯都集中在這裡，取代了分散在各個 handler 函式的 setXxx 呼叫。
           </p>
 
-          <CodeBlock language="tsx">{`function cartReducer(state: CartState, action: CartAction): CartState {
+          <CodeBlock language="tsx">
+{` function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
       const existing = state.items.find(i => i.id === action.payload.id);
@@ -335,7 +340,8 @@ const initialState: CartState = {
     default:
       return state;
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-10 mb-4">Reducer 是純函式（Pure Function）</h3>
 
@@ -392,7 +398,8 @@ const initialState: CartState = {
             所有操作函式都變成單一行的 dispatch 呼叫。
           </p>
 
-          <CodeBlock language="tsx">{`function Cart() {
+          <CodeBlock language="tsx">
+{` function Cart() {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { items, loading, error, discount, couponCode } = state;
 
@@ -453,7 +460,8 @@ const initialState: CartState = {
       </button>
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white">
             <CardBody className="p-6">
@@ -506,7 +514,8 @@ const initialState: CartState = {
             實現全域可存取的結構化狀態。
           </p>
 
-          <CodeBlock language="tsx">{`import { createContext, useContext, useReducer } from 'react';
+          <CodeBlock language="tsx">
+{` import { createContext, useContext, useReducer } from 'react';
 
 // ── 1. 建立 Context ───────────────────────────────────────────────
 const CartContext = createContext<{
@@ -582,7 +591,8 @@ function CartIcon() {
       )}
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md mt-6 bg-blue-50">
             <CardBody className="p-5">
@@ -685,7 +695,8 @@ function CartIcon() {
             這是 useReducer 相比 useState 最大的測試優勢。
           </p>
 
-          <CodeBlock language="typescript">{`// cart.test.ts — 純函式測試，不需要 render 任何元件！
+          <CodeBlock language="typescript">
+{` // cart.test.ts — 純函式測試，不需要 render 任何元件！
 import { cartReducer, initialState } from './cartReducer';
 
 describe('cartReducer', () => {
@@ -735,7 +746,8 @@ describe('cartReducer', () => {
 
 // 對比：如果用 useState，要測試 addItem 邏輯，
 // 你必須 render <Cart />、找到按鈕、模擬點擊、
-// 再斷言 DOM 上的數字 — 複雜度高出好幾倍。`}</CodeBlock>
+// 再斷言 DOM 上的數字 — 複雜度高出好幾倍。 `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md mt-8 border-l-4 border-cyan-500 bg-cyan-50">
             <CardBody className="p-6">

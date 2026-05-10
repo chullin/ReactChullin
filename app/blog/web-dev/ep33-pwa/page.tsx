@@ -164,7 +164,8 @@ export default function WebDevEP33() {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">完整的 manifest.json</h3>
-              <CodeBlock language="json">{`{
+              <CodeBlock language="json">
+{` {
   "name": "My Awesome App",
   "short_name": "AwesomeApp",
   "description": "A Progressive Web App",
@@ -195,7 +196,8 @@ export default function WebDevEP33() {
       "form_factor": "wide"
     }
   ]
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 my-6">
                 {[
@@ -225,7 +227,8 @@ export default function WebDevEP33() {
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 Next.js 13+ 支援透過 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">app/manifest.ts</code> 以程式碼方式產生 manifest，或者使用 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">next-pwa</code> 套件自動處理整個 PWA 配置流程。
               </p>
-              <CodeBlock language="typescript">{`// app/manifest.ts（Next.js 13+ 原生支援）
+              <CodeBlock language="typescript">
+{` // app/manifest.ts（Next.js 13+ 原生支援）
 import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -252,10 +255,12 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
   };
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">使用 next-pwa 套件（自動化方案）</h3>
-              <CodeBlock language="javascript">{`// next.config.js
+              <CodeBlock language="javascript">
+{` // next.config.js
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
@@ -265,7 +270,8 @@ const withPWA = require('next-pwa')({
 
 module.exports = withPWA({
   // your next.js config
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
                 <div className="flex items-start gap-2">
@@ -330,7 +336,8 @@ module.exports = withPWA({
               </div>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">Service Worker 完整生命週期實作</h3>
-              <CodeBlock language="javascript">{`// public/sw.js
+              <CodeBlock language="javascript">
+{` // public/sw.js
 
 const CACHE_NAME = 'v1';
 const STATIC_ASSETS = [
@@ -389,7 +396,8 @@ self.addEventListener('fetch', (event) => {
       });
     })
   );
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-start gap-2">
@@ -435,11 +443,13 @@ self.addEventListener('fetch', (event) => {
                   <p className="text-green-700 text-xs mb-3 leading-relaxed">
                     先查快取，有就直接回傳，沒有才去網路取。適合幾乎不會更新的資源，速度最快，但要注意快取失效策略，否則用戶可能永遠看到舊版資源。
                   </p>
-                  <CodeBlock language="javascript">{`// 先查快取，沒有才去網路
+                  <CodeBlock language="javascript">
+{` // 先查快取，沒有才去網路
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   return cached ?? fetch(request);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
                 </div>
 
                 {/* Network First */}
@@ -451,7 +461,8 @@ async function cacheFirst(request) {
                   <p className="text-blue-700 text-xs mb-3 leading-relaxed">
                     先去網路，成功則更新快取並回傳最新資料；失敗（離線）才用快取。確保資料即時性，但在網路不穩時可能較慢。
                   </p>
-                  <CodeBlock language="javascript">{`// 先去網路，失敗才用快取
+                  <CodeBlock language="javascript">
+{` // 先去網路，失敗才用快取
 async function networkFirst(request, cacheName) {
   try {
     const response = await fetch(request);
@@ -461,7 +472,8 @@ async function networkFirst(request, cacheName) {
   } catch {
     return caches.match(request);
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
                 </div>
 
                 {/* Stale While Revalidate */}
@@ -473,7 +485,8 @@ async function networkFirst(request, cacheName) {
                   <p className="text-purple-700 text-xs mb-3 leading-relaxed">
                     立刻回傳快取（速度快），同時在背景更新快取。下次請求就能看到最新版本。這是「速度優先，允許一次稍舊」的最佳折衷方案。
                   </p>
-                  <CodeBlock language="javascript">{`// 先用快取（快），同時後台更新
+                  <CodeBlock language="javascript">
+{` // 先用快取（快），同時後台更新
 async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
@@ -484,7 +497,8 @@ async function staleWhileRevalidate(request, cacheName) {
   });
 
   return cached ?? fetchPromise;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
                 </div>
 
                 {/* Network Only */}
@@ -531,7 +545,8 @@ async function staleWhileRevalidate(request, cacheName) {
               </div>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">前端：請求權限與訂閱</h3>
-              <CodeBlock language="javascript">{`// 1. 請求通知權限
+              <CodeBlock language="javascript">
+{` // 1. 請求通知權限
 async function requestNotificationPermission() {
   if (!('Notification' in window)) {
     console.log('Browser does not support notifications');
@@ -589,10 +604,12 @@ self.addEventListener('notificationclick', (event) => {
       clients.openWindow(event.notification.data.url)
     );
   }
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">後端發送 Push（Next.js API Route）</h3>
-              <CodeBlock language="typescript">{`// app/api/push/send/route.ts
+              <CodeBlock language="typescript">
+{` // app/api/push/send/route.ts
 import webpush from 'web-push';
 
 webpush.setVapidDetails(
@@ -610,7 +627,8 @@ export async function POST(request: Request) {
   );
 
   return Response.json({ success: true });
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="mt-4 p-4 bg-teal-50 rounded-lg border border-teal-200">
                 <div className="flex items-start gap-2">
@@ -647,7 +665,8 @@ export async function POST(request: Request) {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">在 React 中偵測離線狀態</h3>
-              <CodeBlock language="tsx">{`// hooks/useOnlineStatus.ts
+              <CodeBlock language="tsx">
+{` // hooks/useOnlineStatus.ts
 import { useState, useEffect } from 'react';
 
 export function useOnlineStatus() {
@@ -682,13 +701,15 @@ export function OfflineBanner() {
       目前處於離線模式，部分功能可能無法使用
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Background Sync — 離線儲存，上線後自動同步</h3>
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 Background Sync API 讓你能在網路中斷時，將用戶的操作（例如送出表單）先暫存在 IndexedDB，等到裝置重新連線後，Service Worker 會自動在背景完成這些操作——即使用戶已經關閉了頁面。
               </p>
-              <CodeBlock language="javascript">{`// 在 fetch 失敗時，透過 Background Sync 排程
+              <CodeBlock language="javascript">
+{` // 在 fetch 失敗時，透過 Background Sync 排程
 async function submitFormWithSync(formData) {
   try {
     return await fetch('/api/submit', {
@@ -710,7 +731,8 @@ self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-forms') {
     event.waitUntil(syncPendingForms());
   }
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
                 {[
@@ -771,7 +793,8 @@ self.addEventListener('sync', (event) => {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">完整 next-pwa + Workbox 配置</h3>
-              <CodeBlock language="javascript">{`// next.config.mjs
+              <CodeBlock language="javascript">
+{` // next.config.mjs
 import withPWA from 'next-pwa';
 
 const config = withPWA({
@@ -800,7 +823,8 @@ const config = withPWA({
 
 export default config({
   // your Next.js config
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-4 mt-8">PWA 上線 Checklist</h3>
 
@@ -825,13 +849,15 @@ export default config({
 
               <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <p className="text-slate-700 text-sm font-medium mb-2">iOS 特殊配置（在 app/layout.tsx 的 head 中加入）</p>
-                <CodeBlock language="html">{`<!-- iOS 主畫面圖示 -->
+                <CodeBlock language="html">
+{` <!-- iOS 主畫面圖示 -->
 <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
 
 <!-- iOS Splash Screen（啟動畫面） -->
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="My App" />`}</CodeBlock>
+<meta name="apple-mobile-web-app-title" content="My App" /> `}
+</CodeBlock>
               </div>
             </CardBody>
           </Card>

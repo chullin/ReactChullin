@@ -78,7 +78,8 @@ export default function WebDevEP23() {
             先看一個看似無害的元件：
           </p>
 
-          <CodeBlock language="tsx">{`function ProductList({ products, onAddToCart }) {
+          <CodeBlock language="tsx">
+{` function ProductList({ products, onAddToCart }) {
   return (
     <div>
       {products.map(p => (
@@ -86,7 +87,8 @@ export default function WebDevEP23() {
       ))}
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed mb-6 mt-6 text-lg">
             問題出在哪？當父元件呼叫 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">setState</code>（例如用戶把某個商品加進購物車，更新購物車數量），
@@ -163,7 +165,8 @@ export default function WebDevEP23() {
             如果 props 沒有改變，就跳過渲染，直接用上次的結果。
           </p>
 
-          <CodeBlock language="tsx">{`// ❌ 沒有 memo：每次父元件渲染，ProductCard 都重新渲染
+          <CodeBlock language="tsx">
+{` // ❌ 沒有 memo：每次父元件渲染，ProductCard 都重新渲染
 function ProductCard({ product, onAdd }) {
   console.log('ProductCard 渲染了', product.id);
   return <div onClick={() => onAdd(product)}>{product.name}</div>;
@@ -173,7 +176,8 @@ function ProductCard({ product, onAdd }) {
 const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
   console.log('ProductCard 渲染了', product.id);
   return <div onClick={() => onAdd(product)}>{product.name}</div>;
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-50 to-orange-50">
             <CardBody className="p-6">
@@ -215,7 +219,8 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
             如果預設的淺比較不夠用（例如你只在意 <code className="bg-gray-100 px-1 rounded text-sm">product.id</code> 有沒有變，不管其他欄位），
             可以傳入第二個參數自訂比較邏輯：
           </p>
-          <CodeBlock language="tsx">{`const ProductCard = React.memo(
+          <CodeBlock language="tsx">
+{` const ProductCard = React.memo(
   function ProductCard({ product, onAdd }) {
     return <div onClick={() => onAdd(product)}>{product.name}</div>;
   },
@@ -231,7 +236,8 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
     // 注意：onAdd 的比較這裡被忽略了，
     // 搭配 useCallback 使用更安全
   }
-);`}</CodeBlock>
+); `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -255,7 +261,8 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
             什麼時候用：<strong className="text-red-700">昂貴的運算，且依賴的資料沒變的情況下不需要重算。</strong>
           </p>
 
-          <CodeBlock language="tsx">{`// ❌ 沒有 useMemo：每次渲染都重新排序 / 篩選
+          <CodeBlock language="tsx">
+{` // ❌ 沒有 useMemo：每次渲染都重新排序 / 篩選
 // 假設 products 有 10,000 筆資料——每次父元件 setState，這裡就算一次
 function ProductList({ products, filterCategory }) {
   const filteredProducts = products
@@ -274,7 +281,8 @@ function ProductList({ products, filterCategory }) {
   }, [products, filterCategory]); // deps array：這兩個值沒變就不重算
 
   return <>{filteredProducts.map(p => <ProductCard key={p.id} product={p} />)}</>;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 border-l-4 border-red-500">
             <CardBody className="p-6">
@@ -286,17 +294,19 @@ function ProductList({ products, filterCategory }) {
                     useMemo 需要儲存上次的結果、比較 deps 陣列。這些操作本身就有成本。
                     <strong className="text-red-600"> 不要對簡單運算用 useMemo，得不償失。</strong>
                   </p>
-                  <CodeBlock language="tsx">{`// ❌ 完全沒有意義，useMemo 的開銷比加法還貴
+                  <CodeBlock language="tsx">
+{` // ❌ 完全沒有意義，useMemo 的開銷比加法還貴
 const total = useMemo(() => a + b, [a, b]);
 
 // ❌ 這個也是，字串串接不需要 memo
-const displayName = useMemo(() => \`\${firstName} \${lastName}\`, [firstName, lastName]);
+const displayName = useMemo(() => \\`\\${firstName} \\${lastName}\\`, [firstName, lastName]);
 
 // ✅ 值得：排序 / 篩選大型陣列
 const sortedData = useMemo(() => data.sort(compareFn), [data]);
 
 // ✅ 值得：複雜的巢狀資料轉換
-const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);`}</CodeBlock>
+const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]); `}
+</CodeBlock>
                 </div>
               </div>
             </CardBody>
@@ -369,7 +379,8 @@ const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);
             導致 React.memo 失效。
           </p>
 
-          <CodeBlock language="tsx">{`function ShoppingCart() {
+          <CodeBlock language="tsx">
+{` function ShoppingCart() {
   const [cart, setCart] = useState([]);
 
   // ❌ 每次 ShoppingCart 渲染，addToCart 都是新的函式 reference
@@ -386,7 +397,8 @@ const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);
   }, []); // 空 deps：函式本身不依賴任何外部 state / props
 
   return <ProductList products={products} onAddToCart={addToCart} />;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-50 to-orange-50">
             <CardBody className="p-6">
@@ -398,7 +410,8 @@ const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);
                 當你在 useCallback 內需要讀取 state 的當前值時，有一個常見陷阱：把 state 放進 deps，
                 導致函式每次 state 改變都重建（等於沒用 useCallback）。解法是改用 updater 函式形式：
               </p>
-              <CodeBlock language="tsx">{`// ❌ 把 cart 放進 deps：每次 cart 改變，addToCart 就重建
+              <CodeBlock language="tsx">
+{` // ❌ 把 cart 放進 deps：每次 cart 改變，addToCart 就重建
 const addToCart = useCallback((product) => {
   setCart([...cart, product]); // 直接讀 cart
 }, [cart]); // cart 改變 → addToCart 重建 → ProductCard 重新渲染
@@ -406,7 +419,8 @@ const addToCart = useCallback((product) => {
 // ✅ 用 updater 形式：不需要讀外部的 cart
 const addToCart = useCallback((product) => {
   setCart(prev => [...prev, product]); // 透過 prev 讀取當前值
-}, []); // deps 為空 → addToCart reference 永遠穩定`}</CodeBlock>
+}, []); // deps 為空 → addToCart reference 永遠穩定 `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.section>
@@ -429,7 +443,8 @@ const addToCart = useCallback((product) => {
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">優化後的完整版本</h3>
 
-          <CodeBlock language="tsx">{`// types.ts
+          <CodeBlock language="tsx">
+{` // types.ts
 interface Product {
   id: number;
   name: string;
@@ -513,7 +528,8 @@ const ProductCard = React.memo(function ProductCard({
       <button onClick={() => onAdd(product)}>加入購物車</button>
     </div>
   );
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-600 to-red-600 text-white">
             <CardBody className="p-6">
@@ -574,16 +590,18 @@ const ProductCard = React.memo(function ProductCard({
                   這是「過早優化」的典型反面。看到有人說「要用 useMemo 優化效能」就不管三七二十一全加上去。
                   每個 useMemo 和 useCallback 都有記憶體和比較的開銷，不是加越多越快。
                 </p>
-                <CodeBlock language="tsx">{`// ❌ 完全沒有意義——這些操作比 useMemo 本身的開銷還便宜
+                <CodeBlock language="tsx">
+{` // ❌ 完全沒有意義——這些操作比 useMemo 本身的開銷還便宜
 const name = useMemo(() => user.name, [user.name]);
 const isLoggedIn = useMemo(() => !!user, [user]);
-const greeting = useMemo(() => \`Hello, \${name}\`, [name]);
+const greeting = useMemo(() => \\`Hello, \\${name}\\`, [name]);
 
 // ❌ 這個 useCallback 也是：根本沒有傳給 React.memo 的子元件
 // 完全是浪費
 const handleClick = useCallback(() => {
   console.log('clicked');
-}, []);`}</CodeBlock>
+}, []); `}
+</CodeBlock>
               </CardBody>
             </Card>
 
@@ -598,7 +616,8 @@ const handleClick = useCallback(() => {
                   物件字面量（<code className="bg-gray-100 px-1 rounded">{'{}'}</code>）每次渲染都是新的 reference，
                   放進 deps 後 useMemo 和 useCallback 每次都會重新執行，等於沒用。
                 </p>
-                <CodeBlock language="tsx">{`// ❌ { page: 1 } 每次都是新物件 → useMemo 每次都重新計算
+                <CodeBlock language="tsx">
+{` // ❌ { page: 1 } 每次都是新物件 → useMemo 每次都重新計算
 const result = useMemo(() => computeData(options), [{ page: 1 }]);
 
 // ❌ 同樣問題，陣列字面量也是每次新建
@@ -606,7 +625,8 @@ const filter = useMemo(() => filterData(data), [['a', 'b']]);
 
 // ✅ 把物件抽到外面（或用 useState 管理）
 const options = useMemo(() => ({ page: 1 }), []); // 先穩定 options
-const result = useMemo(() => computeData(options), [options]); // 再用它`}</CodeBlock>
+const result = useMemo(() => computeData(options), [options]); // 再用它 `}
+</CodeBlock>
               </CardBody>
             </Card>
 
@@ -621,15 +641,16 @@ const result = useMemo(() => computeData(options), [options]); // 再用它`}</C
                   這是最隱蔽的 bug。deps 少寫了某個變數，函式裡讀到的是「建立當下」的舊值，
                   不是最新的值。用 eslint-plugin-react-hooks 的 exhaustive-deps 規則可以自動偵測。
                 </p>
-                <CodeBlock language="tsx">{`// ❌ 少寫了 userId：userId 改變時，fetchUser 不會更新
+                <CodeBlock language="tsx">
+{` // ❌ 少寫了 userId：userId 改變時，fetchUser 不會更新
 // 每次呼叫 fetchUser，userId 永遠是初次建立時的舊值
 const fetchUser = useCallback(() => {
-  fetch(\`/api/users/\${userId}\`); // userId 是 stale closure
+  fetch(\\`/api/users/\\${userId}\\`); // userId 是 stale closure
 }, []); // ← 應該要有 [userId]
 
 // ✅ 正確寫法
 const fetchUser = useCallback(() => {
-  fetch(\`/api/users/\${userId}\`);
+  fetch(\\`/api/users/\\${userId}\\`);
 }, [userId]); // userId 改變 → fetchUser 重建，取到最新 userId
 
 // 設定 ESLint 規則自動偵測（.eslintrc.js）：
@@ -638,7 +659,8 @@ const fetchUser = useCallback(() => {
 //   "rules": {
 //     "react-hooks/exhaustive-deps": "error"  // warn 改 error 更嚴格
 //   }
-// }`}</CodeBlock>
+// } `}
+</CodeBlock>
               </CardBody>
             </Card>
           </div>
@@ -722,7 +744,8 @@ const fetchUser = useCallback(() => {
           </div>
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">程式碼層面的效能量測</h3>
-          <CodeBlock language="tsx">{`// 用 React 的 Profiler 元件在程式碼層面量測
+          <CodeBlock language="tsx">
+{` // 用 React 的 Profiler 元件在程式碼層面量測
 import { Profiler, ProfilerOnRenderCallback } from 'react';
 
 const onRenderCallback: ProfilerOnRenderCallback = (
@@ -734,10 +757,10 @@ const onRenderCallback: ProfilerOnRenderCallback = (
   commitTime,
 ) => {
   // 可以上報到 DataDog、Sentry 等效能監控服務
-  console.log(\`[\${id}] \${phase} 渲染耗時：\${actualDuration.toFixed(2)}ms\`);
+  console.log(\\`[\\${id}] \\${phase} 渲染耗時：\\${actualDuration.toFixed(2)}ms\\`);
 
   if (actualDuration > 16) {
-    console.warn(\`⚠️ \${id} 渲染超過一個 frame（\${actualDuration.toFixed(2)}ms）\`);
+    console.warn(\\`⚠️ \\${id} 渲染超過一個 frame（\\${actualDuration.toFixed(2)}ms）\\`);
   }
 };
 
@@ -748,7 +771,8 @@ function App() {
     </Profiler>
   );
 }
-// 注意：Profiler 只在開發模式有效，production build 中會自動移除`}</CodeBlock>
+// 注意：Profiler 只在開發模式有效，production build 中會自動移除 `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-600 to-orange-600 text-white">
             <CardBody className="p-6">

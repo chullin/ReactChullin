@@ -70,7 +70,8 @@ export default function JSEP06() {
             這就是 <strong>Generic Constraints</strong>（泛型約束）的用途。
           </p>
 
-          <CodeBlock language="typescript">{`// ── 基礎泛型（你可能已知道）──
+          <CodeBlock language="typescript">
+{` // ── 基礎泛型（你可能已知道）──
 function identity<T>(arg: T): T {
   return arg;
 }
@@ -90,7 +91,8 @@ function getLength<T extends { length: number }>(arg: T): number {
 getLength("hello");      // ✅ string 有 length
 getLength([1, 2, 3]);    // ✅ array 有 length
 getLength({ length: 5 }); // ✅ 物件有 length
-getLength(42);           // ❌ TypeScript 錯誤！number 沒有 length`}</CodeBlock>
+getLength(42);           // ❌ TypeScript 錯誤！number 沒有 length `}
+</CodeBlock>
 
           <div className="my-6">
             <p className="text-gray-700 font-bold mb-3">keyof constraint — 最常見的泛型用法</p>
@@ -100,7 +102,8 @@ getLength(42);           // ❌ TypeScript 錯誤！number 沒有 length`}</Code
             </p>
           </div>
 
-          <CodeBlock language="typescript">{`// 從物件中安全地取值
+          <CodeBlock language="typescript">
+{` // 從物件中安全地取值
 // K extends keyof T：K 只能是 T 的 key 之一
 // 回傳型別 T[K]：TypeScript 知道取這個 key 會得到什麼型別
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
@@ -121,7 +124,8 @@ function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
 }
 
 const subset = pick(user, ['id', 'name']);
-// 型別：{ id: number; name: string }（不包含 email）`}</CodeBlock>
+// 型別：{ id: number; name: string }（不包含 email） `}
+</CodeBlock>
 
           <Card className="border-0 shadow-sm bg-blue-50 mt-4">
             <CardBody className="p-4">
@@ -154,7 +158,8 @@ const subset = pick(user, ['id', 'name']);
             只是操作對象從「值」變成「型別」。
           </p>
 
-          <CodeBlock language="typescript">{`// 基本語法：T extends U ? X : Y
+          <CodeBlock language="typescript">
+{` // 基本語法：T extends U ? X : Y
 // 「如果 T 相容於 U，則回傳 X，否則回傳 Y」
 type IsString<T> = T extends string ? true : false;
 
@@ -181,7 +186,8 @@ type G = ToArray<string | number>;
 // 如果你不想要 distributive 行為，用 tuple 包起來
 type ToArrayNonDistributive<T> = [T] extends [any] ? T[] : never;
 type H = ToArrayNonDistributive<string | number>;
-// = (string | number)[]`}</CodeBlock>
+// = (string | number)[] `}
+</CodeBlock>
 
           <div className="my-6">
             <p className="text-gray-700 font-bold mb-2">infer 關鍵字 — Conditional Types 的最強功能</p>
@@ -192,7 +198,8 @@ type H = ToArrayNonDistributive<string | number>;
             </p>
           </div>
 
-          <CodeBlock language="typescript">{`// 從函式型別中提取回傳型別（ReturnType 的實作原理）
+          <CodeBlock language="typescript">
+{` // 從函式型別中提取回傳型別（ReturnType 的實作原理）
 // infer R：「如果 T 是函式，幫我把它的回傳型別命名為 R」
 type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 
@@ -222,7 +229,8 @@ type G4 = DeepUnwrapPromise<Promise<Promise<number>>>; // number
 // 從陣列中提取元素型別
 type ArrayElement<T> = T extends (infer E)[] ? E : never;
 type H1 = ArrayElement<string[]>;          // string
-type H2 = ArrayElement<[1, 'a', true]>;    // 1 | 'a' | true（Tuple 的聯合）`}</CodeBlock>
+type H2 = ArrayElement<[1, 'a', true]>;    // 1 | 'a' | true（Tuple 的聯合） `}
+</CodeBlock>
 
           <Card className="border-0 shadow-sm bg-indigo-50 mt-4">
             <CardBody className="p-4">
@@ -255,7 +263,8 @@ type H2 = ArrayElement<[1, 'a', true]>;    // 1 | 'a' | true（Tuple 的聯合�
             並對每個 key 的型別做變換——這就是 TypeScript 所有內建 Utility Types 的實作基礎。
           </p>
 
-          <CodeBlock language="typescript">{`// Mapped Type 的基本語法：[K in keyof T]
+          <CodeBlock language="typescript">
+{` // Mapped Type 的基本語法：[K in keyof T]
 // 對 T 的每個 key K，生成一個新的型別屬性
 
 // Readonly<T>：所有 key 加上 readonly 修飾符
@@ -304,7 +313,8 @@ type StringUserKeys = StringKeys<User>;  // 'name' | 'email'
 // 進一步：取出那些 string 型別的 key 對應的物件
 type PickStringFields<T> = Pick<T, StringKeys<T>>;
 type UserStringFields = PickStringFields<User>;
-// { name: string; email: string }`}</CodeBlock>
+// { name: string; email: string } `}
+</CodeBlock>
 
           <div className="my-6">
             <p className="text-gray-700 font-bold mb-3">as 重新映射（TypeScript 4.1+）</p>
@@ -313,10 +323,11 @@ type UserStringFields = PickStringFields<User>;
             </p>
           </div>
 
-          <CodeBlock language="typescript">{`// 把 key 改成 Getter 形式
+          <CodeBlock language="typescript">
+{` // 把 key 改成 Getter 形式
 // Capitalize<string & K> 確保 K 是 string，再把首字母大寫
 type Getters<T> = {
-  [K in keyof T as \`get\${Capitalize<string & K>}\`]: () => T[K];
+  [K in keyof T as \\`get\\${Capitalize<string & K>}\\`]: () => T[K];
 };
 
 type User = { id: number; name: string; email: string };
@@ -329,7 +340,7 @@ type UserGetters = Getters<User>;
 
 // 把 key 改成 Setter 形式
 type Setters<T> = {
-  [K in keyof T as \`set\${Capitalize<string & K>}\`]: (value: T[K]) => void;
+  [K in keyof T as \\`set\\${Capitalize<string & K>}\\`]: (value: T[K]) => void;
 };
 
 // 用 as 來過濾 key（as never 等於移除這個 key）
@@ -339,7 +350,8 @@ type NonNullableProps<T> = {
 
 type MaybeUser = { id: number; name: string | null; email: string | undefined };
 type StrictUser = NonNullableProps<MaybeUser>;
-// { id: number }（name 和 email 因為含 null/undefined 被過濾掉）`}</CodeBlock>
+// { id: number }（name 和 email 因為含 null/undefined 被過濾掉） `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -362,16 +374,17 @@ type StrictUser = NonNullableProps<MaybeUser>;
             結合 Mapped Types，可以自動生成大量型別，大幅減少手動維護的工作量。
           </p>
 
-          <CodeBlock language="typescript">{`// 基本用法：組合 string literal
+          <CodeBlock language="typescript">
+{` // 基本用法：組合 string literal
 type EventName = 'click' | 'focus' | 'blur';
 
 // Capitalize<S>：把 S 的首字母大寫（內建 Utility Type）
-type Handler = \`on\${Capitalize<EventName>}\`;
+type Handler = \\`on\\${Capitalize<EventName>}\\`;
 // 'onClick' | 'onFocus' | 'onBlur'
 
 // ── 實用：建立 CSS 單位型別 ──
 type CSSUnit = 'px' | 'rem' | 'em' | '%' | 'vh' | 'vw';
-type CSSValue = \`\${number}\${CSSUnit}\`;
+type CSSValue = \\`\\${number}\\${CSSUnit}\\`;
 
 const size: CSSValue = '16px';   // ✅
 const rem: CSSValue  = '1.5rem'; // ✅
@@ -380,7 +393,7 @@ const bad2: CSSValue = 'large';  // ❌ 不是 number 開頭
 
 // ── 路由型別：防止打錯路徑 ──
 type Routes = '/home' | '/about' | '/blog';
-type ApiRoutes = \`/api\${Routes}\`;
+type ApiRoutes = \\`/api\\${Routes}\\`;
 // '/api/home' | '/api/about' | '/api/blog'
 
 // 使用情境：API 函式的路由參數自動有提示
@@ -391,8 +404,8 @@ apiCall('/api/users');  // ❌ TypeScript 錯誤，'/api/users' 不在型別中
 // ── 進階：深層 key 路徑（用在表單驗證、i18n 等場景）──
 type DeepKeys<T, P extends string = ''> = {
   [K in keyof T & string]: T[K] extends object
-    ? DeepKeys<T[K], \`\${P}\${K}.\`>  // 繼續遞迴，在 key 後面加 "."
-    : \`\${P}\${K}\`;                   // 葉節點，回傳完整路徑字串
+    ? DeepKeys<T[K], \\`\\${P}\\${K}.\\`>  // 繼續遞迴，在 key 後面加 "."
+    : \\`\\${P}\\${K}\\`;                   // 葉節點，回傳完整路徑字串
 }[keyof T & string];
 
 type Config = {
@@ -416,7 +429,7 @@ type EventMap = {
 };
 
 type EventEmitterOn = {
-  [K in keyof EventMap as \`on\${Capitalize<string & K>}\`]:
+  [K in keyof EventMap as \\`on\\${Capitalize<string & K>}\\`]:
     (handler: (data: EventMap[K]) => void) => void;
 };
 
@@ -424,7 +437,8 @@ type EventEmitterOn = {
 //   onUserLogin: (handler: (data: { userId: string }) => void) => void;
 //   onUserLogout: (handler: (data: { userId: string }) => void) => void;
 //   onPaymentComplete: (handler: (data: { amount: number }) => void) => void;
-// }`}</CodeBlock>
+// } `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -447,7 +461,8 @@ type EventEmitterOn = {
             理解原理可以讓你在需要時組合出自己的 Utility Types，而不是只靠記憶。
           </p>
 
-          <CodeBlock language="typescript">{`// ── 以下是 TypeScript 內建 Utility Types 的實作原理 ──
+          <CodeBlock language="typescript">
+{` // ── 以下是 TypeScript 內建 Utility Types 的實作原理 ──
 
 // Pick<T, K>：只取需要的 key
 // K extends keyof T 確保 K 是 T 的有效 key
@@ -490,7 +505,8 @@ type F2 = Extract<string | number | boolean, string | number>; // string | numbe
 // Exclude<T, U>：從聯合型別中排除符合的型別
 type Exclude<T, U> = T extends U ? never : T;
 type G1 = Exclude<'a' | 'b' | 'c', 'a' | 'c'>;  // 'b'
-type G2 = Exclude<string | number | null, null>;   // string | number`}</CodeBlock>
+type G2 = Exclude<string | number | null, null>;   // string | number `}
+</CodeBlock>
 
           <div className="my-6">
             <p className="text-gray-700 font-bold mb-3">實用組合：DTO 型別生成</p>
@@ -499,7 +515,8 @@ type G2 = Exclude<string | number | null, null>;   // string | number`}</CodeBlo
             </p>
           </div>
 
-          <CodeBlock language="typescript">{`type User = {
+          <CodeBlock language="typescript">
+{` type User = {
   id: number;
   name: string;
   email: string;
@@ -537,11 +554,12 @@ type UsersListResponse = ApiResponse<UserDto[]>;
 
 // Readonly + 深層：API 回傳的資料不應該被修改
 function fetchUser(id: number): Promise<Readonly<UserDto>> {
-  return fetch(\`/api/users/\${id}\`).then(r => r.json());
+  return fetch(\\`/api/users/\\${id}\\`).then(r => r.json());
 }
 
 const user = await fetchUser(1);
-user.name = 'hacked';  // ❌ TypeScript 錯誤！回傳值是 readonly`}</CodeBlock>
+user.name = 'hacked';  // ❌ TypeScript 錯誤！回傳值是 readonly `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -564,7 +582,8 @@ user.name = 'hacked';  // ❌ TypeScript 錯誤！回傳值是 readonly`}</CodeB
             TypeScript 可以精確地在每個分支推導出正確的型別，消除「狀態不一致」的 bug。
           </p>
 
-          <CodeBlock language="typescript">{`// ── ❌ 容易出 bug 的傳統做法 ──
+          <CodeBlock language="typescript">
+{` // ── ❌ 容易出 bug 的傳統做法 ──
 type LoadingState = {
   isLoading: boolean;
   data: User | null;
@@ -597,15 +616,15 @@ function renderState(state: LoadingState): string {
     case 'success':
       // 這個分支裡，TypeScript 知道 state 是 { status: 'success'; data: User }
       // 所以 state.data 有完整的 User 型別！
-      return \`歡迎，\${state.data.name}\`;
+      return \\`歡迎，\\${state.data.name}\\`;
     case 'error':
       // 這個分支裡，TypeScript 知道 state 是 { status: 'error'; error: string }
-      return \`錯誤：\${state.error}\`;
+      return \\`錯誤：\\${state.error}\\`;
     default:
       // Exhaustive Check：這裡的 state 型別應該是 never
       // 如果你新增了一個 status 但忘了加 case，TypeScript 就會報錯
       const _exhaustive: never = state;
-      throw new Error(\`未處理的狀態：\${JSON.stringify(_exhaustive)}\`);
+      throw new Error(\\`未處理的狀態：\\${JSON.stringify(_exhaustive)}\\`);
   }
 }
 
@@ -628,7 +647,8 @@ function UserProfile({ userId }: { userId: number }) {
     case 'success': return <div>{state.data.name}</div>;  // state.data 有型別！
     case 'error':   return <div>錯誤：{state.error}</div>;
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <div className="mt-8 overflow-x-auto rounded-xl shadow-md">
             <table className="w-full text-sm">

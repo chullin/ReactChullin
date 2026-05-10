@@ -81,7 +81,8 @@ export default function DevOpsEP05() {
             但在流量大的生產環境中是不可接受的操作模式。
           </p>
 
-          <CodeBlock language="bash">{`# 傳統部署（In-place deployment）
+          <CodeBlock language="bash">
+{` # 傳統部署（In-place deployment）
 ssh production-server
 git pull origin main
 npm run build
@@ -90,7 +91,8 @@ pm2 restart app    # 這段時間：服務中斷！
 # 問題：
 # 1. 部署期間有 downtime（可能幾秒到幾分鐘）
 # 2. 新版有 bug → 回滾需要重新部署（又是 downtime）
-# 3. 用戶可能在操作到一半時遭遇中斷`}</CodeBlock>
+# 3. 用戶可能在操作到一半時遭遇中斷 `}
+</CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="border border-red-200 bg-red-50">
@@ -193,7 +195,8 @@ pm2 restart app    # 這段時間：服務中斷！
             GitHub Actions 實作
           </h3>
 
-          <CodeBlock language="yaml">{`# .github/workflows/blue-green-deploy.yml
+          <CodeBlock language="yaml">
+{` # .github/workflows/blue-green-deploy.yml
 name: Blue-Green Deploy
 
 on:
@@ -209,13 +212,13 @@ jobs:
 
       - name: Build new image
         run: |
-          docker build -t myapp:\${{ github.sha }} .
-          docker push registry.example.com/myapp:\${{ github.sha }}
+          docker build -t myapp:\\${{ github.sha }} .
+          docker push registry.example.com/myapp:\\${{ github.sha }}
 
       - name: Deploy to Green environment
         run: |
           kubectl set image deployment/myapp-green \\
-            web=registry.example.com/myapp:\${{ github.sha }}
+            web=registry.example.com/myapp:\\${{ github.sha }}
           kubectl rollout status deployment/myapp-green
 
       - name: Run smoke tests on Green
@@ -238,7 +241,8 @@ jobs:
         run: |
           # 更新 label，讓下次部署知道哪個是「穩定版」
           kubectl label deployment myapp-green role=blue --overwrite
-          kubectl label deployment myapp-blue role=green --overwrite`}</CodeBlock>
+          kubectl label deployment myapp-blue role=green --overwrite `}
+</CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border border-blue-200 bg-blue-50">
@@ -304,7 +308,8 @@ jobs:
             Kubernetes 實作：副本數控制流量比例
           </h3>
 
-          <CodeBlock language="yaml">{`# stable-deployment.yaml
+          <CodeBlock language="yaml">
+{` # stable-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -356,7 +361,8 @@ spec:
     app: myapp         # 同時選中 stable 和 canary（pod 比例決定流量比例）
   ports:
     - port: 80
-      targetPort: 3000`}</CodeBlock>
+      targetPort: 3000 `}
+</CodeBlock>
 
           <div className="mt-6">
             <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
@@ -367,7 +373,8 @@ spec:
               部署 Canary 後不能就放著不管。要盯著這三類指標至少 30 分鐘，才能決定全量推出或回滾。
             </p>
 
-            <CodeBlock language="bash">{`# 在 Canary 部署後監控這些指標（30 分鐘）
+            <CodeBlock language="bash">
+{` # 在 Canary 部署後監控這些指標（30 分鐘）
 - 5xx Error Rate（應該 < 0.1%）
 - P99 Latency（應該沒有顯著升高）
 - Business Metrics（訂單轉換率、用戶行為）
@@ -377,7 +384,8 @@ kubectl scale deployment myapp-canary --replicas=10
 kubectl scale deployment myapp-stable --replicas=0
 
 # 回滾：
-kubectl scale deployment myapp-canary --replicas=0`}</CodeBlock>
+kubectl scale deployment myapp-canary --replicas=0 `}
+</CodeBlock>
           </div>
 
           <div className="mt-6 bg-gradient-to-r from-slate-800 to-zinc-800 text-white rounded-xl p-5">
@@ -422,7 +430,8 @@ kubectl scale deployment myapp-canary --replicas=0`}</CodeBlock>
             自製簡易 Feature Flag 系統
           </h3>
 
-          <CodeBlock language="typescript">{`// lib/featureFlags.ts
+          <CodeBlock language="typescript">
+{` // lib/featureFlags.ts
 type FeatureFlag = {
   enabled: boolean;
   rolloutPercentage: number;  // 0-100，向多少 % 用戶開放
@@ -451,7 +460,8 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
   // 根據 userId 的 hash 決定（確保同一個用戶永遠看到同樣結果）
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return (hash % 100) < flag.rolloutPercentage;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <div className="mt-6">
             <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
@@ -459,11 +469,13 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
               在元件中使用
             </h3>
 
-            <CodeBlock language="tsx">{`function CheckoutPage({ userId }) {
+            <CodeBlock language="tsx">
+{` function CheckoutPage({ userId }) {
   const showNewCheckout = isFeatureEnabled('new-checkout-flow', userId);
 
   return showNewCheckout ? <NewCheckoutFlow /> : <OldCheckoutFlow />;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
           </div>
 
           <div className="mt-6">
@@ -520,7 +532,8 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
             概念是：逐批替換舊版 Pod，而非一次全部下線。在 EP.04 中我們提過這個策略，這裡深入看它的參數控制。
           </p>
 
-          <CodeBlock language="yaml">{`strategy:
+          <CodeBlock language="yaml">
+{` strategy:
   type: RollingUpdate
   rollingUpdate:
     maxSurge: 25%        # 最多比 replicas 多 25% 的 Pod（新版）
@@ -530,7 +543,8 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
 # Step 1: 啟動 3 個新版 Pod → 共 13 個（10+3）
 # Step 2: 關閉 3 個舊版 Pod → 共 10 個（7+3）
 # Step 3: 啟動 3 個新版 Pod → 共 13 個（7+6）
-# ...直到全部換完`}</CodeBlock>
+# ...直到全部換完 `}
+</CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border border-purple-200 bg-purple-50">
@@ -564,14 +578,16 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
               <GitBranch size={16} className="text-purple-400" />
               快速回滾指令
             </p>
-            <CodeBlock language="bash">{`# 查看部署歷史
+            <CodeBlock language="bash">
+{` # 查看部署歷史
 kubectl rollout history deployment/myapp
 
 # 回滾到上一個版本（不需要重新 build！）
 kubectl rollout undo deployment/myapp
 
 # 回滾到指定版本
-kubectl rollout undo deployment/myapp --to-revision=3`}</CodeBlock>
+kubectl rollout undo deployment/myapp --to-revision=3 `}
+</CodeBlock>
           </div>
         </motion.div>
 

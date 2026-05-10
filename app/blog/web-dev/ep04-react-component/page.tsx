@@ -215,7 +215,7 @@ export default function RootLayout({ children }) {
           </p>
           <CodeBlock title="blog/page.tsx — 實際應用" code={`// series 是一個陣列，.map() 讓每個元素都產生一張卡片
 {series.map((s, i) => (
-  <a key={s.id} href={\`#\${s.id}\`}>
+  <a key={s.id} href={\\`#\\${s.id}\`}>
     <p className="text-lg font-black">{s.posts.length}</p>  {/* 顯示文章數 */}
     <p>{s.label}</p>                                        {/* 顯示系列名稱 */}
   </a>

@@ -71,7 +71,8 @@ export default function SystemDesignEP09() {
             結果反而增加了不必要的複雜度與運維負擔。在決定是否拆分之前，先理解真實的代價。
           </p>
 
-          <CodeBlock language="text">{`單體架構（Monolith）：
+          <CodeBlock language="text">
+{` 單體架構（Monolith）：
   一個 codebase、一個 DB、一個部署單元
   優點：開發快速、事務容易、除錯直觀、部署簡單
   缺點：規模擴展困難、技術債累積快、一個 bug 可能拖垮整個服務
@@ -83,7 +84,8 @@ export default function SystemDesignEP09() {
     - 分散式系統複雜度（網路延遲、部分失敗）
     - 資料一致性難保證（沒有 ACID 跨服務事務）
     - 服務發現、負載均衡、監控成本大幅上升
-    - 本地開發困難（需要跑多個服務）`}</CodeBlock>
+    - 本地開發困難（需要跑多個服務） `}
+</CodeBlock>
 
           <Card className="border border-amber-200 bg-amber-50 my-6">
             <CardBody className="p-5">
@@ -160,7 +162,8 @@ export default function SystemDesignEP09() {
             以電商系統為例，每個 Bounded Context 就對應到一個微服務。
           </p>
 
-          <CodeBlock language="text">{`電商系統的 Bounded Context 劃分：
+          <CodeBlock language="text">
+{` 電商系統的 Bounded Context 劃分：
 
 訂單（Order BC）          → Order Service
   └── 訂單、訂單明細、訂單狀態（Pending / Confirmed / Shipped）
@@ -182,7 +185,8 @@ export default function SystemDesignEP09() {
   └── 純粹的通知分發，不包含業務邏輯
 
 推薦（Recommendation BC） → Recommendation Service
-  └── 用戶行為分析、推薦演算法、A/B 測試`}</CodeBlock>
+  └── 用戶行為分析、推薦演算法、A/B 測試 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4">三個核心拆分原則</h3>
           <div className="space-y-3">
@@ -247,7 +251,8 @@ export default function SystemDesignEP09() {
             這個模式讓你可以在生產環境持續運行的同時，漸進式地遷移系統。
           </p>
 
-          <CodeBlock language="text">{`第一步：在 Monolith 前面加一層 API Gateway
+          <CodeBlock language="text">
+{` 第一步：在 Monolith 前面加一層 API Gateway
 
   所有請求
   Request ──→ API Gateway ──→ Monolith（全部流量）
@@ -284,14 +289,16 @@ export default function SystemDesignEP09() {
                 ├── /api/orders/*   ──→ Order Service
                 ├── /api/users/*    ──→ User Service
                 ├── /api/inventory/* → Inventory Service
-                └── ...`}</CodeBlock>
+                └── ... `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4">遷移時的資料庫策略</h3>
           <p className="text-gray-700 leading-relaxed mb-4">
             資料庫遷移是最難的部分。建議採用「雙寫（Dual Write）」策略過渡：
           </p>
 
-          <CodeBlock language="typescript">{`// 遷移期間：同時寫入舊 DB 和新 DB
+          <CodeBlock language="typescript">
+{` // 遷移期間：同時寫入舊 DB 和新 DB
 async function createOrder(orderData: OrderInput) {
   // 1. 寫入舊的 Monolith DB（確保舊系統不中斷）
   await legacyDb.query(
@@ -316,7 +323,8 @@ async function getOrder(orderId: string) {
     return await orderService.getOrder(orderId);
   }
   return await legacyDb.query('SELECT * FROM orders WHERE id = $1', [orderId]);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -340,7 +348,8 @@ async function getOrder(orderId: string) {
 
           <h3 className="text-lg font-bold text-gray-800 mb-4">同步通訊（REST / gRPC）</h3>
 
-          <CodeBlock language="text">{`Order Service ──HTTP/gRPC──→ Payment Service
+          <CodeBlock language="text">
+{` Order Service ──HTTP/gRPC──→ Payment Service
                                （等待回應，最長 30 秒 timeout）
 
 優點：
@@ -351,11 +360,13 @@ async function getOrder(orderId: string) {
 缺點：
   ✗ Payment Service 掛了，Order Service 也會失敗
   ✗ 網路延遲直接影響用戶體驗
-  ✗ 服務之間形成時間耦合（Temporal Coupling）`}</CodeBlock>
+  ✗ 服務之間形成時間耦合（Temporal Coupling） `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4">非同步通訊（Kafka / RabbitMQ）</h3>
 
-          <CodeBlock language="text">{`Order Service ──Event──→ Kafka Topic: order.created
+          <CodeBlock language="text">
+{` Order Service ──Event──→ Kafka Topic: order.created
                               ├──→ Payment Service（訂閱，獨立消費）
                               ├──→ Notification Service（訂閱）
                               └──→ Inventory Service（訂閱）
@@ -370,7 +381,8 @@ Order Service 發完事件就返回，不等任何人回應
 缺點：
   ✗ 最終一致性（Eventual Consistency），不是立即一致
   ✗ 除錯困難，要追蹤事件流
-  ✗ 需要額外維護 Kafka 基礎設施`}</CodeBlock>
+  ✗ 需要額外維護 Kafka 基礎設施 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4">Saga Pattern — 分散式事務的解法</h3>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -378,7 +390,8 @@ Order Service 發完事件就返回，不等任何人回應
             每一步失敗都執行「補償交易（Compensating Transaction）」來回滾。
           </p>
 
-          <CodeBlock language="text">{`下訂單完整流程（Choreography Saga）：
+          <CodeBlock language="text">
+{` 下訂單完整流程（Choreography Saga）：
 
   Step 1: Order Service
     ├── 建立訂單（狀態：PENDING）
@@ -401,9 +414,11 @@ Order Service 發完事件就返回，不等任何人回應
     Inventory Service（收到 PaymentFailed）
     └── 補償交易：還原庫存（+N 件回去）
     Order Service（收到 PaymentFailed）
-    └── 更新訂單狀態：FAILED，通知用戶`}</CodeBlock>
+    └── 更新訂單狀態：FAILED，通知用戶 `}
+</CodeBlock>
 
-          <CodeBlock language="typescript">{`// Kafka 事件消費範例（Payment Service）
+          <CodeBlock language="typescript">
+{` // Kafka 事件消費範例（Payment Service）
 import { Kafka } from 'kafkajs';
 
 const kafka = new Kafka({ clientId: 'payment-service', brokers: ['kafka:9092'] });
@@ -437,7 +452,8 @@ await consumer.run({
       });
     }
   },
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -461,7 +477,8 @@ await consumer.run({
             抽離到基礎設施層，讓每個服務可以專注在業務邏輯上。
           </p>
 
-          <CodeBlock language="text">{`沒有 Service Mesh：
+          <CodeBlock language="text">
+{` 沒有 Service Mesh：
   每個微服務自己實作：
     ├── 重試邏輯（Retry with exponential backoff）
     ├── Circuit Breaker（斷路器）
@@ -487,7 +504,8 @@ await consumer.run({
     ├── 自動重試與超時
     ├── Circuit Breaker
     ├── 流量追蹤（Jaeger / Zipkin）
-    └── 訪問控制（誰可以呼叫誰）`}</CodeBlock>
+    └── 訪問控制（誰可以呼叫誰） `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4">Istio Traffic Management：Canary 部署</h3>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -495,7 +513,8 @@ await consumer.run({
             可以基於 Header、百分比、用戶身份等條件將流量導向不同版本，實現安全的 Canary 部署。
           </p>
 
-          <CodeBlock language="yaml">{`# VirtualService：定義流量路由規則
+          <CodeBlock language="yaml">
+{` # VirtualService：定義流量路由規則
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -545,11 +564,13 @@ spec:
     outlierDetection:
       consecutiveErrors: 5        # 連續 5 次錯誤觸發斷路
       interval: 30s               # 每 30 秒評估一次
-      baseEjectionTime: 1m        # 斷路後剔除 1 分鐘`}</CodeBlock>
+      baseEjectionTime: 1m        # 斷路後剔除 1 分鐘 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-4">Authorization Policy：服務間的存取控制</h3>
 
-          <CodeBlock language="yaml">{`# 只允許 order-service 呼叫 payment-service
+          <CodeBlock language="yaml">
+{` # 只允許 order-service 呼叫 payment-service
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
@@ -568,7 +589,8 @@ spec:
         - operation:
             methods: ["POST"]
             paths: ["/api/payment/charge"]
-  # 其他服務的請求會被自動拒絕（403 Forbidden）`}</CodeBlock>
+  # 其他服務的請求會被自動拒絕（403 Forbidden） `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -618,7 +640,8 @@ spec:
             每個請求在入口處產生一個唯一 ID，並在所有服務間傳遞。
           </p>
 
-          <CodeBlock language="typescript">{`import { v4 as uuid } from 'uuid';
+          <CodeBlock language="typescript">
+{` import { v4 as uuid } from 'uuid';
 import pino from 'pino';
 
 const logger = pino({ level: 'info' });
@@ -659,11 +682,13 @@ async function callInventoryService(orderId: string, correlationId: string) {
   });
 }
 // 在 Kibana / Grafana Loki 用 correlationId 搜尋，
-// 就能看到一個請求穿越所有服務的完整日誌鏈`}</CodeBlock>
+// 就能看到一個請求穿越所有服務的完整日誌鏈 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3">2. Metrics — 關鍵指標監控</h3>
 
-          <CodeBlock language="typescript">{`import { Counter, Histogram, Registry } from 'prom-client';
+          <CodeBlock language="typescript">
+{` import { Counter, Histogram, Registry } from 'prom-client';
 
 const register = new Registry();
 
@@ -715,11 +740,13 @@ app.get('/metrics', async (req, res) => {
 // 在 Grafana 設定 Alert：
 // - Error Rate > 1%：頁面告警
 // - P99 Latency > 2s：Slack 通知
-// - RPS 突然下降 50%：可能服務掛掉`}</CodeBlock>
+// - RPS 突然下降 50%：可能服務掛掉 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3">3. Traces — OpenTelemetry 分散式追蹤</h3>
 
-          <CodeBlock language="typescript">{`// OpenTelemetry 是分散式追蹤的業界標準
+          <CodeBlock language="typescript">
+{` // OpenTelemetry 是分散式追蹤的業界標準
 // 可以導出到 Jaeger、Zipkin、Datadog 等後端
 import { trace, SpanStatusCode, context, propagation } from '@opentelemetry/api';
 import { NodeTracerProvider } from '@opentelemetry/sdk-node';
@@ -782,7 +809,8 @@ async function processOrder(orderData: OrderInput) {
 //   └── db.orders.create        15ms
 //   └── HTTP POST /api/reserve (Inventory Service) 45ms
 //         └── db.inventory.update 12ms
-//         └── kafka.produce       8ms`}</CodeBlock>
+//         └── kafka.produce       8ms `}
+</CodeBlock>
 
           <Card className="border border-slate-200 bg-gradient-to-r from-slate-50 to-zinc-50 mt-6">
             <CardBody className="p-5">

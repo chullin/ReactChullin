@@ -120,11 +120,11 @@ export default function WebDevEP15() {
 
       todos.forEach(todo => {
         const li = document.createElement('li');
-        li.innerHTML = \`
-          <span style="text-decoration: \${todo.done ? 'line-through' : 'none'}">\${todo.text}</span>
-          <button onclick="toggleTodo(\${todo.id})">完成</button>
-          <button onclick="deleteTodo(\${todo.id})">刪除</button>
-        \`;
+        li.innerHTML = \\`
+          <span style="text-decoration: \\${todo.done ? 'line-through' : 'none'}">\\${todo.text}</span>
+          <button onclick="toggleTodo(\\${todo.id})">完成</button>
+          <button onclick="deleteTodo(\\${todo.id})">刪除</button>
+        \\`;
         list.appendChild(li);
       });
 

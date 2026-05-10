@@ -225,7 +225,7 @@ PI=3.14
 
 # 讀取變數（加 $）
 echo "My name is $NAME"
-echo "Age: \${AGE}"         # 大括號明確標示變數範圍
+echo "Age: \\${AGE}"         # 大括號明確標示變數範圍
 
 # 腳本參數（$0 是腳本名，$1 是第一個參數）
 echo "腳本名稱：$0"
@@ -341,7 +341,7 @@ done
 
 # for 迴圈：陣列
 SERVERS=("web01" "web02" "db01")
-for server in "\${SERVERS[@]}"; do
+for server in "\\${SERVERS[@]}"; do
     echo "連線到 $server"
     # ssh "$server" "uptime"
 done

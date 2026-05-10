@@ -229,7 +229,7 @@ Promise.resolve().then(() => {
 console.log("4. End");`} 
             />
             <div className="bg-slate-900 p-6 rounded-2xl">
-              <p className="text-emerald-400 font-mono text-sm">答案：1 -> 4 -> 3 -> 2</p>
+              <p className="text-emerald-400 font-mono text-sm">答案：1 -&gt; 4 -&gt; 3 -&gt; 2</p>
               <p className="text-slate-400 text-xs mt-2 leading-relaxed">
                 解析：1 和 4 是同步程式碼先跑。3 是微任務，在同步跑完後立即執行。2 是宏任務，排在最後。
               </p>
@@ -265,7 +265,7 @@ myFunc();
 console.log("Global - End");`} 
           />
           <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 text-sm text-blue-800 italic">
-            印出順序：Global - Start -> Inside - Start -> Global - End -> Inside - End
+            印出順序：Global - Start -&gt; Inside - Start -&gt; Global - End -&gt; Inside - End
           </div>
         </SectionWrapper>
 

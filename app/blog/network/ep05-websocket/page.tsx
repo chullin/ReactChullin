@@ -86,7 +86,7 @@ export default function NetworkEP05() {
                 <h3 className="font-bold text-gray-800">用 HTTP Polling 模擬即時更新</h3>
               </div>
               <CodeBlock language="javascript">
-{`// ❌ 每秒輪詢：浪費頻寬，有延遲
+{` // ❌ 每秒輪詢：浪費頻寬，有延遲
 setInterval(async () => {
   const messages = await fetch('/api/messages').then(r => r.json());
   setMessages(messages);
@@ -96,8 +96,8 @@ setInterval(async () => {
 // 問題 2：大多數時候伺服器沒有新資料（99% 的請求是無效的）
 // 問題 3：延遲：最長可達 1 秒才能收到新訊息
 // 問題 4：10 個用戶 × 1 秒 1 次 = 每秒 10 個請求
-//         1000 個用戶 = 每秒 1000 個請求（純粹是在轟炸伺服器）`}
-              </CodeBlock>
+//         1000 個用戶 = 每秒 1000 個請求（純粹是在轟炸伺服器） `}
+</CodeBlock>
             </CardBody>
           </Card>
 
@@ -176,7 +176,7 @@ setInterval(async () => {
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">WebSocket 連線建立過程</h3>
             <CodeBlock language="text">
-{`步驟 1：客戶端發送 HTTP 升級請求
+{` 步驟 1：客戶端發送 HTTP 升級請求
 
 GET /chat HTTP/1.1
 Host: server.example.com
@@ -201,8 +201,8 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=  ← 驗證 key
 TCP 連線保持開放，不再是 HTTP 請求/回應模式
 → 持久雙向通訊開始
 → 任何一方都可以隨時發送訊息框架（Frame）
-→ 直到其中一方發送 Close Frame 才關閉`}
-            </CodeBlock>
+→ 直到其中一方發送 Close Frame 才關閉 `}
+</CodeBlock>
           </div>
 
           <div className="mb-6">
@@ -273,7 +273,7 @@ TCP 連線保持開放，不再是 HTTP 請求/回應模式
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">WebSocket Manager：封裝重連邏輯</h3>
             <CodeBlock language="typescript">
-{`class WebSocketManager {
+{` class WebSocketManager {
   private ws: WebSocket | null = null;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
@@ -303,7 +303,7 @@ TCP 連線保持開放，不再是 HTTP 請求/回應模式
     };
 
     this.ws.onclose = (event) => {
-      console.log(\`連線關閉，code: \${event.code}, reason: \${event.reason}\`);
+      console.log(\\`連線關閉，code: \\${event.code}, reason: \\${event.reason}\\`);
 
       // 1000 = 正常關閉，不需要重連
       if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
@@ -313,7 +313,7 @@ TCP 連線保持開放，不再是 HTTP 請求/回應模式
         // 第 3 次：4 秒後重試
         // 最長不超過 30 秒
         const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
-        console.log(\`\${delay / 1000} 秒後嘗試重連（第 \${this.reconnectAttempts + 1} 次）\`);
+        console.log(\\`\\${delay / 1000} 秒後嘗試重連（第 \\${this.reconnectAttempts + 1} 次）\\`);
         setTimeout(() => this.connect(url), delay);
         this.reconnectAttempts++;
       }
@@ -348,8 +348,8 @@ TCP 連線保持開放，不再是 HTTP 請求/回應模式
 // WebSocket.CONNECTING = 0 → 正在連線
 // WebSocket.OPEN = 1       → 已連線，可以收發訊息
 // WebSocket.CLOSING = 2    → 正在關閉
-// WebSocket.CLOSED = 3     → 已關閉`}
-            </CodeBlock>
+// WebSocket.CLOSED = 3     → 已關閉 `}
+</CodeBlock>
           </div>
 
           <div className="mb-6">
@@ -359,7 +359,7 @@ TCP 連線保持開放，不再是 HTTP 請求/回應模式
               來管理連線生命週期，確保元件卸載時正確關閉連線，避免 memory leak。
             </p>
             <CodeBlock language="typescript">
-{`import { useState, useEffect, useRef, useCallback } from 'react';
+{` import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Message {
   id: string;
@@ -409,7 +409,7 @@ function useWebSocket(url: string) {
 // 使用方式
 function ChatRoom({ roomId }: { roomId: string }) {
   const { messages, sendMessage, isConnected } = useWebSocket(
-    \`wss://api.example.com/chat/\${roomId}\`
+    \\`wss://api.example.com/chat/\\${roomId}\\`
   );
 
   return (
@@ -425,8 +425,8 @@ function ChatRoom({ roomId }: { roomId: string }) {
       <button onClick={() => sendMessage('Hello!')}>發送</button>
     </div>
   );
-}`}
-            </CodeBlock>
+} `}
+</CodeBlock>
           </div>
         </motion.section>
 
@@ -495,16 +495,16 @@ function ChatRoom({ roomId }: { roomId: string }) {
               每個事件以兩個換行符結尾。
             </p>
             <CodeBlock language="typescript">
-{`// app/api/events/route.ts（Next.js App Router）
+{` // app/api/events/route.ts（Next.js App Router）
 export async function GET(req: Request) {
   const stream = new ReadableStream({
     start(controller) {
       // 輔助函式：推送一個 SSE 事件
       const send = (data: object, event?: string) => {
         if (event) {
-          controller.enqueue(\`event: \${event}\n\`);
+          controller.enqueue(\\`event: \\${event}\n\\`);
         }
-        controller.enqueue(\`data: \${JSON.stringify(data)}\n\n\`);
+        controller.enqueue(\\`data: \\${JSON.stringify(data)}\n\n\\`);
         // 格式：
         //   event: eventName  （可選，客戶端可用 addEventListener 監聽）
         //   data: { ... }     （必須）
@@ -547,14 +547,14 @@ export async function GET(req: Request) {
       'X-Accel-Buffering': 'no',             // 關閉 Nginx 緩衝（重要！）
     },
   });
-}`}
-            </CodeBlock>
+} `}
+</CodeBlock>
           </div>
 
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">前端實作（EventSource API）</h3>
             <CodeBlock language="typescript">
-{`import { useState, useEffect } from 'react';
+{` import { useState, useEffect } from 'react';
 
 // 通用的 SSE Hook
 function useSSE<T>(url: string) {
@@ -579,7 +579,7 @@ function useSSE<T>(url: string) {
 
     eventSource.addEventListener('notification', (event) => {
       const notification = JSON.parse(event.data);
-      alert(\`通知：\${notification.message}\`);
+      alert(\\`通知：\\${notification.message}\\`);
     });
 
     eventSource.onerror = () => {
@@ -616,7 +616,7 @@ function StockTicker() {
       {stock && (
         <div>
           <span className="text-2xl font-bold">{stock.symbol}</span>
-          <span className="text-xl ml-3">\${stock.price}</span>
+          <span className="text-xl ml-3">\\${stock.price}</span>
           <span className={stock.change.startsWith('-') ? 'text-red-500 ml-2' : 'text-green-500 ml-2'}>
             {stock.change}
           </span>
@@ -624,8 +624,8 @@ function StockTicker() {
       )}
     </div>
   );
-}`}
-            </CodeBlock>
+} `}
+</CodeBlock>
           </div>
 
           <Card className="border-l-4 border-cyan-400 bg-cyan-50 shadow-sm">
@@ -669,7 +669,7 @@ function StockTicker() {
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">後端（Node.js + Socket.io）</h3>
             <CodeBlock language="typescript">
-{`// server.ts（獨立 Node.js 伺服器）
+{` // server.ts（獨立 Node.js 伺服器）
 import { createServer } from 'http';
 import { Server, Socket } from 'socket.io';
 
@@ -698,7 +698,7 @@ io.use(async (socket, next) => {
 
 io.on('connection', (socket: Socket) => {
   const user = socket.data.user;
-  console.log(\`用戶 \${user.name} 連線，ID: \${socket.id}\`);
+  console.log(\\`用戶 \\${user.name} 連線，ID: \\${socket.id}\\`);
 
   // 加入聊天室（Socket.io 的 Room 概念）
   socket.on('join-room', (roomId: string) => {
@@ -736,19 +736,19 @@ io.on('connection', (socket: Socket) => {
   });
 
   socket.on('disconnect', (reason) => {
-    console.log(\`用戶 \${user.name} 斷線，原因：\${reason}\`);
+    console.log(\\`用戶 \\${user.name} 斷線，原因：\\${reason}\\`);
     // reason: 'transport close'（網路問題）/ 'client namespace disconnect'（主動離開）
   });
 });
 
-httpServer.listen(4000, () => console.log('Socket.io 伺服器啟動於 port 4000'));`}
-            </CodeBlock>
+httpServer.listen(4000, () => console.log('Socket.io 伺服器啟動於 port 4000')); `}
+</CodeBlock>
           </div>
 
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">前端（React + Socket.io-client）</h3>
             <CodeBlock language="tsx">
-{`import { useEffect, useRef, useState, useCallback } from 'react';
+{` import { useEffect, useRef, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 interface Message {
@@ -851,8 +851,8 @@ function ChatRoom({ roomId, token }: { roomId: string; token: string }) {
       </div>
     </div>
   );
-}`}
-            </CodeBlock>
+} `}
+</CodeBlock>
           </div>
 
           <Card className="border-l-4 border-violet-400 bg-violet-50 shadow-sm">
@@ -992,7 +992,7 @@ function ChatRoom({ roomId, token }: { roomId: string; token: string }) {
               <div className="mt-4 pt-4 border-t border-amber-100">
                 <h4 className="font-semibold text-gray-700 mb-2">水平擴展架構（Socket.io + Redis）</h4>
                 <CodeBlock language="typescript">
-{`import { createAdapter } from '@socket.io/redis-adapter';
+{` import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 
 // 生產環境：用 Redis 讓多個 Node.js 實例可以互相廣播
@@ -1002,8 +1002,8 @@ const subClient = pubClient.duplicate();
 await Promise.all([pubClient.connect(), subClient.connect()]);
 
 io.adapter(createAdapter(pubClient, subClient));
-// 現在 io.to(roomId).emit() 會廣播到所有節點上的連線`}
-                </CodeBlock>
+// 現在 io.to(roomId).emit() 會廣播到所有節點上的連線 `}
+</CodeBlock>
               </div>
             </CardBody>
           </Card>

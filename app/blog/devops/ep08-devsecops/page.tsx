@@ -199,7 +199,7 @@ jobs:
               <AlertTriangle size={20} /> 實戰建議：GitHub Dependabot
             </h4>
             <p className="text-amber-800 text-sm leading-relaxed">
-              這是最簡單的 SCA 工具。在 GitHub Repo 的 Settings -> Security 中開啟它，它會自動偵測漏洞，甚至幫你開 Pull Request 自動更新套件版本。
+              這是最簡單的 SCA 工具。在 GitHub Repo 的 Settings -&gt; Security 中開啟它，它會自動偵測漏洞，甚至幫你開 Pull Request 自動更新套件版本。
             </p>
           </div>
 
@@ -257,7 +257,7 @@ jobs:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
         env:
-          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`} 
+          GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}`} 
           />
         </SectionWrapper>
 

@@ -73,8 +73,10 @@ export default function NetworkEP06() {
           <Card className="border-0 shadow-md mb-6">
             <CardBody className="p-6 bg-gray-50">
               <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">REST 微服務通訊示意圖</p>
-              <CodeBlock language="plaintext">{`Order Service  →  HTTP/1.1 POST /api/payments  →  Payment Service
-                       JSON: { "orderId": "abc-123", "amount": 1000 }`}</CodeBlock>
+              <CodeBlock language="plaintext">
+{` Order Service  →  HTTP/1.1 POST /api/payments  →  Payment Service
+                       JSON: { "orderId": "abc-123", "amount": 1000 } `}
+</CodeBlock>
             </CardBody>
           </Card>
 
@@ -151,7 +153,8 @@ export default function NetworkEP06() {
             這份 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm text-indigo-700">.proto</code> 就是雙方服務的「合約」，型別不一致會在編譯期就報錯。
           </p>
 
-          <CodeBlock language="protobuf">{`// payment.proto
+          <CodeBlock language="protobuf">
+{` // payment.proto
 syntax = "proto3";
 
 package payment;
@@ -211,7 +214,8 @@ service PaymentService {
 
   // Bidirectional Streaming（雙向流）
   rpc LivePaymentFeed(stream PaymentFilter) returns (stream PaymentRecord);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="border-0 shadow-md">
@@ -220,12 +224,14 @@ service PaymentService {
                   <span className="text-orange-500">JSON 格式</span>
                   <span className="text-gray-400 text-xs">（文字）</span>
                 </p>
-                <CodeBlock language="json">{`{
+                <CodeBlock language="json">
+{` {
   "order_id": "abc123",
   "amount": 1000.50
 }
 // 大小：38 bytes
-// key 名稱也要序列化傳輸`}</CodeBlock>
+// key 名稱也要序列化傳輸 `}
+</CodeBlock>
               </CardBody>
             </Card>
             <Card className="border-0 shadow-md">
@@ -234,10 +240,12 @@ service PaymentService {
                   <span className="text-indigo-600">Protobuf 格式</span>
                   <span className="text-gray-400 text-xs">（二進位）</span>
                 </p>
-                <CodeBlock language="plaintext">{`// 同樣資料 = ~12 bytes
+                <CodeBlock language="plaintext">
+{` // 同樣資料 = ~12 bytes
 // 用 field number (1, 2, 3...) 取代 key 名稱
 // 省去了 "order_id"、"amount" 字串本身的空間
-// 數字型別直接以二進位編碼，不轉成字串`}</CodeBlock>
+// 數字型別直接以二進位編碼，不轉成字串 `}
+</CodeBlock>
               </CardBody>
             </Card>
           </div>
@@ -274,7 +282,8 @@ service PaymentService {
             不需要額外編譯 .proto，直接在 runtime 載入即可：
           </p>
 
-          <CodeBlock language="typescript">{`// npm install @grpc/grpc-js @grpc/proto-loader
+          <CodeBlock language="typescript">
+{` // npm install @grpc/grpc-js @grpc/proto-loader
 
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
@@ -320,13 +329,13 @@ const proto = grpc.loadPackageDefinition(packageDef) as any;
 // ── 模擬資料庫操作 ──
 async function processPaymentInDB(orderId: string, amount: number, currency: string) {
   // 實際會連資料庫、打金流 API...
-  return { id: `pay-${Date.now()}` };
+  return { id: \`pay-\${Date.now()}\` };
 }
 
 async function getPaymentHistory(userId: string, limit: number): Promise<PaymentRecord[]> {
   // 模擬從資料庫撈資料
   return Array.from({ length: Math.min(limit, 10) }, (_, i) => ({
-    payment_id: \`pay-\${i}\`,
+    payment_id: \\`pay-\\${i}\\`,
     amount: (i + 1) * 100,
     created_at: new Date().toISOString(),
   }));
@@ -387,9 +396,10 @@ server.bindAsync(
       return;
     }
     server.start();
-    console.log(\`gRPC server 在 port \${port} 啟動\`);
+    console.log(\\`gRPC server 在 port \\${port} 啟動\\`);
   }
-);`}</CodeBlock>
+); `}
+</CodeBlock>
 
           <Card className="border-0 shadow-sm bg-blue-50 mt-4">
             <CardBody className="p-4">
@@ -425,7 +435,8 @@ server.bindAsync(
             原生 API 是 callback 風格，實際使用時通常 promisify 一下：
           </p>
 
-          <CodeBlock language="typescript">{`import * as grpc from '@grpc/grpc-js';
+          <CodeBlock language="typescript">
+{` import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 import { promisify } from 'util';
 import path from 'path';
@@ -476,12 +487,12 @@ function streamPaymentHistory(userId: string): Promise<PaymentRecord[]> {
     // 每收到一筆資料就觸發
     stream.on('data', (record: PaymentRecord) => {
       records.push(record);
-      console.log(\`收到第 \${records.length} 筆付款記錄\`);
+      console.log(\\`收到第 \\${records.length} 筆付款記錄\\`);
     });
 
     // server 呼叫 call.end() 後觸發
     stream.on('end', () => {
-      console.log(\`串流結束，共 \${records.length} 筆\`);
+      console.log(\\`串流結束，共 \\${records.length} 筆\\`);
       resolve(records);
     });
 
@@ -525,13 +536,14 @@ async function main() {
       { order_id: 'batch-1', amount: 100, currency: 'TWD', description: '' },
       { order_id: 'batch-2', amount: 200, currency: 'TWD', description: '' },
     ]);
-    console.log(\`批次結果：成功 \${result.success_count} 筆，失敗 \${result.fail_count} 筆\`);
+    console.log(\\`批次結果：成功 \\${result.success_count} 筆，失敗 \\${result.fail_count} 筆\\`);
   } catch (error) {
     console.error('gRPC 呼叫失敗：', error);
   }
 }
 
-main();`}</CodeBlock>
+main(); `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -592,7 +604,8 @@ main();`}</CodeBlock>
             <Card className="border-0 shadow-sm bg-slate-50">
               <CardBody className="p-5">
                 <p className="font-bold text-gray-800 mb-2">HTTP/1.1 vs HTTP/2 連線模型</p>
-                <CodeBlock language="plaintext">{`HTTP/1.1（REST）：
+                <CodeBlock language="plaintext">
+{` HTTP/1.1（REST）：
 Request A ──────────────────────────────► Response A
                     Request B ──────────────────► Response B
                                    Request C ──────────────► Response C
@@ -602,7 +615,8 @@ HTTP/2（gRPC）：
           ┌─ Stream 1: Request A ──────────────► Response A ─┐
 TCP 連線 ─┼─ Stream 2: Request B ──────────────► Response B ─┤
           └─ Stream 3: Request C ──────────────► Response C ─┘
-（三個請求共用一條 TCP 連線，真正並行）`}</CodeBlock>
+（三個請求共用一條 TCP 連線，真正並行） `}
+</CodeBlock>
               </CardBody>
             </Card>
           </div>
@@ -697,14 +711,16 @@ TCP 連線 ─┼─ Stream 2: Request B ─────────────
                 對外是 REST API（瀏覽器友好），服務與服務之間是 gRPC（效能最優）。
                 這兩者並不互斥，你可以用 API Gateway 把外部 REST 請求轉發給內部 gRPC 服務。
               </p>
-              <CodeBlock language="plaintext">{`瀏覽器 / App
+              <CodeBlock language="plaintext">
+{` 瀏覽器 / App
      │ REST (HTTPS)
      ▼
 API Gateway（Nginx / Kong）
      │ gRPC (HTTP/2)
      ├──► Order Service  :50051
      ├──► Payment Service :50052
-     └──► Inventory Service :50053`}</CodeBlock>
+     └──► Inventory Service :50053 `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.section>

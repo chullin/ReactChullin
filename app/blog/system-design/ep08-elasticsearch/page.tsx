@@ -88,7 +88,8 @@ export default function SysDesignEP08() {
             就會遇到一系列根本無法用 SQL 解決的問題。
           </p>
 
-          <CodeBlock language="sql">{`-- 用戶搜尋「JavaScript 入門」
+          <CodeBlock language="sql">
+{` -- 用戶搜尋「JavaScript 入門」
 SELECT * FROM articles WHERE title LIKE '%JavaScript 入門%';
 
 -- 問題 1：必須完全匹配「JavaScript 入門」這個字串
@@ -105,7 +106,8 @@ SELECT * FROM articles WHERE title LIKE '%JavaScript 入門%';
 
 -- 問題 4：不支援中文分詞
 -- 搜尋「機器學習」應該要能找到「機器」、「學習」分開出現的文章
--- LIKE 只能做字面匹配，完全不懂語言結構`}</CodeBlock>
+-- LIKE 只能做字面匹配，完全不懂語言結構 `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed">
             Elasticsearch 對以上每個問題都有針對性的解法，而且這些解法是在架構層面設計的，不是打補丁：
@@ -251,7 +253,8 @@ SELECT * FROM articles WHERE title LIKE '%JavaScript 入門%';
             而倒排索引反過來，建立「詞彙 → 文件列表」的映射。
           </p>
 
-          <CodeBlock language="text">{`文章 1: "React 入門教學"
+          <CodeBlock language="text">
+{` 文章 1: "React 入門教學"
 文章 2: "入門 JavaScript 指南"
 文章 3: "React 與 Vue 比較"
 
@@ -280,7 +283,8 @@ Term          │ Documents（包含此詞的文章）
    - 文章1 同時包含 "react" 和 "入門" → score 最高
    - 文章2 只有 "入門" → score 次之
    - 文章3 只有 "react" → score 最低
-4. 結果排序：文章1 > 文章3 > 文章2（依 BM25 分數）`}</CodeBlock>
+4. 結果排序：文章1 > 文章3 > 文章2（依 BM25 分數） `}
+</CodeBlock>
 
           <Card className="border-0 bg-blue-50 border-l-4 border-blue-400">
             <CardBody className="p-5">
@@ -314,7 +318,8 @@ Term          │ Documents（包含此詞的文章）
             避免型別推斷錯誤導致後續無法修改（Mapping 一旦建立就不能修改，只能 reindex）。
           </p>
 
-          <CodeBlock language="javascript">{`// PUT /articles
+          <CodeBlock language="javascript">
+{` // PUT /articles
 // 創建 Index 並定義 Mapping（相當於 CREATE TABLE）
 {
   "mappings": {
@@ -400,7 +405,8 @@ Term          │ Documents（包含此詞的文章）
       }
     }
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 bg-amber-50">
             <CardBody className="p-5">
@@ -453,7 +459,8 @@ Term          │ Documents（包含此詞的文章）
             就能應對 90% 的搜尋需求。
           </p>
 
-          <CodeBlock language="javascript">{`// ─── 1. Match Query（全文搜尋，最常用）──────────────────────────────
+          <CodeBlock language="javascript">
+{` // ─── 1. Match Query（全文搜尋，最常用）──────────────────────────────
 // 先把 query 字串分詞，再搜尋包含這些詞的文件
 GET /articles/_search
 {
@@ -477,9 +484,11 @@ GET /articles/_search
       }
     }
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
-          <CodeBlock language="javascript">{`// ─── 2. Multi-match Query（搜尋多個欄位）──────────────────────────
+          <CodeBlock language="javascript">
+{` // ─── 2. Multi-match Query（搜尋多個欄位）──────────────────────────
 // 同時在 title、content、tags 中搜尋，並設定不同欄位的相關度權重
 {
   "query": {
@@ -496,9 +505,11 @@ GET /articles/_search
       "fuzziness": "AUTO"           // 模糊搜尋（容錯打字錯誤）
     }
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
-          <CodeBlock language="javascript">{`// ─── 3. Bool Query（組合查詢）— 最強大，實際專案用最多 ──────────
+          <CodeBlock language="javascript">
+{` // ─── 3. Bool Query（組合查詢）— 最強大，實際專案用最多 ──────────
 {
   "query": {
     "bool": {
@@ -555,9 +566,11 @@ GET /articles/_search
   // 分頁
   "from": 0,
   "size": 20
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
-          <CodeBlock language="javascript">{`// ─── 4. 高亮顯示（Highlight）─────────────────────────────────────
+          <CodeBlock language="javascript">
+{` // ─── 4. 高亮顯示（Highlight）─────────────────────────────────────
 // 在搜尋結果中標記匹配到的關鍵詞，顯示給用戶
 {
   "query": {
@@ -585,7 +598,8 @@ GET /articles/_search
 //       "...useEffect 是 <mark>React</mark> 最常用的 <mark>hooks</mark> 之一..."
 //     ]
 //   }
-// }`}</CodeBlock>
+// } `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -608,7 +622,8 @@ GET /articles/_search
             Log 分析等需求。
           </p>
 
-          <CodeBlock language="javascript">{`// ─── 統計每個 tag 的文章數 + 平均觀看數 ────────────────────────
+          <CodeBlock language="javascript">
+{` // ─── 統計每個 tag 的文章數 + 平均觀看數 ────────────────────────
 GET /articles/_search
 {
   // size: 0 表示只要聚合結果，不要回傳文章本身
@@ -677,7 +692,8 @@ GET /articles/_search
 //       ]
 //     }
 //   }
-// }`}</CodeBlock>
+// } `}
+</CodeBlock>
 
           <Card className="border-0 bg-slate-50">
             <CardBody className="p-5">
@@ -737,7 +753,8 @@ GET /articles/_search
             API 設計與 REST API 結構一致，上手非常快。
           </p>
 
-          <CodeBlock language="typescript">{`// npm install @elastic/elasticsearch
+          <CodeBlock language="typescript">
+{` // npm install @elastic/elasticsearch
 import { Client } from '@elastic/elasticsearch';
 
 const client = new Client({
@@ -813,9 +830,11 @@ async function searchArticles(options: SearchOptions) {
       highlights: hit.highlight,
     })),
   };
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
-          <CodeBlock language="typescript">{`// ─── 寫入 / 更新文章到 ES ─────────────────────────────────────────
+          <CodeBlock language="typescript">
+{` // ─── 寫入 / 更新文章到 ES ─────────────────────────────────────────
 interface Article {
   id:          string;
   title:       string;
@@ -882,7 +901,8 @@ async function createArticle(data: CreateArticleDto) {
 // 使用 Debezium 監聽 PostgreSQL WAL（Write-Ahead Log）
 // 每次 INSERT/UPDATE/DELETE 都會自動觸發 Kafka 事件
 // Kafka Consumer 消費事件並同步到 Elasticsearch
-// 優點：解耦、可靠、最終一致性保證`}</CodeBlock>
+// 優點：解耦、可靠、最終一致性保證 `}
+</CodeBlock>
 
           <Card className="border-0 bg-gradient-to-br from-amber-800 to-orange-800 text-white">
             <CardBody className="p-6">

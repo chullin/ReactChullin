@@ -173,7 +173,8 @@ export default function DevOpsEP03() {
             下面是一個 Web 應用 + 資料庫的基本結構，理解這個就掌握了 80% 的核心概念。
           </p>
 
-          <CodeBlock language="yaml">{`version: '3.8'  # Compose 規格版本，建議用 3.8
+          <CodeBlock language="yaml">
+{` version: '3.8'  # Compose 規格版本，建議用 3.8
 
 services:       # 你的應用程式組件，每個 service = 一個 Container
   web:          # 服務名稱（可自定義，會成為容器間互連的 hostname）
@@ -191,7 +192,8 @@ services:       # 你的應用程式組件，每個 service = 一個 Container
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: myapp
     ports:
-      - "5432:5432"     # 讓本機的 DB GUI 工具（TablePlus 等）可以連入`}</CodeBlock>
+      - "5432:5432"     # 讓本機的 DB GUI 工具（TablePlus 等）可以連入 `}
+</CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">三個核心概念</h3>
 
@@ -269,7 +271,8 @@ services:       # 你的應用程式組件，每個 service = 一個 Container
             以下是一個 Next.js + FastAPI + PostgreSQL + Redis 的完整範例，附上每個關鍵設定的說明。
           </p>
 
-          <CodeBlock language="yaml">{`version: '3.8'
+          <CodeBlock language="yaml">
+{` version: '3.8'
 
 services:
 
@@ -342,7 +345,8 @@ services:
 # （要清除資料：docker compose down -v）
 volumes:
   postgres_data:
-  # redis_data:   # 如果 Redis 也要持久化就加這行`}</CodeBlock>
+  # redis_data:   # 如果 Redis 也要持久化就加這行 `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md mt-6 bg-blue-50">
             <CardBody className="p-6">
@@ -387,13 +391,15 @@ volumes:
             把本機的目錄「掛進」容器，本機改動的檔案會即時同步到容器裡（反之亦然）。
             開發時最常用，讓你不需要重新 build image 就能看到改動效果。
           </p>
-          <CodeBlock language="yaml">{`services:
+          <CodeBlock language="yaml">
+{` services:
   frontend:
     volumes:
       - ./frontend:/app       # 本機 ./frontend 掛到容器的 /app
       # 格式：本機路徑:容器路徑
       # 本機改動 src/page.tsx → 容器內 /app/src/page.tsx 即時更新
-      # Next.js / Vite 的 hot reload 就靠這個`}</CodeBlock>
+      # Next.js / Vite 的 hot reload 就靠這個 `}
+</CodeBlock>
           <Card className="border-0 shadow-md mt-4 bg-blue-50">
             <CardBody className="p-4">
               <p className="text-blue-700 text-sm">
@@ -413,7 +419,8 @@ volumes:
             最常用於資料庫資料 — 你刪掉 Container，資料還在；下次 <code className="bg-gray-100 px-1 rounded">docker compose up</code>，
             資料庫的資料自動恢復。
           </p>
-          <CodeBlock language="yaml">{`services:
+          <CodeBlock language="yaml">
+{` services:
   db:
     image: postgres:14-alpine
     volumes:
@@ -430,7 +437,8 @@ volumes:
 # docker compose down       → Container 刪除，Volume 保留（資料安全）
 # docker compose down -v    → Container 和 Volume 都刪除（清空資料庫）
 # docker volume ls          → 查看所有 Volume
-# docker volume inspect postgres_data → 查看 Volume 詳細資訊`}</CodeBlock>
+# docker volume inspect postgres_data → 查看 Volume 詳細資訊 `}
+</CodeBlock>
 
           {/* 匿名 Volume */}
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
@@ -442,7 +450,8 @@ volumes:
             本機的<code className="bg-gray-100 px-1 rounded mx-1">node_modules</code>也會被掛進去，
             可能蓋掉容器內正確安裝的<code className="bg-gray-100 px-1 rounded mx-1">node_modules</code>。
           </p>
-          <CodeBlock language="yaml">{`services:
+          <CodeBlock language="yaml">
+{` services:
   frontend:
     volumes:
       - ./frontend:/app          # Bind Mount：把整個 frontend 目錄掛進去
@@ -457,7 +466,8 @@ volumes:
 # 加上 - /app/node_modules 之後：
 # Docker 會用匿名 Volume 「佔住」這個路徑
 # Bind Mount 就無法覆蓋到這個目錄了
-# 容器在 RUN npm install 時安裝的 Linux binary 得以保留`}</CodeBlock>
+# 容器在 RUN npm install 時安裝的 Linux binary 得以保留 `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md mt-6">
             <CardBody className="p-6">
@@ -516,7 +526,8 @@ volumes:
             日常開發中你 90% 的時間只會用到下面這些指令。遇到問題時，先看 logs，再進容器除錯。
           </p>
 
-          <CodeBlock language="bash">{`# ── 啟動 & 停止 ─────────────────────────────────────────────────
+          <CodeBlock language="bash">
+{` # ── 啟動 & 停止 ─────────────────────────────────────────────────
 
 # 啟動所有服務（背景執行，推薦）
 docker compose up -d
@@ -573,7 +584,8 @@ docker compose images
 docker compose restart backend
 
 # 查看服務的資源使用量（CPU、Memory）
-docker stats`}</CodeBlock>
+docker stats `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8">
             <CardBody className="p-6">
@@ -644,13 +656,14 @@ docker stats`}</CodeBlock>
             不暴露不必要的 port。用 Override 機制，讓同一套 Compose 設定適應不同環境，
             不需要維護兩份完全不同的 YAML。
           </p>
-          <CodeBlock language="yaml">{`# docker-compose.yml（基本設定，開發/生產共用）
+          <CodeBlock language="yaml">
+{` # docker-compose.yml（基本設定，開發/生產共用）
 version: '3.8'
 services:
   backend:
     image: myapp/backend:latest
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=\${DATABASE_URL}
 
   db:
     image: postgres:14-alpine
@@ -658,9 +671,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:`}</CodeBlock>
+  postgres_data: `}
+</CodeBlock>
 
-          <CodeBlock language="yaml">{`# docker-compose.override.yml（開發覆蓋，執行 "docker compose up" 時自動載入）
+          <CodeBlock language="yaml">
+{` # docker-compose.override.yml（開發覆蓋，執行 "docker compose up" 時自動載入）
 version: '3.8'
 services:
   backend:
@@ -674,25 +689,30 @@ services:
 
   db:
     ports:
-      - "5432:5432"             # 開發時讓 GUI 工具可以連`}</CodeBlock>
+      - "5432:5432"             # 開發時讓 GUI 工具可以連 `}
+</CodeBlock>
 
-          <CodeBlock language="yaml">{`# docker-compose.prod.yml（生產設定）
+          <CodeBlock language="yaml">
+{` # docker-compose.prod.yml（生產設定）
 version: '3.8'
 services:
   backend:
-    image: myapp/backend:${GIT_SHA}   # 生產用固定版本的 image
+    image: myapp/backend:\${GIT_SHA}   # 生產用固定版本的 image
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
-    restart: always              # 容器崩潰自動重啟`}</CodeBlock>
+    restart: always              # 容器崩潰自動重啟 `}
+</CodeBlock>
 
-          <CodeBlock language="bash">{`# 開發：自動合併 docker-compose.yml + docker-compose.override.yml
+          <CodeBlock language="bash">
+{` # 開發：自動合併 docker-compose.yml + docker-compose.override.yml
 docker compose up -d
 
 # 生產：手動指定合併哪些檔案
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`}</CodeBlock>
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d `}
+</CodeBlock>
 
           {/* Tip 2: healthcheck */}
           <h3 className="text-xl font-bold text-gray-800 mt-10 mb-4 flex items-center gap-2">
@@ -704,7 +724,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`}</CodeBlo
             PostgreSQL Container 啟動後還需要幾秒初始化資料庫，在這段時間內如果 backend 試圖連線，就會失敗崩潰。
             搭配 healthcheck 可以確保「服務真的 ready 了才啟動下一個」。
           </p>
-          <CodeBlock language="yaml">{`services:
+          <CodeBlock language="yaml">
+{` services:
   db:
     image: postgres:14-alpine
     environment:
@@ -729,7 +750,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`}</CodeBlo
 # PostgreSQL：pg_isready -U postgres
 # MySQL：mysqladmin ping -h localhost
 # Redis：redis-cli ping
-# HTTP 服務：curl -f http://localhost:8080/health || exit 1`}</CodeBlock>
+# HTTP 服務：curl -f http://localhost:8080/health || exit 1 `}
+</CodeBlock>
 
           {/* Tip 3: Multi-stage Dockerfile */}
           <h3 className="text-xl font-bold text-gray-800 mt-10 mb-4 flex items-center gap-2">
@@ -741,7 +763,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`}</CodeBlo
             生產 Dockerfile 著重體積最小化、安全性（移除 devDependencies、multi-stage build）。
             兩者應該分開維護，不要用同一個 Dockerfile 塞一堆條件判斷。
           </p>
-          <CodeBlock language="dockerfile">{`# Dockerfile.dev（開發用，含 hot reload，約 400–600 MB）
+          <CodeBlock language="dockerfile">
+{` # Dockerfile.dev（開發用，含 hot reload，約 400–600 MB）
 FROM node:18-alpine
 
 # 設定工作目錄
@@ -755,9 +778,11 @@ RUN npm install   # 安裝包含 devDependencies 的完整套件
 # 不需要 COPY . .（因為用 Bind Mount 即時同步）
 
 EXPOSE 3000
-CMD ["npm", "run", "dev"]   # 帶 hot reload 的開發指令`}</CodeBlock>
+CMD ["npm", "run", "dev"]   # 帶 hot reload 的開發指令 `}
+</CodeBlock>
 
-          <CodeBlock language="dockerfile">{`# Dockerfile（生產用，多階段 build，約 50–150 MB）
+          <CodeBlock language="dockerfile">
+{` # Dockerfile（生產用，多階段 build，約 50–150 MB）
 
 # ── 第一階段：建立 ────────────────────────────────────────────
 FROM node:18-alpine AS builder
@@ -783,7 +808,8 @@ COPY --from=builder /app/public ./public
 
 USER nextjs    # 以非 root 用戶執行
 EXPOSE 3000
-CMD ["node", "server.js"]`}</CodeBlock>
+CMD ["node", "server.js"] `}
+</CodeBlock>
 
           {/* 後續主題 */}
           <Card className="border-0 shadow-lg mt-10 bg-gradient-to-r from-blue-900 to-cyan-800 text-white">

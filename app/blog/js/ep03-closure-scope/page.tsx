@@ -245,12 +245,12 @@ counter(); // 3`}
   return {
     deposit: (amount) => {
       balance += amount;
-      console.log(\`存入 \${amount}，餘額 \${balance}\`);
+      console.log(\\`存入 \\${amount}，餘額 \\${balance}\\`);
     },
     withdraw: (amount) => {
       if (amount > balance) return console.error("餘額不足");
       balance -= amount;
-      console.log(\`取出 \${amount}，餘額 \${balance}\`);
+      console.log(\\`取出 \\${amount}，餘額 \\${balance}\\`);
     },
     getBalance: () => balance
   };

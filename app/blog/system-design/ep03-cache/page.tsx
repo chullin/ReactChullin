@@ -223,7 +223,7 @@ export default function SystemDesignEP03() {
                   language="typescript"
                   filename="Cache-aside 實作"
                   code={`async function getUserById(userId: string) {
-  const cacheKey = \`user:\${userId}\`;
+  const cacheKey = \\`user:\\${userId}\\`;
 
   // 1. 先查 Redis
   const cached = await redis.get(cacheKey);
@@ -243,7 +243,7 @@ export default function SystemDesignEP03() {
 // 更新時：刪除快取（讓下次讀取重新從 DB 載入）
 async function updateUser(userId: string, data: Partial<User>) {
   await db.query('UPDATE users SET ... WHERE id = $1', [userId]);
-  await redis.del(\`user:\${userId}\`);  // Cache Invalidation
+  await redis.del(\\`user:\\${userId}\\`);  // Cache Invalidation
 }`}
                 />
 
@@ -288,7 +288,7 @@ async function updateUser(userId: string, data: Partial<User>) {
   // Step 2：DB 成功後才更新 Redis
   // 若 Redis 失敗，允許 Cache 暫時過期，TTL 到期後自動重建（可接受短暫不一致）
   try {
-    await redis.setex(\`user:\${userId}\`, 3600, JSON.stringify(updatedUser));
+    await redis.setex(\\`user:\\${userId}\\`, 3600, JSON.stringify(updatedUser));
   } catch {
     console.error('Cache update failed, will self-heal on next read');
   }
@@ -428,10 +428,10 @@ async function updateUser(userId: string, data: Partial<User>) {
                   filename=""
                   code={`// 更新用戶後刪除快取
 await db.updateUser(userId, data);
-await redis.del(\`user:\${userId}\`);
+await redis.del(\\`user:\\${userId}\\`);
 
 // 批次刪除（如更新分類下所有商品）
-const keys = await redis.keys(\`product:cat:\${catId}:*\`);
+const keys = await redis.keys(\\`product:cat:\\${catId}:*\\`);
 if (keys.length > 0) await redis.del(...keys);`}
                 />
               </CardBody>

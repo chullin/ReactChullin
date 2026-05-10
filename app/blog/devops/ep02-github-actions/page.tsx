@@ -323,7 +323,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: \${{ matrix.node-version }}
+          node-version: \\${{ matrix.node-version }}
           cache: 'npm'  # 快取 node_modules，加速後續執行
 
       # 3. 安裝依賴
@@ -347,7 +347,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()  # 就算測試失敗也上傳
         with:
-          token: \${{ secrets.CODECOV_TOKEN }}`}
+          token: \\${{ secrets.CODECOV_TOKEN }}`}
           />
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -446,24 +446,24 @@ jobs:
 
       # Pull Vercel 專案設定
       - name: Pull Vercel Environment
-        run: vercel pull --yes --environment=production --token=\${{ secrets.VERCEL_TOKEN }}
+        run: vercel pull --yes --environment=production --token=\\${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: \\${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: \\${{ secrets.VERCEL_PROJECT_ID }}
 
       # Build
       - name: Build
-        run: vercel build --prod --token=\${{ secrets.VERCEL_TOKEN }}
+        run: vercel build --prod --token=\\${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: \\${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: \\${{ secrets.VERCEL_PROJECT_ID }}
 
       # Deploy 預建好的產物
       - name: Deploy to Production
-        run: vercel deploy --prebuilt --prod --token=\${{ secrets.VERCEL_TOKEN }}
+        run: vercel deploy --prebuilt --prod --token=\\${{ secrets.VERCEL_TOKEN }}
         env:
-          VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}`}
+          VERCEL_ORG_ID: \\${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: \\${{ secrets.VERCEL_PROJECT_ID }}`}
           />
 
           <Card className="border-0 shadow-md bg-amber-50 border-l-4 border-amber-500 mt-6">
@@ -519,13 +519,13 @@ jobs:
       - name: Deploy Preview
         id: deploy
         run: |
-          vercel pull --yes --environment=preview --token=\${{ secrets.VERCEL_TOKEN }}
-          vercel build --token=\${{ secrets.VERCEL_TOKEN }}
-          PREVIEW_URL=\$(vercel deploy --prebuilt --token=\${{ secrets.VERCEL_TOKEN }})
+          vercel pull --yes --environment=preview --token=\\${{ secrets.VERCEL_TOKEN }}
+          vercel build --token=\\${{ secrets.VERCEL_TOKEN }}
+          PREVIEW_URL=\$(vercel deploy --prebuilt --token=\\${{ secrets.VERCEL_TOKEN }})
           echo "url=\$PREVIEW_URL" >> \$GITHUB_OUTPUT
         env:
-          VERCEL_ORG_ID: \${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: \\${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: \\${{ secrets.VERCEL_PROJECT_ID }}
 
       # 把 Preview URL 自動留言在 PR 上
       - name: Comment Preview URL on PR
@@ -536,7 +536,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: \`## 🚀 Preview 環境已部署\\n\\n**URL**: \${{ steps.deploy.outputs.url }}\\n\\n> 此 Preview 會在 PR 關閉後自動刪除\`
+              body: \\`## 🚀 Preview 環境已部署\\n\\n**URL**: \\${{ steps.deploy.outputs.url }}\\n\\n> 此 Preview 會在 PR 關閉後自動刪除\\`
             })`}
           />
 
@@ -574,7 +574,7 @@ jobs:
                   filename=""
                   code={`# 加在 jobs: 同層
 concurrency:
-  group: \${{ github.workflow }}-\${{ github.ref }}
+  group: \\${{ github.workflow }}-\\${{ github.ref }}
   cancel-in-progress: true  # 取消同 group 的舊 run`}
                 />
               </CardBody>
@@ -610,7 +610,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: \${{ inputs.node-version }}
+          node-version: \\${{ inputs.node-version }}
           cache: 'npm'
       - run: npm ci && npm run lint && npm test -- --watchAll=false`}
                 />

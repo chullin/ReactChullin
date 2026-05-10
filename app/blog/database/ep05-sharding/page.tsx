@@ -347,14 +347,14 @@ export async function createUserWithCache(data: CreateUserInput) {
   const user = await primaryDB.user.create({ data });
 
   // 2. 立刻寫入 Redis（TTL 60 秒，足夠 Replica 同步）
-  await redis.setex(\`user:\${user.id}\`, 60, JSON.stringify(user));
+  await redis.setex(\\`user:\\${user.id}\\`, 60, JSON.stringify(user));
 
   return user;
 }
 
 export async function getUserByIdWithCache(id: string) {
   // 1. 先查 Cache
-  const cached = await redis.get(\`user:\${id}\`);
+  const cached = await redis.get(\\`user:\\${id}\\`);
   if (cached) return JSON.parse(cached);
 
   // 2. Cache miss → 讀 Replica（此時 Lag 可能已消除）

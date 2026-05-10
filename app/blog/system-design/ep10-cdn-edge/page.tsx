@@ -79,7 +79,8 @@ export default function SystemDesignEP10() {
                 <AlertTriangle size={18} className="text-red-600" />
                 沒有 CDN：台灣用戶訪問美國伺服器
               </h3>
-              <CodeBlock language="text">{`台灣用戶（高雄）
+              <CodeBlock language="text">
+{` 台灣用戶（高雄）
     ↓ 發出 HTTP 請求
     ↓ 跨越太平洋光纖（物理延遲：約 60-80ms 單程）
 美國東岸 Origin Server（紐約）
@@ -92,7 +93,8 @@ TCP 單次往返（RTT）：150-200ms
 總延遲：300-500ms 以上
 
 如果頁面有 20 個資源（HTML + CSS + JS + 圖片）：
-最壞情況：300ms × 20 = 6 秒才能載入完畢`}</CodeBlock>
+最壞情況：300ms × 20 = 6 秒才能載入完畢 `}
+</CodeBlock>
             </CardBody>
           </Card>
 
@@ -102,7 +104,8 @@ TCP 單次往返（RTT）：150-200ms
                 <CheckCircle size={18} className="text-green-600" />
                 有 CDN：資料近在咫尺
               </h3>
-              <CodeBlock language="text">{`台灣用戶（高雄）
+              <CodeBlock language="text">
+{` 台灣用戶（高雄）
     ↓ DNS 解析：自動導向最近的 CDN 節點
     ↓ 連接台灣或亞洲的 CDN PoP（Point of Presence）
 台灣 CDN PoP（延遲：5-20ms）
@@ -113,7 +116,8 @@ RTT：10-40ms（縮短 10 倍以上）
 頁面 20 個資源：因為 HTTP/2 多路複用，
 快取命中的資源幾乎同時回傳
 
-使用者感受：頁面「秒開」`}</CodeBlock>
+使用者感受：頁面「秒開」 `}
+</CodeBlock>
             </CardBody>
           </Card>
 
@@ -168,7 +172,8 @@ RTT：10-40ms（縮短 10 倍以上）
 
           <h3 className="text-lg font-bold text-gray-800 mb-4">三種快取狀態：Hit、Miss、Stale</h3>
 
-          <CodeBlock language="text">{`第一個用戶（Cache Miss）：
+          <CodeBlock language="text">
+{` 第一個用戶（Cache Miss）：
 User → CDN PoP [找不到快取] → Origin Server [拿資源]
      → CDN PoP [儲存副本，設定過期時間]
      → User
@@ -183,7 +188,8 @@ User → CDN PoP [快取存在但已過期]
      → Origin Server [重新驗證，詢問資源是否有變更]
      → 如果沒變更：304 Not Modified，CDN 更新過期時間，回傳快取內容
      → 如果有變更：200 OK，CDN 更新快取副本
-     → User`}</CodeBlock>
+     → User `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-8">HTTP Cache Headers：告訴 CDN 如何快取</h3>
 
@@ -192,7 +198,8 @@ User → CDN PoP [快取存在但已過期]
             最重要的 Header 是 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">Cache-Control</code>。
           </p>
 
-          <CodeBlock language="text">{`# ── 場景 1：靜態資源（JS、CSS、圖片）── 永久快取
+          <CodeBlock language="text">
+{` # ── 場景 1：靜態資源（JS、CSS、圖片）── 永久快取
 Cache-Control: public, max-age=31536000, immutable
 # public    → CDN（共享快取）和瀏覽器都可以快取
 # max-age   → 快取有效期（秒），31536000 秒 = 1 年
@@ -223,7 +230,8 @@ ETag: "33a64df551425fcc55e4d42a148795d9f25f89d"
 
 Last-Modified: Thu, 08 May 2026 00:00:00 GMT
 # 類似 ETag，但以時間作為驗證依據
-# 精度較低（秒級），推薦優先使用 ETag`}</CodeBlock>
+# 精度較低（秒級），推薦優先使用 ETag `}
+</CodeBlock>
 
           <Card className="border border-blue-200 bg-blue-50 mt-6">
             <CardBody className="p-5">
@@ -274,7 +282,8 @@ Last-Modified: Thu, 08 May 2026 00:00:00 GMT
             下次有用戶請求時，CDN 會重新向 Origin 拉取最新內容。
           </p>
 
-          <CodeBlock language="bash">{`# Cloudflare Cache Purge API
+          <CodeBlock language="bash">
+{` # Cloudflare Cache Purge API
 curl -X POST \
   "https://api.cloudflare.com/client/v4/zones/{zone_id}/purge_cache" \
   -H "Authorization: Bearer {api_token}" \
@@ -288,7 +297,8 @@ curl -X POST \
 
 # 回應：
 # { "success": true, "result": { "id": "9a7806061c..." } }
-# 通常在幾秒內生效，全球 300+ 個節點同步清除`}</CodeBlock>
+# 通常在幾秒內生效，全球 300+ 個節點同步清除 `}
+</CodeBlock>
 
           <p className="text-gray-700 leading-relaxed mb-4 mt-4">
             <strong>限制：</strong>你必須知道所有受影響的 URL。如果一篇文章同時出現在首頁、分類頁、標籤頁，
@@ -302,7 +312,8 @@ curl -X POST \
             舊 URL 的快取會自然過期，新 URL 會建立新的快取。
           </p>
 
-          <CodeBlock language="html">{`<!-- 方式一：Query String 版本號（不推薦） -->
+          <CodeBlock language="html">
+{` <!-- 方式一：Query String 版本號（不推薦） -->
 <!-- 有些 CDN 會忽略 Query String，不保證快取更新 -->
 <link rel="stylesheet" href="/styles.css?v=2.1.0">
 <script src="/app.js?v=a8f3c2d"></script>
@@ -314,7 +325,8 @@ curl -X POST \
 <link rel="stylesheet" href="/_next/static/css/3f8a9b2c.css">
 
 <!-- 因為 URL 變了，可以安心設定 1 年的永久快取 -->
-<!-- Cache-Control: public, max-age=31536000, immutable -->`}</CodeBlock>
+<!-- Cache-Control: public, max-age=31536000, immutable --> `}
+</CodeBlock>
 
           <p className="text-gray-700 leading-relaxed mb-4 mt-4">
             <strong>優點：</strong>不需要呼叫 CDN API，完全由 Build 工具自動處理，零運維成本。
@@ -329,7 +341,8 @@ curl -X POST \
             Cloudflare、Fastly 都支援這個功能。
           </p>
 
-          <CodeBlock language="javascript">{`// ── 步驟 1：API 回應時加上 Cache-Tag Header ──
+          <CodeBlock language="javascript">
+{` // ── 步驟 1：API 回應時加上 Cache-Tag Header ──
 // app/api/articles/[id]/route.ts
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   const article = await db.article.findUnique({ where: { id: params.id } });
@@ -340,9 +353,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
       // 給這個響應打上標籤：文章 ID、作者 ID、分類 ID
       // Cloudflare 使用 Cache-Tag，Fastly 使用 Surrogate-Key
       'Cache-Tag': [
-        \`article:\${params.id}\`,
-        \`author:\${article.authorId}\`,
-        \`category:\${article.categoryId}\`,
+        \\`article:\\${params.id}\\`,
+        \\`author:\\${article.authorId}\\`,
+        \\`category:\\${article.categoryId}\\`,
       ].join(','),
     },
   });
@@ -352,15 +365,15 @@ export async function GET(request: Request, { params }: { params: { id: string }
 async function onArticleUpdate(articleId: string) {
   // 清除這篇文章的所有快取（文章頁、API 響應、可能出現在的任何地方）
   await fetch(
-    \`https://api.cloudflare.com/client/v4/zones/\${process.env.CF_ZONE_ID}/purge_cache\`,
+    \\`https://api.cloudflare.com/client/v4/zones/\\${process.env.CF_ZONE_ID}/purge_cache\\`,
     {
       method: 'POST',
       headers: {
-        'Authorization': \`Bearer \${process.env.CF_API_TOKEN}\`,
+        'Authorization': \\`Bearer \\${process.env.CF_API_TOKEN}\\`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        tags: [\`article:\${articleId}\`],
+        tags: [\\`article:\\${articleId}\\`],
       }),
     }
   );
@@ -369,7 +382,8 @@ async function onArticleUpdate(articleId: string) {
 
 // ── 實際觸發時機 ──
 // CMS webhook → API endpoint → onArticleUpdate()
-// 或在 CMS 操作完成後，由 Next.js Server Action 呼叫`}</CodeBlock>
+// 或在 CMS 操作完成後，由 Next.js Server Action 呼叫 `}
+</CodeBlock>
 
           <Card className="border border-indigo-200 bg-indigo-50 mt-6">
             <CardBody className="p-5">
@@ -407,7 +421,8 @@ async function onArticleUpdate(articleId: string) {
             在靠近用戶的地方完成邏輯處理，不需要再跑一趟 Origin。
           </p>
 
-          <CodeBlock language="text">{`傳統 CDN 架構（靜態快取）：
+          <CodeBlock language="text">
+{` 傳統 CDN 架構（靜態快取）：
                        ┌─────────────────────┐
 Request → CDN PoP ──→ │  Origin Server       │
           ↑只能快取    │  （所有邏輯在這裡）   │
@@ -422,7 +437,8 @@ Request → │  CDN PoP（Edge Runtime）                │ ──→ Origin S
           │  ✓ 地理重定向                             │
           │  ✓ 快取邏輯                              │
           └─────────────────────────────────────────┘
-          延遲：10-20ms（就在用戶旁邊）`}</CodeBlock>
+          延遲：10-20ms（就在用戶旁邊） `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-8">Cloudflare Workers 實際範例</h3>
 
@@ -433,7 +449,8 @@ Request → │  CDN PoP（Edge Runtime）                │ ──→ Origin S
             <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">fetch</code>）撰寫。
           </p>
 
-          <CodeBlock language="javascript">{`// wrangler.toml 部署設定（Cloudflare Workers）
+          <CodeBlock language="javascript">
+{` // wrangler.toml 部署設定（Cloudflare Workers）
 // name = "my-edge-worker"
 // main = "src/worker.js"
 // compatibility_date = "2026-01-01"
@@ -466,7 +483,7 @@ export default {
       if (!cookie.includes('ab_group=')) {
         newResponse.headers.append(
           'Set-Cookie',
-          \`ab_group=\${group}; Path=/; Max-Age=2592000; SameSite=Lax\`
+          \\`ab_group=\\${group}; Path=/; Max-Age=2592000; SameSite=Lax\\`
         );
       }
       newResponse.headers.set('X-AB-Group', group);
@@ -496,9 +513,11 @@ export default {
 
     return secureResponse;
   },
-};`}</CodeBlock>
+}; `}
+</CodeBlock>
 
-          <CodeBlock language="javascript">{`// ── 使用案例 3：邊緣地理重定向 ──
+          <CodeBlock language="javascript">
+{` // ── 使用案例 3：邊緣地理重定向 ──
 export default {
   async fetch(request, env) {
     const country = request.cf?.country ?? 'US'; // Cloudflare 自動注入地理資訊
@@ -514,12 +533,12 @@ export default {
         'GB': '/en',
       };
       const targetLang = langMap[country] ?? '/en';
-      return Response.redirect(\`\${url.origin}\${targetLang}\`, 302);
+      return Response.redirect(\\`\\${url.origin}\\${targetLang}\\`, 302);
     }
 
     // ── 使用案例 4：邊緣 Rate Limiting（簡易版）──
     const clientIP = request.headers.get('CF-Connecting-IP') ?? 'unknown';
-    const rateLimitKey = \`rate:\${clientIP}:\${Math.floor(Date.now() / 60000)}\`; // 每分鐘
+    const rateLimitKey = \\`rate:\\${clientIP}:\\${Math.floor(Date.now() / 60000)}\\`; // 每分鐘
 
     // 使用 Cloudflare KV 儲存計數器
     const current = parseInt(await env.KV.get(rateLimitKey) ?? '0');
@@ -534,7 +553,8 @@ export default {
 
     return fetch(request);
   },
-};`}</CodeBlock>
+}; `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -559,7 +579,8 @@ export default {
 
           <h3 className="text-lg font-bold text-gray-800 mb-4">next.config.ts 設定</h3>
 
-          <CodeBlock language="typescript">{`// next.config.ts
+          <CodeBlock language="typescript">
+{` // next.config.ts
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -618,11 +639,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;`}</CodeBlock>
+export default nextConfig; `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-8">API Route 的快取設定</h3>
 
-          <CodeBlock language="typescript">{`// app/api/articles/route.ts
+          <CodeBlock language="typescript">
+{` // app/api/articles/route.ts
 // Next.js App Router 的 Route Handler
 
 export async function GET(request: Request) {
@@ -665,7 +688,7 @@ export async function GET(
   return Response.json(article, {
     headers: {
       'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-      'Cache-Tag': [\`article:\${params.id}\`, \`author:\${article.authorId}\`].join(','),
+      'Cache-Tag': [\\`article:\\${params.id}\\`, \\`author:\\${article.authorId}\\`].join(','),
     },
   });
 }
@@ -684,19 +707,20 @@ export async function PATCH(
 
   // 文章更新後，清除 CDN 快取
   await fetch(
-    \`https://api.cloudflare.com/client/v4/zones/\${process.env.CF_ZONE_ID}/purge_cache\`,
+    \\`https://api.cloudflare.com/client/v4/zones/\\${process.env.CF_ZONE_ID}/purge_cache\\`,
     {
       method: 'POST',
-      headers: { 'Authorization': \`Bearer \${process.env.CF_API_TOKEN}\` },
-      body: JSON.stringify({ tags: [\`article:\${params.id}\`] }),
+      headers: { 'Authorization': \\`Bearer \\${process.env.CF_API_TOKEN}\\` },
+      body: JSON.stringify({ tags: [\\`article:\\${params.id}\\`] }),
     }
   );
 
   // 同時觸發 Next.js 的 On-Demand Revalidation
-  revalidateTag(\`article-\${params.id}\`);
+  revalidateTag(\\`article-\\${params.id}\\`);
 
   return Response.json(updated);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -841,7 +865,8 @@ export async function PATCH(
             <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">curl</code> 查看 Response Headers 是最快的方式。
           </p>
 
-          <CodeBlock language="bash">{`# 用 curl 的 -I 參數只取 Response Headers（不下載 Body）
+          <CodeBlock language="bash">
+{` # 用 curl 的 -I 參數只取 Response Headers（不下載 Body）
 curl -I https://example.com/image.jpg
 
 # ── Cloudflare 的 CDN 狀態 Header ──
@@ -877,7 +902,8 @@ done
 
 # ── 快取命中率計算 ──
 # 目標：靜態資源命中率 > 99%，API 命中率 > 80%
-# 可在 Cloudflare Dashboard 的 Analytics 頁面直接查看`}</CodeBlock>
+# 可在 Cloudflare Dashboard 的 Analytics 頁面直接查看 `}
+</CodeBlock>
 
           <Card className="border border-green-200 bg-green-50 mt-6">
             <CardBody className="p-5">

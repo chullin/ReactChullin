@@ -579,7 +579,7 @@ function BookCard({ book }) {     // ← 參數是物件，下一篇會教解構
     <div style={{ border: '1px solid #eee', padding: '16px', margin: '8px', borderRadius: '8px' }}>
       <h3 style={{ margin: 0 }}>{book.title}</h3>
       <p style={{ color: '#666' }}>作者：{book.author}</p>
-      <p style={{ fontWeight: 'bold', color: '#e55' }}>NT${book.price}</p>
+      <p style={{ fontWeight: 'bold', color: '#e55' }}>NT\${book.price}</p>
     </div>
   );
 }

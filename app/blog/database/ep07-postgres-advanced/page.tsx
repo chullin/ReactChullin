@@ -89,7 +89,8 @@ export default function DBEP07() {
             以下是一個真實案例：兩個查詢，功能完全相同，但執行時間差了 100 倍。
           </p>
 
-          <CodeBlock language="sql">{`-- ❌ 慢查詢（掃全表 + 子查詢重複執行）
+          <CodeBlock language="sql">
+{` -- ❌ 慢查詢（掃全表 + 子查詢重複執行）
 SELECT *
 FROM orders o
 WHERE o.total = (
@@ -107,7 +108,8 @@ FROM (
   FROM orders
 ) ranked
 WHERE total = max_total;
--- 執行時間：42ms（同樣百萬行）`}</CodeBlock>
+-- 執行時間：42ms（同樣百萬行） `}
+</CodeBlock>
 
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5">
             <p className="text-amber-800 text-sm leading-relaxed">
@@ -172,7 +174,8 @@ WHERE total = max_total;
             GROUP BY 會把多行「折疊」成一行，而 Window Functions 保留所有原始行，同時在每行上附加計算結果。
           </p>
 
-          <CodeBlock language="sql">{`-- GROUP BY：結果被「折疊」為每組一行
+          <CodeBlock language="sql">
+{` -- GROUP BY：結果被「折疊」為每組一行
 SELECT department_id, AVG(salary) as avg_salary
 FROM employees
 GROUP BY department_id;
@@ -187,7 +190,8 @@ SELECT
   salary - AVG(salary) OVER (PARTITION BY department_id) AS diff_from_avg
 FROM employees;
 -- 每個員工一行，同時顯示他跟部門平均的差距
--- 可以直接看到「這個人比部門平均高/低多少」`}</CodeBlock>
+-- 可以直接看到「這個人比部門平均高/低多少」 `}
+</CodeBlock>
 
           <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
             <p className="text-indigo-800 text-sm leading-relaxed">
@@ -205,7 +209,8 @@ FROM employees;
             選錯會導致業務邏輯錯誤。下面用一個具體例子說明差異：
           </p>
 
-          <CodeBlock language="sql">{`-- 測試資料
+          <CodeBlock language="sql">
+{` -- 測試資料
 WITH scores AS (
   SELECT 'Alice' AS name, 95 AS score UNION ALL
   SELECT 'Bob', 87 UNION ALL
@@ -231,7 +236,8 @@ SELECT
   PERCENT_RANK() OVER (ORDER BY score DESC) AS percentile
   -- 0.0, 0.25, 0.25, 0.75, 0.75（百分位）
   -- 計算公式：(rank - 1) / (total_rows - 1)
-FROM scores;`}</CodeBlock>
+FROM scores; `}
+</CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
@@ -291,7 +297,8 @@ FROM scores;`}</CodeBlock>
             不用自己 JOIN，也不用子查詢，一行就能搞定。
           </p>
 
-          <CodeBlock language="sql">{`-- 計算每月銷售額與上月的環比成長率
+          <CodeBlock language="sql">
+{` -- 計算每月銷售額與上月的環比成長率
 SELECT
   year,
   month,
@@ -305,9 +312,11 @@ SELECT
   ) AS growth_rate_pct
   -- NULLIF 防止除以 0（當上月銷售為 0 時回傳 NULL 而非錯誤）
 FROM monthly_sales
-ORDER BY year, month;`}</CodeBlock>
+ORDER BY year, month; `}
+</CodeBlock>
 
-          <CodeBlock language="sql">{`-- LAG/LEAD 的三個參數
+          <CodeBlock language="sql">
+{` -- LAG/LEAD 的三個參數
 LAG(total_sales, 1, 0) OVER (ORDER BY month)
 -- 第一個參數：要讀取的欄位
 -- 第二個參數：offset，往前幾行（預設為 1）
@@ -317,7 +326,8 @@ LAG(total_sales, 3) OVER (ORDER BY month)
 -- 往前3行，即「季度對比」，與三個月前比較
 
 LEAD(total_sales, 1, 0) OVER (ORDER BY month)
--- 往後1行，即「預覽下個月的數字」`}</CodeBlock>
+-- 往後1行，即「預覽下個月的數字」 `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">搭配 PARTITION BY：每個分組獨立計算</h3>
 
@@ -326,7 +336,8 @@ LEAD(total_sales, 1, 0) OVER (ORDER BY month)
             不同分組之間的邊界不會互相干擾。下面的例子計算每個用戶相鄰訂單的時間差：
           </p>
 
-          <CodeBlock language="sql">{`-- 每個用戶的相鄰訂單時間差
+          <CodeBlock language="sql">
+{` -- 每個用戶的相鄰訂單時間差
 SELECT
   user_id,
   order_id,
@@ -353,7 +364,8 @@ FROM (
   FROM orders
 ) gaps
 WHERE next_order_at IS NULL  -- 最後一筆訂單
-   OR next_order_at - created_at > INTERVAL '30 days';  -- 或間隔超過30天`}</CodeBlock>
+   OR next_order_at - created_at > INTERVAL '30 days';  -- 或間隔超過30天 `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -376,7 +388,8 @@ WHERE next_order_at IS NULL  -- 最後一筆訂單
             常見應用包含 7 天移動平均、累計銷售額、滾動總和等。
           </p>
 
-          <CodeBlock language="sql">{`-- 7天移動平均（Rolling Average）
+          <CodeBlock language="sql">
+{` -- 7天移動平均（Rolling Average）
 SELECT
   date,
   daily_revenue,
@@ -390,7 +403,8 @@ SELECT
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW  -- 從第一行到當前行
   ) AS cumulative_revenue
   -- 累計總和：每行顯示從期初到該日期的總收入
-FROM daily_revenue_report;`}</CodeBlock>
+FROM daily_revenue_report; `}
+</CodeBlock>
 
           <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 space-y-3">
             <p className="text-purple-800 font-bold text-sm">ROWS vs RANGE 的差異（容易踩坑！）</p>
@@ -408,7 +422,8 @@ FROM daily_revenue_report;`}</CodeBlock>
             </div>
           </div>
 
-          <CodeBlock language="sql">{`-- 視窗邊界語法完整說明
+          <CodeBlock language="sql">
+{` -- 視窗邊界語法完整說明
 ROWS BETWEEN [start] AND [end]
 
 -- start / end 可以是：
@@ -440,7 +455,8 @@ SELECT
     ) / SUM(order_total) OVER (),
     1
   ) AS cumulative_pct
-FROM orders;`}</CodeBlock>
+FROM orders; `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -463,7 +479,8 @@ FROM orders;`}</CodeBlock>
             最大的優點是可讀性：複雜的 Nested Subquery 可以變成清晰的線性邏輯。
           </p>
 
-          <CodeBlock language="sql">{`-- 沒有 CTE 的複雜查詢（難以維護，三個月後連自己都看不懂）
+          <CodeBlock language="sql">
+{` -- 沒有 CTE 的複雜查詢（難以維護，三個月後連自己都看不懂）
 SELECT u.name, order_counts.count, revenue.total
 FROM users u
 JOIN (
@@ -478,9 +495,11 @@ JOIN (
   WHERE status = 'completed'
   GROUP BY user_id
 ) revenue ON u.id = revenue.user_id;
--- 問題：orders 表被掃描了兩次，邏輯重複且難以維護`}</CodeBlock>
+-- 問題：orders 表被掃描了兩次，邏輯重複且難以維護 `}
+</CodeBlock>
 
-          <CodeBlock language="sql">{`-- 用 CTE 改寫（清晰易讀，邏輯一目瞭然）
+          <CodeBlock language="sql">
+{` -- 用 CTE 改寫（清晰易讀，邏輯一目瞭然）
 WITH completed_orders AS (
   -- 第一步：篩選已完成的訂單（只掃描一次）
   SELECT user_id, total
@@ -507,7 +526,8 @@ SELECT
 FROM users u
 JOIN user_order_stats s ON u.id = s.user_id
 ORDER BY s.total_revenue DESC
-LIMIT 100;`}</CodeBlock>
+LIMIT 100; `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800 mt-8">遞迴 CTE — 處理樹狀結構的利器</h3>
 
@@ -517,7 +537,8 @@ LIMIT 100;`}</CodeBlock>
             遞迴 CTE 由兩部分組成：基礎查詢（錨點）和遞迴查詢，用 UNION ALL 連接。
           </p>
 
-          <CodeBlock language="sql">{`-- 組織架構樹（自引用表）
+          <CodeBlock language="sql">
+{` -- 組織架構樹（自引用表）
 CREATE TABLE employees (
   id INT PRIMARY KEY,
   name VARCHAR(100),
@@ -561,7 +582,8 @@ ORDER BY level, name;
 -- CEO                        (level 1)
 --   CTO                      (level 2)
 --     VP Engineering         (level 3)
---       Senior Engineer A    (level 4)`}</CodeBlock>
+--       Senior Engineer A    (level 4) `}
+</CodeBlock>
 
           <div className="bg-violet-50 border border-violet-200 rounded-xl p-5">
             <p className="text-violet-800 text-sm leading-relaxed">
@@ -593,15 +615,18 @@ ORDER BY level, name;
             沒有這個工具，所謂的「優化」只是猜測。有了它，才能做到有根據的效能改善。
           </p>
 
-          <CodeBlock language="sql">{`-- 在任何查詢前加上 EXPLAIN ANALYZE 即可查看執行計畫
+          <CodeBlock language="sql">
+{` -- 在任何查詢前加上 EXPLAIN ANALYZE 即可查看執行計畫
 EXPLAIN ANALYZE
 SELECT u.name, COUNT(o.id) as order_count
 FROM users u
 LEFT JOIN orders o ON u.id = o.user_id
 WHERE u.created_at > '2026-01-01'
-GROUP BY u.id, u.name;`}</CodeBlock>
+GROUP BY u.id, u.name; `}
+</CodeBlock>
 
-          <CodeBlock language="bash">{`-- 典型輸出（需要學會解讀每一行的含義）
+          <CodeBlock language="bash">
+{` -- 典型輸出（需要學會解讀每一行的含義）
 HashAggregate  (cost=1250.00..1350.00 rows=1000 width=50)
                (actual time=125.3..142.8 rows=892 loops=1)
   Group Key: u.id, u.name
@@ -617,7 +642,8 @@ HashAggregate  (cost=1250.00..1350.00 rows=1000 width=50)
                     Filter: (created_at > '2026-01-01'::date)
                     Rows Removed by Filter: 108
 Planning Time: 3.2 ms
-Execution Time: 145.2 ms`}</CodeBlock>
+Execution Time: 145.2 ms `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">關鍵指標解讀</h3>
 
@@ -674,7 +700,8 @@ Execution Time: 145.2 ms`}</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800 mt-6">加 Index 後的效果對比</h3>
 
-          <CodeBlock language="sql">{`-- 步驟一：看到 EXPLAIN 中有 Seq Scan on users（因為 created_at 沒有 Index）
+          <CodeBlock language="sql">
+{` -- 步驟一：看到 EXPLAIN 中有 Seq Scan on users（因為 created_at 沒有 Index）
 -- 建立 Index，CONCURRENTLY 讓生產環境不鎖表
 CREATE INDEX CONCURRENTLY idx_users_created_at ON users(created_at);
 
@@ -692,7 +719,8 @@ GROUP BY u.id, u.name;
 -- 優化後的執行計畫變化：
 -- Seq Scan on users u  →  Index Scan using idx_users_created_at on users u
 -- Hash Left Join       →  Index Nested Loop（因為 orders.user_id 有 Index 了）
--- Execution Time: 145.2 ms  →  8.3 ms  （快了 17 倍！）`}</CodeBlock>
+-- Execution Time: 145.2 ms  →  8.3 ms  （快了 17 倍！） `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -716,7 +744,8 @@ GROUP BY u.id, u.name;
 
           <h3 className="text-xl font-black text-gray-800">1. UPSERT — 不存在就插入，存在就更新</h3>
 
-          <CodeBlock language="sql">{`-- ON CONFLICT DO UPDATE（UPSERT）
+          <CodeBlock language="sql">
+{` -- ON CONFLICT DO UPDATE（UPSERT）
 -- 場景：同步外部資料時，不確定資料是否已存在
 INSERT INTO user_stats (user_id, total_orders, total_revenue)
 VALUES (1, 5, 7500.00)
@@ -735,11 +764,13 @@ INSERT INTO order_items (order_id, product_id, quantity, price)
 VALUES (100, 'PROD-001', 2, 299.00)
 ON CONFLICT (order_id, product_id) DO UPDATE SET  -- 複合 Unique
   quantity = order_items.quantity + EXCLUDED.quantity,  -- 數量累加
-  updated_at = NOW();`}</CodeBlock>
+  updated_at = NOW(); `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">2. JSONB — 比 MongoDB 更強的 JSON 支援</h3>
 
-          <CodeBlock language="sql">{`-- PostgreSQL JSONB 支援完整的 JSON 操作
+          <CodeBlock language="sql">
+{` -- PostgreSQL JSONB 支援完整的 JSON 操作
 -- 查詢 JSONB 欄位（->> 取出文字值，-> 取出 JSON 值）
 SELECT * FROM products
 WHERE metadata->>'category' = 'electronics'
@@ -761,11 +792,13 @@ WHERE metadata->'tags' ? 'wireless';  -- ? 運算子：key 或陣列元素是否
 
 -- GIN Index 加速 JSONB 查詢
 CREATE INDEX idx_products_metadata ON products USING gin(metadata);
--- 建立後，@>、?、? 等運算子都可以利用 Index`}</CodeBlock>
+-- 建立後，@>、?、? 等運算子都可以利用 Index `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">3. 全文搜尋 — 不需要 Elasticsearch 的基本全文搜尋</h3>
 
-          <CodeBlock language="sql">{`-- 建立全文搜尋向量欄位
+          <CodeBlock language="sql">
+{` -- 建立全文搜尋向量欄位
 ALTER TABLE articles ADD COLUMN search_vector tsvector;
 
 -- 更新現有資料的搜尋向量
@@ -790,11 +823,13 @@ CREATE TRIGGER update_search_vector
 BEFORE INSERT OR UPDATE ON articles
 FOR EACH ROW EXECUTE FUNCTION
   tsvector_update_trigger(search_vector, 'pg_catalog.english', title, content);
--- 之後 INSERT/UPDATE 時自動重算 search_vector`}</CodeBlock>
+-- 之後 INSERT/UPDATE 時自動重算 search_vector `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">4. Keyset Pagination — 比 OFFSET 快 100 倍的分頁</h3>
 
-          <CodeBlock language="sql">{`-- ❌ OFFSET 分頁（越翻越慢）
+          <CodeBlock language="sql">
+{` -- ❌ OFFSET 分頁（越翻越慢）
 -- 第 100 頁要先掃描並丟棄前 2000 行，才回傳第 2001-2020 行
 SELECT * FROM posts
 ORDER BY created_at DESC
@@ -817,7 +852,8 @@ LIMIT 20;
 -- 直接用 Index 定位，無論第幾頁速度都一樣
 
 -- 搭配 Index 最佳化
-CREATE INDEX idx_posts_pagination ON posts(created_at DESC, id DESC);`}</CodeBlock>
+CREATE INDEX idx_posts_pagination ON posts(created_at DESC, id DESC); `}
+</CodeBlock>
 
           <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
             <p className="text-indigo-800 text-sm leading-relaxed">

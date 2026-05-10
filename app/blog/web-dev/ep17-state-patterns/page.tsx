@@ -452,7 +452,7 @@ function GoodTodoApp() {
     <div>
       <p>{completedCount} / {totalCount} 完成</p>
       <div
-        style={{ width: \`\${progress}%\` }}
+        style={{ width: \\`\\${progress}%\\` }}
         className="h-2 bg-violet-500 rounded transition-all"
       />
     </div>

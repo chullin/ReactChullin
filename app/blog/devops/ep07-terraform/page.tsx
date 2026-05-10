@@ -336,7 +336,7 @@ resource "aws_vpc" "main" {
   enable_dns_support   = true
 
   tags = {
-    Name        = "\${var.app_name}-vpc"
+    Name        = "\\${var.app_name}-vpc"
     Environment = var.environment
     ManagedBy   = "terraform"    # 方便在 Console 識別哪些資源是 Terraform 管的
   }
@@ -347,7 +347,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id    # 引用同一個 tf 裡的其他 resource
 
   tags = {
-    Name = "\${var.app_name}-igw"
+    Name = "\\${var.app_name}-igw"
   }
 }
 
@@ -358,13 +358,13 @@ resource "aws_subnet" "public" {
   count = 2    # count meta-argument：建立 2 個相同結構的資源
 
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.\${count.index}.0/24"    # 10.0.0.0/24、10.0.1.0/24
+  cidr_block        = "10.0.\\${count.index}.0/24"    # 10.0.0.0/24、10.0.1.0/24
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   map_public_ip_on_launch = true    # 在這個 Subnet 啟動的 EC2 自動取得 Public IP
 
   tags = {
-    Name = "\${var.app_name}-public-\${count.index + 1}"
+    Name = "\\${var.app_name}-public-\\${count.index + 1}"
     Type = "public"
   }
 }
@@ -374,11 +374,11 @@ resource "aws_subnet" "private" {
   count = 2
 
   vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.\${count.index + 10}.0/24"    # 10.0.10.0/24、10.0.11.0/24
+  cidr_block        = "10.0.\\${count.index + 10}.0/24"    # 10.0.10.0/24、10.0.11.0/24
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Name = "\${var.app_name}-private-\${count.index + 1}"
+    Name = "\\${var.app_name}-private-\\${count.index + 1}"
     Type = "private"
   }
 }
@@ -387,16 +387,16 @@ resource "aws_subnet" "private" {
 
 # RDS 需要一個 Subnet Group（指定要部署在哪些 Subnet）
 resource "aws_db_subnet_group" "main" {
-  name       = "\${var.app_name}-db-subnet-group"
+  name       = "\\${var.app_name}-db-subnet-group"
   subnet_ids = aws_subnet.private[*].id    # [*] splat：取所有 private subnet 的 id
 
   tags = {
-    Name = "\${var.app_name}-db-subnet-group"
+    Name = "\\${var.app_name}-db-subnet-group"
   }
 }
 
 resource "aws_db_instance" "main" {
-  identifier        = "\${var.app_name}-\${var.environment}-db"
+  identifier        = "\\${var.app_name}-\\${var.environment}-db"
   engine            = "postgres"
   engine_version    = "15.4"
   instance_class    = "db.t3.micro"
@@ -416,7 +416,7 @@ resource "aws_db_instance" "main" {
 
   deletion_protection     = true     # 防止 terraform destroy 誤刪 RDS！
   skip_final_snapshot     = false    # destroy 前強制建立最後一個快照
-  final_snapshot_identifier = "\${var.app_name}-final-snapshot"
+  final_snapshot_identifier = "\\${var.app_name}-final-snapshot"
 
   tags = {
     Environment = var.environment
@@ -426,7 +426,7 @@ resource "aws_db_instance" "main" {
 # ─── Security Group ──────────────────────────────────────────────────
 
 resource "aws_security_group" "rds" {
-  name        = "\${var.app_name}-rds-sg"
+  name        = "\\${var.app_name}-rds-sg"
   description = "Allow PostgreSQL access from app servers only"
   vpc_id      = aws_vpc.main.id
 
@@ -652,7 +652,7 @@ variable "subnet_ids" {
 
 # modules/web-app/main.tf
 resource "aws_ecs_cluster" "main" {
-  name = "\${var.app_name}-\${var.environment}"
+  name = "\\${var.app_name}-\\${var.environment}"
 
   setting {
     name  = "containerInsights"
@@ -666,7 +666,7 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_task_definition" "main" {
-  family                   = "\${var.app_name}-\${var.environment}"
+  family                   = "\\${var.app_name}-\\${var.environment}"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -675,7 +675,7 @@ resource "aws_ecs_task_definition" "main" {
   container_definitions = jsonencode([
     {
       name      = var.app_name
-      image     = "\${aws_ecr_repository.main.repository_url}:latest"
+      image     = "\\${aws_ecr_repository.main.repository_url}:latest"
       essential = true
       portMappings = [
         { containerPort = 3000, protocol = "tcp" }
@@ -683,7 +683,7 @@ resource "aws_ecs_task_definition" "main" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/\${var.app_name}"
+          "awslogs-group"         = "/ecs/\\${var.app_name}"
           "awslogs-region"        = "us-east-1"
           "awslogs-stream-prefix" = "ecs"
         }
@@ -844,8 +844,8 @@ variable "jwt_secret" {
 # db_password = "local-dev-password-only"
 #
 # 方法 B：環境變數（CI/CD 推薦，TF_VAR_ 前綴自動對應 variable）
-# export TF_VAR_db_password=${{ secrets.DB_PASSWORD }}
-# export TF_VAR_jwt_secret=${{ secrets.JWT_SECRET }}
+# export TF_VAR_db_password=\${{ secrets.DB_PASSWORD }}
+# export TF_VAR_jwt_secret=\${{ secrets.JWT_SECRET }}
 #
 # 方法 C：AWS Secrets Manager（Production 最佳實踐）
 # ─────────────────────────────────────────────────────────────────────
@@ -904,8 +904,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: \${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: \${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: \\${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: \\${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
       - name: Terraform Init
@@ -922,7 +922,7 @@ jobs:
         id: plan
         run: |
           terraform -chdir=terraform plan \\
-            -var="db_password=\${{ secrets.DB_PASSWORD }}" \\
+            -var="db_password=\\${{ secrets.DB_PASSWORD }}" \\
             -out=tfplan \\
             -no-color 2>&1 | tee plan_output.txt
         continue-on-error: true    # Plan 失敗也繼續，讓後面步驟能貼 Comment
@@ -934,7 +934,7 @@ jobs:
           script: |
             const fs = require('fs');
             const plan = fs.readFileSync('plan_output.txt', 'utf8');
-            const body = \`## Terraform Plan\n\n\\\`\\\`\\\`\n\${plan}\n\\\`\\\`\\\`\`;
+            const body = \\`## Terraform Plan\n\n\\\\`\\\\`\\\\`\n\\${plan}\n\\\\`\\\\`\\\\`\\`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -946,7 +946,7 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
           terraform -chdir=terraform apply \\
-            -var="db_password=\${{ secrets.DB_PASSWORD }}" \\
+            -var="db_password=\\${{ secrets.DB_PASSWORD }}" \\
             -auto-approve \\
             tfplan`}
           />

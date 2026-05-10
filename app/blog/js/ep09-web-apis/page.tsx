@@ -173,7 +173,8 @@ export default function JSEP09() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">問題 vs 解法</h3>
 
-              <CodeBlock language="javascript">{`// ❌ 問題：在主執行緒跑大計算 → UI 凍結
+              <CodeBlock language="javascript">
+{` // ❌ 問題：在主執行緒跑大計算 → UI 凍結
 function heavyCalc(n) {
   let result = 0;
   for (let i = 0; i < n; i++) {
@@ -216,7 +217,8 @@ document.querySelector('button').addEventListener('click', () => {
   worker.postMessage({ n: 100_000_000 }); // 送給 Worker，主執行緒不卡
   // 這行會立刻執行完畢，不會等 Worker 算完
   console.log('計算已送出，UI 繼續回應！');
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
               <div className="p-5 bg-slate-900 rounded-xl border border-slate-700 my-6 font-mono text-sm">
                 <p className="text-slate-400 text-xs mb-3">Web Worker 通訊模型</p>
@@ -243,7 +245,8 @@ document.querySelector('button').addEventListener('click', () => {
                 原生 Web Worker API 用 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">postMessage / onmessage</code> 通訊，寫起來像在用事件系統，不夠直覺。<code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">Comlink</code> 是 Google 開發的輕量包裝庫，讓你像呼叫普通 async function 一樣呼叫 Worker 中的函式。
               </p>
 
-              <CodeBlock language="typescript">{`// workers/calculator.worker.ts
+              <CodeBlock language="typescript">
+{` // workers/calculator.worker.ts
 import { expose } from 'comlink';
 
 const calculator = {
@@ -264,11 +267,13 @@ const calculator = {
   },
 };
 
-expose(calculator); // Comlink：把物件暴露給主執行緒`}</CodeBlock>
+expose(calculator); // Comlink：把物件暴露給主執行緒 `}
+</CodeBlock>
 
               <div className="h-4" />
 
-              <CodeBlock language="typescript">{`// hooks/useWorker.ts
+              <CodeBlock language="typescript">
+{` // hooks/useWorker.ts
 import { wrap } from 'comlink';
 import { useRef, useEffect } from 'react';
 
@@ -314,7 +319,8 @@ function MyComponent() {
       {result && <p>結果：{result}</p>}
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
                 <div className="p-4 bg-green-50 rounded-xl border border-green-200">
@@ -363,7 +369,8 @@ function MyComponent() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">傳統做法 vs Intersection Observer</h3>
 
-              <CodeBlock language="javascript">{`// ❌ 舊方法：監聽 scroll 事件（效能差！）
+              <CodeBlock language="javascript">
+{` // ❌ 舊方法：監聽 scroll 事件（效能差！）
 window.addEventListener('scroll', () => {
   // 每次滾動都觸發（可能每秒幾十次）
   // 每次都要重新計算所有元素的位置
@@ -408,11 +415,13 @@ document.querySelectorAll('.lazy-load').forEach(el => {
 // 0   → 元素剛剛碰到視口邊緣就觸發
 // 0.5 → 元素出現一半才觸發
 // 1   → 元素完整出現才觸發
-// [0, 0.25, 0.5, 0.75, 1] → 每達到這些比例都觸發`}</CodeBlock>
+// [0, 0.25, 0.5, 0.75, 1] → 每達到這些比例都觸發 `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-6">React Hook 封裝</h3>
 
-              <CodeBlock language="typescript">{`// hooks/useIntersectionObserver.ts
+              <CodeBlock language="typescript">
+{` // hooks/useIntersectionObserver.ts
 import { useEffect, useRef, useState } from 'react';
 
 interface Options {
@@ -476,9 +485,9 @@ function AnimatedCard({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={ref as any}
-      className={\`transition-all duration-700 \${
+      className={\\`transition-all duration-700 \\${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }\`}
+      }\\`}
     >
       {children}
     </div>
@@ -512,8 +521,9 @@ function InfiniteList() {
 
 async function fetchNextPage(page: number): Promise<string[]> {
   // 模擬 API 呼叫
-  return Array.from({ length: 10 }, (_, i) => \`Item \${(page - 1) * 10 + i + 1}\`);
-}`}</CodeBlock>
+  return Array.from({ length: 10 }, (_, i) => \\`Item \\${(page - 1) * 10 + i + 1}\\`);
+} `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.div>
@@ -568,11 +578,14 @@ async function fetchNextPage(page: number): Promise<string[]> {
                 原生 IndexedDB API 是基於事件的，寫起來相當繁瑣。<code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">idb</code> 庫提供 Promise 化的包裝以及完整的 TypeScript 型別支援，讓 IndexedDB 的使用體驗接近 async/await 的直覺感。
               </p>
 
-              <CodeBlock language="bash">{`npm install idb`}</CodeBlock>
+              <CodeBlock language="bash">
+{` npm install idb `}
+</CodeBlock>
 
               <div className="h-4" />
 
-              <CodeBlock language="typescript">{`import { openDB, DBSchema } from 'idb';
+              <CodeBlock language="typescript">
+{` import { openDB, DBSchema } from 'idb';
 
 // 定義 DB Schema（TypeScript 型別安全）
 interface BlogDB extends DBSchema {
@@ -661,7 +674,8 @@ async function clearExpiredCache() {
 
   await tx.done;
   console.log('過期快取已清除');
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 mt-6">
                 <div className="flex items-start gap-2">
@@ -700,7 +714,8 @@ async function clearExpiredCache() {
                 傳統做法是監聽 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">window.resize</code> 事件，但這只能偵測視窗大小，無法偵測特定元素的大小變化（例如側邊欄展開收合、動態內容導致父容器改變大小）。ResizeObserver 正是為這個場景而生。
               </p>
 
-              <CodeBlock language="typescript">{`// hooks/useElementSize.ts
+              <CodeBlock language="typescript">
+{` // hooks/useElementSize.ts
 import { useEffect, useRef, useState } from 'react';
 
 interface Size {
@@ -751,7 +766,7 @@ function ResponsiveGrid({ children }: { children: React.ReactNode }) {
       ref={ref as any}
       style={{
         display: 'grid',
-        gridTemplateColumns: \`repeat(\${columns}, 1fr)\`,
+        gridTemplateColumns: \\`repeat(\\${columns}, 1fr)\\`,
         gap: '1rem',
       }}
     >
@@ -778,7 +793,7 @@ function ClampedText({ text }: { text: string }) {
     <div>
       <p
         ref={ref as any}
-        className={\`\${isExpanded ? '' : 'line-clamp-3'} text-gray-600\`}
+        className={\\`\\${isExpanded ? '' : 'line-clamp-3'} text-gray-600\\`}
       >
         {text}
       </p>
@@ -789,7 +804,8 @@ function ClampedText({ text }: { text: string }) {
       )}
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
                 <div className="p-4 bg-green-50 rounded-xl border border-green-200">
@@ -836,7 +852,8 @@ function ClampedText({ text }: { text: string }) {
                 Page Visibility API 讓你知道用戶目前是否在看這個頁面——他們切換到其他分頁、最小化視窗、或鎖定螢幕時，<code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">document.hidden</code> 會變成 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">true</code>。善用這個 API，可以暫停不必要的 CPU/網路消耗，節省用戶的電量和流量。
               </p>
 
-              <CodeBlock language="typescript">{`// hooks/usePageVisibility.ts
+              <CodeBlock language="typescript">
+{` // hooks/usePageVisibility.ts
 import { useState, useEffect } from 'react';
 
 export function usePageVisibility() {
@@ -909,7 +926,8 @@ function useActiveTime() {
 async function fetchLatestData() {
   const res = await fetch('/api/data');
   return res.json();
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 mt-6">
                 <div className="flex items-start gap-2">
@@ -968,7 +986,8 @@ async function fetchLatestData() {
                 </div>
               </div>
 
-              <CodeBlock language="typescript">{`// ── AES-GCM 對稱加密 ──────────────────────────────────────
+              <CodeBlock language="typescript">
+{` // ── AES-GCM 對稱加密 ──────────────────────────────────────
 
 // 生成加密金鑰
 async function generateKey(): Promise<CryptoKey> {
@@ -1056,7 +1075,8 @@ async function demo() {
     ['encrypt', 'decrypt']
   );
   console.log('金鑰匯入成功：', importedKey);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-3 gap-4">
                 {[

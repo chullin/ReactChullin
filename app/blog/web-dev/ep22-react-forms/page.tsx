@@ -79,7 +79,8 @@ export default function WebDevEP22() {
             這還沒算 isSubmitting、isLoading、serverError… 這不是你的錯，這是純 React 表單的原罪。
           </p>
 
-          <CodeBlock language="tsx">{`// 5 個欄位 × 3 個 state = 15 個 useState 😱
+          <CodeBlock language="tsx">
+{` // 5 個欄位 × 3 個 state = 15 個 useState 😱
 const [name, setName] = useState('');
 const [nameError, setNameError] = useState('');
 const [nameTouched, setNameTouched] = useState(false);
@@ -178,7 +179,8 @@ return (
 
     {/* 每個欄位都要重複同樣的模式... */}
   </form>
-);`}</CodeBlock>
+); `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 border-l-4 border-rose-500">
             <CardBody className="p-6">
@@ -230,10 +232,13 @@ return (
           </p>
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">安裝套件</h3>
-          <CodeBlock language="bash">{`npm install react-hook-form zod @hookform/resolvers`}</CodeBlock>
+          <CodeBlock language="bash">
+{` npm install react-hook-form zod @hookform/resolvers `}
+</CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">三個核心 API</h3>
-          <CodeBlock language="tsx">{`import { useForm } from 'react-hook-form';
+          <CodeBlock language="tsx">
+{` import { useForm } from 'react-hook-form';
 
 const {
   register,           // 把 input 「登記」給 react-hook-form 管理
@@ -247,7 +252,8 @@ const {
   watch,              // 即時監看欄位值
   setValue,           // 程式設定欄位值
   control,            // 給 Controller 用，控制第三方元件
-} = useForm();`}</CodeBlock>
+} = useForm(); `}
+</CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
             <Card className="border-0 shadow-md">
@@ -326,7 +332,8 @@ const {
             </Card>
           </div>
 
-          <CodeBlock language="tsx">{`import { z } from 'zod';
+          <CodeBlock language="tsx">
+{` import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 // ── 定義驗證 Schema ───────────────────────────────────────────────
@@ -380,7 +387,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormData>({
   resolver: zodResolver(registerSchema), // 這一行連接兩者
   mode: 'onBlur', // onSubmit | onBlur | onChange | onTouched | all
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md mt-6 bg-gradient-to-r from-fuchsia-50 to-pink-50">
             <CardBody className="p-6">
@@ -414,7 +422,8 @@ const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormDa
             注意對比行數和可讀性的差異。
           </p>
 
-          <CodeBlock language="tsx">{`'use client';
+          <CodeBlock language="tsx">
+{` 'use client';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -465,8 +474,8 @@ export default function RegisterForm() {
         <label className="block text-sm font-medium text-gray-700 mb-1">姓名</label>
         <input
           {...register('name')}
-          className={\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
-            \${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'}\`}
+          className={\\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
+            \\${errors.name ? 'border-red-500 bg-red-50' : 'border-gray-300'}\\`}
           placeholder="請輸入姓名"
         />
         {errors.name && (
@@ -480,8 +489,8 @@ export default function RegisterForm() {
         <input
           {...register('email')}
           type="email"
-          className={\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
-            \${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}\`}
+          className={\\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
+            \\${errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'}\\`}
           placeholder="your@email.com"
         />
         {errors.email && (
@@ -495,8 +504,8 @@ export default function RegisterForm() {
         <input
           {...register('password')}
           type="password"
-          className={\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
-            \${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'}\`}
+          className={\\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
+            \\${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'}\\`}
           placeholder="至少 8 碼，含大寫與數字"
         />
         {errors.password && (
@@ -510,8 +519,8 @@ export default function RegisterForm() {
         <input
           {...register('confirmPassword')}
           type="password"
-          className={\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
-            \${errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'}\`}
+          className={\\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
+            \\${errors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'}\\`}
           placeholder="再次輸入密碼"
         />
         {errors.confirmPassword && (
@@ -525,8 +534,8 @@ export default function RegisterForm() {
         <textarea
           {...register('bio')}
           rows={3}
-          className={\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
-            \${errors.bio ? 'border-red-500 bg-red-50' : 'border-gray-300'}\`}
+          className={\\`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500
+            \\${errors.bio ? 'border-red-500 bg-red-50' : 'border-gray-300'}\\`}
           placeholder="簡短介紹自己..."
         />
         {errors.bio && (
@@ -545,7 +554,8 @@ export default function RegisterForm() {
       </button>
     </form>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
             <Card className="border-0 shadow-md border-l-4 border-red-400">
@@ -608,7 +618,8 @@ export default function RegisterForm() {
             情境：你想在用戶輸入密碼的同時，即時顯示「密碼強度」指示器（弱/中/強）。
             這需要即時讀取密碼欄位的值，但又不想用 useState 引入不必要的 re-render。
           </p>
-          <CodeBlock language="tsx">{`const { register, handleSubmit, watch } = useForm<RegisterFormData>();
+          <CodeBlock language="tsx">
+{` const { register, handleSubmit, watch } = useForm<RegisterFormData>();
 
 // watch('password') 會在 password 欄位改變時觸發 re-render
 // 傳入第二個參數作為初始值，避免 undefined
@@ -642,9 +653,9 @@ return (
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className={\`h-1 flex-1 rounded-full transition-colors \${
+              className={\\`h-1 flex-1 rounded-full transition-colors \\${
                 i <= strength.score ? strength.color : 'bg-gray-200'
-              }\`}
+              }\\`}
             />
           ))}
         </div>
@@ -656,7 +667,8 @@ return (
 
 // 也可以 watch 多個欄位或整個表單
 const allValues = watch();                    // 監看所有欄位
-const [name, email] = watch(['name', 'email']); // 監看指定多個欄位`}</CodeBlock>
+const [name, email] = watch(['name', 'email']); // 監看指定多個欄位 `}
+</CodeBlock>
 
           {/* setValue */}
           <h3 className="text-xl font-bold text-gray-800 mt-10 mb-3 flex items-center gap-2">
@@ -667,7 +679,8 @@ const [name, email] = watch(['name', 'email']); // 監看指定多個欄位`}</C
             情境：用郵遞區號 API 自動填入縣市、地址欄位。用戶只需輸入郵遞區號，其他欄位自動完成。
             這類「程式驅動的欄位更新」就是 setValue 的用武之地。
           </p>
-          <CodeBlock language="tsx">{`const { register, handleSubmit, setValue } = useForm<AddressFormData>();
+          <CodeBlock language="tsx">
+{` const { register, handleSubmit, setValue } = useForm<AddressFormData>();
 
 // 當用戶輸入郵遞區號，自動查詢並填入城市
 const handleZipCodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -705,7 +718,8 @@ return (
 // setValue 的第三個參數（options）：
 // shouldValidate: true  → 設定後立即觸發驗證
 // shouldDirty: true     → 標記為「已被修改」（影響 isDirty）
-// shouldTouch: true     → 標記為「已被觸碰」（影響 isTouched）`}</CodeBlock>
+// shouldTouch: true     → 標記為「已被觸碰」（影響 isTouched） `}
+</CodeBlock>
 
           {/* Controller */}
           <h3 className="text-xl font-bold text-gray-800 mt-10 mb-3 flex items-center gap-2">
@@ -717,7 +731,8 @@ return (
             這些第三方元件不是原生的 input，所以沒辦法用 <code className="bg-gray-100 px-1 rounded text-sm">...register()</code> 直接接上。
             這時候就需要 Controller 作為橋接器。
           </p>
-          <CodeBlock language="tsx">{`import { useForm, Controller } from 'react-hook-form';
+          <CodeBlock language="tsx">
+{` import { useForm, Controller } from 'react-hook-form';
 import { Select, SelectItem } from '@heroui/react'; // HeroUI 的 Select
 
 type CategoryFormData = {
@@ -774,7 +789,8 @@ export default function ArticleForm() {
       <button type="submit">發布</button>
     </form>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -800,7 +816,8 @@ export default function ArticleForm() {
           </p>
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">步驟一：建立 Server Action</h3>
-          <CodeBlock language="tsx">{`// app/actions/register.ts
+          <CodeBlock language="tsx">
+{` // app/actions/register.ts
 'use server'; // ← 這個指令讓這個檔案的所有函式在伺服器上執行
 
 import { redirect } from 'next/navigation';
@@ -851,10 +868,12 @@ export async function registerAction(formData: RegisterFormData) {
 
   // ── 成功後重導向（Server-side redirect）──────────────────────
   redirect('/dashboard');
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">步驟二：在表單元件呼叫 Server Action</h3>
-          <CodeBlock language="tsx">{`'use client';
+          <CodeBlock language="tsx">
+{` 'use client';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -920,10 +939,12 @@ export default function RegisterForm() {
       </button>
     </form>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">共用 Schema 的最佳實踐</h3>
-          <CodeBlock language="tsx">{`// lib/schemas/register.ts ← 單一來源，前後端共用
+          <CodeBlock language="tsx">
+{` // lib/schemas/register.ts ← 單一來源，前後端共用
 import { z } from 'zod';
 
 export const registerSchema = z
@@ -943,7 +964,8 @@ export type RegisterFormData = z.infer<typeof registerSchema>;
 
 // 前端：import { registerSchema } from '@/lib/schemas/register'
 // 後端：import { registerSchema } from '@/lib/schemas/register'
-// 同一份 schema，兩邊都用 → 規則永遠一致`}</CodeBlock>
+// 同一份 schema，兩邊都用 → 規則永遠一致 `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg mt-6 bg-gradient-to-r from-rose-600 to-fuchsia-600 text-white">
             <CardBody className="p-6">

@@ -152,7 +152,8 @@ export default function JSEP07() {
             完整的 TypeScript 泛型約束確保你不會傳錯 payload。
           </p>
 
-          <CodeBlock language="typescript">{`class EventEmitter<Events extends Record<string, any>> {
+          <CodeBlock language="typescript">
+{` class EventEmitter<Events extends Record<string, any>> {
   private listeners: Partial<{
     [K in keyof Events]: Array<(data: Events[K]) => void>;
   }> = {};
@@ -198,7 +199,7 @@ const unsubscribe = eventBus.on('user:login', ({ userId }) => {
 
 // ── 訂閱（Notification Service）──
 eventBus.on('order:placed', ({ orderId, total }) => {
-  sendEmail({ subject: \`訂單 \${orderId} 確認\`, total });
+  sendEmail({ subject: \\`訂單 \\${orderId} 確認\\`, total });
 });
 
 // ── 發布事件（所有訂閱者自動收到通知）──
@@ -208,14 +209,16 @@ eventBus.emit('user:login', { userId: '123', email: 'joe@example.com' });
 useEffect(() => {
   const unsub = eventBus.on('user:login', handler);
   return () => unsub(); // cleanup
-}, []);`}</CodeBlock>
+}, []); `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3">React Custom Hook 版本</h3>
           <p className="text-gray-700 leading-relaxed mb-4">
             在 React 中，通常會把 EventEmitter 放進 Ref 裡，確保同一個元件生命週期內是同一個實例。
           </p>
 
-          <CodeBlock language="typescript">{`import { useRef, useEffect } from 'react';
+          <CodeBlock language="typescript">
+{` import { useRef, useEffect } from 'react';
 
 function useEventEmitter<Events extends Record<string, any>>() {
   const emitterRef = useRef(new EventEmitter<Events>());
@@ -236,7 +239,7 @@ function ChatRoom() {
     });
 
     const unsub2 = emitter.on('user:join', ({ name }) => {
-      setNotifications((prev) => [...prev, \`\${name} 加入了聊天室\`]);
+      setNotifications((prev) => [...prev, \\`\\${name} 加入了聊天室\\`]);
     });
 
     return () => {
@@ -244,7 +247,8 @@ function ChatRoom() {
       unsub2();
     };
   }, [emitter]);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border border-purple-100 bg-gradient-to-r from-purple-50 to-fuchsia-50 mt-6">
             <CardBody className="p-4">
@@ -300,7 +304,8 @@ function ChatRoom() {
             每加一種支付方式，這個函式就越來越複雜、越來越難測試，最終變成一個誰都不敢改的巨大函式。
           </p>
 
-          <CodeBlock language="typescript">{`function processPayment(method: string, amount: number) {
+          <CodeBlock language="typescript">
+{` function processPayment(method: string, amount: number) {
   if (method === 'credit') {
     // 100 行信用卡邏輯...
     // 驗證卡號、呼叫 Stripe API、處理 3D Secure...
@@ -314,11 +319,13 @@ function ChatRoom() {
     // 每加一種支付方式，這個函式就更複雜
     // 而且改一個 if-else 可能影響其他分支
   }
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3">✅ Strategy Pattern</h3>
 
-          <CodeBlock language="typescript">{`// 1. 定義策略介面（Interface）
+          <CodeBlock language="typescript">
+{` // 1. 定義策略介面（Interface）
 interface PaymentStrategy {
   pay(amount: number): Promise<PaymentResult>;
   validate(cardData: any): boolean;
@@ -383,7 +390,8 @@ await payment.checkout(1000);
 
 // 新增支付方式只需要新增一個 class，不修改任何現有程式碼
 payment.setStrategy(new JkosStrategy());
-await payment.checkout(1000);`}</CodeBlock>
+await payment.checkout(1000); `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3">React 中的 Strategy Pattern</h3>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -391,7 +399,8 @@ await payment.checkout(1000);`}</CodeBlock>
             React 的 Hook 很適合這個模式。
           </p>
 
-          <CodeBlock language="tsx">{`// ── 定義不同的「篩選策略」（函式即策略）──
+          <CodeBlock language="tsx">
+{` // ── 定義不同的「篩選策略」（函式即策略）──
 type FilterStrategy = (items: Product[], query: string) => Product[];
 
 const exactMatch: FilterStrategy = (items, q) =>
@@ -425,7 +434,8 @@ function ProductSearch({ products }: { products: Product[] }) {
       {results.map((p) => <ProductCard key={p.id} product={p} />)}
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -461,7 +471,8 @@ function ProductSearch({ products }: { products: Product[] }) {
 
           <h3 className="text-lg font-bold text-gray-800 mb-3">Simple Factory — Logger 範例</h3>
 
-          <CodeBlock language="typescript">{`type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+          <CodeBlock language="typescript">
+{` type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 // 定義 Logger 介面
 interface Logger {
@@ -477,7 +488,7 @@ class ConsoleLogger implements Logger {
       warn: '\x1b[33m',
       error: '\x1b[31m',
     };
-    console.log(\`\${colors[level]}[\${level.toUpperCase()}] \${message}\x1b[0m\`);
+    console.log(\\`\\${colors[level]}[\\${level.toUpperCase()}] \\${message}\x1b[0m\\`);
   }
 }
 
@@ -508,7 +519,8 @@ const logger = createLogger(process.env.NODE_ENV ?? 'development');
 logger.log('info', '伺服器啟動完成');
 logger.log('error', '資料庫連線失敗');
 
-// 換環境完全不影響呼叫端的程式碼`}</CodeBlock>
+// 換環境完全不影響呼叫端的程式碼 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-8 mb-3">React 中的 Factory Pattern</h3>
           <p className="text-gray-700 leading-relaxed mb-4">
@@ -516,7 +528,8 @@ logger.log('error', '資料庫連線失敗');
             後端傳來欄位設定，前端透過 Factory 元件決定渲染哪種輸入元件。
           </p>
 
-          <CodeBlock language="tsx">{`// 欄位設定的聯合型別（Discriminated Union）
+          <CodeBlock language="tsx">
+{` // 欄位設定的聯合型別（Discriminated Union）
 type FieldConfig =
   | { type: 'text'; label: string; placeholder?: string }
   | { type: 'select'; label: string; options: { value: string; label: string }[] }
@@ -590,7 +603,8 @@ function DynamicForm({ schema }: { schema: FieldConfig[] }) {
       ))}
     </form>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -619,16 +633,19 @@ function DynamicForm({ schema }: { schema: FieldConfig[] }) {
 
           <h3 className="text-lg font-bold text-gray-800 mb-3">❌ 沒有 Singleton 的問題</h3>
 
-          <CodeBlock language="typescript">{`// ❌ 每次呼叫都建立新的連線池——極其浪費資源
+          <CodeBlock language="typescript">
+{` // ❌ 每次呼叫都建立新的連線池——極其浪費資源
 async function getUser(id: string) {
   const db = new Database(process.env.DB_URL);  // 每次 API 呼叫都建立新連線！
   return db.query('SELECT * FROM users WHERE id = $1', [id]);
 }
-// 如果同時有 1000 個請求，就會有 1000 個資料庫連線`}</CodeBlock>
+// 如果同時有 1000 個請求，就會有 1000 個資料庫連線 `}
+</CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mt-6 mb-3">✅ Singleton Pattern</h3>
 
-          <CodeBlock language="typescript">{`class DatabaseConnection {
+          <CodeBlock language="typescript">
+{` class DatabaseConnection {
   // private static 確保只有一個 instance
   private static instance: DatabaseConnection | null = null;
   private pool: Pool;
@@ -695,7 +712,8 @@ export function getPrismaClient() {
   }
   return instance;
 }
-// module 本身就是 Singleton，Node.js 會 cache module`}</CodeBlock>
+// module 本身就是 Singleton，Node.js 會 cache module `}
+</CodeBlock>
 
           <Card className="border border-amber-100 bg-amber-50 mt-6">
             <CardBody className="p-4">

@@ -500,25 +500,25 @@ const age = 26;
 const greeting = '你好，' + name + '！你今年 ' + age + ' 歲。';
 
 // 模板字串：直覺多了
-const greeting = \`你好，\${name}！你今年 \${age} 歲。\`;
+const greeting = \\`你好，\\${name}！你今年 \\${age} 歲。\\`;
 // 你好，Joseph！你今年 26 歲。
 
-// ${}  裡面可以放任何 JavaScript 運算式
+// \${}  裡面可以放任何 JavaScript 運算式
 const price = 100;
 const qty = 3;
-console.log(\`總計：\${price * qty} 元\`);   // 總計：300 元
-console.log(\`明年：\${age + 1} 歲\`);        // 明年：27 歲
+console.log(\\`總計：\\${price * qty} 元\\`);   // 總計：300 元
+console.log(\\`明年：\\${age + 1} 歲\\`);        // 明年：27 歲
 
 // 多行字串（舊方法要 \\n，模板字串直接換行）
-const message = \`
-  親愛的 \${name}，
+const message = \\`
+  親愛的 \\${name}，
   您的訂單已確認。
-  總計：NT$\${price * qty}
-\`;
+  總計：NT$\\${price * qty}
+\\`;
 
 // 在 React 裡：動態 className
 const isActive = true;
-const className = \`btn \${isActive ? 'btn-active' : 'btn-default'}\`;
+const className = \\`btn \\${isActive ? 'btn-active' : 'btn-default'}\\`;
 // 'btn btn-active'`}
           />
 
@@ -755,7 +755,7 @@ function Profile({ user }) {
                 code={`// 箭頭函式 + 解構（含預設值）+ 模板字串
 const BookCard = ({ title, author, price, inStock = true }) => (
   <div>
-    {\`\${title} by \${author} — NT$\${price} \${inStock ? '(現貨)' : '(缺貨)'}\`}
+    {\\`\\${title} by \\${author} — NT$\\${price} \\${inStock ? '(現貨)' : '(缺貨)'}\`}
   </div>
 );`}
               />
@@ -840,7 +840,7 @@ const BookCard = ({ title, author, price, inStock = true }) => (
 //     陣列解構         陣列解構        函式呼叫
 
 const UserCard = ({ name, age = 18 }) => (  // 解構 + 預設值 + 箭頭函式
-  <div className={\`card \${age >= 18 ? 'adult' : 'minor'}\`}>  {/* 模板字串 */}
+  <div className={\\`card \\${age >= 18 ? 'adult' : 'minor'}\`}>  {/* 模板字串 */}
     <h2>{name ?? '訪客'}</h2>                                  {/* 空值合併 */}
   </div>
 );`}

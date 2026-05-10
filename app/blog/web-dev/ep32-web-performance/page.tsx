@@ -208,7 +208,8 @@ export default function WebDevEP32() {
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 LCP 元素最常見的是圖片。使用 Next.js 的 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">Image</code> 組件，你幾乎可以自動解決圖片相關的所有 LCP 問題。
               </p>
-              <CodeBlock language="tsx">{`// ❌ 原生 img 標籤：沒有優化，沒有 lazy loading 控制
+              <CodeBlock language="tsx">
+{` // ❌ 原生 img 標籤：沒有優化，沒有 lazy loading 控制
 <img src="/hero.jpg" width={1200} height={600} alt="Hero image" />
 // 問題：
 // - 沒有自動轉換為 WebP/AVIF（更小的檔案大小）
@@ -237,13 +238,15 @@ import Image from 'next/image';
 // sizes 的寫法解釋：
 // "(max-width: 768px) 100vw" → 手機上佔全部視口寬度
 // "1200px"                   → 桌面上最大 1200px
-// 瀏覽器用這個資訊決定要下載哪個尺寸的圖片（自動選最合適的）`}</CodeBlock>
+// 瀏覽器用這個資訊決定要下載哪個尺寸的圖片（自動選最合適的） `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 2：字型阻塞渲染</h3>
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 Google Fonts 的傳統 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">&lt;link&gt;</code> 標籤需要建立額外的 HTTP 連線，字型未載入完成前文字渲染可能被阻塞，造成 Flash of Invisible Text（FOIT）。
               </p>
-              <CodeBlock language="tsx">{`// ❌ 傳統 Google Fonts link 標籤（在 layout.tsx 的 head 中）
+              <CodeBlock language="tsx">
+{` // ❌ 傳統 Google Fonts link 標籤（在 layout.tsx 的 head 中）
 // <link rel="preconnect" href="https://fonts.googleapis.com" />
 // <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 // <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
@@ -274,12 +277,13 @@ const notoSansTC = Noto_Sans_TC({
 export default function RootLayout({ children }) {
   return (
     <html lang="zh-TW">
-      <body className={\`\${inter.variable} \${notoSansTC.variable} font-sans\`}>
+      <body className={\\`\\${inter.variable} \\${notoSansTC.variable} font-sans\\`}>
         {children}
       </body>
     </html>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 3：Server Response 太慢（TTFB 高）</h3>
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
@@ -356,7 +360,8 @@ export default function RootLayout({ children }) {
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 瀏覽器的 JavaScript 主線程同時負責執行 JS 和繪製畫面。如果有昂貴的同步運算佔用主線程，用戶互動的回應就會被延遲。
               </p>
-              <CodeBlock language="tsx">{`// ❌ 昂貴的同步運算阻塞 UI
+              <CodeBlock language="tsx">
+{` // ❌ 昂貴的同步運算阻塞 UI
 function handleSearch(query: string) {
   // 假設 hugeDataset 有 10 萬筆資料
   // 複雜的 filter 可能執行 100ms+，這段時間 UI 完全凍結
@@ -397,10 +402,12 @@ function SearchInput() {
       <ResultList results={results} />
     </>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 2：大型 Component 的重新渲染</h3>
-              <CodeBlock language="tsx">{`// ✅ useDeferredValue — 延遲非關鍵 UI 更新
+              <CodeBlock language="tsx">
+{` // ✅ useDeferredValue — 延遲非關鍵 UI 更新
 import { useDeferredValue, useMemo, useState } from 'react';
 
 function SearchResults({ query }: { query: string }) {
@@ -430,10 +437,12 @@ function SearchResults({ query }: { query: string }) {
 // useDeferredValue vs startTransition 的差異：
 // - startTransition：你控制「哪個 setState 是低優先級」（push 模型）
 // - useDeferredValue：你控制「哪個值應該延遲更新」（pull 模型）
-// - 如果值來自父組件 props，只能用 useDeferredValue`}</CodeBlock>
+// - 如果值來自父組件 props，只能用 useDeferredValue `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 3：事件 Handler 太慢</h3>
-              <CodeBlock language="tsx">{`// ✅ 把昂貴的計算移到 Web Worker（完全不阻塞主線程）
+              <CodeBlock language="tsx">
+{` // ✅ 把昂貴的計算移到 Web Worker（完全不阻塞主線程）
 // 適合：圖片處理、資料解析、複雜的數學運算
 
 // worker.ts
@@ -485,7 +494,8 @@ function processLargeBatch(items: unknown[]) {
   }
 
   requestAnimationFrame(processBatch);
-}`}</CodeBlock>
+} `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.div>
@@ -524,7 +534,8 @@ function processLargeBatch(items: unknown[]) {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">問題 1：圖片沒有設定尺寸（最常見）</h3>
-              <CodeBlock language="tsx">{`// ❌ 圖片沒有尺寸：圖片載入後突然佔了空間，把下面的內容往下推
+              <CodeBlock language="tsx">
+{` // ❌ 圖片沒有尺寸：圖片載入後突然佔了空間，把下面的內容往下推
 // CLS 分數可能因此暴增
 <img src="photo.jpg" alt="用戶照片" />
 // 圖片下載完成前，這個 <img> 的高度是 0
@@ -549,10 +560,12 @@ import Image from 'next/image';
   height={600}
   alt="用戶照片"
   // Next.js Image 自動根據 width/height 保留空間，CLS = 0
-/>`}</CodeBlock>
+/> `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 2：字型替換導致文字位移</h3>
-              <CodeBlock language="css">{`/* 問題：Web Font 載入時，fallback 字型（系統字型）和 web font 的字元寬度不同
+              <CodeBlock language="css">
+{` /* 問題：Web Font 載入時，fallback 字型（系統字型）和 web font 的字元寬度不同
    文字會在字型替換時跳動（造成 CLS）
 
    解法：size-adjust 讓 fallback 字型的大小接近 web font */
@@ -573,10 +586,12 @@ body {
 }
 
 /* 使用 next/font 時 Next.js 會自動計算這些值 */
-/* 這是 next/font 自動 zero CLS 的秘密 */`}</CodeBlock>
+/* 這是 next/font 自動 zero CLS 的秘密 */ `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 3：動態注入的內容（廣告、Banner）</h3>
-              <CodeBlock language="tsx">{`// ❌ 廣告/Banner 在頁面渲染後才插入，把下方內容往下推
+              <CodeBlock language="tsx">
+{` // ❌ 廣告/Banner 在頁面渲染後才插入，把下方內容往下推
 <ArticleContent />
 <AdBanner />  {/* 廣告資料從 API 取得後才插入，造成 layout shift */}
 <MoreContent />
@@ -604,10 +619,12 @@ function Toast({ message }: { message: string }) {
       {message}
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">問題 4：動畫導致位移（用 transform 而非 margin）</h3>
-              <CodeBlock language="css">{`/* ❌ 改變 layout 屬性的動畫 — 觸發 Layout + Paint，影響其他元素 */
+              <CodeBlock language="css">
+{` /* ❌ 改變 layout 屬性的動畫 — 觸發 Layout + Paint，影響其他元素 */
 .slide-in-bad {
   animation: slideInBad 0.3s ease;
 }
@@ -638,7 +655,8 @@ function Toast({ message }: { message: string }) {
 .animated-element {
   will-change: transform;  /* 提示瀏覽器此元素會動，提前建立 compositing layer */
   /* 注意：不要對所有元素都加，只用在確實會動的元素上 */
-}`}</CodeBlock>
+} `}
+</CodeBlock>
             </CardBody>
           </Card>
         </motion.div>
@@ -663,7 +681,8 @@ function Toast({ message }: { message: string }) {
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">1. Image 優化完整設定</h3>
-              <CodeBlock language="tsx">{`import Image from 'next/image';
+              <CodeBlock language="tsx">
+{` import Image from 'next/image';
 
 // LCP 元素（Hero 圖片、主要內容圖）
 <Image
@@ -696,13 +715,15 @@ function Toast({ message }: { message: string }) {
   height={40}
   className="rounded-full"
   alt={user.name}
-/>`}</CodeBlock>
+/> `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">2. Dynamic Import — 程式碼分割</h3>
               <p className="text-gray-600 mb-3 text-sm leading-relaxed">
                 Dynamic Import 讓你把大型組件分割成獨立的 JS chunk，只有在需要時才下載。這直接減少初始頁面的 JS 大小，改善 LCP 和 INP。
               </p>
-              <CodeBlock language="tsx">{`import dynamic from 'next/dynamic';
+              <CodeBlock language="tsx">
+{` import dynamic from 'next/dynamic';
 
 // ✅ 大型圖表庫（不需要在首屏顯示）
 const HeavyChart = dynamic(() => import('./HeavyChart'), {
@@ -740,10 +761,12 @@ function ProductPage() {
       <HeavyChart data={chartData} />
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">3. Script 最佳化載入</h3>
-              <CodeBlock language="tsx">{`import Script from 'next/script';
+              <CodeBlock language="tsx">
+{` import Script from 'next/script';
 
 // strategy 決定 script 的載入時機：
 
@@ -762,10 +785,12 @@ function ProductPage() {
 
 // worker — 在 Web Worker 中執行（不阻塞主線程）
 // 需要安裝 @builder.io/partytown
-<Script src="/heavy-analytics.js" strategy="worker" />`}</CodeBlock>
+<Script src="/heavy-analytics.js" strategy="worker" /> `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">4. Bundle 大小分析</h3>
-              <CodeBlock language="bash">{`# 安裝 bundle analyzer
+              <CodeBlock language="bash">
+{` # 安裝 bundle analyzer
 npm install @next/bundle-analyzer
 
 # next.config.ts
@@ -783,7 +808,8 @@ ANALYZE=true next build
 # 常見的 bundle 優化機會：
 # - lodash：改用 lodash-es 或直接用原生 JS 方法
 # - moment.js：改用 date-fns（按需引入）或 Day.js
-# - @mui/icons-material：改用具名引入而非整包引入`}</CodeBlock>
+# - @mui/icons-material：改用具名引入而非整包引入 `}
+</CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-2 gap-4">
                 <div className="p-4 bg-green-50 rounded-xl border border-green-200">
@@ -837,7 +863,8 @@ ANALYZE=true next build
               </p>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">使用 Lighthouse</h3>
-              <CodeBlock language="bash">{`# 方法 1：Chrome DevTools
+              <CodeBlock language="bash">
+{` # 方法 1：Chrome DevTools
 # 打開 DevTools → Lighthouse 分頁 → 選擇 Mobile / Desktop → Generate report
 
 # 方法 2：CLI（適合 CI/CD 整合）
@@ -857,7 +884,8 @@ lighthouse https://yoursite.com \\
 
 # 方法 3：PageSpeed Insights（Google 線上工具）
 # https://pagespeed.web.dev/
-# 用真實的 Lighthouse 跑分 + 提供真實用戶的 CrUX 資料`}</CodeBlock>
+# 用真實的 Lighthouse 跑分 + 提供真實用戶的 CrUX 資料 `}
+</CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-4 mt-8">Lighthouse 分數解讀</h3>
               <div className="overflow-x-auto mb-6">
@@ -935,7 +963,8 @@ lighthouse https://yoursite.com \\
               </div>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">在 CI/CD 中整合 Lighthouse</h3>
-              <CodeBlock language="bash">{`# package.json — 加入效能測試 script
+              <CodeBlock language="bash">
+{` # package.json — 加入效能測試 script
 # "scripts": {
 #   "perf:check": "lighthouse-ci autorun"
 # }
@@ -971,7 +1000,8 @@ module.exports = {
 #   run: |
 #     npm run build
 #     npm start &
-#     npx @lhci/cli autorun`}</CodeBlock>
+#     npx @lhci/cli autorun `}
+</CodeBlock>
 
               <div className="mt-6 p-5 bg-gradient-to-r from-green-700/10 to-teal-600/10 rounded-xl border border-green-200">
                 <div className="flex items-start gap-3">

@@ -200,7 +200,8 @@ export default function DevOpsEP06() {
             這個設計讓 Prometheus 本身就能感知哪些服務還在運行，哪些已經掛掉。
           </p>
 
-          <CodeBlock language="text">{`Prometheus Server
+          <CodeBlock language="text">
+{` Prometheus Server
     │
     ├── 每 15 秒拉取（scrape）→ /metrics endpoint
     │   ├── api-server:9090/metrics        （你的 Node.js 應用）
@@ -211,7 +212,8 @@ export default function DevOpsEP06() {
     ├── 儲存 Time Series 資料（預設保存 15 天）
     │
     └── 提供 PromQL 查詢介面
-         └── Grafana 連接 Prometheus 做視覺化`}</CodeBlock>
+         └── Grafana 連接 Prometheus 做視覺化 `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">四種 Metric 型別</h3>
           <p className="text-gray-600 leading-relaxed">
@@ -219,7 +221,8 @@ export default function DevOpsEP06() {
             選錯型別會讓後續查詢和圖表變得困難。
           </p>
 
-          <CodeBlock language="text">{`# ── Counter（計數器）────────────────────────────────────────────
+          <CodeBlock language="text">
+{` # ── Counter（計數器）────────────────────────────────────────────
 # 只增不減的累計值。適合：請求次數、錯誤次數、傳輸位元組數
 # 注意：Counter 只會增加（除非 process 重啟歸零）
 # 實際使用時用 rate() 計算速率，而不是直接看絕對值
@@ -255,7 +258,8 @@ http_request_duration_seconds_count               1000   # 總請求數
 
 rpc_duration_seconds{quantile="0.5"}  0.012   # 中位數 12ms
 rpc_duration_seconds{quantile="0.9"}  0.087   # P90 87ms
-rpc_duration_seconds{quantile="0.99"} 0.342   # P99 342ms`}</CodeBlock>
+rpc_duration_seconds{quantile="0.99"} 0.342   # P99 342ms `}
+</CodeBlock>
 
           <Card className="border-0 bg-emerald-50">
             <CardBody className="p-5">
@@ -306,7 +310,8 @@ rpc_duration_seconds{quantile="0.99"} 0.342   # P99 342ms`}</CodeBlock>
             提供了四種 Metric 型別的封裝，並自動收集 Node.js 系統預設指標。
           </p>
 
-          <CodeBlock language="typescript">{`// npm install prom-client
+          <CodeBlock language="typescript">
+{` // npm install prom-client
 import { collectDefaultMetrics, Counter, Histogram, Gauge, Registry } from 'prom-client';
 
 // 建立獨立的 Registry（避免全域污染，利於測試）
@@ -353,9 +358,11 @@ setInterval(async () => {
   const poolStats = await prisma.$pool.stats();
   dbConnectionsActive.set(poolStats.activeConnections);
   dbConnectionsPoolSize.set(poolStats.totalConnections);
-}, 10_000);`}</CodeBlock>
+}, 10_000); `}
+</CodeBlock>
 
-          <CodeBlock language="typescript">{`// ─── Express Middleware：自動記錄所有 HTTP 請求 ──────────────
+          <CodeBlock language="typescript">
+{` // ─── Express Middleware：自動記錄所有 HTTP 請求 ──────────────
 import express from 'express';
 const app = express();
 
@@ -399,9 +406,11 @@ app.get('/metrics', async (req, res) => {
 
   res.set('Content-Type', register.contentType);
   res.end(await register.metrics());
-});`}</CodeBlock>
+}); `}
+</CodeBlock>
 
-          <CodeBlock language="typescript">{`// ─── 業務層 Metrics：記錄重要的業務事件 ─────────────────────
+          <CodeBlock language="typescript">
+{` // ─── 業務層 Metrics：記錄重要的業務事件 ─────────────────────
 const orderCreatedTotal = new Counter({
   name:       'orders_created_total',
   help:       'Total orders created',
@@ -428,7 +437,8 @@ async function createOrder(data: CreateOrderDto, user: User) {
   orderAmountHistogram.observe(order.totalAmount);
 
   return order;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -450,7 +460,8 @@ async function createOrder(data: CreateOrderDto, user: User) {
             掌握以下幾個核心函數，就能寫出 Grafana Dashboard 所需的所有查詢。
           </p>
 
-          <CodeBlock language="promql">{`# ── 流量（Traffic）────────────────────────────────────────────
+          <CodeBlock language="promql">
+{` # ── 流量（Traffic）────────────────────────────────────────────
 # rate()：計算 Counter 在指定時間窗口內的每秒平均增長率
 # [5m] 表示用過去 5 分鐘的資料計算
 rate(http_requests_total[5m])
@@ -506,7 +517,8 @@ rate(http_request_duration_seconds_sum[5m])
   / rate(http_request_duration_seconds_count[5m])
 
 # 最近 1 小時的錯誤請求總數
-increase(http_requests_total{status=~"5.."}[1h])`}</CodeBlock>
+increase(http_requests_total{status=~"5.."}[1h]) `}
+</CodeBlock>
 
           <Card className="border-0 bg-slate-50">
             <CardBody className="p-5">
@@ -553,7 +565,8 @@ increase(http_requests_total{status=~"5.."}[1h])`}</CodeBlock>
             再連接 Grafana 建立 Dashboard。
           </p>
 
-          <CodeBlock language="yaml">{`# prometheus.yml — Prometheus 設定檔
+          <CodeBlock language="yaml">
+{` # prometheus.yml — Prometheus 設定檔
 global:
   scrape_interval:     15s   # 每 15 秒拉取一次
   evaluation_interval: 15s   # 每 15 秒評估一次告警規則
@@ -599,7 +612,8 @@ scrape_configs:
   # Redis（需要安裝 redis_exporter）
   - job_name: 'redis'
     static_configs:
-      - targets: ['redis-exporter:9121']`}</CodeBlock>
+      - targets: ['redis-exporter:9121'] `}
+</CodeBlock>
 
           <h3 className="text-xl font-black text-gray-800">標準服務 Dashboard 應包含的 Panel</h3>
           <p className="text-gray-600 leading-relaxed">
@@ -702,7 +716,8 @@ scrape_configs:
             告警規則定義在 Prometheus 的 rule 檔案中。
           </p>
 
-          <CodeBlock language="yaml">{`# alert-rules.yml — 告警規則定義
+          <CodeBlock language="yaml">
+{` # alert-rules.yml — 告警規則定義
 groups:
   - name: api_alerts
     rules:
@@ -769,9 +784,11 @@ groups:
           severity: critical
         annotations:
           summary:     "服務不可用"
-          description: "{{ $labels.instance }} 已無法抓取 Metrics 超過 1 分鐘，可能已 Down。"`}</CodeBlock>
+          description: "{{ $labels.instance }} 已無法抓取 Metrics 超過 1 分鐘，可能已 Down。" `}
+</CodeBlock>
 
-          <CodeBlock language="yaml">{`# alertmanager.yml — AlertManager 路由與通知設定
+          <CodeBlock language="yaml">
+{` # alertmanager.yml — AlertManager 路由與通知設定
 global:
   # 預設的 Slack Webhook（也可以在各 receiver 中個別設定）
   slack_api_url: 'https://hooks.slack.com/services/xxx/yyy/zzz'
@@ -824,7 +841,8 @@ receivers:
 
   # ── 告警靜默（Silencing）────────────────────────────────────
   # 可在 AlertManager UI 設定，避免維護期間誤報
-  # 例如：部署新版本的 5 分鐘內靜默所有告警`}</CodeBlock>
+  # 例如：部署新版本的 5 分鐘內靜默所有告警 `}
+</CodeBlock>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <Card className="border-0 bg-green-50">

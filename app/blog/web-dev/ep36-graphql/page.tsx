@@ -321,7 +321,7 @@ const resolvers = {
             language="tsx" 
             code={`import { useQuery, gql } from '@apollo/client';
 
-const GET_POSTS = gql\`
+const GET_POSTS = gql\\`
   query GetAllPosts {
     allPosts {
       id
@@ -329,7 +329,7 @@ const GET_POSTS = gql\`
       author { name }
     }
   }
-\`;
+\\`;
 
 function PostList() {
   const { loading, error, data } = useQuery(GET_POSTS);

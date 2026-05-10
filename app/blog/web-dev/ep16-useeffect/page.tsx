@@ -246,7 +246,7 @@ function UserProfile() {
 
   useEffect(() => {
     // 當 userId 改變時，重新請求對應的使用者資料
-    fetch(\`/api/users/\${userId}\`)
+    fetch(\\`/api/users/\\${userId}\\`)
       .then(res => res.json())
       .then(data => setUser(data));
   }, [userId]);  // ← userId 是 dependency，userId 變了就重新執行
@@ -371,9 +371,9 @@ function UserProfile({ userId }: UserProfileProps) {
     setIsLoading(true);
     setError(null);
 
-    fetch(\`/api/users/\${userId}\`)
+    fetch(\\`/api/users/\\${userId}\\`)
       .then(res => {
-        if (!res.ok) throw new Error(\`API 回傳錯誤：\${res.status}\`);
+        if (!res.ok) throw new Error(\\`API 回傳錯誤：\\${res.status}\\`);
         return res.json();
       })
       .then((data: User) => {
@@ -583,7 +583,7 @@ useEffect(() => {
 // ✅ 加上 dependency array
 useEffect(() => {
   // 只有需要時才執行
-  document.title = \`計數：\${count}\`;
+  document.title = \\`計數：\\${count}\\`;
 }, [count]);  // count 改變時才更新 title`}
                 />
                 <p className="text-gray-500 text-sm">
@@ -606,14 +606,14 @@ useEffect(() => {
                   lang="tsx"
                   code={`// ❌ 用了 userId，但沒放進 dependency array
 useEffect(() => {
-  fetch(\`/api/users/\${userId}\`)  // userId 可能是舊的！
+  fetch(\\`/api/users/\\${userId}\\`)  // userId 可能是舊的！
     .then(res => res.json())
     .then(data => setUser(data));
 }, []);  // ← 空陣列，userId 改變時不重新執行
 
 // ✅ 把 userId 加進 dependency array
 useEffect(() => {
-  fetch(\`/api/users/\${userId}\`)
+  fetch(\\`/api/users/\\${userId}\\`)
     .then(res => res.json())
     .then(data => setUser(data));
 }, [userId]);  // ← userId 改變時重新執行`}

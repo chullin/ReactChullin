@@ -82,7 +82,8 @@ export default function WebDevEP20() {
             並在元件掛載時讀回來。你可能會在每個元件裡寫出這樣的程式碼——
           </p>
 
-          <CodeBlock language="tsx">{`// ProfilePage.tsx — 第一次寫
+          <CodeBlock language="tsx">
+{` // ProfilePage.tsx — 第一次寫
 function ProfilePage() {
   const [theme, setTheme] = useState('light');
 
@@ -125,7 +126,8 @@ function DashboardPage() {
     if (saved) setTheme(saved);
   }, []);
   // ...
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-red-400">
             <CardBody className="p-6">
@@ -253,7 +255,8 @@ function DashboardPage() {
             做成一個可以重用於任何型別的泛型 Hook：
           </p>
 
-          <CodeBlock language="tsx">{`// hooks/useLocalStorage.ts
+          <CodeBlock language="tsx">
+{` // hooks/useLocalStorage.ts
 import { useState } from 'react';
 
 function useLocalStorage<T>(key: string, initialValue: T) {
@@ -276,7 +279,8 @@ function useLocalStorage<T>(key: string, initialValue: T) {
   return [value, setStoredValue] as const;
 }
 
-export default useLocalStorage;`}</CodeBlock>
+export default useLocalStorage; `}
+</CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4">
             <Card className="border-0 shadow-md">
@@ -318,7 +322,8 @@ export default useLocalStorage;`}</CodeBlock>
             有了這個 Hook，原本三個元件各自寫的 15 行，現在變成 1 行：
           </p>
 
-          <CodeBlock language="tsx">{`// ProfilePage.tsx — 現在只需要 1 行！
+          <CodeBlock language="tsx">
+{` // ProfilePage.tsx — 現在只需要 1 行！
 const [theme, setTheme] = useLocalStorage('theme', 'light');
 
 // 也可以用在任何型別
@@ -340,7 +345,8 @@ function ProfilePage() {
       <button onClick={() => setTheme('dark')}>切換深色模式</button>
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-teal-400">
             <CardBody className="p-5">
@@ -378,7 +384,8 @@ function ProfilePage() {
           <Card className="border-0 shadow-md border-l-4 border-l-red-400">
             <CardBody className="p-6">
               <p className="font-bold text-red-700 mb-3">沒有 debounce 的搜尋框（效能殺手）</p>
-              <CodeBlock language="tsx">{`function SearchPage() {
+              <CodeBlock language="tsx">
+{` function SearchPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -389,7 +396,8 @@ function ProfilePage() {
   }, [search]);
 
   return <input onChange={e => setSearch(e.target.value)} />;
-}`}</CodeBlock>
+} `}
+</CodeBlock>
               <p className="text-gray-600 text-sm mt-3">
                 使用者輸入 10 個字的過程中，你發了 10 次請求。前 9 次的結果根本沒用，
                 卻浪費了伺服器資源和使用者的流量。
@@ -402,7 +410,8 @@ function ProfilePage() {
             把這個等待邏輯抽成 Hook：
           </p>
 
-          <CodeBlock language="tsx">{`// hooks/useDebounce.ts
+          <CodeBlock language="tsx">
+{` // hooks/useDebounce.ts
 import { useState, useEffect } from 'react';
 
 function useDebounce<T>(value: T, delay: number = 500): T {
@@ -422,14 +431,16 @@ function useDebounce<T>(value: T, delay: number = 500): T {
   return debouncedValue;
 }
 
-export default useDebounce;`}</CodeBlock>
+export default useDebounce; `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
             用起來非常直觀——加一行 <code className="bg-gray-100 text-emerald-700 px-1.5 py-0.5 rounded font-mono">useDebounce</code>，
             搜尋框就從「每字都 fetch」變成「停止輸入後才 fetch」：
           </p>
 
-          <CodeBlock language="tsx">{`function SearchPage() {
+          <CodeBlock language="tsx">
+{` function SearchPage() {
   const [search, setSearch] = useState('');
 
   // 把原始 search 值延遲 300ms
@@ -452,7 +463,8 @@ export default useDebounce;`}</CodeBlock>
 // 效果：
 // 使用者輸入 "typescript"（300ms 內快速輸入）
 // → 只有在停止輸入 300ms 後，才發出 1 次 API 請求
-// → 省下 9 次不必要的請求！`}</CodeBlock>
+// → 省下 9 次不必要的請求！ `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50">
             <CardBody className="p-6">
@@ -497,7 +509,8 @@ export default useDebounce;`}</CodeBlock>
             每次都重複寫一樣的模板代碼。把它封裝成 useFetch：
           </p>
 
-          <CodeBlock language="tsx">{`// hooks/useFetch.ts
+          <CodeBlock language="tsx">
+{` // hooks/useFetch.ts
 import { useState, useEffect } from 'react';
 
 type FetchState<T> = {
@@ -521,7 +534,7 @@ function useFetch<T>(url: string) {
 
     fetch(url, { signal: controller.signal })
       .then(res => {
-        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+        if (!res.ok) throw new Error(\\`HTTP \\${res.status}\\`);
         return res.json();
       })
       .then(data => setState({ data, loading: false, error: null }))
@@ -539,7 +552,8 @@ function useFetch<T>(url: string) {
   return state;
 }
 
-export default useFetch;`}</CodeBlock>
+export default useFetch; `}
+</CodeBlock>
 
           <Card className="border-0 shadow-lg bg-gradient-to-r from-green-50 to-emerald-50">
             <CardBody className="p-6">
@@ -564,7 +578,8 @@ export default useFetch;`}</CodeBlock>
             有了 useFetch，任何資料顯示頁面都可以用三行解決所有狀態管理：
           </p>
 
-          <CodeBlock language="tsx">{`// 用法非常乾淨
+          <CodeBlock language="tsx">
+{` // 用法非常乾淨
 type Post = { id: number; title: string; body: string };
 
 function PostList() {
@@ -585,9 +600,10 @@ function PostList() {
 
 // url 變了自動重新請求
 function UserDetail({ userId }: { userId: number }) {
-  const { data: user, loading } = useFetch<User>(\`/api/users/\${userId}\`);
+  const { data: user, loading } = useFetch<User>(\\`/api/users/\\${userId}\\`);
   // userId 從 1 變成 2，自動重新 fetch /api/users/2
-}`}</CodeBlock>
+} `}
+</CodeBlock>
         </motion.section>
 
         <Divider className="my-8" />
@@ -611,7 +627,8 @@ function UserDetail({ userId }: { userId: number }) {
             但這些邏輯全部可以封裝在一個 Hook 裡：
           </p>
 
-          <CodeBlock language="tsx">{`// hooks/usePagination.ts
+          <CodeBlock language="tsx">
+{` // hooks/usePagination.ts
 import { useState } from 'react';
 
 function usePagination<T>(data: T[], itemsPerPage: number = 10) {
@@ -639,14 +656,16 @@ function usePagination<T>(data: T[], itemsPerPage: number = 10) {
   };
 }
 
-export default usePagination;`}</CodeBlock>
+export default usePagination; `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
             更進一步，我們可以把 useFetch 和 usePagination 結合起來，
             完成一個具備「資料請求 + 分頁」功能的複合 Hook：
           </p>
 
-          <CodeBlock language="tsx">{`function PostListPage() {
+          <CodeBlock language="tsx">
+{` function PostListPage() {
   // 先用 useFetch 拿資料
   const { data: allPosts, loading, error } = useFetch<Post[]>('/api/posts');
 
@@ -676,7 +695,8 @@ export default usePagination;`}</CodeBlock>
       </div>
     </div>
   );
-}`}</CodeBlock>
+} `}
+</CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
             PostListPage 本身只有 30 行，但功能完整。邏輯全部在 Hook 裡，
