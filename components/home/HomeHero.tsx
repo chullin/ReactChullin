@@ -103,8 +103,8 @@ export default function HomeHero() {
                     <Code2 size={24} />
                   </div>
                   <div>
-                    <p className="font-bold text-sm leading-none">Software</p>
-                    <p className="text-gray-500 text-xs mt-1">Engineer</p>
+                    <p className="font-bold text-sm leading-none">AI Integration</p>
+                    <p className="text-gray-500 text-xs mt-1">Specialist</p>
                   </div>
                 </CardBody>
               </Card>
@@ -121,8 +121,8 @@ export default function HomeHero() {
                     <Cpu size={24} />
                   </div>
                   <div>
-                    <p className="font-bold text-sm leading-none">Python</p>
-                    <p className="text-gray-500 text-xs mt-1">2+ Years Exp.</p>
+                    <p className="font-bold text-sm leading-none">Automation</p>
+                    <p className="text-gray-500 text-xs mt-1">Smart Systems</p>
                   </div>
                 </CardBody>
               </Card>
