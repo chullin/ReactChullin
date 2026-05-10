@@ -1,0 +1,1145 @@
+[
+  {
+    "seriesId": "ai",
+    "slug": "ep01-airgapped-intro",
+    "title": "製造工廠",
+    "subtitle": "為什麼有些企業的 AI 不能連網？什麼是隔離網路？ 從我在鴻海深圳廠的實際部署經驗說起",
+    "href": "/blog/ai/ep01-airgapped-intro",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep02-ollama-local-llm",
+    "title": "模型管理",
+    "subtitle": "從安裝 Ollama 到在本地跑第一個推論， 再到如何在完全沒有網路的工廠環境部署模型",
+    "href": "/blog/ai/ep02-ollama-local-llm",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep03-dify",
+    "title": "LLM Orchestration",
+    "subtitle": "No-code AI Pipeline、Knowledge Base、Agent 串接 打造可控的企業級 AI 應用",
+    "href": "/blog/ai/ep03-dify",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep04-transformer-tts",
+    "title": "WaveNet",
+    "subtitle": "Encoder-Decoder、Self-Attention、從論文到嵌入式推論 碩士論文主題精華整理",
+    "href": "/blog/ai/ep04-transformer-tts",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep05-tts-models",
+    "title": "聲碼器演進與端到端 TTS：從 WaveNet 到 VITS",
+    "subtitle": "陳憲億（Joseph Chen）深入分析 Tacotron2、FastSpeech2、WaveNet、HiFi-GAN、VITS 五大模型的核心設計邏輯，探討 TTS 如何走向端到端架構。",
+    "href": "/blog/ai/ep05-tts-models",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep06-tts-edge-deploy",
+    "title": "OOM（Out of Memory）：模型過大無法載入",
+    "subtitle": "VITS 音質再好，也必須壓縮才能跑在智慧穿戴裝置上。 Pruning、Quantization、Knowledge Distillation——三大壓縮技術的原理與取捨，以及 NPU/DSP 部署的實戰眉角。",
+    "href": "/blog/ai/ep06-tts-edge-deploy",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep07-finetune-lora",
+    "title": "LLM 微調技術詳解：Adapter, LoRA 與 QLoRA",
+    "subtitle": "由陳憲億（Joseph Chen）撰寫，深入淺出解析 PEFT 技術，包括 Adapter、LoRA 與 QLoRA 的原理與實作，教你如何在消費級 GPU 上微調大模型。",
+    "href": "/blog/ai/ep07-finetune-lora",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "ai",
+    "slug": "ep08-transformer-to-gpt",
+    "title": "監督式微調（Supervised Fine-Tuning, SFT）",
+    "subtitle": "Attention 機制如何從語音合成走向通用語言智慧 — BERT 雙向編碼器、GPT 系列、RLHF、到 ChatGPT 的誕生",
+    "href": "/blog/ai/ep08-transformer-to-gpt",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep01-sql-basics",
+    "title": "SQL 入門：SELECT 不只是查資料 從關聯式資料庫到 JOIN 的完整思維",
+    "subtitle": "資料庫是每個軟體系統的心臟。學 SQL 不只是背指令， 更要理解「為什麼要這樣設計」。本篇從零開始，帶你建立正確的資料庫思維。",
+    "href": "/blog/database/ep01-sql-basics",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep02-index",
+    "title": "儲存空間",
+    "subtitle": "同樣的 SQL，在 100 筆資料時跑 1ms，在 1000 萬筆時跑 30 秒。 索引是讓資料庫「秒查」的關鍵，但錯誤的索引策略反而會讓系統更慢。",
+    "href": "/blog/database/ep02-index",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep03-transaction",
+    "title": "交易與鎖定：ACID 不只是面試題 隔離層級、髒讀、幻讀與死鎖實戰",
+    "subtitle": "「帳戶轉帳扣了錢卻沒入帳」、「庫存超賣」——這些都是交易設計錯誤的結果。 ACID 保證的不只是理論，而是你的資料在並發情況下不會壞掉的底線。",
+    "href": "/blog/database/ep03-transaction",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep04-nosql-mongodb",
+    "title": "Clean Code",
+    "subtitle": "什麼時候用 NoSQL，什麼時候堅持 SQL？從 Document Model 的本質出發， 一路走到 Aggregation Pipeline 與實際的 Mongoose 開發，再給你一份清晰的選型決策表。",
+    "href": "/blog/database/ep04-nosql-mongodb",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep05-sharding",
+    "title": "加索引優化查詢",
+    "subtitle": "Hash Sharding、Range Sharding、主從複製、Replication Lag — 千萬級資料的分散式資料庫架構，從讀寫分離到 Sharding，一步步解開水平擴展的謎題。",
+    "href": "/blog/database/ep05-sharding",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep06-redis-advanced",
+    "title": "快取（Cache）",
+    "subtitle": "Redis Streams、HyperLogLog、Bloom Filter、分散式鎖實作 — Redis 不只是快取的完整應用指南，從 Pub/Sub 到 Lua Script 原子操作， 解鎖 Redis 的全部潛能。",
+    "href": "/blog/database/ep06-redis-advanced",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "database",
+    "slug": "ep07-postgres-advanced",
+    "title": "Window Functions",
+    "subtitle": "ROW_NUMBER、RANK、LAG/LEAD、遞迴 CTE、執行計畫優化 — 讓你從「會寫 SQL」進化到「寫好 SQL」",
+    "href": "/blog/database/ep07-postgres-advanced",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep01-test-pyramid",
+    "title": "測試金字塔：Unit、Integration、E2E 什麼值得測？怎麼測才有效？",
+    "subtitle": "「寫測試很浪費時間」是初階工程師的想法。 「不寫測試才是最浪費時間的」是走過大型專案的工程師的體悟。 這篇帶你建立正確的測試心態與實作技巧。",
+    "href": "/blog/devops/ep01-test-pyramid",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep02-github-actions",
+    "title": "npm ci vs npm install",
+    "subtitle": "每次 Push 都要手動跑測試、手動部署？這不是工程師該做的事。 這篇帶你從零開始設定 GitHub Actions，讓 CI/CD 幫你把守每一道關卡。",
+    "href": "/blog/devops/ep02-github-actions",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep03-docker-compose",
+    "title": "Docker Compose： 一個指令啟動整個開發環境",
+    "subtitle": "services、volumes、networks、depends_on — 讓前後端 + 資料庫一鍵啟動，告別「在我電腦可以跑」",
+    "href": "/blog/devops/ep03-docker-compose",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep04-kubernetes",
+    "title": "Kubernetes 入門： Container 編排的下一步",
+    "subtitle": "Pod、Deployment、Service、Ingress — 從 Docker Compose 到 K8s 的思維轉換，以及為什麼大公司都在用",
+    "href": "/blog/devops/ep04-kubernetes",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep05-deployment-strategy",
+    "title": "藍綠部署與 Canary Release： 零 Downtime 上線策略",
+    "subtitle": "藍綠切換、Canary 灰度發布、Feature Flag、滾動更新 — 讓每次部署都可以安全回滾",
+    "href": "/blog/devops/ep05-deployment-strategy",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep06-monitoring",
+    "title": "⚠️ {{ .GroupLabels.alertname }}",
+    "subtitle": "P99 延遲達 {{ $value | humanizeDuration }}，請檢查慢查詢或資源瓶頸。",
+    "href": "/blog/devops/ep06-monitoring",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep07-terraform",
+    "title": "Terraform：Infrastructure as Code 入門 用程式碼管理雲端基礎設施",
+    "subtitle": "Provider、Resource、State、Module — 告別手動點選 AWS Console， 把整個雲端基礎設施變成可版本控制、可重現、可自動化的程式碼。",
+    "href": "/blog/devops/ep07-terraform",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "devops",
+    "slug": "ep08-devsecops",
+    "title": "部署中斷",
+    "subtitle": "不要讓「安全」成為部署的阻礙。學習如何在 CI/CD 的每一秒鐘，自動偵測漏洞、掃描秘密資訊與保護容器鏡像。",
+    "href": "/blog/devops/ep08-devsecops",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "embedded",
+    "slug": "ep01-linux",
+    "title": "Raspberry Pi / 嵌入式",
+    "subtitle": "檔案操作、權限管理、cron 排程、process 管理 — 附面試常考題",
+    "href": "/blog/embedded/ep01-linux",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "embedded",
+    "slug": "ep02-shell",
+    "title": "新增 shebang",
+    "subtitle": "變數、迴圈、條件判斷、函數 — 10 個工程師實際用到的腳本模板",
+    "href": "/blog/embedded/ep02-shell",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "embedded",
+    "slug": "ep03-uart-i2c",
+    "title": "UART &amp; I2C 嵌入式硬體溝通基礎原理",
+    "subtitle": "不需要深入硬體，只需理解軟體工程師該懂的通訊概念 — Python pyserial / smbus 實作",
+    "href": "/blog/embedded/ep03-uart-i2c",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "general",
+    "slug": "building-react-portfolio",
+    "title": "App Router vs Pages Router",
+    "subtitle": "從零開始，到 Vercel 部署上線的完整過程",
+    "href": "/blog/general/building-react-portfolio",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "general",
+    "slug": "man-must-explore",
+    "title": "Man must explore, and this is exploration at its greatest",
+    "subtitle": "Problems look mighty small from 150 miles up",
+    "href": "/blog/general/man-must-explore",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "30days-learning-review",
+    "title": "Create Hello World Function",
+    "subtitle": "{bad} ✅ 正確寫法 {good} {note}",
+    "href": "/blog/js/30days-learning-review",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "closure-scope",
+    "title": "閉包與作用域 JS 最核心的底層機制",
+    "subtitle": "{note}",
+    "href": "/blog/js/closure-scope",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep01-js-basics",
+    "title": "Clean Code",
+    "subtitle": "變數、函式、陣列、物件——React 程式碼裡最常用的四樣東西， 一次全部搞懂，從此看 React 程式碼不再霧煞煞",
+    "href": "/blog/js/ep01-js-basics",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep02-es6",
+    "title": "六個 ES6+ 語法， 讓你看懂所有 React 程式碼",
+    "subtitle": "箭頭函式、解構、展開、模板字串、import/export、選用鏈—— 一次全學完，從此 React 程式碼不再有看不懂的語法",
+    "href": "/blog/js/ep02-es6",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep03-closure-scope",
+    "title": "Closure & Scope： 掌握 JS 的靈魂核心",
+    "subtitle": "為什麼函式執行完畢後，還能「記得」外部的變數？這不是魔法，而是 JavaScript 最強大也最令人困惑的機制：閉包與作用域。",
+    "href": "/blog/js/ep03-closure-scope",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep04-event-loop",
+    "title": "Event Loop： 單執行緒的異步奇蹟",
+    "subtitle": "為什麼 JS 只有一個執行緒卻不會卡死？深入理解 Call Stack、Task Queue 與 Microtasks 的協作模式，掌握前端效能優化的核心。",
+    "href": "/blog/js/ep04-event-loop",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep05-promise-async",
+    "title": "一網打盡",
+    "subtitle": "從混亂的 Callback Hell 到優雅的 Async/Await。徹底掌握 JavaScript 處理資料請求與長時間任務的終極方案。",
+    "href": "/blog/js/ep05-promise-async",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep06-typescript-advanced",
+    "title": "TypeScript 進階：泛型、 Conditional Types、Utility Types 實戰",
+    "subtitle": "Generic Constraints、infer、Mapped Types、Template Literal — 從「加冒號」到真正的型別工程師",
+    "href": "/blog/js/ep06-typescript-advanced",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep07-design-patterns",
+    "title": "JavaScript 設計模式： Observer、Strategy、Factory 實戰",
+    "subtitle": "三個最常被問到的設計模式 — 用 React 的真實場景帶你理解「為什麼」而非死背",
+    "href": "/blog/js/ep07-design-patterns",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep08-functional-programming",
+    "title": "Functional Programming in JavaScript： 不可變資料與純函數",
+    "subtitle": "Immutability、Pure Functions、Compose、Functor、Maybe Monad — 讓你的程式碼更可預測、更好測試",
+    "href": "/blog/js/ep08-functional-programming",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "ep09-web-apis",
+    "title": "Web Workers",
+    "subtitle": "瀏覽器原生 API 的三大場景 — 背景執行緒、離線儲存、懶載入 — 不依賴框架的原生能力",
+    "href": "/blog/js/ep09-web-apis",
+    "ep": "EP.09",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "event-loop",
+    "title": "Event Loop 完整圖解 JS 如何做到「非同步」",
+    "subtitle": "為什麼 setTimeout 0ms 不是真的立刻執行？ Promise 和 setTimeout 誰先誰後？用互動圖解一次說清楚",
+    "href": "/blog/js/event-loop",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "js",
+    "slug": "promise-async",
+    "title": "Promise vs async/await 非同步 JS 的現代寫法",
+    "subtitle": "{bad} {goodLabel ?? '✅ 正確做法'} {good} {note && {note}",
+    "href": "/blog/js/promise-async",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "lang",
+    "slug": "ep01-c",
+    "title": "Stack（堆疊）",
+    "subtitle": "指標基礎、Stack vs Heap、struct、常見面試 Coding 題解析",
+    "href": "/blog/lang/ep01-c",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "lang",
+    "slug": "ep02-csharp",
+    "title": "Task vs Task<T>",
+    "subtitle": "型別系統、LINQ、Web API 設計 — C# 語法特性與後端開發核心概念",
+    "href": "/blog/lang/ep02-csharp",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep01-two-sum",
+    "title": "#1 Two Sum 從暴力解到 HashMap 思維",
+    "subtitle": "同一題三種解法，複雜度從 O(n²) 降到 O(n)",
+    "href": "/blog/leetcode/ep01-two-sum",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep02-set-vs-dict",
+    "title": "Set vs Dict 選對資料結構，解題事半功倍",
+    "subtitle": "#217 Contains Duplicate · #242 Valid Anagram",
+    "href": "/blog/leetcode/ep02-set-vs-dict",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep03-group-anagrams",
+    "title": "#49 Group Anagrams defaultdict 的正確用法",
+    "subtitle": "排序作為 key，用 defaultdict 分組——理解這兩件事就解開這題",
+    "href": "/blog/leetcode/ep03-group-anagrams",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep04-two-pointers",
+    "title": "從兩端向中間",
+    "subtitle": "#125 Valid Palindrome — 一個 Bug 讓我徹底理解 Two Pointers",
+    "href": "/blog/leetcode/ep04-two-pointers",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep05-sliding-window",
+    "title": "Longest Substring Without Repeating Characters",
+    "subtitle": "#121 Best Time to Buy and Sell Stock — Sliding Window 最直觀的入門題",
+    "href": "/blog/leetcode/ep05-sliding-window",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep06-stack",
+    "title": "Stack 後進先出，解決「配對」問題",
+    "subtitle": "#20 Valid Parentheses — Stack 最經典的應用，也是單調棧的入口",
+    "href": "/blog/leetcode/ep06-stack",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep07-binary-search",
+    "title": "Binary Search 每次砍掉一半，O(log n) 的魔法",
+    "subtitle": "#704 Binary Search · #33 Search in Rotated Sorted Array",
+    "href": "/blog/leetcode/ep07-binary-search",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep08-linked-list",
+    "title": "Pointer 反轉",
+    "subtitle": "#206 Reverse · #21 Merge · #141 Cycle — Linked List 三大核心題",
+    "href": "/blog/leetcode/ep08-linked-list",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep09-tree-dfs",
+    "title": "Tree & DFS 遞迴的本質，就是信任自己",
+    "subtitle": "#104 Max Depth · #100 Same Tree · #226 Invert — 三題打通 DFS 思維",
+    "href": "/blog/leetcode/ep09-tree-dfs",
+    "ep": "EP.09",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep10-tree-bfs-bst",
+    "title": "Tree BFS & BST 層序遍歷、驗證 BST、找共同祖先",
+    "subtitle": "#102 Level Order · #98 Validate BST · #235 LCA",
+    "href": "/blog/leetcode/ep10-tree-bfs-bst",
+    "ep": "EP.10",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep11-dp-basics",
+    "title": "重疊子問題",
+    "subtitle": "#70 Climbing Stairs · #198 House Robber — 用兩題打通 1D DP 的思維",
+    "href": "/blog/leetcode/ep11-dp-basics",
+    "ep": "EP.11",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep12-dp-advanced",
+    "title": "EP.12 — DP 進階： 最佳化、序列、分割",
+    "subtitle": "#322 Coin Change · #300 Longest Increasing Subsequence · #139 Word Break — 三種進階 DP 模板，處理無限選擇、序列比對、字串分割",
+    "href": "/blog/leetcode/ep12-dp-advanced",
+    "ep": "EP.12",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep13-graph-dfs",
+    "title": "EP.13 — Graph 入門： DFS 在圖上長什麼樣子",
+    "subtitle": "#200 Number of Islands · #133 Clone Graph — Grid DFS、visited 集合、adjacency list 三個核心概念",
+    "href": "/blog/leetcode/ep13-graph-dfs",
+    "ep": "EP.13",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep14-graph-topo",
+    "title": "建圖 + 計算每個節點的 in-degree",
+    "subtitle": "#207 Course Schedule · #210 Course Schedule II — Kahn's Algorithm、DFS Cycle Detection、有向圖的排序問題",
+    "href": "/blog/leetcode/ep14-graph-topo",
+    "ep": "EP.14",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep15-backtracking",
+    "title": "EP.15 — Backtracking： 走不通就退回來",
+    "subtitle": "#78 Subsets · #46 Permutations · #39 Combination Sum — 一個框架搞定所有「列出所有可能」的問題",
+    "href": "/blog/leetcode/ep15-backtracking",
+    "ep": "EP.15",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep16-greedy",
+    "title": "找「貪心選擇」",
+    "subtitle": "#55 Jump Game · #45 Jump Game II · #134 Gas Station — 貪心演算法不是亂猜，是有數學保證的局部最優",
+    "href": "/blog/leetcode/ep16-greedy",
+    "ep": "EP.16",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep17-intervals",
+    "title": "按 start 排序",
+    "subtitle": "#56 Merge Intervals · #435 Non-overlapping Intervals · #253 Meeting Rooms II — 所有區間題的共同鑰匙：按 start 排序",
+    "href": "/blog/leetcode/ep17-intervals",
+    "ep": "EP.17",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep18-monotonic-stack",
+    "title": "EP.18 — Monotonic Stack： 維持單調的 Stack",
+    "subtitle": "#739 Daily Temperatures · #496 Next Greater Element · #42 Trapping Rain Water — 從 O(n²) 暴力到 O(n) 的關鍵資料結構",
+    "href": "/blog/leetcode/ep18-monotonic-stack",
+    "ep": "EP.18",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep19-trie",
+    "title": "每個節點",
+    "subtitle": "#208 Implement Trie · #211 Add and Search Words · #648 Replace Words — 從零實作 Trie，到 DFS 萬用字元搜尋",
+    "href": "/blog/leetcode/ep19-trie",
+    "ep": "EP.19",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep20-heap",
+    "title": "EP.20 — Heap： 永遠能找到最大或最小",
+    "subtitle": "#215 Kth Largest Element · #347 Top K Frequent · #295 Find Median from Data Stream — heapq 實戰，從 K 大值到雙 Heap 中位數",
+    "href": "/blog/leetcode/ep20-heap",
+    "ep": "EP.20",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep21-bit-manipulation",
+    "title": "取最低位的 1",
+    "subtitle": "#191 Number of 1 Bits · #338 Counting Bits · #268 Missing Number · #136 Single Number — 用 XOR 與位移取代迴圈，寫出令人拍案的 O(1) 解法",
+    "href": "/blog/leetcode/ep21-bit-manipulation",
+    "ep": "EP.21",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "ep22-math",
+    "title": "Math 數學解題技巧",
+    "subtitle": "#9 Palindrome Number · #50 Pow(x, n) · #202 Happy Number · #204 Count Primes — 快速冪、篩法、Floyd 判環，把數學性質變成演算法武器",
+    "href": "/blog/leetcode/ep22-math",
+    "ep": "EP.22",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "python-pitfalls",
+    "title": "Two Sum",
+    "subtitle": "那些刷題時讓我卡關的 Python 細節，整理給自己也給你",
+    "href": "/blog/leetcode/python-pitfalls",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "leetcode",
+    "slug": "python-review",
+    "title": "演算法原理理解",
+    "subtitle": "{bad} {goodLabel} {good} {note && ( {note}",
+    "href": "/blog/leetcode/python-review",
+    "ep": "",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep01-http",
+    "title": "DNS 解析",
+    "subtitle": "每次瀏覽器請求都走過一條你看不見的旅程。理解這條路上發生了什麼， 才能真正排查效能問題、理解 HTTPS 的意義，以及為什麼 HTTP/2 比 HTTP/1.1 快。",
+    "href": "/blog/network/ep01-http",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep02-dns-ip",
+    "title": "DNS 解析",
+    "subtitle": "DNS 解析、IP 路由、TCP 握手——最經典面試題的完整解答。 很多人能說個大概，但說不完整。這篇從頭到尾把每一步說清楚。",
+    "href": "/blog/network/ep02-dns-ip",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep03-https-tls",
+    "title": "竊聽（Eavesdropping）",
+    "subtitle": "對稱加密、非對稱加密、憑證鏈——理解 HTTPS 安全的完整原理。 從「為什麼需要加密」開始，到 TLS 握手的每一步，一次全部說清楚。",
+    "href": "/blog/network/ep03-https-tls",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep04-jwt-oauth2",
+    "title": "認證與授權：JWT、OAuth2、Session Cookie vs Token、Refresh Token、第三方登入",
+    "subtitle": "Authentication（認證）和 Authorization（授權）是兩個不同的問題，卻常被混淆。 選錯機制不只讓系統不安全，還讓使用者體驗變差。這篇帶你理解每種方案的設計邏輯與適用場景。",
+    "href": "/blog/network/ep04-jwt-oauth2",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep05-websocket",
+    "title": "WebSocket 與 SSE： 即時通訊的兩種選擇",
+    "subtitle": "WebSocket 雙向連線、Server-Sent Events 單向推送 — 聊天室 vs 即時更新，選對工具",
+    "href": "/blog/network/ep05-websocket",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep06-grpc",
+    "title": "效能瓶頸",
+    "subtitle": "商品購買",
+    "href": "/blog/network/ep06-grpc",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep07-http3-quic",
+    "title": "HTTP/3 與 QUIC：下一代網路協定完全解析 為什麼 HTTP/3 比 HTTP/2 快？",
+    "subtitle": "QUIC 協定原理、0-RTT 連線、多路複用解決 Head-of-Line Blocking — 從 TCP 的致命缺陷說起，解析 HTTP/3 如何從根本上重新設計網路傳輸層， 並帶來連線遷移、0-RTT 等革命性特性。",
+    "href": "/blog/network/ep07-http3-quic",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep08-security-headers",
+    "title": "Security Headers： 網頁安全的隱形防線",
+    "subtitle": "為什麼加了幾個 Header 就能防禦 90% 的攻擊？從 CORS、CSP 到 HSTS，深度解析現代瀏覽器的安全機制與正確配置方法。",
+    "href": "/blog/network/ep08-security-headers",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "network",
+    "slug": "ep09-tcp-ip-deep-dive",
+    "title": "慢啟動 (Slow Start)",
+    "subtitle": "為什麼網路傳輸需要這麼繁雜的步驟？深入探討可靠傳輸背後的設計哲學，掌握擁塞控制與視窗機制。",
+    "href": "/blog/network/ep09-tcp-ip-deep-dive",
+    "ep": "EP.09",
+    "date": "2026"
+  },
+  {
+    "seriesId": "python",
+    "slug": "ep01-opencv-automation",
+    "title": "影像擷取",
+    "subtitle": "如何用 Python + OpenCV 讓機械手臂「看到」目標並自動移動到正確位置， 從影像辨識到 XY 軸座標轉換的完整技術拆解",
+    "href": "/blog/python/ep01-opencv-automation",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "python",
+    "slug": "ep02-pytorch",
+    "title": "requires_grad=True 的作用",
+    "subtitle": "Tensor 操作、autograd、訓練迴圈 — 從 NumPy 思維到深度學習框架",
+    "href": "/blog/python/ep02-pytorch",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "python",
+    "slug": "ep03-tkinter",
+    "title": "適合場景",
+    "subtitle": "事件驅動設計、Grid 佈局、與 Raspberry Pi 自動化測試的實際整合",
+    "href": "/blog/python/ep03-tkinter",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep01-intro",
+    "title": "直接跳進實作細節",
+    "subtitle": "面試官問「設計一個 Instagram」，你該從哪裡開始？ 這篇建立系統設計的思考框架：如何拆解需求、估算容量、 一步步做出有依據的架構決策。",
+    "href": "/blog/system-design/ep01-intro",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep02-load-balancer",
+    "title": "提升吞吐量",
+    "subtitle": "一台伺服器撐不住？加一台就好。但加了之後，誰決定每個請求去哪？ 這篇深入負載均衡的演算法、健康檢查、L4 vs L7 差異， 以及在系統設計面試中如何正確使用它。",
+    "href": "/blog/system-design/ep02-load-balancer",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep03-cache",
+    "title": "Key 命名規範",
+    "subtitle": "「加快取就好了」是最常見的回答，也是最危險的回答。 Cache-aside？Write-through？TTL 設多長？資料更新時怎麼辦？ 這篇帶你搞清楚每一種快取策略的原理與取捨。",
+    "href": "/blog/system-design/ep03-cache",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep04-db-design",
+    "title": "更新異常（Update Anomaly）",
+    "subtitle": "從「一張超大表」的痛苦，到規範化設計的清爽—— 系統設計面試必備。你的表結構決定了系統的上限。",
+    "href": "/blog/system-design/ep04-db-design",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep05-api-design",
+    "title": "新文章",
+    "subtitle": "RESTful 最佳實踐、GraphQL N+1 問題解法、tRPC 零配置型別安全 — 根據情境選對 API 架構",
+    "href": "/blog/system-design/ep05-api-design",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep06-message-queue",
+    "title": "Message Queue： 用 Kafka 解耦你的系統",
+    "subtitle": "Producer / Consumer / Topic / Partition — 高流量系統的非同步事件驅動架構完整指南",
+    "href": "/blog/system-design/ep06-message-queue",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep07-rate-limiting",
+    "title": "防止濫用",
+    "subtitle": "面試最常考的限流演算法完整指南。從演算法原理到 Node.js 單機實作， 再到 Redis 分散式方案，最後討論不同資源的限流策略設計。",
+    "href": "/blog/system-design/ep07-rate-limiting",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep08-elasticsearch",
+    "title": "搜尋系統：Elasticsearch 入門與全文搜尋設計 Inverted Index、Mapping、Query DSL、Relevance Score",
+    "subtitle": "從 SQL LIKE 到真正的搜尋引擎 — 理解倒排索引如何讓搜尋從 O(n) 變成 O(1)， 掌握 Query DSL 與 Aggregation，最後整合到 Node.js 生產環境。",
+    "href": "/blog/system-design/ep08-elasticsearch",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep09-microservices",
+    "title": "部署頻率差異大",
+    "subtitle": "Domain-Driven Design、Strangler Fig Pattern、Istio Sidecar — 何時拆、怎麼拆、拆完怎麼管",
+    "href": "/blog/system-design/ep09-microservices",
+    "ep": "EP.09",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep10-cdn-edge",
+    "title": "CDN 與 Edge Computing： 讓資源在全球 50ms 內送達",
+    "subtitle": "CDN 原理、Edge Caching、Cache Invalidation、Cloudflare Workers — 大流量系統的靜態資源加速策略",
+    "href": "/blog/system-design/ep10-cdn-edge",
+    "ep": "EP.10",
+    "date": "2026"
+  },
+  {
+    "seriesId": "system-design",
+    "slug": "ep11-event-sourcing",
+    "title": "Event Sourcing 與 CQRS： 用事件重建一切",
+    "subtitle": "Event Store、Command/Query 分離、Projection 重建 — 金融、電商最愛的資料架構模式",
+    "href": "/blog/system-design/ep11-event-sourcing",
+    "ep": "EP.11",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep01-modern-web",
+    "title": "React 誕生",
+    "subtitle": "{s.desc}",
+    "href": "/blog/web-dev/ep01-modern-web",
+    "ep": "EP.01",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep02-setup-env",
+    "title": "Node.js",
+    "subtitle": "安裝 Node.js、設定 VS Code、建立 Next.js 專案， 讓你的電腦能跑和我的個人網頁一樣的技術棧",
+    "href": "/blog/web-dev/ep02-setup-env",
+    "ep": "EP.02",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep03-project-structure",
+    "title": "認識 Next.js 專案結構 每個資料夾都有它的職責",
+    "subtitle": "打開 VS Code 看到一堆資料夾和檔案不知道從哪裡下手？ 這篇帶你一個一個搞清楚它們的用途",
+    "href": "/blog/web-dev/ep03-project-structure",
+    "ep": "EP.03",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep04-react-component",
+    "title": "React 核心概念 Component、JSX、Props、State",
+    "subtitle": "看懂我的個人網頁每一行程式碼的關鍵 用你已經看過的實際程式碼來說明",
+    "href": "/blog/web-dev/ep04-react-component",
+    "ep": "EP.04",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep05-tailwind",
+    "title": "Tailwind CSS 不再寫 CSS 檔，class 就是樣式",
+    "subtitle": "我的個人網頁沒有任何手寫的 .css 檔案（除了全域設定）， 所有樣式都寫在 className 裡面",
+    "href": "/blog/web-dev/ep05-tailwind",
+    "ep": "EP.05",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep06-heroui",
+    "title": "HeroUI 元件庫 現成 UI 積木，快速建出美觀介面",
+    "subtitle": "Card、Button、Chip、Divider — 我的網頁所有 UI 元件都來自這裡， 安裝一次，直接拿來用",
+    "href": "/blog/web-dev/ep06-heroui",
+    "ep": "EP.06",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep07-framer-motion",
+    "title": "Framer Motion 讓頁面元素動起來",
+    "subtitle": "我的網頁所有滑入、淡出、滾動觸發動畫都靠它， 幾行程式碼就能讓靜態頁面瞬間有生命感",
+    "href": "/blog/web-dev/ep07-framer-motion",
+    "ep": "EP.07",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep08-vercel-deploy",
+    "title": "Vercel 部署上線 push 一下，全世界都能看到",
+    "subtitle": "GitHub + Vercel，免費、自動化、有預覽 URL， 這就是 chullin.tw 的部署方式",
+    "href": "/blog/web-dev/ep08-vercel-deploy",
+    "ep": "EP.08",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep09-advanced-nav",
+    "title": "部落格導航與搜尋系統 從結構設計到演算法實作",
+    "subtitle": "如何建立一個可擴充的配置系統？如何實作高效的即時搜尋與滾動追蹤目錄？ 本篇將深度拆解 chullin.tw 的導航架構。",
+    "href": "/blog/web-dev/ep09-advanced-nav",
+    "ep": "EP.09",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep10-html-css",
+    "title": "HTML / CSS 核心概念 前端面試基礎題",
+    "subtitle": "Box Model、Flexbox、Grid、RWD、Selector — 寫前端 10 年都用得到的基礎，面試必考",
+    "href": "/blog/web-dev/ep10-html-css",
+    "ep": "EP.10",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep11-bootstrap",
+    "title": "Bootstrap 入門 Grid 系統與元件庫",
+    "subtitle": "12 欄 Grid、RWD Breakpoints、Utility classes — 與 Tailwind 設計哲學的核心差異",
+    "href": "/blog/web-dev/ep11-bootstrap",
+    "ep": "EP.11",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep12-git",
+    "title": "Git 入門到實戰 版本控制的底層邏輯",
+    "subtitle": "commit / branch / merge / rebase — 工程師每天都在用， 面試最常考的 10 個問題",
+    "href": "/blog/web-dev/ep12-git",
+    "ep": "EP.12",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep13-docker",
+    "title": "開發環境",
+    "subtitle": "Image 是食譜，Container 是料理 — 從 Hello World 到 docker-compose 部署， 附面試必備概念",
+    "href": "/blog/web-dev/ep13-docker",
+    "ep": "EP.13",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep14-typescript",
+    "title": "編譯期錯誤發現",
+    "subtitle": "TypeScript 不是讓你多寫程式碼的工具——它是讓你少 debug 的工具。 這篇從「為什麼要加型別」出發，帶你掌握 Interface、泛型、嚴格模式等核心概念。",
+    "href": "/blog/web-dev/ep14-typescript",
+    "ep": "EP.14",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep15-why-react",
+    "title": "不用 React，做個動態待辦清單 ——然後你就懂了",
+    "subtitle": "從「手動操作 DOM 的痛苦」理解 React 為什麼存在。 先用原生 JavaScript 體驗那個痛點，再看 React 如何優雅地解決它。",
+    "href": "/blog/web-dev/ep15-why-react",
+    "ep": "EP.15",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep16-useeffect",
+    "title": "初始狀態",
+    "subtitle": "資料請求、副作用、Cleanup——用三個真實場景搞懂 useEffect， React 最常讓初學者困惑的 Hook。",
+    "href": "/blog/web-dev/ep16-useeffect",
+    "ep": "EP.16",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep17-state-patterns",
+    "title": "useState 不只是計數器：五種狀態管理場景 物件狀態、陣列狀態、衍生狀態、多個 state——從入門到實戰全覆蓋",
+    "subtitle": "表單 10 個欄位要寫 10 個 useState 嗎？splice 為什麼不能用？ 這篇五個場景全部解清楚，讓你不再踩坑。",
+    "href": "/blog/web-dev/ep17-state-patterns",
+    "ep": "EP.17",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep18-app-router",
+    "title": "Layout 不重新渲染",
+    "subtitle": "技術文章、LeetCode 題解、工程師日常——全端開發的心得分享",
+    "href": "/blog/web-dev/ep18-app-router",
+    "ep": "EP.18",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep19-data-fetching",
+    "title": "自動快取",
+    "subtitle": "從 useEffect + fetch 到 custom hook，再到 Next.js Server Component 的資料請求演進。 學完這篇，你才算真正能寫一個「連得上後端」的 React 應用。",
+    "href": "/blog/web-dev/ep19-data-fetching",
+    "ep": "EP.19",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep20-custom-hooks",
+    "title": "自訂 Hook：把邏輯從元件裡抽出來 讓元件永遠不超過 100 行",
+    "subtitle": "useLocalStorage、useDebounce、useFetch — 一旦學會，你的元件永遠不會超過 100 行。 Custom Hook 是 React 開發者從「寫得出來」進化到「寫得好」的關鍵一步。",
+    "href": "/blog/web-dev/ep20-custom-hooks",
+    "ep": "EP.20",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep21-context",
+    "title": "Context API：告別 Props Drilling 跨元件共享狀態的正確方式",
+    "subtitle": "createContext、useContext、ThemeContext 實戰、何時不該用 Context — 從「到處傳 props」的地獄中解脫，學會讓資料在元件樹中「自由流動」。",
+    "href": "/blog/web-dev/ep21-context",
+    "ep": "EP.21",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep22-react-forms",
+    "title": "React 表單實戰： 從 useState 到 react-hook-form",
+    "subtitle": "非同步驗證、Zod Schema、Server Action — 讓表單開發不再痛苦的完整解法",
+    "href": "/blog/web-dev/ep22-react-forms",
+    "ep": "EP.22",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep23-performance",
+    "title": "React 效能優化三件套： useMemo、useCallback、React.memo",
+    "subtitle": "什麼時候用、什麼時候反而變慢 — 搞懂 re-render 原理才能正確優化",
+    "href": "/blog/web-dev/ep23-performance",
+    "ep": "EP.23",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep24-error-suspense",
+    "title": "Error Boundary 與 Suspense： 優雅的錯誤與 Loading 處理",
+    "subtitle": "不讓白屏毀掉用戶體驗 — 從 class ErrorBoundary 到 react-error-boundary 套件的完整解法",
+    "href": "/blog/web-dev/ep24-error-suspense",
+    "ep": "EP.24",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep25-usereducer",
+    "title": "useReducer： 當 useState 不夠用的時候",
+    "subtitle": "dispatch / action / reducer 三角關係、購物車實戰 — 從 useState 升級到 useReducer 的正確時機",
+    "href": "/blog/web-dev/ep25-usereducer",
+    "ep": "EP.25",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep26-react-testing",
+    "title": "React 測試實戰： Vitest + Testing Library",
+    "subtitle": "unit test、user-event 互動、mock API、coverage — 讓你的元件可測試、可維護、讓 CI 不再擋你路",
+    "href": "/blog/web-dev/ep26-react-testing",
+    "ep": "EP.26",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep27-zustand",
+    "title": "Zustand： 輕量全域狀態管理",
+    "subtitle": "比 Redux 簡單 10 倍、比 Context 效能更好 — 2026 年最推薦的 React 狀態管理方案",
+    "href": "/blog/web-dev/ep27-zustand",
+    "ep": "EP.27",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep28-react-router",
+    "title": "React Router v6： SPA 路由完整指南",
+    "subtitle": "BrowserRouter、動態路由 :id、Outlet 巢狀、Loader/Action — 非 Next.js 的 React 應用必學",
+    "href": "/blog/web-dev/ep28-react-router",
+    "ep": "EP.28",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep29-accessibility",
+    "title": "role",
+    "subtitle": "ARIA 屬性、語義化 HTML、鍵盤導航、色彩對比 — 前端面試越來越常考，也是做好產品的必修課",
+    "href": "/blog/web-dev/ep29-accessibility",
+    "ep": "EP.29",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep30-web-security",
+    "title": "Web 安全實戰： XSS、CSRF、CSP 防禦",
+    "subtitle": "跨站腳本攻擊、跨站請求偽造、內容安全策略 — OWASP Top 10 前端工程師必懂的攻防",
+    "href": "/blog/web-dev/ep30-web-security",
+    "ep": "EP.30",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep31-nextjs15",
+    "title": "Turbopack 穩定版",
+    "subtitle": "Server Actions、use() hook、PPR、Turbopack 穩定版 — 2026 年現代全端開發的最新樣貌",
+    "href": "/blog/web-dev/ep31-nextjs15",
+    "ep": "EP.31",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep32-web-performance",
+    "title": "使用 CDN / Edge Network",
+    "subtitle": "LCP、INP、CLS 三大指標 — 從分析到實際改善，讓你的 Google Search 評分達到 90+",
+    "href": "/blog/web-dev/ep32-web-performance",
+    "ep": "EP.32",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep33-pwa",
+    "title": "Reliable（可靠）",
+    "subtitle": "A Progressive Web App",
+    "href": "/blog/web-dev/ep33-pwa",
+    "ep": "EP.33",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep34-nextjs-middleware",
+    "title": "身份驗證",
+    "subtitle": "Middleware 攔截請求、Edge Functions、Geolocation 分流 — 讓你的應用響應速度提升到 50ms 以內",
+    "href": "/blog/web-dev/ep34-nextjs-middleware",
+    "ep": "EP.34",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep35-i18n",
+    "title": "文字翻譯",
+    "subtitle": "next-intl 路由配置、訊息格式化、複數規則、日期貨幣本地化 — 打造真正的多語言 Next.js 應用",
+    "href": "/blog/web-dev/ep35-i18n",
+    "ep": "EP.35",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep36-graphql",
+    "title": "GraphQL： 重新定義 API 互動",
+    "subtitle": "不再被 REST 的多個 Endpoint 所困擾。學習如何讓前端精確定義所需的資料，並透過 Apollo Server 打造高效能的 API 層。",
+    "href": "/blog/web-dev/ep36-graphql",
+    "ep": "EP.36",
+    "date": "2026"
+  },
+  {
+    "seriesId": "web-dev",
+    "slug": "ep37-websocket-realtime",
+    "title": "資源浪費",
+    "subtitle": "不再被動等待回應。學習如何透過全雙工通訊，實現毫秒級的即時聊天、通知系統與多人協作功能。",
+    "href": "/blog/web-dev/ep37-websocket-realtime",
+    "ep": "EP.37",
+    "date": "2026"
+  }
+]
