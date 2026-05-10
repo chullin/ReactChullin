@@ -1,16 +1,24 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider, Tabs, Tab, Button, Accordion, AccordionItem } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Tabs,
+  Tab,
+  Button,
+  Accordion,
+  AccordionItem } from '@heroui/react';
 import { 
-  Network, 
-  Share2, 
-  Layers, 
-  Code2, 
-  Terminal, 
-  Cpu, 
-  Zap, 
-  ArrowRight, 
-  Database, 
+  Network,
+  Share2,
+  Layers,
+  Code2,
+  Terminal,
+  Cpu,
+  Zap,
+  ArrowRight,
+  Database,
   Search,
   CheckCircle2,
   AlertCircle,
@@ -18,8 +26,10 @@ import {
   Package,
   Activity,
   ChevronRight,
-  MessageSquare
+  MessageSquare,
+  Server
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -321,7 +331,7 @@ const resolvers = {
             language="tsx" 
             code={`import { useQuery, gql } from '@apollo/client';
 
-const GET_POSTS = gql\\`
+const GET_POSTS = gql\`
   query GetAllPosts {
     allPosts {
       id
@@ -329,7 +339,7 @@ const GET_POSTS = gql\\`
       author { name }
     }
   }
-\\`;
+\`;
 
 function PostList() {
   const { loading, error, data } = useQuery(GET_POSTS);

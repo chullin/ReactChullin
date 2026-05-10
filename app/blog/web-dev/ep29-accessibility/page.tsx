@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -16,8 +19,9 @@ import {
   XCircle,
   AlertCircle,
   Lightbulb,
-  Globe,
+  Globe
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -159,7 +163,7 @@ export default function WebDevEP29() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-4">壞 vs 好的 HTML 結構對比</h3>
               <CodeBlock language="html">
-{` <!-- ❌ 不語義化：全是 div，螢幕閱讀器無法理解任何結構 -->
+{`   <!-- ❌ 不語義化：全是 div，螢幕閱讀器無法理解任何結構 -->
 <div class="header">
   <div class="nav">
     <div class="nav-item" onclick="navigate()">首頁</div>
@@ -187,7 +191,7 @@ export default function WebDevEP29() {
     <p>內容...</p>
   </article>
 </main>
-<footer>版權所有</footer> `}
+<footer>版權所有</footer>   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-4 mt-8">常用語義化元素速查表</h3>
@@ -270,7 +274,7 @@ export default function WebDevEP29() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">1. role — 告訴螢幕閱讀器「這是什麼」</h3>
               <CodeBlock language="tsx">
-{` // 自訂下拉選單 — 螢幕閱讀器需要 role 才能理解這個元件
+{`   // 自訂下拉選單 — 螢幕閱讀器需要 role 才能理解這個元件
 function CustomSelect({ options, value, onChange }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -307,12 +311,12 @@ function CustomSelect({ options, value, onChange }) {
       )}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">2. aria-* 屬性 — 描述狀態與關聯</h3>
               <CodeBlock language="tsx">
-{` // Modal 對話框 — 完整的 ARIA 無障礙實作
+{`   // Modal 對話框 — 完整的 ARIA 無障礙實作
 function ConfirmModal({ isOpen, onConfirm, onClose }) {
   return isOpen ? (
     <div
@@ -349,12 +353,12 @@ function ConfirmModal({ isOpen, onConfirm, onClose }) {
 // aria-disabled={boolean}        → 禁用狀態（配合視覺樣式）
 // aria-hidden={boolean}          → 對螢幕閱讀器隱藏（裝飾性元素）
 // aria-required={boolean}        → 必填欄位
-// aria-invalid={boolean}         → 欄位驗證失敗 `}
+// aria-invalid={boolean}         → 欄位驗證失敗   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">3. aria-live — 動態更新通知</h3>
               <CodeBlock language="tsx">
-{` // 表單錯誤訊息：當 error 出現時，螢幕閱讀器自動唸出內容
+{`   // 表單錯誤訊息：當 error 出現時，螢幕閱讀器自動唸出內容
 // 不需要使用者焦點在這個元素上
 function FormWithLiveRegion() {
   const [error, setError] = useState('');
@@ -390,7 +394,7 @@ function FormWithLiveRegion() {
 // - 表單驗證錯誤訊息
 // - Toast / 通知訊息
 // - 搜尋結果數量更新（「找到 23 筆結果」）
-// - 載入狀態變化（「資料載入完成」） `}
+// - 載入狀態變化（「資料載入完成」）   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-cyan-50 rounded-lg border border-cyan-200">
@@ -424,7 +428,7 @@ function FormWithLiveRegion() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">自訂按鈕的鍵盤支援</h3>
               <CodeBlock language="tsx">
-{` // ❌ 自訂按鈕：無法用 Tab 聚焦，無法用 Enter 觸發
+{`   // ❌ 自訂按鈕：無法用 Tab 聚焦，無法用 Enter 觸發
 function BadButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
   return (
     <div
@@ -475,7 +479,7 @@ function ClickableCard({ onClick, children }) {
       {children}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">焦點管理 — Modal 的正確實作</h3>
@@ -483,7 +487,7 @@ function ClickableCard({ onClick, children }) {
                 Modal 開啟時，焦點必須移到 Modal 內部；關閉時，焦點必須回到觸發按鈕。同時需要實作「焦點陷阱」，讓 Tab 鍵在 Modal 內循環，不允許焦點跑到背景的元素。
               </p>
               <CodeBlock language="tsx">
-{` import { useRef, useEffect } from 'react';
+{`   import { useRef, useEffect } from 'react';
 
 function Modal({
   isOpen,
@@ -554,7 +558,7 @@ function Modal({
 // import FocusTrap from 'focus-trap-react';
 // <FocusTrap active={isOpen}>
 //   <div role="dialog" aria-modal="true">...</div>
-// </FocusTrap> `}
+// </FocusTrap>   `}
 </CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-2 gap-4">
@@ -616,7 +620,7 @@ function Modal({
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">對比度範例</h3>
               <CodeBlock language="tsx">
-{` // ❌ 對比度不足（淺灰色文字在白底）
+{`   // ❌ 對比度不足（淺灰色文字在白底）
 <p className="text-gray-300">這段文字很難看到</p>
 {/* text-gray-300 on white = 1.9:1 — 完全不及格 */}
 
@@ -643,7 +647,7 @@ function Modal({
 {/* text-blue-600 on white = 4.5:1 ✅（剛好達標）*/}
 
 <a className="text-blue-500">連結文字</a>
-{/* text-blue-500 on white = 3.1:1 ❌（不達標）*/} `}
+{/* text-blue-500 on white = 3.1:1 ❌（不達標）*/}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-4 mt-8">Tailwind CSS 色彩對比速查</h3>
@@ -708,7 +712,7 @@ function Modal({
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">1. 圖片 alt 屬性</h3>
               <CodeBlock language="tsx">
-{` // ✅ 有意義的圖片：alt 描述圖片傳達的資訊
+{`   // ✅ 有意義的圖片：alt 描述圖片傳達的資訊
 <img
   src="sales-chart.png"
   alt="2024 年第三季銷售成長 23%，較上季成長 5%"
@@ -735,12 +739,12 @@ function Modal({
 <button onClick={handleDelete}>
   <TrashIcon aria-hidden="true" size={16} />
   <span>刪除</span>
-</button> `}
+</button>   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">2. 無障礙表單完整實作</h3>
               <CodeBlock language="tsx">
-{` // 完整的無障礙表單
+{`   // 完整的無障礙表單
 function AccessibleForm() {
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -801,12 +805,12 @@ function AccessibleForm() {
       </button>
     </form>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">3. Skip Navigation — 讓鍵盤用戶跳過導覽</h3>
               <CodeBlock language="tsx">
-{` // 放在 <body> 最頂部的第一個元素
+{`   // 放在 <body> 最頂部的第一個元素
 // 平常用 sr-only 隱藏，Tab 鍵聚焦時才顯示
 function SkipToContent() {
   return (
@@ -845,7 +849,7 @@ function Layout({ children }) {
 // 為什麼需要 Skip Navigation？
 // 鍵盤用戶每次到達新頁面，都必須從導覽列的第一個連結開始按 Tab
 // 如果導覽列有 20 個連結，需要按 20 次才能到達主要內容
-// Skip Navigation 讓他們可以按一次 Tab 就跳過整個導覽 `}
+// Skip Navigation 讓他們可以按一次 Tab 就跳過整個導覽   `}
 </CodeBlock>
 
               <div className="mt-6 p-5 bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl border border-teal-200">

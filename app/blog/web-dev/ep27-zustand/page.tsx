@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -16,8 +19,9 @@ import {
   CheckCircle,
   XCircle,
   Settings,
-  Database,
+  Database
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -86,13 +90,13 @@ export default function WebDevEP27() {
                 Context 最大的問題是「粒度太粗」。只要 Context 的 value 物件有任何一個欄位改變，所有訂閱該 Context 的 Consumer 元件都會強制重新渲染，即使它根本沒有用到那個改變的欄位。
               </p>
               <CodeBlock language="tsx">
-{` // ❌ Context 的效能陷阱：任何 value 改變，所有 Consumer 重新渲染
+{`   // ❌ Context 的效能陷阱：任何 value 改變，所有 Consumer 重新渲染
 const AppContext = createContext({ user: null, cart: [], notifications: [] });
 
 // 更新通知 → user 和 cart 沒變 → 但所有 Consumer 都 re-render 了
 // CartIcon 元件：只需要 cart，但通知更新時也會被迫重渲染
 // UserAvatar 元件：只需要 user，但購物車變動時也會被迫重渲染
-// 在大型應用中，這會造成嚴重的效能問題 `}
+// 在大型應用中，這會造成嚴重的效能問題   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8 flex items-center gap-2">
@@ -103,7 +107,7 @@ const AppContext = createContext({ user: null, cart: [], notifications: [] });
                 Redux 功能強大，但即使是最現代的 Redux Toolkit 版本，也需要引入大量概念與多個檔案才能完成一個功能。對中小型應用來說，這個成本往往不值得。
               </p>
               <CodeBlock language="bash">
-{` npm install @reduxjs/toolkit react-redux  # 兩個 package，30+ KB
+{`   npm install @reduxjs/toolkit react-redux  # 兩個 package，30+ KB
 
 # 要實作一個「計數器」功能，你需要：
 # 1. counterSlice.ts      → 定義 reducer 與 actions
@@ -113,7 +117,7 @@ const AppContext = createContext({ user: null, cart: [], notifications: [] });
 # 5. dispatch(increment()) → action → reducer → 新 state
 
 # action → actionCreator → reducer → store → selector → dispatch
-# 一個簡單功能要寫 4-5 個概念，對新手來說門檻很高 `}
+# 一個簡單功能要寫 4-5 個概念，對新手來說門檻很高   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8 flex items-center gap-2">
@@ -124,14 +128,14 @@ const AppContext = createContext({ user: null, cart: [], notifications: [] });
                 Zustand（德文「狀態」的意思）只有 2KB，一個 package，整個 store 只需要 20 行。它採用 hook-based API，不需要 Provider，任何元件直接 import 就能使用。
               </p>
               <CodeBlock language="bash">
-{` npm install zustand  # 一個 package，僅 2KB gzipped
+{`   npm install zustand  # 一個 package，僅 2KB gzipped
 
 # Zustand 的核心哲學：
 # 1. 不需要 Provider 包裹 — 直接 import hook 就能用
 # 2. 內建 selector 機制 — 只訂閱你需要的值
 # 3. 可選的 middleware — devtools、persist、immer 按需加載
 # 4. TypeScript 友好 — 型別推斷完整
-# 5. 測試容易 — 純函式，不依賴 React 環境 `}
+# 5. 測試容易 — 純函式，不依賴 React 環境   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -158,7 +162,7 @@ const AppContext = createContext({ user: null, cart: [], notifications: [] });
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">建立 Store</h3>
               <CodeBlock language="typescript">
-{` // store/useCounterStore.ts
+{`   // store/useCounterStore.ts
 import { create } from 'zustand';
 
 // 定義型別：state 欄位 + 操作函式
@@ -182,7 +186,7 @@ export const useCounterStore = create<CounterState>((set) => ({
   reset: () => set({ count: 0 }),
 }));
 
-// 就這樣！不需要 Provider，不需要 reducer，不需要 action type `}
+// 就這樣！不需要 Provider，不需要 reducer，不需要 action type   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">在元件中使用</h3>
@@ -190,7 +194,7 @@ export const useCounterStore = create<CounterState>((set) => ({
                 Zustand 最大的優點之一：<strong>不需要 Provider 包裹</strong>。任何元件只要 import hook 就能直接取用 store 中的值，包含在完全不同的元件樹中。
               </p>
               <CodeBlock language="tsx">
-{` // components/Counter.tsx
+{`   // components/Counter.tsx
 import { useCounterStore } from '@/store/useCounterStore';
 
 function Counter() {
@@ -222,7 +226,7 @@ function ResetButton() {
 function CountDisplay() {
   const count = useCounterStore((state) => state.count);
   return <p>目前計數：{count}</p>;
-} `}
+}   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-violet-50 rounded-lg border border-violet-200">
@@ -257,7 +261,7 @@ function CountDisplay() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">購物車 Store（含自動持久化）</h3>
               <CodeBlock language="typescript">
-{` // store/useCartStore.ts
+{`   // store/useCartStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -323,7 +327,7 @@ export const useCartStore = create<CartStore>()(
       // partialize: (state) => ({ items: state.items }),
     }
   )
-); `}
+);   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">在各元件中使用</h3>
@@ -331,7 +335,7 @@ export const useCartStore = create<CartStore>()(
                 各元件只訂閱自己需要的部分，彼此完全解耦。不需要任何 Provider，不需要透過 props 傳遞回調函式。
               </p>
               <CodeBlock language="tsx">
-{` // 商品卡片：只需要 addItem
+{`   // 商品卡片：只需要 addItem
 function ProductCard({ product }: { product: { id: string; name: string; price: number } }) {
   const addItem = useCartStore((state) => state.addItem);
   return (
@@ -386,7 +390,7 @@ function CartList() {
       ))}
     </ul>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-fuchsia-50 rounded-lg border border-fuchsia-200">
@@ -426,7 +430,7 @@ function CartList() {
                 安裝 Redux DevTools 瀏覽器擴充後，加上 devtools middleware 即可在瀏覽器中時間旅行除錯，查看每次 state 改變的歷史記錄。
               </p>
               <CodeBlock language="typescript">
-{` import { devtools } from 'zustand/middleware';
+{`   import { devtools } from 'zustand/middleware';
 
 const useStore = create<State>()(
   devtools(
@@ -443,7 +447,7 @@ const useStore = create<State>()(
 // 在 Redux DevTools 中你可以看到：
 // - 每一次 action 的名稱（increment、decrement...）
 // - 每次 action 前後的 state 差異
-// - 時間旅行：回到任意歷史 state `}
+// - 時間旅行：回到任意歷史 state   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8 flex items-center gap-2">
@@ -454,7 +458,7 @@ const useStore = create<State>()(
                 immer middleware 讓你在 set 函式中直接修改 state（mutate），不需要手動 spread 展開。immer 在背後幫你產生不可變的新 state。
               </p>
               <CodeBlock language="typescript">
-{` import { immer } from 'zustand/middleware/immer';
+{`   import { immer } from 'zustand/middleware/immer';
 
 const useCartStore = create<CartStore>()(
   immer((set) => ({
@@ -484,7 +488,7 @@ const useCartStore = create<CartStore>()(
     //   return { items: [...state.items, { ...product, qty: 1 }] };
     // }),
   }))
-); `}
+);   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">組合多個 Middleware</h3>
@@ -492,7 +496,7 @@ const useCartStore = create<CartStore>()(
                 三個 middleware 可以同時使用，用括號依序包裹即可。注意順序：通常 devtools 在最外層，persist 次之，immer 在最內層。
               </p>
               <CodeBlock language="typescript">
-{` import { create } from 'zustand';
+{`   import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 
@@ -519,7 +523,7 @@ const useCartStore = create<CartStore>()(
     ),
     { name: 'CartStore' }        // devtools 設定
   )
-); `}
+);   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -546,7 +550,7 @@ const useCartStore = create<CartStore>()(
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">基本 Selector 用法</h3>
               <CodeBlock language="tsx">
-{` // ❌ 反面示範：拿整個 state 物件
+{`   // ❌ 反面示範：拿整個 state 物件
 // 每次 store 中任何值改變，這個元件都會重新渲染
 const state = useCartStore();
 // 即使你只用了 state.items，其他欄位改變也觸發 re-render
@@ -562,7 +566,7 @@ const totalPrice = useCartStore((state) => state.totalPrice);
 
 // ✅ 選取函式（動作）時，函式參考是穩定的，不會造成 re-render
 const addItem = useCartStore((state) => state.addItem);
-const clearCart = useCartStore((state) => state.clearCart); `}
+const clearCart = useCartStore((state) => state.clearCart);   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">shallow — 訂閱多個欄位</h3>
@@ -570,7 +574,7 @@ const clearCart = useCartStore((state) => state.clearCart); `}
                 當需要同時訂閱多個欄位時，selector 回傳的是一個新物件，每次呼叫都會建立新物件參考（即使內容相同），會造成不必要的 re-render。解法是使用 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">shallow</code> 進行淺比較。
               </p>
               <CodeBlock language="tsx">
-{` import { shallow } from 'zustand/shallow';
+{`   import { shallow } from 'zustand/shallow';
 
 // ❌ 問題：每次 store 更新，selector 都回傳新物件
 // React 以參考比較，新物件 !== 舊物件，所以每次都重渲染
@@ -596,12 +600,12 @@ const { items, addItem } = useCartStore(
 // 假設 store 有 { items: [...], user: {...}, ui: {...} }
 // 當 user 更新時：
 //   - 沒有 selector：CartList 重渲染 ❌
-//   - 有 selector + shallow：CartList 不重渲染 ✅ `}
+//   - 有 selector + shallow：CartList 不重渲染 ✅   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">訂閱模式的效能階梯</h3>
               <CodeBlock language="tsx">
-{` // 效能由差到好：
+{`   // 效能由差到好：
 
 // 1. 整個 store（最差）：任何改變都重渲染
 const everything = useStore();
@@ -617,7 +621,7 @@ const { count, name } = useStore(
 
 // 4. 計算衍生值（好）：在 selector 中計算，結果相同就不重渲染
 const totalQty = useStore((s) => s.items.reduce((sum, i) => sum + i.qty, 0));
-// 即使 items 陣列參考改變，只要 totalQty 數值不變，就不重渲染 `}
+// 即使 items 陣列參考改變，只要 totalQty 數值不變，就不重渲染   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -677,7 +681,7 @@ const totalQty = useStore((s) => s.items.reduce((sum, i) => sum + i.qty, 0));
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">2026 年建議選用路線</h3>
               <CodeBlock language="typescript">
-{` // 根據應用規模選擇狀態管理方案
+{`   // 根據應用規模選擇狀態管理方案
 
 // 1. 小型專案 / 簡單共享狀態 → Context API
 //    適合：主題切換（dark/light）、語言設定、登入使用者資訊
@@ -697,7 +701,7 @@ const store = configureStore({ reducer: { /* ... */ } });
 // 判斷流程：
 // Q: 只是主題/語言？→ Context
 // Q: 有購物車/複雜 state？→ Zustand
-// Q: 是 10 人以上團隊的大型 SaaS？→ Redux Toolkit 值得投資 `}
+// Q: 是 10 人以上團隊的大型 SaaS？→ Redux Toolkit 值得投資   `}
 </CodeBlock>
 
               <div className="mt-6 p-5 bg-gradient-to-r from-purple-50 to-fuchsia-50 rounded-xl border border-purple-200">

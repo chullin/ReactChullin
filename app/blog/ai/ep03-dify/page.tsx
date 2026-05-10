@@ -1,12 +1,21 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  Clock,
+  Eye,
+  Quote,
+  ArrowLeft,
+  ArrowRight
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, Clock, Eye, Quote, ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
-
-
 
 const nodeTypes = [
   { label: 'Start', color: 'bg-emerald-100 border-emerald-300 text-emerald-800', desc: '工作流的起點，定義輸入變數與使用者傳入的資料格式。' },

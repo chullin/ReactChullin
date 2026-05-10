@@ -1,12 +1,21 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
-
-
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -247,7 +256,6 @@ export default function LeetcodeEP19Page() {
         self.children = {}   # char → TrieNode
         self.is_end = False  # 是否為某個單字的結尾
 
-
 class Trie:
     def __init__(self):
         self.root = TrieNode()
@@ -275,7 +283,6 @@ class Trie:
                 return False
             node = node.children[ch]
         return True           # 不管 is_end，只要前綴存在就 True
-
 
 # 使用範例
 trie = Trie()

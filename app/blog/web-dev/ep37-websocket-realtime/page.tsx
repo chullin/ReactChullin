@@ -1,25 +1,35 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider, Button, Avatar, Badge } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Button,
+  Avatar,
+  Badge } from '@heroui/react';
 import { 
-  Zap, 
-  MessageSquare, 
-  Users, 
-  ShieldCheck, 
-  Activity, 
-  Terminal, 
-  ArrowRight, 
-  Server, 
-  Globe, 
-  Clock, 
+  Zap,
+  MessageSquare,
+  Users,
+  ShieldCheck,
+  Activity,
+  Terminal,
+  ArrowRight,
+  Server,
+  Globe,
+  Clock,
   Lock,
   Wifi,
   WifiOff,
   Cpu,
   Share2,
   ChevronRight,
-  Code2
+  Code2,
+  Layers,
+  Info,
+  AlertCircle
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -314,7 +324,7 @@ function Chat() {
   // 加入特定房間
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
-    console.log(\\`User joined room: \\${roomId}\\`);
+    console.log(\`User joined room: \${roomId}\`);
   });
 
   // 只傳送訊息給該房間的人

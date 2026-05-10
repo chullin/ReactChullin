@@ -1,14 +1,23 @@
 'use client';
-
-import { 
-  Card, 
-  CardBody, 
-  Divider, 
-  Image, 
-  Button, 
+import {
+  Card,
+  CardBody,
+  Divider,
+  Image,
+  Button,
   Link as HeroLink 
 } from '@heroui/react';
-import { Calendar, User, ArrowLeft, Bookmark, Share2, Globe, Quote, Clock, Eye } from 'lucide-react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  Bookmark,
+  Share2,
+  Globe,
+  Quote,
+  Clock,
+  Eye
+} from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 

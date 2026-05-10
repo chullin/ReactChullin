@@ -1,7 +1,24 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Cpu,
+  AlertTriangle,
+  Lightbulb,
+  RefreshCw,
+  Layers,
+  Box
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, Cpu, AlertTriangle, Lightbulb, RefreshCw, Layers, Box } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -120,11 +137,11 @@ export default function WebDevEP15() {
 
       todos.forEach(todo => {
         const li = document.createElement('li');
-        li.innerHTML = \\`
-          <span style="text-decoration: \\${todo.done ? 'line-through' : 'none'}">\\${todo.text}</span>
-          <button onclick="toggleTodo(\\${todo.id})">完成</button>
-          <button onclick="deleteTodo(\\${todo.id})">刪除</button>
-        \\`;
+        li.innerHTML = \`
+          <span style="text-decoration: \${todo.done ? 'line-through' : 'none'}">\${todo.text}</span>
+          <button onclick="toggleTodo(\${todo.id})">完成</button>
+          <button onclick="deleteTodo(\${todo.id})">刪除</button>
+        \`;
         list.appendChild(li);
       });
 

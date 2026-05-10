@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -12,8 +15,9 @@ import {
   Server,
   AlertTriangle,
   RefreshCw,
-  Layers,
+  Layers
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -538,7 +542,7 @@ export async function rateLimitMiddleware(
     req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
     'unknown';
 
-  const key = \\`rate-limit:\\${ip}\\`;
+  const key = \`rate-limit:\${ip}\`;
 
   const { allowed, remaining, resetAt } = await slidingWindowRateLimit(
     key, limit, windowMs
@@ -601,7 +605,7 @@ export async function middleware(request: NextRequest) {
             code={`// 進階：用 Lua Script 讓 Token Bucket 在 Redis 中原子執行
 // Redis 保證 Lua Script 是原子的，不需要分散式鎖
 
-const TOKEN_BUCKET_SCRIPT = \\`
+const TOKEN_BUCKET_SCRIPT = \`
 local key       = KEYS[1]
 local capacity  = tonumber(ARGV[1])   -- 桶容量
 local refillRate = tonumber(ARGV[2])  -- 每秒補充速率（令牌數）
@@ -628,7 +632,7 @@ redis.call('HSET', key, 'tokens', tokens, 'lastRefill', now)
 redis.call('EXPIRE', key, math.ceil(capacity / refillRate) + 1)
 
 return { allowed, math.floor(tokens) }
-\\`;
+\`;
 
 async function tokenBucketRedis(
   key: string,
@@ -830,14 +834,14 @@ async function tokenBucketRedis(
 
     // 被限流：讀取伺服器建議的等待時間
     const retryAfter = Number(response.headers.get('Retry-After') ?? 1);
-    console.warn(\\`[RateLimit] Attempt \\${attempt + 1}/\\${maxRetries}，\\${retryAfter}s 後重試\\`);
+    console.warn(\`[RateLimit] Attempt \${attempt + 1}/\${maxRetries}，\${retryAfter}s 後重試\`);
 
     if (attempt < maxRetries - 1) {
       await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
     }
   }
 
-  throw new Error(\\`超過最大重試次數（\\${maxRetries}），請求依然被限流\\`);
+  throw new Error(\`超過最大重試次數（\${maxRetries}），請求依然被限流\`);
 }`}
           />
 
@@ -893,7 +897,7 @@ async function fetchWithExponentialBackoff(
       }
 
       console.warn(
-        \\`[Retry] Attempt \\${attempt + 1}/\\${maxRetries}, Status: \\${response.status}, Wait: \\${Math.round(delay)}ms\\`
+        \`[Retry] Attempt \${attempt + 1}/\${maxRetries}, Status: \${response.status}, Wait: \${Math.round(delay)}ms\`
       );
       await new Promise(resolve => setTimeout(resolve, delay));
 

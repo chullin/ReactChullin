@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -16,8 +19,9 @@ import {
   Layers,
   ShieldAlert,
   RefreshCw,
-  Package,
+  Package
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -81,7 +85,7 @@ export default function WebDevEP24() {
           </p>
 
           <CodeBlock language="tsx">
-{` // 一個元件的 TypeError 會讓整個 React tree 崩潰
+{`   // 一個元件的 TypeError 會讓整個 React tree 崩潰
 function UserCard({ user }) {
   // 如果 API 回傳 null，或者 profile 欄位不存在
   // 這行就會拋出：TypeError: Cannot read properties of null (reading 'avatar')
@@ -100,7 +104,7 @@ function App() {
 }
 
 // 用戶只看到一片白屏，還不知道發生了什麼事。
-// 這就是為什麼需要 Error Boundary。 `}
+// 這就是為什麼需要 Error Boundary。   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 border-l-4 border-slate-500">
@@ -184,7 +188,7 @@ function App() {
           </Card>
 
           <CodeBlock language="tsx">
-{` import React, { Component, ErrorInfo } from 'react';
+{`   import React, { Component, ErrorInfo } from 'react';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -242,7 +246,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     return this.props.children;
   }
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">使用方式</h3>
@@ -251,7 +255,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             粒度越細，錯誤影響範圍越小：
           </p>
           <CodeBlock language="tsx">
-{` // ── 方式一：包整個 app（粒度最粗）──────────────────────────────
+{`   // ── 方式一：包整個 app（粒度最粗）──────────────────────────────
 function App() {
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
@@ -287,7 +291,7 @@ function Dashboard() {
 // 1. 事件處理器中的錯誤（用 try/catch 處理）
 // 2. 非同步程式碼（setTimeout、Promise）
 // 3. Server-side rendering 中的錯誤
-// 4. Error Boundary 元件本身的錯誤（往上傳給父層的 Error Boundary） `}
+// 4. Error Boundary 元件本身的錯誤（往上傳給父層的 Error Boundary）   `}
 </CodeBlock>
         </motion.section>
 
@@ -310,7 +314,7 @@ function Dashboard() {
           <h3 className="text-xl font-bold text-gray-800 mb-4">最常見的用法：React.lazy 程式碼分割</h3>
 
           <CodeBlock language="tsx">
-{` import { Suspense, lazy } from 'react';
+{`   import { Suspense, lazy } from 'react';
 
 // React.lazy 讓你把大型元件「懶載入」——只在需要的時候才下載這個 chunk
 // import() 回傳一個 Promise，React 會等它 resolve
@@ -352,7 +356,7 @@ function Layout() {
       </Suspense>
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">三個 Suspense 使用場景</h3>
@@ -401,7 +405,7 @@ function Layout() {
             Next.js 會自動把它包進 Suspense 的 fallback：
           </p>
           <CodeBlock language="tsx">
-{` // app/dashboard/loading.tsx
+{`   // app/dashboard/loading.tsx
 // Next.js 自動把這個包進 <Suspense fallback={<Loading />}>
 export default function Loading() {
   return (
@@ -430,7 +434,7 @@ async function DashboardPage() {
 // 等同於手動寫：
 // <Suspense fallback={<Loading />}>
 //   <DashboardPage />
-// </Suspense> `}
+// </Suspense>   `}
 </CodeBlock>
         </motion.section>
 
@@ -452,7 +456,7 @@ async function DashboardPage() {
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">標準的組合模式</h3>
           <CodeBlock language="tsx">
-{` // ErrorBoundary 在外層，Suspense 在內層
+{`   // ErrorBoundary 在外層，Suspense 在內層
 // 這樣的順序讓 Suspense 的錯誤（例如 lazy 載入失敗）也能被 ErrorBoundary 攔截
 function Dashboard() {
   return (
@@ -512,7 +516,7 @@ function Dashboard() {
       <DashboardContent />
     </AsyncBoundary>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">Next.js App Router 中的 error.tsx</h3>
@@ -522,7 +526,7 @@ function Dashboard() {
             Next.js 自動幫你創建一個 Error Boundary，用 error.tsx 當 fallback：
           </p>
           <CodeBlock language="tsx">
-{` // app/dashboard/error.tsx
+{`   // app/dashboard/error.tsx
 'use client'; // 必須是 Client Component，因為 Error Boundary 只能在客戶端
 
 interface DashboardErrorProps {
@@ -565,7 +569,7 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
 //     page.tsx
 
 // 注意：error.tsx 無法捕獲同層 layout.tsx 的錯誤
-// layout 的錯誤需要在父層的 error.tsx 處理 `}
+// layout 的錯誤需要在父層的 error.tsx 處理   `}
 </CodeBlock>
         </motion.section>
 
@@ -598,12 +602,12 @@ export default function DashboardError({ error, reset }: DashboardErrorProps) {
           </Card>
 
           <CodeBlock language="bash">
-{` npm install react-error-boundary `}
+{`   npm install react-error-boundary   `}
 </CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">基本用法：FallbackComponent</h3>
           <CodeBlock language="tsx">
-{` import { ErrorBoundary } from 'react-error-boundary';
+{`   import { ErrorBoundary } from 'react-error-boundary';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -649,7 +653,7 @@ function App() {
       <MyApp />
     </ErrorBoundary>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">useErrorBoundary — 在 async 操作中手動觸發</h3>
@@ -659,7 +663,7 @@ function App() {
             <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono text-sm">useErrorBoundary</code> 讓你把這些錯誤手動「拋進」最近的 Error Boundary：
           </p>
           <CodeBlock language="tsx">
-{` import { useErrorBoundary } from 'react-error-boundary';
+{`   import { useErrorBoundary } from 'react-error-boundary';
 
 function UserProfile({ userId }: { userId: string }) {
   const [user, setUser] = useState(null);
@@ -668,11 +672,11 @@ function UserProfile({ userId }: { userId: string }) {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const response = await fetch(\\`/api/users/\\${userId}\\`);
+        const response = await fetch(\`/api/users/\${userId}\`);
 
         if (!response.ok) {
           // API 回傳 4xx / 5xx：拋給最近的 ErrorBoundary 處理
-          throw new Error(\\`API 錯誤：\\${response.status} \\${response.statusText}\\`);
+          throw new Error(\`API 錯誤：\${response.status} \${response.statusText}\`);
         }
 
         const data = await response.json();
@@ -701,7 +705,7 @@ function ProfilePage() {
       <UserProfile userId="123" />
     </ErrorBoundary>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">resetKeys — 根據 props 改變自動重置</h3>
@@ -710,7 +714,7 @@ function ProfilePage() {
             <code className="bg-gray-100 px-1 rounded text-sm">resetKeys</code> 讓你指定「某個 prop 改變時，自動重置 Error Boundary」：
           </p>
           <CodeBlock language="tsx">
-{` function ProfilePage({ userId }: { userId: string }) {
+{`   function ProfilePage({ userId }: { userId: string }) {
   return (
     <ErrorBoundary
       FallbackComponent={ErrorFallback}
@@ -751,7 +755,7 @@ function AnalyticsDashboard({ reportId }: { reportId: string }) {
       </Suspense>
     </ErrorBoundary>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-slate-700 via-gray-700 to-zinc-700 text-white">

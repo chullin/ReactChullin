@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -15,8 +18,9 @@ import {
   Database,
   RefreshCw,
   AlertTriangle,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -129,11 +133,11 @@ export default function WebDevEP31() {
               <div className="p-4 bg-slate-900 rounded-xl border border-slate-700">
                 <p className="text-slate-400 text-xs font-mono mb-2"># 快速確認你的 Next.js 版本</p>
                 <CodeBlock language="bash">
-{` # 查看當前版本
+{`   # 查看當前版本
 npx next --version
 
 # 升級到最新版本
-npx @next/codemod@canary upgrade latest `}
+npx @next/codemod@canary upgrade latest   `}
 </CodeBlock>
               </div>
             </CardBody>
@@ -176,7 +180,7 @@ npx @next/codemod@canary upgrade latest `}
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">建立 Server Action（actions.ts）</h3>
               <CodeBlock language="tsx">
-{` // app/actions.ts
+{`   // app/actions.ts
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -209,7 +213,7 @@ export async function createPost(prevState: any, formData: FormData) {
 
   // 4. 導向新頁面
   redirect('/blog');
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">在 Client Component 中使用 useActionState</h3>
@@ -217,7 +221,7 @@ export async function createPost(prevState: any, formData: FormData) {
                 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">useActionState</code> 是 React 19 的新 Hook（取代了 Next.js 14 的 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">useFormState</code>），讓你能追蹤 Server Action 的狀態（回傳值和 pending 狀態）。
               </p>
               <CodeBlock language="tsx">
-{` 'use client';
+{`   'use client';
 import { useActionState } from 'react';
 import { createPost } from './actions';
 
@@ -263,12 +267,12 @@ export function CreatePostForm() {
       </div>
     </form>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">在 Server Component 中直接使用</h3>
               <CodeBlock language="tsx">
-{` // app/blog/new/page.tsx — Server Component（不需要 'use client'）
+{`   // app/blog/new/page.tsx — Server Component（不需要 'use client'）
 export default function NewPostPage() {
   // Server Action 可以直接定義在 Server Component 內
   async function handleCreate(formData: FormData) {
@@ -287,7 +291,7 @@ export default function NewPostPage() {
       <button type="submit">建立</button>
     </form>
   );
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -317,11 +321,11 @@ export default function NewPostPage() {
                 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">use()</code> 是一個特殊的 Hook，可以讀取 Promise 和 Context。與其他 Hook 不同，它可以在條件式和迴圈中使用。配合 Suspense，它讓 Promise 的消費變得極其簡潔。
               </p>
               <CodeBlock language="tsx">
-{` // use() 可以讀取 Promise 和 Context（Suspense 必須包裹）
+{`   // use() 可以讀取 Promise 和 Context（Suspense 必須包裹）
 import { use, Suspense } from 'react';
 
 async function fetchUser(id: string) {
-  const res = await fetch(\\`/api/users/\\${id}\\`);
+  const res = await fetch(\`/api/users/\${id}\`);
   return res.json();
 }
 
@@ -361,7 +365,7 @@ function ConditionalThemedButton({ showTheme }: { showTheme: boolean }) {
     return <button style={{ background: theme.primary }}>按鈕</button>;
   }
   return <button>按鈕</button>;
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-2 mt-8">useOptimistic() — 樂觀更新</h3>
@@ -369,7 +373,7 @@ function ConditionalThemedButton({ showTheme }: { showTheme: boolean }) {
                 樂觀更新（Optimistic Update）的概念是：假設操作會成功，立刻更新 UI；如果實際操作失敗，再 rollback 回原本的狀態。以前需要手動管理這個邏輯，<code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">useOptimistic</code> 讓這件事變成兩行。
               </p>
               <CodeBlock language="tsx">
-{` 'use client';
+{`   'use client';
 import { useOptimistic } from 'react';
 
 function LikeButton({ postId, initialLikeCount }: { postId: string; initialLikeCount: number }) {
@@ -400,7 +404,7 @@ function LikeButton({ postId, initialLikeCount }: { postId: string; initialLikeC
       <span className="font-medium">{optimisticLikes}</span>
     </button>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-2 mt-8">useFormStatus() — 表單送出狀態</h3>
@@ -408,7 +412,7 @@ function LikeButton({ postId, initialLikeCount }: { postId: string; initialLikeC
                 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">useFormStatus</code> 讓你在表單的子元件中存取表單的送出狀態，不需要把 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">isPending</code> 一層層往下傳。這個 Hook 必須在 <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">{'<form>'}</code> 內部的元件中使用。
               </p>
               <CodeBlock language="tsx">
-{` import { useFormStatus } from 'react-dom';
+{`   import { useFormStatus } from 'react-dom';
 
 // 這個元件可以在任何 <form> 內部使用，不需要額外 props
 function SubmitButton() {
@@ -439,7 +443,7 @@ function MyForm() {
       <SubmitButton />  {/* 自動感應所在表單的狀態 */}
     </form>
   );
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -499,19 +503,19 @@ function MyForm() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">開啟 PPR</h3>
               <CodeBlock language="tsx">
-{` // next.config.ts — 開啟實驗性 PPR
+{`   // next.config.ts — 開啟實驗性 PPR
 const nextConfig = {
   experimental: {
     ppr: 'incremental',  // 'incremental' 讓你逐頁採用，不需要全站一起改
   },
 };
 
-export default nextConfig; `}
+export default nextConfig;   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">實際頁面示例</h3>
               <CodeBlock language="tsx">
-{` // app/product/[id]/page.tsx
+{`   // app/product/[id]/page.tsx
 import { Suspense } from 'react';
 
 // 每個頁面需要明確 opt-in
@@ -550,7 +554,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 // 1. Build time：Next.js 預渲染靜態部分（ProductHero + ProductDescription）
 // 2. Request time：靜態部分從 CDN 立刻回傳，瀏覽器立刻顯示
 // 3. 同時：動態部分（Reviews、Recommendations、Stock）開始 streaming
-// 4. 動態部分資料準備好後，React 用實際內容取代 Skeleton `}
+// 4. 動態部分資料準備好後，React 用實際內容取代 Skeleton   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
@@ -610,7 +614,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">fetch 快取行為對比</h3>
               <CodeBlock language="typescript">
-{` // ─── Next.js 14（預設 cache）───
+{`   // ─── Next.js 14（預設 cache）───
 fetch('https://api.example.com/data');
 // 等同於：fetch('https://api.example.com/data', { cache: 'force-cache' })
 // 資料會被永久快取，只有手動 revalidate 才更新
@@ -640,7 +644,7 @@ fetch('https://api.example.com/posts', {
 
 // 之後在 Server Action 或 Route Handler 中觸發失效：
 // import { revalidateTag } from 'next/cache';
-// revalidateTag('posts'); `}
+// revalidateTag('posts');   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">unstable_cache — 資料層快取</h3>
@@ -648,7 +652,7 @@ fetch('https://api.example.com/posts', {
                 當你使用 ORM（如 Prisma）或直接查詢資料庫時，<code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono">unstable_cache</code> 讓你能在資料層加上快取，而不是在 HTTP 層。
               </p>
               <CodeBlock language="typescript">
-{` import { unstable_cache } from 'next/cache';
+{`   import { unstable_cache } from 'next/cache';
 
 // 包裝需要快取的資料查詢函式
 const getCachedUser = unstable_cache(
@@ -668,7 +672,7 @@ async function UserPage({ params }: { params: { id: string } }) {
   // 同樣的 id，60 秒內只查一次資料庫
   const user = await getCachedUser(params.id);
   return <div>{user?.name}</div>;
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -714,7 +718,7 @@ async function UserPage({ params }: { params: { id: string } }) {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">在 Route Handler 中使用</h3>
               <CodeBlock language="typescript">
-{` import { after } from 'next/server';
+{`   import { after } from 'next/server';
 
 export async function POST(req: Request) {
   const data = await req.json();
@@ -744,12 +748,12 @@ export async function POST(req: Request) {
 
   // 這個 Response 立刻回傳，不等 after() 內的工作
   return Response.json({ orderId: result.id, status: 'created' });
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">在 Server Action 中使用</h3>
               <CodeBlock language="typescript">
-{` 'use server';
+{`   'use server';
 import { after } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
@@ -763,7 +767,7 @@ export async function submitComment(formData: FormData) {
   });
 
   // 快取失效（同步，確保用戶看到最新資料）
-  revalidatePath(\\`/blog/\\${postId}\\`);
+  revalidatePath(\`/blog/\${postId}\`);
 
   // 後處理（非同步，不阻塞用戶）
   after(async () => {
@@ -777,7 +781,7 @@ export async function submitComment(formData: FormData) {
       data: { commentCount: { increment: 1 } },
     });
   });
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -804,14 +808,14 @@ export async function submitComment(formData: FormData) {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">使用官方 codemod 升級</h3>
               <CodeBlock language="bash">
-{` # 升級指令（自動更新 package.json 並執行 codemod）
+{`   # 升級指令（自動更新 package.json 並執行 codemod）
 npx @next/codemod@canary upgrade latest
 
 # 或者手動升級
 npm install next@latest react@latest react-dom@latest
 
 # 執行特定 codemod
-npx @next/codemod@latest next-async-request-api . `}
+npx @next/codemod@latest next-async-request-api .   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-4 mt-8">主要 Breaking Changes</h3>
@@ -872,10 +876,10 @@ export async function GET() {
                     severity: 'medium',
                   },
                 ].map(({ title, desc, fix, severity }) => {
-                  const colors = {
+                  const colors = (({
                     high: { bg: 'bg-red-50', border: 'border-red-200', badge: 'bg-red-600', text: 'text-red-800', label: 'Breaking Change' },
                     medium: { bg: 'bg-yellow-50', border: 'border-yellow-200', badge: 'bg-yellow-600', text: 'text-yellow-800', label: '需注意' },
-                  }[severity];
+                  } as const)[severity as 'high' | 'medium']) || { bg: 'bg-slate-50', border: 'border-slate-200', badge: 'bg-slate-600', text: 'text-slate-800', label: 'Note' };
 
                   return (
                     <div key={title} className={`p-5 ${colors.bg} rounded-xl border ${colors.border}`}>

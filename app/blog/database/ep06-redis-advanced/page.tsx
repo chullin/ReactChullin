@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -17,8 +20,9 @@ import {
   Server,
   AlertTriangle,
   CheckCircle,
-  Info,
+  Info
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -217,7 +221,7 @@ await subscriber.subscribe('notifications', 'chat:general');
 
 subscriber.on('message', (channel, message) => {
   const data = JSON.parse(message);
-  console.log(\\`[\\${channel}] Received:\\`, data);
+  console.log(\`[\${channel}] Received:\`, data);
 
   // 根據頻道處理不同邏輯
   if (channel === 'notifications') {
@@ -242,7 +246,7 @@ await publisher.publish('notifications', JSON.stringify({
 await subscriber.psubscribe('chat:*');
 
 subscriber.on('pmessage', (pattern, channel, message) => {
-  console.log(\\`Pattern "\\${pattern}" matched "\\${channel}":\\`, message);
+  console.log(\`Pattern "\${pattern}" matched "\${channel}":\`, message);
   // pattern  = "chat:*"
   // channel  = "chat:general" 或 "chat:room-1" 等實際頻道名
   // message  = 訊息內容
@@ -324,7 +328,7 @@ if (messages) {
         await redis.xack('orders-stream', 'order-processors', id);
       } catch (err) {
         // 處理失敗 → 不 ACK，訊息留在 Pending List，等待重新投遞
-        console.error(\\`Failed to process message \\${id}:\\`, err);
+        console.error(\`Failed to process message \${id}:\`, err);
       }
     }
   }
@@ -411,7 +415,7 @@ const redlock = new Redlock(
 );
 
 async function purchaseProduct(productId: string, userId: string) {
-  const lockKey = \\`lock:product:\\${productId}\\`;
+  const lockKey = \`lock:product:\${productId}\`;
   const lockTTL = 10_000; // 鎖的最長持有時間：10 秒（防止死鎖）
 
   // 嘗試獲取鎖（會等待重試，直到成功或超過 retryCount）
@@ -430,7 +434,7 @@ async function purchaseProduct(productId: string, userId: string) {
     await decreaseStock(productId, 1);
     const order = await createOrder({ productId, userId, quantity: 1 });
 
-    console.log(\\`Order \\${order.id} created for user \\${userId}\\`);
+    console.log(\`Order \${order.id} created for user \${userId}\`);
     return order;
     // ─── 臨界區結束 ─────────────────────────────────────────
 
@@ -445,7 +449,7 @@ async function purchaseProduct(productId: string, userId: string) {
 // Redis 的 SET NX EX 是原子操作，這是分散式鎖的核心
 async function acquireLock(key: string, ttlSeconds: number): Promise<string | null> {
   // 使用隨機 token 作為鎖的值（用於確認只有鎖的持有者才能釋放）
-  const token = \\`\\${Date.now()}-\\${Math.random()}\\`;
+  const token = \`\${Date.now()}-\${Math.random()}\`;
 
   // SET key token NX EX ttl
   // NX：Only Set if Not eXists（只有 key 不存在時才設定）
@@ -460,13 +464,13 @@ async function releaseLock(key: string, token: string): Promise<boolean> {
   // 必須先確認 token 是自己的，才能刪除
   // 這段必須是原子操作，否則「確認」和「刪除」之間可能有 Race Condition
   // → 用 Lua Script 保證原子性（見 Section 4）
-  const luaScript = \\`
+  const luaScript = \`
     if redis.call('GET', KEYS[1]) == ARGV[1] then
       return redis.call('DEL', KEYS[1])
     else
       return 0
     end
-  \\`;
+  \`;
 
   const result = await redis.eval(luaScript, 1, key, token) as number;
   return result === 1;
@@ -571,19 +575,19 @@ async function deductStock(
   const result = await redis.evalsha(
     sha,                                   // Script 的 SHA1 Hash
     1,                                     // KEYS 的數量（下面的參數分為 KEYS 和 ARGV）
-    \\`stock:\\${productId}\\`,                // KEYS[1]
+    \`stock:\${productId}\`,                // KEYS[1]
     quantity.toString(),                    // ARGV[1]
-    \\`\\${userId}:\\${Date.now()}\\`,          // ARGV[2]
+    \`\${userId}:\${Date.now()}\`,          // ARGV[2]
   ) as number;
 
   // 解析 Lua Script 的回傳值
   switch (result) {
     case -1:
-      throw new Error(\\`Product \\${productId} not found\\`);
+      throw new Error(\`Product \${productId} not found\`);
     case -2:
-      throw new Error(\\`Insufficient stock for product \\${productId}\\`);
+      throw new Error(\`Insufficient stock for product \${productId}\`);
     default:
-      console.log(\\`Stock deducted. Remaining: \\${result}\\`);
+      console.log(\`Stock deducted. Remaining: \${result}\`);
       return result;
   }
 }
@@ -665,13 +669,13 @@ const today = new Date().toISOString().slice(0, 10); // "2026-05-08"
 
 // ─── 記錄訪客（每次用戶訪問頁面時呼叫）─────────────────────
 async function trackPageVisit(userId: string) {
-  await redis.pfadd(\\`uv:\\${today}\\`, userId);
+  await redis.pfadd(\`uv:\${today}\`, userId);
   // PFADD 只在 userId 是新的時回傳 1，重複加入回傳 0（去重）
 }
 
 // ─── 查詢今天的獨立訪客數 ────────────────────────────────
 async function getTodayUV(): Promise<number> {
-  return await redis.pfcount(\\`uv:\\${today}\\`);
+  return await redis.pfcount(\`uv:\${today}\`);
 }
 
 // ─── 合併多天統計（週報、月報）──────────────────────────────
@@ -679,7 +683,7 @@ async function getWeeklyUV(): Promise<number> {
   const keys = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    return \\`uv:\\${d.toISOString().slice(0, 10)}\\`;
+    return \`uv:\${d.toISOString().slice(0, 10)}\`;
   });
 
   // PFMERGE 把多個 HyperLogLog 合併成一個

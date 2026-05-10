@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -21,8 +24,9 @@ import {
   BarChart3,
   Globe,
   HardDrive,
-  Database,
+  Database
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -84,7 +88,7 @@ export default function DevOpsEP04() {
 
           <p className="text-slate-700 font-semibold mb-3">在開發環境很好用，但生產環境呢？</p>
           <CodeBlock language="yaml">
-{` # docker-compose.yml 在開發環境很好，但生產環境...
+{`   # docker-compose.yml 在開發環境很好，但生產環境...
 services:
   web:
     image: myapp:latest
@@ -102,7 +106,7 @@ services:
 
   redis:
     image: redis:7
-    # ❌ 記憶體暫存也是單點，無法叢集 `}
+    # ❌ 記憶體暫存也是單點，無法叢集   `}
 </CodeBlock>
 
           <div className="grid md:grid-cols-2 gap-4 my-8">
@@ -191,7 +195,7 @@ services:
 
           <p className="text-slate-700 font-semibold mb-3">K8s Cluster 架構：</p>
           <CodeBlock language="text">
-{` Kubernetes Cluster
+{`   Kubernetes Cluster
 ├── Control Plane（Master）
 │   ├── API Server       ← 所有指令的唯一入口（kubectl 就是在跟它說話）
 │   ├── Scheduler        ← 決定新的 Pod 要排程到哪台 Worker Node
@@ -211,7 +215,7 @@ services:
     │   ├── Pod C
     │   └── Pod D
     └── Node 3
-        └── Pod E `}
+        └── Pod E   `}
 </CodeBlock>
 
           <div className="grid md:grid-cols-2 gap-4 mt-6">
@@ -292,7 +296,7 @@ services:
 
           <p className="text-slate-700 font-semibold mb-3">Pod 定義（了解結構即可，通常不直接使用）：</p>
           <CodeBlock language="yaml">
-{` # pod.yaml（通常不直接用，而是透過 Deployment）
+{`   # pod.yaml（通常不直接用，而是透過 Deployment）
 apiVersion: v1
 kind: Pod
 metadata:
@@ -312,12 +316,12 @@ spec:
           valueFrom:
             secretKeyRef:         # 從 Secret 讀取，不要直接寫明文
               name: db-secret
-              key: url `}
+              key: url   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">Deployment — 生產環境真正使用的資源：</p>
           <CodeBlock language="yaml">
-{` # deployment.yaml
+{`   # deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -361,7 +365,7 @@ spec:
     type: RollingUpdate          # 滾動更新：保持服務不中斷
     rollingUpdate:
       maxSurge: 1                # 更新時最多多跑 1 個新版 Pod
-      maxUnavailable: 0          # 不允許 Pod 數量低於 replicas（零 downtime） `}
+      maxUnavailable: 0          # 不允許 Pod 數量低於 replicas（零 downtime）   `}
 </CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4 mt-6">
@@ -407,7 +411,7 @@ spec:
 
           <p className="text-slate-700 font-semibold mb-3">Service 定義：</p>
           <CodeBlock language="yaml">
-{` # service.yaml
+{`   # service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -422,7 +426,7 @@ spec:
       port: 80          # Service 對外暴露的 port
       targetPort: 3000  # 轉發到 Pod 的 port
 
-  type: ClusterIP       # 只在 cluster 內部可訪問（預設值） `}
+  type: ClusterIP       # 只在 cluster 內部可訪問（預設值）   `}
 </CodeBlock>
 
           <p className="text-slate-600 mb-6 leading-relaxed mt-4">
@@ -469,7 +473,7 @@ spec:
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">前後端服務各自的 Service 範例：</p>
           <CodeBlock language="yaml">
-{` # backend-service.yaml
+{`   # backend-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -494,7 +498,7 @@ spec:
   ports:
     - port: 80
       targetPort: 3000
-  type: ClusterIP    # 同樣只讓 Ingress 存取，不直接對外 `}
+  type: ClusterIP    # 同樣只讓 Ingress 存取，不直接對外   `}
 </CodeBlock>
         </motion.div>
 
@@ -518,7 +522,7 @@ spec:
 
           <p className="text-slate-700 font-semibold mb-3">Ingress 設定（需先安裝 ingress-nginx controller）：</p>
           <CodeBlock language="yaml">
-{` # ingress.yaml
+{`   # ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -566,7 +570,7 @@ spec:
               service:
                 name: frontend-service
                 port:
-                  number: 80 `}
+                  number: 80   `}
 </CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4 mt-6">
@@ -625,7 +629,7 @@ spec:
 
           <p className="text-slate-700 font-semibold mb-3">部署與更新：</p>
           <CodeBlock language="bash">
-{` # 套用 YAML 設定（建立或更新資源）
+{`   # 套用 YAML 設定（建立或更新資源）
 kubectl apply -f deployment.yaml
 
 # 套用整個目錄下的所有 YAML
@@ -638,12 +642,12 @@ kubectl rollout status deployment/my-app
 kubectl rollout pause deployment/my-app
 
 # 繼續暫停的更新
-kubectl rollout resume deployment/my-app `}
+kubectl rollout resume deployment/my-app   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-6">查看資源狀態：</p>
           <CodeBlock language="bash">
-{` # 列出所有 Pod
+{`   # 列出所有 Pod
 kubectl get pods
 
 # 帶有更多資訊（IP、Node、年齡）
@@ -660,12 +664,12 @@ kubectl get services
 kubectl get deployments
 
 # 列出所有 namespace 的資源
-kubectl get pods -A `}
+kubectl get pods -A   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-6">查看 logs / 進入 container：</p>
           <CodeBlock language="bash">
-{` # 查看 Pod logs（最後 100 行）
+{`   # 查看 Pod logs（最後 100 行）
 kubectl logs my-app-abc123 --tail=100
 
 # Follow mode（即時串流，Ctrl+C 停止）
@@ -678,12 +682,12 @@ kubectl logs my-app-abc123 -c web
 kubectl exec -it my-app-abc123 -- bash
 
 # 在 container 中執行單一指令
-kubectl exec my-app-abc123 -- env | grep NODE `}
+kubectl exec my-app-abc123 -- env | grep NODE   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-6">常用操作：</p>
           <CodeBlock language="bash">
-{` # 直接更新 Deployment 的 image（觸發滾動更新）
+{`   # 直接更新 Deployment 的 image（觸發滾動更新）
 kubectl set image deployment/my-app web=myapp:1.1.0
 
 # 查看 rollout 歷史
@@ -708,7 +712,7 @@ kubectl delete deployment my-app
 kubectl delete -f deployment.yaml
 
 # 臨時 port-forward（本機訪問 cluster 內的 Service，用於 debug）
-kubectl port-forward service/my-app-service 8080:80 `}
+kubectl port-forward service/my-app-service 8080:80   `}
 </CodeBlock>
         </motion.div>
 
@@ -733,7 +737,7 @@ kubectl port-forward service/my-app-service 8080:80 `}
 
           <p className="text-slate-700 font-semibold mb-3">HPA 設定：</p>
           <CodeBlock language="yaml">
-{` # hpa.yaml（Horizontal Pod Autoscaler）
+{`   # hpa.yaml（Horizontal Pod Autoscaler）
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -777,7 +781,7 @@ spec:
       policies:
         - type: Percent
           value: 20
-          periodSeconds: 60             # 每分鐘最多減少 20% `}
+          periodSeconds: 60             # 每分鐘最多減少 20%   `}
 </CodeBlock>
 
           <Card className="mt-6 mb-8 border border-amber-200 bg-amber-50">

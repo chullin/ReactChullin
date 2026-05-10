@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -22,8 +25,9 @@ import {
   ShieldCheck,
   TrendingUp,
   AlertCircle,
-  Activity,
+  Activity
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -82,7 +86,7 @@ export default function DevOpsEP05() {
           </p>
 
           <CodeBlock language="bash">
-{` # 傳統部署（In-place deployment）
+{`   # 傳統部署（In-place deployment）
 ssh production-server
 git pull origin main
 npm run build
@@ -91,7 +95,7 @@ pm2 restart app    # 這段時間：服務中斷！
 # 問題：
 # 1. 部署期間有 downtime（可能幾秒到幾分鐘）
 # 2. 新版有 bug → 回滾需要重新部署（又是 downtime）
-# 3. 用戶可能在操作到一半時遭遇中斷 `}
+# 3. 用戶可能在操作到一半時遭遇中斷   `}
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -196,7 +200,7 @@ pm2 restart app    # 這段時間：服務中斷！
           </h3>
 
           <CodeBlock language="yaml">
-{` # .github/workflows/blue-green-deploy.yml
+{`   # .github/workflows/blue-green-deploy.yml
 name: Blue-Green Deploy
 
 on:
@@ -212,13 +216,13 @@ jobs:
 
       - name: Build new image
         run: |
-          docker build -t myapp:\\${{ github.sha }} .
-          docker push registry.example.com/myapp:\\${{ github.sha }}
+          docker build -t myapp:\${{ github.sha }} .
+          docker push registry.example.com/myapp:\${{ github.sha }}
 
       - name: Deploy to Green environment
         run: |
           kubectl set image deployment/myapp-green \\
-            web=registry.example.com/myapp:\\${{ github.sha }}
+            web=registry.example.com/myapp:\${{ github.sha }}
           kubectl rollout status deployment/myapp-green
 
       - name: Run smoke tests on Green
@@ -241,7 +245,7 @@ jobs:
         run: |
           # 更新 label，讓下次部署知道哪個是「穩定版」
           kubectl label deployment myapp-green role=blue --overwrite
-          kubectl label deployment myapp-blue role=green --overwrite `}
+          kubectl label deployment myapp-blue role=green --overwrite   `}
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -309,7 +313,7 @@ jobs:
           </h3>
 
           <CodeBlock language="yaml">
-{` # stable-deployment.yaml
+{`   # stable-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -361,7 +365,7 @@ spec:
     app: myapp         # 同時選中 stable 和 canary（pod 比例決定流量比例）
   ports:
     - port: 80
-      targetPort: 3000 `}
+      targetPort: 3000   `}
 </CodeBlock>
 
           <div className="mt-6">
@@ -374,7 +378,7 @@ spec:
             </p>
 
             <CodeBlock language="bash">
-{` # 在 Canary 部署後監控這些指標（30 分鐘）
+{`   # 在 Canary 部署後監控這些指標（30 分鐘）
 - 5xx Error Rate（應該 < 0.1%）
 - P99 Latency（應該沒有顯著升高）
 - Business Metrics（訂單轉換率、用戶行為）
@@ -384,7 +388,7 @@ kubectl scale deployment myapp-canary --replicas=10
 kubectl scale deployment myapp-stable --replicas=0
 
 # 回滾：
-kubectl scale deployment myapp-canary --replicas=0 `}
+kubectl scale deployment myapp-canary --replicas=0   `}
 </CodeBlock>
           </div>
 
@@ -431,7 +435,7 @@ kubectl scale deployment myapp-canary --replicas=0 `}
           </h3>
 
           <CodeBlock language="typescript">
-{` // lib/featureFlags.ts
+{`   // lib/featureFlags.ts
 type FeatureFlag = {
   enabled: boolean;
   rolloutPercentage: number;  // 0-100，向多少 % 用戶開放
@@ -460,7 +464,7 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
   // 根據 userId 的 hash 決定（確保同一個用戶永遠看到同樣結果）
   const hash = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return (hash % 100) < flag.rolloutPercentage;
-} `}
+}   `}
 </CodeBlock>
 
           <div className="mt-6">
@@ -470,11 +474,11 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
             </h3>
 
             <CodeBlock language="tsx">
-{` function CheckoutPage({ userId }) {
+{`   function CheckoutPage({ userId }) {
   const showNewCheckout = isFeatureEnabled('new-checkout-flow', userId);
 
   return showNewCheckout ? <NewCheckoutFlow /> : <OldCheckoutFlow />;
-} `}
+}   `}
 </CodeBlock>
           </div>
 
@@ -533,7 +537,7 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
           </p>
 
           <CodeBlock language="yaml">
-{` strategy:
+{`   strategy:
   type: RollingUpdate
   rollingUpdate:
     maxSurge: 25%        # 最多比 replicas 多 25% 的 Pod（新版）
@@ -543,7 +547,7 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
 # Step 1: 啟動 3 個新版 Pod → 共 13 個（10+3）
 # Step 2: 關閉 3 個舊版 Pod → 共 10 個（7+3）
 # Step 3: 啟動 3 個新版 Pod → 共 13 個（7+6）
-# ...直到全部換完 `}
+# ...直到全部換完   `}
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -579,14 +583,14 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
               快速回滾指令
             </p>
             <CodeBlock language="bash">
-{` # 查看部署歷史
+{`   # 查看部署歷史
 kubectl rollout history deployment/myapp
 
 # 回滾到上一個版本（不需要重新 build！）
 kubectl rollout undo deployment/myapp
 
 # 回滾到指定版本
-kubectl rollout undo deployment/myapp --to-revision=3 `}
+kubectl rollout undo deployment/myapp --to-revision=3   `}
 </CodeBlock>
           </div>
         </motion.div>

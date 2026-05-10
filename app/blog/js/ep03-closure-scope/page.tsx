@@ -1,13 +1,18 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider, Button, Code } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Button,
+  Code } from '@heroui/react';
 import { 
-  Zap, 
-  Layers, 
-  Lock, 
-  Cpu, 
-  Terminal, 
-  ArrowRight, 
+  Zap,
+  Layers,
+  Lock,
+  Cpu,
+  Terminal,
+  ArrowRight,
   Search,
   CheckCircle2,
   AlertCircle,
@@ -17,8 +22,10 @@ import {
   ChevronRight,
   Database,
   Eye,
-  Key
+  Key,
+  Info
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -245,12 +252,12 @@ counter(); // 3`}
   return {
     deposit: (amount) => {
       balance += amount;
-      console.log(\\`存入 \\${amount}，餘額 \\${balance}\\`);
+      console.log(\`存入 \${amount}，餘額 \${balance}\`);
     },
     withdraw: (amount) => {
       if (amount > balance) return console.error("餘額不足");
       balance -= amount;
-      console.log(\\`取出 \\${amount}，餘額 \\${balance}\\`);
+      console.log(\`取出 \${amount}，餘額 \${balance}\`);
     },
     getBalance: () => balance
   };

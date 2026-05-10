@@ -1,7 +1,21 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  Quote,
+  Clock,
+  Eye,
+  Shield,
+  Key,
+  Lock,
+  AlertTriangle
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, Quote, Clock, Eye, Shield, Key, Lock, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -263,12 +277,12 @@ async function logout(refreshToken: string) {
   const payload = jwt.verify(refreshToken, SECRET) as { userId: number; exp: number };
   const ttl = payload.exp - Math.floor(Date.now() / 1000);
   // 只需黑名單到原本的過期時間（7天），TTL到期後自動清除
-  await redis.setex(\\`blacklist:\\${refreshToken}\\`, ttl, '1');
+  await redis.setex(\`blacklist:\${refreshToken}\`, ttl, '1');
 }
 
 // 換新 Access Token 時：先檢查黑名單
 async function refreshAccessToken(refreshToken: string) {
-  const isRevoked = await redis.exists(\\`blacklist:\\${refreshToken}\\`);
+  const isRevoked = await redis.exists(\`blacklist:\${refreshToken}\`);
   if (isRevoked) throw new Error('Refresh token has been revoked');
 
   const payload = jwt.verify(refreshToken, SECRET) as { userId: number };

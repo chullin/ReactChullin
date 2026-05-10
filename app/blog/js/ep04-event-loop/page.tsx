@@ -1,14 +1,19 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider, Button, Code } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Button,
+  Code } from '@heroui/react';
 import { 
-  Zap, 
-  Activity, 
-  Clock, 
-  Cpu, 
-  Layers, 
-  Terminal, 
-  ArrowRight, 
+  Zap,
+  Activity,
+  Clock,
+  Cpu,
+  Layers,
+  Terminal,
+  ArrowRight,
   RefreshCcw,
   AlertTriangle,
   CheckCircle2,
@@ -18,6 +23,7 @@ import {
   Play,
   Settings
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';

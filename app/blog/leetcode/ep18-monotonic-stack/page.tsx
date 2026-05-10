@@ -1,12 +1,21 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
-
-
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">

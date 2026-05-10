@@ -1,15 +1,27 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
 import {
-  Calendar, User, Clock, Quote, ArrowRight, Terminal,
-  Shield, Cpu, Network, Search, AlarmClock,
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import {
+  Calendar,
+  User,
+  Clock,
+  Quote,
+  ArrowRight,
+  Terminal,
+  Shield,
+  Cpu,
+  Network,
+  Search,
+  AlarmClock,
+  Info
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
-
-
 
 /* ─── Section Heading ─── */
 const SectionHeading = ({ color, children }: { color: string; children: React.ReactNode }) => (

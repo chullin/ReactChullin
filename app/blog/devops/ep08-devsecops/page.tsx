@@ -1,15 +1,20 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider, Button, Code } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Button,
+  Code } from '@heroui/react';
 import { 
-  ShieldCheck, 
-  Lock, 
-  Search, 
-  Activity, 
-  AlertTriangle, 
-  ChevronRight, 
-  Terminal, 
-  Cpu, 
+  ShieldCheck,
+  Lock,
+  Search,
+  Activity,
+  AlertTriangle,
+  ChevronRight,
+  Terminal,
+  Cpu,
   Server,
   Key,
   Eye,
@@ -17,6 +22,7 @@ import {
   Box,
   CheckCircle2
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -257,7 +263,7 @@ jobs:
           fetch-depth: 0
       - uses: gitleaks/gitleaks-action@v2
         env:
-          GITHUB_TOKEN: \\${{ secrets.GITHUB_TOKEN }}`} 
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`} 
           />
         </SectionWrapper>
 

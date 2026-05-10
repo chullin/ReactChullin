@@ -1,11 +1,30 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, Clock, Eye, AlertTriangle, CheckCircle, Radio, Layers, Zap, BarChart3, RefreshCw, Shield } from 'lucide-react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import {Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import {
+  motion
+} from 'framer-motion';
+import {
+  Calendar,
+  User,
+  Clock,
+  Eye,
+  AlertTriangle,
+  CheckCircle,
+  Radio,
+  Layers,
+  Zap,
+  BarChart3,
+  RefreshCw,
+  Shield,
+  ArrowRight,
+  ArrowLeft,
+  Lightbulb
+} from 'lucide-react';
 import CodeBlock from '@/components/blog/CodeBlock';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function WebDevEP21() {
   return (
@@ -96,7 +115,7 @@ export default function WebDevEP21() {
           </p>
 
           <CodeBlock language="tsx">
-{` // App.tsx — 資料的源頭
+{`   // App.tsx — 資料的源頭
 function App() {
   const [user, setUser] = useState({ name: 'Joseph', email: 'fg6ts15@gmail.com' });
 
@@ -128,7 +147,7 @@ function Sidebar({ user }: { user: User }) {
 // UserProfile.tsx — 真正用到 user 的元件
 function UserProfile({ user }: { user: User }) {
   return <div>{user.name}</div>;
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-red-400">
@@ -195,7 +214,7 @@ function UserProfile({ user }: { user: User }) {
           </p>
 
           <CodeBlock language="tsx">
-{` // context/UserContext.tsx
+{`   // context/UserContext.tsx
 import { createContext, useContext, useState } from 'react';
 
 type User = {
@@ -234,7 +253,7 @@ export function useUser() {
   }
   return context;
 }
- `}
+   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
@@ -243,7 +262,7 @@ export function useUser() {
           </p>
 
           <CodeBlock language="tsx">
-{` // App.tsx — 用 Provider 包住整個 app
+{`   // App.tsx — 用 Provider 包住整個 app
 function App() {
   return (
     <UserProvider>
@@ -277,7 +296,7 @@ function UserProfile() {
 
   if (!user) return <div>未登入</div>;
   return <div>{user.name}</div>;
-} `}
+}   `}
 </CodeBlock>
         </motion.section>
 
@@ -302,7 +321,7 @@ function UserProfile() {
           </p>
 
           <CodeBlock language="tsx">
-{` // context/ThemeContext.tsx
+{`   // context/ThemeContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 
 type Theme = 'light' | 'dark';
@@ -348,7 +367,7 @@ export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) throw new Error('useTheme must be used within ThemeProvider');
   return context;
-} `}
+}   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
@@ -357,7 +376,7 @@ export function useTheme() {
           </p>
 
           <CodeBlock language="tsx">
-{` // 可以放在 app 的任何地方，不管層級多深
+{`   // 可以放在 app 的任何地方，不管層級多深
 function ThemeToggleButton() {
   const { theme, toggleTheme } = useTheme();
 
@@ -386,7 +405,7 @@ function Header() {
 function DeepNestedComponent() {
   const { theme } = useTheme();
   return <div className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>...</div>;
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-amber-400">
@@ -425,7 +444,7 @@ function DeepNestedComponent() {
           </p>
 
           <CodeBlock language="tsx">
-{` // app/layout.tsx
+{`   // app/layout.tsx
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UserProvider } from '@/context/UserContext';
 import { CartProvider } from '@/context/CartContext';
@@ -451,7 +470,7 @@ export default function RootLayout({
       </body>
     </html>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg bg-gradient-to-r from-orange-50 to-amber-50">
@@ -491,7 +510,7 @@ export default function RootLayout({
           </p>
 
           <CodeBlock language="tsx">
-{` // providers/AppProviders.tsx — 把所有 Provider 整合在一起
+{`   // providers/AppProviders.tsx — 把所有 Provider 整合在一起
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider>
@@ -513,7 +532,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   );
-} `}
+}   `}
 </CodeBlock>
         </motion.section>
 
@@ -545,7 +564,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 無論它們用到的是不是那個改變的值。
               </p>
               <CodeBlock language="tsx">
-{` // ❌ 壞做法：把不相關的狀態混在同一個 Context
+{`   // ❌ 壞做法：把不相關的狀態混在同一個 Context
 const AppContext = createContext({
   count: 0,      // 每秒更新一次的計數器
   user: null,    // 幾乎不變
@@ -554,7 +573,7 @@ const AppContext = createContext({
 
 // 每次 count 變化（每秒一次）：
 // → 所有用到 AppContext 的元件都重新渲染
-// → 即使元件只用到 user，根本不在乎 count！ `}
+// → 即使元件只用到 user，根本不在乎 count！   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -564,7 +583,7 @@ const AppContext = createContext({
           </p>
 
           <CodeBlock language="tsx">
-{` // ✅ 好做法：按更新頻率拆分
+{`   // ✅ 好做法：按更新頻率拆分
 const CountContext = createContext(0);        // 高頻更新 → 單獨隔離
 const UserContext = createContext(null);      // 低頻更新 → 獨立管理
 const ThemeContext = createContext('light');  // 極低頻 → 獨立管理
@@ -572,7 +591,7 @@ const ThemeContext = createContext('light');  // 極低頻 → 獨立管理
 // 現在：
 // count 每秒更新 → 只有 useContext(CountContext) 的元件重渲染
 // UserProfile 用 UserContext → 完全不受 count 影響
-// ThemeToggle 用 ThemeContext → 同樣不受 count 影響 `}
+// ThemeToggle 用 ThemeContext → 同樣不受 count 影響   `}
 </CodeBlock>
 
           {/* 比較表格 */}

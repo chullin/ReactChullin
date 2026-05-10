@@ -1,7 +1,22 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Layers,
+  AlertCircle,
+  CheckCircle,
+  Zap
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, Layers, AlertCircle, CheckCircle, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -452,7 +467,7 @@ function GoodTodoApp() {
     <div>
       <p>{completedCount} / {totalCount} 完成</p>
       <div
-        style={{ width: \\`\\${progress}%\\` }}
+        style={{ width: \`\${progress}%\` }}
         className="h-2 bg-violet-500 rounded transition-all"
       />
     </div>

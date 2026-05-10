@@ -1,7 +1,25 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Input,
+  Accordion,
+  AccordionItem } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Search,
+  Layers,
+  Navigation2,
+  Zap
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider, Input, Accordion, AccordionItem } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, Search, Layers, Navigation2, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';

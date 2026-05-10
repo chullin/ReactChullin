@@ -1,7 +1,18 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -251,7 +262,6 @@ def myPow(x: float, n: int) -> float:
     else:
         return x * myPow(x * x, n // 2)
 
-
 # 迭代版（O(1) space，更優）
 def myPow_iter(x: float, n: int) -> float:
     if n < 0:
@@ -369,7 +379,6 @@ def myPow_iter(x: float, n: int) -> float:
         seen.add(n)
         n = get_next(n)
     return True
-
 
 def isHappy_floyd(n: int) -> bool:
     def get_next(num: int) -> int:

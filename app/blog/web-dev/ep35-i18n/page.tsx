@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -15,8 +18,9 @@ import {
   Settings,
   FileText,
   LayoutGrid,
-  Sparkles,
+  Sparkles
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -202,13 +206,13 @@ export default function WebDevEP35() {
               </p>
 
               <CodeBlock language="bash">
-{` npm install next-intl `}
+{`   npm install next-intl   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-6">目錄結構</h3>
 
               <CodeBlock language="bash">
-{` ├── app/
+{`   ├── app/
 │   ├── [locale]/          ← 所有路由包在 locale 下
 │   │   ├── layout.tsx
 │   │   ├── page.tsx
@@ -220,7 +224,7 @@ export default function WebDevEP35() {
 │   ├── zh-TW.json         ← 繁體中文翻譯
 │   └── ja.json            ← 日文翻譯
 ├── i18n.ts                ← next-intl 配置
-└── middleware.ts           ← 語言偵測與路由 `}
+└── middleware.ts           ← 語言偵測與路由   `}
 </CodeBlock>
 
               <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 my-6">
@@ -233,18 +237,18 @@ export default function WebDevEP35() {
               </div>
 
               <CodeBlock language="typescript">
-{` // i18n.ts — 告訴 next-intl 如何載入翻譯訊息
+{`   // i18n.ts — 告訴 next-intl 如何載入翻譯訊息
 import { getRequestConfig } from 'next-intl/server';
 
 export default getRequestConfig(async ({ locale }) => ({
-  messages: (await import(\\`../messages/\\${locale}.json\\`)).default,
-})); `}
+  messages: (await import(\`../messages/\${locale}.json\`)).default,
+}));   `}
 </CodeBlock>
 
               <div className="h-4" />
 
               <CodeBlock language="typescript">
-{` // middleware.ts — 語言偵測與路由重導向
+{`   // middleware.ts — 語言偵測與路由重導向
 import createMiddleware from 'next-intl/middleware';
 
 export default createMiddleware({
@@ -259,19 +263,19 @@ export default createMiddleware({
 export const config = {
   // 排除 API、Next.js 靜態資源、含副檔名的檔案（圖片、字體等）
   matcher: ['/((?!api|_next|.*\\..*).*)'],
-}; `}
+};   `}
 </CodeBlock>
 
               <div className="h-4" />
 
               <CodeBlock language="typescript">
-{` // next.config.ts — 套用 next-intl plugin
+{`   // next.config.ts — 套用 next-intl plugin
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
 export default withNextIntl({
   // 你原本的 Next.js 設定可以繼續放在這裡
-}); `}
+});   `}
 </CodeBlock>
 
               <div className="p-5 bg-slate-900 rounded-xl border border-slate-700 mt-6 font-mono text-sm">
@@ -314,7 +318,7 @@ export default withNextIntl({
               </p>
 
               <CodeBlock language="json">
-{` // messages/zh-TW.json
+{`   // messages/zh-TW.json
 {
   "nav": {
     "home": "首頁",
@@ -337,13 +341,13 @@ export default withNextIntl({
     "404": "找不到頁面",
     "tryAgain": "重新嘗試"
   }
-} `}
+}   `}
 </CodeBlock>
 
               <div className="h-4" />
 
               <CodeBlock language="json">
-{` // messages/en.json
+{`   // messages/en.json
 {
   "nav": {
     "home": "Home",
@@ -366,13 +370,13 @@ export default withNextIntl({
     "404": "Page Not Found",
     "tryAgain": "Try Again"
   }
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-6">在 Server Component 與 Client Component 中使用</h3>
 
               <CodeBlock language="tsx">
-{` // app/[locale]/page.tsx — Server Component 版本
+{`   // app/[locale]/page.tsx — Server Component 版本
 // 注意：Server Component 不需要加 'use client'
 import { useTranslations } from 'next-intl';
 
@@ -405,7 +409,7 @@ export function NavBar() {
       <a href="/blog">{t('blog')}</a>
     </nav>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
@@ -472,7 +476,7 @@ export function NavBar() {
               </div>
 
               <CodeBlock language="tsx">
-{` // 英文：singular/plural 兩種
+{`   // 英文：singular/plural 兩種
 // messages/en.json: "minuteRead": "{count, plural, one {# minute} other {# minutes}} read"
 // 1 → "1 minute read", 5 → "5 minutes read"
 
@@ -498,13 +502,13 @@ function ArticleCount({ count }: { count: number }) {
       */}
     </span>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">日期、時間、貨幣格式化</h3>
 
               <CodeBlock language="tsx">
-{` import { useFormatter } from 'next-intl';
+{`   import { useFormatter } from 'next-intl';
 
 function PublishedDate({ date }: { date: Date }) {
   const format = useFormatter();
@@ -572,7 +576,7 @@ function Stats({ value }: { value: number }) {
       {/* en: "1.5M", zh-TW: "150萬" */}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -598,7 +602,7 @@ function Stats({ value }: { value: number }) {
               </p>
 
               <CodeBlock language="tsx">
-{` // components/LocaleSwitcher.tsx
+{`   // components/LocaleSwitcher.tsx
 'use client';
 import { useLocale } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
@@ -617,12 +621,12 @@ export function LocaleSwitcher() {
   function switchLocale(newLocale: string) {
     // 替換路徑中的語言前綴
     // 例如：/en/blog → /ja/blog（停在同一頁面，換語言）
-    const currentLocalePrefix = \\`/\\${locale}\\`;
+    const currentLocalePrefix = \`/\${locale}\`;
     const cleanPath = pathname.startsWith(currentLocalePrefix)
       ? pathname.slice(currentLocalePrefix.length) || '/'
       : pathname;
 
-    router.push(\\`/\\${newLocale}\\${cleanPath}\\`);
+    router.push(\`/\${newLocale}\${cleanPath}\`);
   }
 
   return (
@@ -631,19 +635,19 @@ export function LocaleSwitcher() {
         <button
           key={code}
           onClick={() => switchLocale(code)}
-          aria-label={\\`切換到\\${label}\\`}
-          className={\\`px-3 py-1 rounded text-sm transition-colors \\${
+          aria-label={\`切換到\${label}\`}
+          className={\`px-3 py-1 rounded text-sm transition-colors \${
             locale === code
               ? 'bg-rose-600 text-white font-bold'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }\\`}
+          }\`}
         >
           {flag} {label}
         </button>
       ))}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-6">SEO 多語言 Meta 設定（hreflang）</h3>
@@ -653,7 +657,7 @@ export function LocaleSwitcher() {
               </p>
 
               <CodeBlock language="tsx">
-{` // app/[locale]/layout.tsx
+{`   // app/[locale]/layout.tsx
 import { getTranslations } from 'next-intl/server';
 
 // generateMetadata 是 Server-side 函式，可以用 async/await
@@ -670,7 +674,7 @@ export async function generateMetadata({
     description: t('description'),
     alternates: {
       // 告訴搜尋引擎這個頁面的各語言版本
-      canonical: \\`https://example.com/\\${locale}\\`,
+      canonical: \`https://example.com/\${locale}\`,
       languages: {
         'zh-TW': 'https://example.com/zh-TW',
         'en':    'https://example.com/en',
@@ -685,7 +689,7 @@ export async function generateMetadata({
       alternateLocale: ['zh-TW', 'en', 'ja'].filter((l) => l !== locale),
     },
   };
-} `}
+}   `}
 </CodeBlock>
 
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 mt-6">
@@ -726,7 +730,7 @@ export async function generateMetadata({
               </p>
 
               <CodeBlock language="typescript">
-{` // types/next-intl.d.ts
+{`   // types/next-intl.d.ts
 // 讓 TypeScript 自動驗證翻譯 key 是否存在
 
 declare module 'next-intl' {
@@ -747,7 +751,7 @@ const t = useTranslations('navi');
 
 // ❌ 打錯 key 名稱：TypeScript 立刻報錯
 t('homes');
-// Error: Argument of type '"homes"' is not assignable to parameter of type '"home" | "about" | "blog" | "contact"' `}
+// Error: Argument of type '"homes"' is not assignable to parameter of type '"home" | "about" | "blog" | "contact"'   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-6">翻譯 Key 命名最佳實踐</h3>
@@ -756,7 +760,7 @@ t('homes');
                 <div>
                   <p className="text-green-700 text-xs font-bold mb-2 flex items-center gap-1"><CheckCircle size={12} /> 好的結構：按功能/頁面分組</p>
                   <CodeBlock language="json">
-{` {
+{`   {
   "pages": {
     "home": {
       "title": "...",
@@ -779,13 +783,13 @@ t('homes');
       "success": "..."
     }
   }
-} `}
+}   `}
 </CodeBlock>
                 </div>
                 <div>
                   <p className="text-red-700 text-xs font-bold mb-2 flex items-center gap-1">✗ 不好的結構：一層扁平</p>
                   <CodeBlock language="json">
-{` {
+{`   {
   "homeTitle": "...",
   "homeSubtitle": "...",
   "aboutTitle": "...",
@@ -796,7 +800,7 @@ t('homes');
   "loadingText": "...",
   "errorText": "...",
   "successText": "..."
-} `}
+}   `}
 </CodeBlock>
                 </div>
               </div>

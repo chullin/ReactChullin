@@ -1,16 +1,22 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider, Button, Tabs, Tab } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider,
+  Button,
+  Tabs,
+  Tab } from '@heroui/react';
 import { 
-  Globe, 
-  Activity, 
-  Zap, 
-  ShieldCheck, 
-  RefreshCcw, 
-  Terminal, 
-  ArrowRight, 
-  Layers, 
-  Cpu, 
+  Globe,
+  Activity,
+  Zap,
+  ShieldCheck,
+  RefreshCcw,
+  Terminal,
+  ArrowRight,
+  Layers,
+  Cpu,
   Network,
   Clock,
   ArrowDownUp,
@@ -22,6 +28,7 @@ import {
   Database,
   Search
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';

@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -13,8 +16,9 @@ import {
   BarChart3,
   Layers,
   Server,
-  AlertCircle,
+  AlertCircle
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -89,7 +93,7 @@ export default function SysDesignEP08() {
           </p>
 
           <CodeBlock language="sql">
-{` -- 用戶搜尋「JavaScript 入門」
+{`   -- 用戶搜尋「JavaScript 入門」
 SELECT * FROM articles WHERE title LIKE '%JavaScript 入門%';
 
 -- 問題 1：必須完全匹配「JavaScript 入門」這個字串
@@ -106,7 +110,7 @@ SELECT * FROM articles WHERE title LIKE '%JavaScript 入門%';
 
 -- 問題 4：不支援中文分詞
 -- 搜尋「機器學習」應該要能找到「機器」、「學習」分開出現的文章
--- LIKE 只能做字面匹配，完全不懂語言結構 `}
+-- LIKE 只能做字面匹配，完全不懂語言結構   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed">
@@ -254,7 +258,7 @@ SELECT * FROM articles WHERE title LIKE '%JavaScript 入門%';
           </p>
 
           <CodeBlock language="text">
-{` 文章 1: "React 入門教學"
+{`   文章 1: "React 入門教學"
 文章 2: "入門 JavaScript 指南"
 文章 3: "React 與 Vue 比較"
 
@@ -283,7 +287,7 @@ Term          │ Documents（包含此詞的文章）
    - 文章1 同時包含 "react" 和 "入門" → score 最高
    - 文章2 只有 "入門" → score 次之
    - 文章3 只有 "react" → score 最低
-4. 結果排序：文章1 > 文章3 > 文章2（依 BM25 分數） `}
+4. 結果排序：文章1 > 文章3 > 文章2（依 BM25 分數）   `}
 </CodeBlock>
 
           <Card className="border-0 bg-blue-50 border-l-4 border-blue-400">
@@ -319,7 +323,7 @@ Term          │ Documents（包含此詞的文章）
           </p>
 
           <CodeBlock language="javascript">
-{` // PUT /articles
+{`   // PUT /articles
 // 創建 Index 並定義 Mapping（相當於 CREATE TABLE）
 {
   "mappings": {
@@ -405,7 +409,7 @@ Term          │ Documents（包含此詞的文章）
       }
     }
   }
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 bg-amber-50">
@@ -460,7 +464,7 @@ Term          │ Documents（包含此詞的文章）
           </p>
 
           <CodeBlock language="javascript">
-{` // ─── 1. Match Query（全文搜尋，最常用）──────────────────────────────
+{`   // ─── 1. Match Query（全文搜尋，最常用）──────────────────────────────
 // 先把 query 字串分詞，再搜尋包含這些詞的文件
 GET /articles/_search
 {
@@ -484,11 +488,11 @@ GET /articles/_search
       }
     }
   }
-} `}
+}   `}
 </CodeBlock>
 
           <CodeBlock language="javascript">
-{` // ─── 2. Multi-match Query（搜尋多個欄位）──────────────────────────
+{`   // ─── 2. Multi-match Query（搜尋多個欄位）──────────────────────────
 // 同時在 title、content、tags 中搜尋，並設定不同欄位的相關度權重
 {
   "query": {
@@ -505,11 +509,11 @@ GET /articles/_search
       "fuzziness": "AUTO"           // 模糊搜尋（容錯打字錯誤）
     }
   }
-} `}
+}   `}
 </CodeBlock>
 
           <CodeBlock language="javascript">
-{` // ─── 3. Bool Query（組合查詢）— 最強大，實際專案用最多 ──────────
+{`   // ─── 3. Bool Query（組合查詢）— 最強大，實際專案用最多 ──────────
 {
   "query": {
     "bool": {
@@ -566,11 +570,11 @@ GET /articles/_search
   // 分頁
   "from": 0,
   "size": 20
-} `}
+}   `}
 </CodeBlock>
 
           <CodeBlock language="javascript">
-{` // ─── 4. 高亮顯示（Highlight）─────────────────────────────────────
+{`   // ─── 4. 高亮顯示（Highlight）─────────────────────────────────────
 // 在搜尋結果中標記匹配到的關鍵詞，顯示給用戶
 {
   "query": {
@@ -598,7 +602,7 @@ GET /articles/_search
 //       "...useEffect 是 <mark>React</mark> 最常用的 <mark>hooks</mark> 之一..."
 //     ]
 //   }
-// } `}
+// }   `}
 </CodeBlock>
         </motion.section>
 
@@ -623,7 +627,7 @@ GET /articles/_search
           </p>
 
           <CodeBlock language="javascript">
-{` // ─── 統計每個 tag 的文章數 + 平均觀看數 ────────────────────────
+{`   // ─── 統計每個 tag 的文章數 + 平均觀看數 ────────────────────────
 GET /articles/_search
 {
   // size: 0 表示只要聚合結果，不要回傳文章本身
@@ -692,7 +696,7 @@ GET /articles/_search
 //       ]
 //     }
 //   }
-// } `}
+// }   `}
 </CodeBlock>
 
           <Card className="border-0 bg-slate-50">
@@ -754,7 +758,7 @@ GET /articles/_search
           </p>
 
           <CodeBlock language="typescript">
-{` // npm install @elastic/elasticsearch
+{`   // npm install @elastic/elasticsearch
 import { Client } from '@elastic/elasticsearch';
 
 const client = new Client({
@@ -830,11 +834,11 @@ async function searchArticles(options: SearchOptions) {
       highlights: hit.highlight,
     })),
   };
-} `}
+}   `}
 </CodeBlock>
 
           <CodeBlock language="typescript">
-{` // ─── 寫入 / 更新文章到 ES ─────────────────────────────────────────
+{`   // ─── 寫入 / 更新文章到 ES ─────────────────────────────────────────
 interface Article {
   id:          string;
   title:       string;
@@ -901,7 +905,7 @@ async function createArticle(data: CreateArticleDto) {
 // 使用 Debezium 監聽 PostgreSQL WAL（Write-Ahead Log）
 // 每次 INSERT/UPDATE/DELETE 都會自動觸發 Kafka 事件
 // Kafka Consumer 消費事件並同步到 Elasticsearch
-// 優點：解耦、可靠、最終一致性保證 `}
+// 優點：解耦、可靠、最終一致性保證   `}
 </CodeBlock>
 
           <Card className="border-0 bg-gradient-to-br from-amber-800 to-orange-800 text-white">

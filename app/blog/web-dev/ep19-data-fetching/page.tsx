@@ -1,7 +1,24 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Wifi,
+  Zap,
+  RefreshCw,
+  Server,
+  AlertTriangle,
+  CheckCircle
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, Wifi, Zap, RefreshCw, Server, AlertTriangle, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -93,11 +110,11 @@ export default function WebDevEP19() {
     setIsLoading(true);
     setError(null);
 
-    fetch(\\`/api/users/\\${userId}\\`)
+    fetch(\`/api/users/\${userId}\`)
       .then(res => {
         // 注意！fetch 不會在 4xx/5xx 時丟出 Error
         // 你要自己檢查 res.ok
-        if (!res.ok) throw new Error(\\`HTTP error! status: \\${res.status}\\`);
+        if (!res.ok) throw new Error(\`HTTP error! status: \${res.status}\`);
         return res.json();
       })
       .then(data => {
@@ -272,7 +289,7 @@ function useFetch<T>(url: string | null) {
 
     fetch(url, { signal: controller.signal })
       .then(res => {
-        if (!res.ok) throw new Error(\\`HTTP \\${res.status}: \\${res.statusText}\\`);
+        if (!res.ok) throw new Error(\`HTTP \${res.status}: \${res.statusText}\`);
         return res.json();
       })
       .then(data => {
@@ -305,7 +322,7 @@ function useFetch<T>(url: string | null) {
             code={`// 使用端：超級簡潔
 function UserProfile({ userId }: { userId: string }) {
   const { data: user, isLoading, error } = useFetch<User>(
-    \\`/api/users/\\${userId}\\`
+    \`/api/users/\${userId}\`
   );
 
   if (isLoading) return <UserSkeleton />;
@@ -410,13 +427,13 @@ import useSWR from 'swr';
 // 這樣設計是讓你可以換成 axios、graphql client 等
 const fetcher = (url: string) =>
   fetch(url).then(res => {
-    if (!res.ok) throw new Error(\\`HTTP \\${res.status}\\`);
+    if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
     return res.json();
   });
 
 function UserProfile({ userId }: { userId: string }) {
   const { data: user, error, isLoading } = useSWR(
-    \\`/api/users/\\${userId}\\`,  // Key（也是 URL）
+    \`/api/users/\${userId}\`,  // Key（也是 URL）
     fetcher                    // 如何 fetch
   );
 
@@ -486,7 +503,7 @@ async function UserPage({ params }: { params: { id: string } }) {
   // 直接 await，就像 Node.js 寫法
   // API 金鑰、資料庫連線字串都不會暴露給瀏覽器
   const user = await fetch(
-    \\`https://api.example.com/users/\\${params.id}\\`,
+    \`https://api.example.com/users/\${params.id}\`,
     {
       // Next.js 擴充了 fetch，支援細粒度快取控制
       next: { revalidate: 60 }  // 這份資料 60 秒後重新驗證

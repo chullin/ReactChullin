@@ -1,11 +1,31 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, Clock, Eye, Layers, Lightbulb, Zap, Database, Search, RefreshCw, AlertTriangle, CheckCircle, Package } from 'lucide-react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import {
+  motion
+} from 'framer-motion';
+import {
+  Calendar,
+  User,
+  Clock,
+  Eye,
+  Layers,
+  Lightbulb,
+  Zap,
+  Database,
+  Search,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle,
+  Package,
+  ArrowRight,
+  ArrowLeft
+} from 'lucide-react';
 import CodeBlock from '@/components/blog/CodeBlock';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function WebDevEP20() {
   return (
@@ -83,7 +103,7 @@ export default function WebDevEP20() {
           </p>
 
           <CodeBlock language="tsx">
-{` // ProfilePage.tsx — 第一次寫
+{`   // ProfilePage.tsx — 第一次寫
 function ProfilePage() {
   const [theme, setTheme] = useState('light');
 
@@ -126,7 +146,7 @@ function DashboardPage() {
     if (saved) setTheme(saved);
   }, []);
   // ...
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-red-400">
@@ -256,7 +276,7 @@ function DashboardPage() {
           </p>
 
           <CodeBlock language="tsx">
-{` // hooks/useLocalStorage.ts
+{`   // hooks/useLocalStorage.ts
 import { useState } from 'react';
 
 function useLocalStorage<T>(key: string, initialValue: T) {
@@ -279,7 +299,7 @@ function useLocalStorage<T>(key: string, initialValue: T) {
   return [value, setStoredValue] as const;
 }
 
-export default useLocalStorage; `}
+export default useLocalStorage;   `}
 </CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4">
@@ -323,7 +343,7 @@ export default useLocalStorage; `}
           </p>
 
           <CodeBlock language="tsx">
-{` // ProfilePage.tsx — 現在只需要 1 行！
+{`   // ProfilePage.tsx — 現在只需要 1 行！
 const [theme, setTheme] = useLocalStorage('theme', 'light');
 
 // 也可以用在任何型別
@@ -345,7 +365,7 @@ function ProfilePage() {
       <button onClick={() => setTheme('dark')}>切換深色模式</button>
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-md border-l-4 border-l-teal-400">
@@ -385,7 +405,7 @@ function ProfilePage() {
             <CardBody className="p-6">
               <p className="font-bold text-red-700 mb-3">沒有 debounce 的搜尋框（效能殺手）</p>
               <CodeBlock language="tsx">
-{` function SearchPage() {
+{`   function SearchPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
@@ -396,7 +416,7 @@ function ProfilePage() {
   }, [search]);
 
   return <input onChange={e => setSearch(e.target.value)} />;
-} `}
+}   `}
 </CodeBlock>
               <p className="text-gray-600 text-sm mt-3">
                 使用者輸入 10 個字的過程中，你發了 10 次請求。前 9 次的結果根本沒用，
@@ -411,7 +431,7 @@ function ProfilePage() {
           </p>
 
           <CodeBlock language="tsx">
-{` // hooks/useDebounce.ts
+{`   // hooks/useDebounce.ts
 import { useState, useEffect } from 'react';
 
 function useDebounce<T>(value: T, delay: number = 500): T {
@@ -431,7 +451,7 @@ function useDebounce<T>(value: T, delay: number = 500): T {
   return debouncedValue;
 }
 
-export default useDebounce; `}
+export default useDebounce;   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
@@ -440,7 +460,7 @@ export default useDebounce; `}
           </p>
 
           <CodeBlock language="tsx">
-{` function SearchPage() {
+{`   function SearchPage() {
   const [search, setSearch] = useState('');
 
   // 把原始 search 值延遲 300ms
@@ -463,7 +483,7 @@ export default useDebounce; `}
 // 效果：
 // 使用者輸入 "typescript"（300ms 內快速輸入）
 // → 只有在停止輸入 300ms 後，才發出 1 次 API 請求
-// → 省下 9 次不必要的請求！ `}
+// → 省下 9 次不必要的請求！   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg bg-gradient-to-r from-amber-50 to-orange-50">
@@ -510,7 +530,7 @@ export default useDebounce; `}
           </p>
 
           <CodeBlock language="tsx">
-{` // hooks/useFetch.ts
+{`   // hooks/useFetch.ts
 import { useState, useEffect } from 'react';
 
 type FetchState<T> = {
@@ -534,7 +554,7 @@ function useFetch<T>(url: string) {
 
     fetch(url, { signal: controller.signal })
       .then(res => {
-        if (!res.ok) throw new Error(\\`HTTP \\${res.status}\\`);
+        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
         return res.json();
       })
       .then(data => setState({ data, loading: false, error: null }))
@@ -552,7 +572,7 @@ function useFetch<T>(url: string) {
   return state;
 }
 
-export default useFetch; `}
+export default useFetch;   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg bg-gradient-to-r from-green-50 to-emerald-50">
@@ -579,7 +599,7 @@ export default useFetch; `}
           </p>
 
           <CodeBlock language="tsx">
-{` // 用法非常乾淨
+{`   // 用法非常乾淨
 type Post = { id: number; title: string; body: string };
 
 function PostList() {
@@ -600,9 +620,9 @@ function PostList() {
 
 // url 變了自動重新請求
 function UserDetail({ userId }: { userId: number }) {
-  const { data: user, loading } = useFetch<User>(\\`/api/users/\\${userId}\\`);
+  const { data: user, loading } = useFetch<User>(\`/api/users/\${userId}\`);
   // userId 從 1 變成 2，自動重新 fetch /api/users/2
-} `}
+}   `}
 </CodeBlock>
         </motion.section>
 
@@ -628,7 +648,7 @@ function UserDetail({ userId }: { userId: number }) {
           </p>
 
           <CodeBlock language="tsx">
-{` // hooks/usePagination.ts
+{`   // hooks/usePagination.ts
 import { useState } from 'react';
 
 function usePagination<T>(data: T[], itemsPerPage: number = 10) {
@@ -656,7 +676,7 @@ function usePagination<T>(data: T[], itemsPerPage: number = 10) {
   };
 }
 
-export default usePagination; `}
+export default usePagination;   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">
@@ -665,7 +685,7 @@ export default usePagination; `}
           </p>
 
           <CodeBlock language="tsx">
-{` function PostListPage() {
+{`   function PostListPage() {
   // 先用 useFetch 拿資料
   const { data: allPosts, loading, error } = useFetch<Post[]>('/api/posts');
 
@@ -695,7 +715,7 @@ export default usePagination; `}
       </div>
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed text-lg">

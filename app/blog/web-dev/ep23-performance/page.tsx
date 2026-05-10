@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -16,8 +19,9 @@ import {
   Layers,
   BarChart2,
   XCircle,
-  Activity,
+  Activity
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -79,7 +83,7 @@ export default function WebDevEP23() {
           </p>
 
           <CodeBlock language="tsx">
-{` function ProductList({ products, onAddToCart }) {
+{`   function ProductList({ products, onAddToCart }) {
   return (
     <div>
       {products.map(p => (
@@ -87,7 +91,7 @@ export default function WebDevEP23() {
       ))}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
           <p className="text-gray-600 leading-relaxed mb-6 mt-6 text-lg">
@@ -166,7 +170,7 @@ export default function WebDevEP23() {
           </p>
 
           <CodeBlock language="tsx">
-{` // ❌ 沒有 memo：每次父元件渲染，ProductCard 都重新渲染
+{`   // ❌ 沒有 memo：每次父元件渲染，ProductCard 都重新渲染
 function ProductCard({ product, onAdd }) {
   console.log('ProductCard 渲染了', product.id);
   return <div onClick={() => onAdd(product)}>{product.name}</div>;
@@ -176,7 +180,7 @@ function ProductCard({ product, onAdd }) {
 const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
   console.log('ProductCard 渲染了', product.id);
   return <div onClick={() => onAdd(product)}>{product.name}</div>;
-}); `}
+});   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-50 to-orange-50">
@@ -220,7 +224,7 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
             可以傳入第二個參數自訂比較邏輯：
           </p>
           <CodeBlock language="tsx">
-{` const ProductCard = React.memo(
+{`   const ProductCard = React.memo(
   function ProductCard({ product, onAdd }) {
     return <div onClick={() => onAdd(product)}>{product.name}</div>;
   },
@@ -236,7 +240,7 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
     // 注意：onAdd 的比較這裡被忽略了，
     // 搭配 useCallback 使用更安全
   }
-); `}
+);   `}
 </CodeBlock>
         </motion.section>
 
@@ -262,7 +266,7 @@ const ProductCard = React.memo(function ProductCard({ product, onAdd }) {
           </p>
 
           <CodeBlock language="tsx">
-{` // ❌ 沒有 useMemo：每次渲染都重新排序 / 篩選
+{`   // ❌ 沒有 useMemo：每次渲染都重新排序 / 篩選
 // 假設 products 有 10,000 筆資料——每次父元件 setState，這裡就算一次
 function ProductList({ products, filterCategory }) {
   const filteredProducts = products
@@ -281,7 +285,7 @@ function ProductList({ products, filterCategory }) {
   }, [products, filterCategory]); // deps array：這兩個值沒變就不重算
 
   return <>{filteredProducts.map(p => <ProductCard key={p.id} product={p} />)}</>;
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 border-l-4 border-red-500">
@@ -295,17 +299,17 @@ function ProductList({ products, filterCategory }) {
                     <strong className="text-red-600"> 不要對簡單運算用 useMemo，得不償失。</strong>
                   </p>
                   <CodeBlock language="tsx">
-{` // ❌ 完全沒有意義，useMemo 的開銷比加法還貴
+{`   // ❌ 完全沒有意義，useMemo 的開銷比加法還貴
 const total = useMemo(() => a + b, [a, b]);
 
 // ❌ 這個也是，字串串接不需要 memo
-const displayName = useMemo(() => \\`\\${firstName} \\${lastName}\\`, [firstName, lastName]);
+const displayName = useMemo(() => \`\${firstName} \${lastName}\`, [firstName, lastName]);
 
 // ✅ 值得：排序 / 篩選大型陣列
 const sortedData = useMemo(() => data.sort(compareFn), [data]);
 
 // ✅ 值得：複雜的巢狀資料轉換
-const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]); `}
+const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);   `}
 </CodeBlock>
                 </div>
               </div>
@@ -380,7 +384,7 @@ const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);
           </p>
 
           <CodeBlock language="tsx">
-{` function ShoppingCart() {
+{`   function ShoppingCart() {
   const [cart, setCart] = useState([]);
 
   // ❌ 每次 ShoppingCart 渲染，addToCart 都是新的函式 reference
@@ -397,7 +401,7 @@ const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);
   }, []); // 空 deps：函式本身不依賴任何外部 state / props
 
   return <ProductList products={products} onAddToCart={addToCart} />;
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-50 to-orange-50">
@@ -411,7 +415,7 @@ const chartData = useMemo(() => transformRawData(rawSalesData), [rawSalesData]);
                 導致函式每次 state 改變都重建（等於沒用 useCallback）。解法是改用 updater 函式形式：
               </p>
               <CodeBlock language="tsx">
-{` // ❌ 把 cart 放進 deps：每次 cart 改變，addToCart 就重建
+{`   // ❌ 把 cart 放進 deps：每次 cart 改變，addToCart 就重建
 const addToCart = useCallback((product) => {
   setCart([...cart, product]); // 直接讀 cart
 }, [cart]); // cart 改變 → addToCart 重建 → ProductCard 重新渲染
@@ -419,7 +423,7 @@ const addToCart = useCallback((product) => {
 // ✅ 用 updater 形式：不需要讀外部的 cart
 const addToCart = useCallback((product) => {
   setCart(prev => [...prev, product]); // 透過 prev 讀取當前值
-}, []); // deps 為空 → addToCart reference 永遠穩定 `}
+}, []); // deps 為空 → addToCart reference 永遠穩定   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -444,7 +448,7 @@ const addToCart = useCallback((product) => {
           <h3 className="text-xl font-bold text-gray-800 mb-4">優化後的完整版本</h3>
 
           <CodeBlock language="tsx">
-{` // types.ts
+{`   // types.ts
 interface Product {
   id: number;
   name: string;
@@ -528,7 +532,7 @@ const ProductCard = React.memo(function ProductCard({
       <button onClick={() => onAdd(product)}>加入購物車</button>
     </div>
   );
-}); `}
+});   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-600 to-red-600 text-white">
@@ -591,16 +595,16 @@ const ProductCard = React.memo(function ProductCard({
                   每個 useMemo 和 useCallback 都有記憶體和比較的開銷，不是加越多越快。
                 </p>
                 <CodeBlock language="tsx">
-{` // ❌ 完全沒有意義——這些操作比 useMemo 本身的開銷還便宜
+{`   // ❌ 完全沒有意義——這些操作比 useMemo 本身的開銷還便宜
 const name = useMemo(() => user.name, [user.name]);
 const isLoggedIn = useMemo(() => !!user, [user]);
-const greeting = useMemo(() => \\`Hello, \\${name}\\`, [name]);
+const greeting = useMemo(() => \`Hello, \${name}\`, [name]);
 
 // ❌ 這個 useCallback 也是：根本沒有傳給 React.memo 的子元件
 // 完全是浪費
 const handleClick = useCallback(() => {
   console.log('clicked');
-}, []); `}
+}, []);   `}
 </CodeBlock>
               </CardBody>
             </Card>
@@ -617,7 +621,7 @@ const handleClick = useCallback(() => {
                   放進 deps 後 useMemo 和 useCallback 每次都會重新執行，等於沒用。
                 </p>
                 <CodeBlock language="tsx">
-{` // ❌ { page: 1 } 每次都是新物件 → useMemo 每次都重新計算
+{`   // ❌ { page: 1 } 每次都是新物件 → useMemo 每次都重新計算
 const result = useMemo(() => computeData(options), [{ page: 1 }]);
 
 // ❌ 同樣問題，陣列字面量也是每次新建
@@ -625,7 +629,7 @@ const filter = useMemo(() => filterData(data), [['a', 'b']]);
 
 // ✅ 把物件抽到外面（或用 useState 管理）
 const options = useMemo(() => ({ page: 1 }), []); // 先穩定 options
-const result = useMemo(() => computeData(options), [options]); // 再用它 `}
+const result = useMemo(() => computeData(options), [options]); // 再用它   `}
 </CodeBlock>
               </CardBody>
             </Card>
@@ -642,15 +646,15 @@ const result = useMemo(() => computeData(options), [options]); // 再用它 `}
                   不是最新的值。用 eslint-plugin-react-hooks 的 exhaustive-deps 規則可以自動偵測。
                 </p>
                 <CodeBlock language="tsx">
-{` // ❌ 少寫了 userId：userId 改變時，fetchUser 不會更新
+{`   // ❌ 少寫了 userId：userId 改變時，fetchUser 不會更新
 // 每次呼叫 fetchUser，userId 永遠是初次建立時的舊值
 const fetchUser = useCallback(() => {
-  fetch(\\`/api/users/\\${userId}\\`); // userId 是 stale closure
+  fetch(\`/api/users/\${userId}\`); // userId 是 stale closure
 }, []); // ← 應該要有 [userId]
 
 // ✅ 正確寫法
 const fetchUser = useCallback(() => {
-  fetch(\\`/api/users/\\${userId}\\`);
+  fetch(\`/api/users/\${userId}\`);
 }, [userId]); // userId 改變 → fetchUser 重建，取到最新 userId
 
 // 設定 ESLint 規則自動偵測（.eslintrc.js）：
@@ -659,7 +663,7 @@ const fetchUser = useCallback(() => {
 //   "rules": {
 //     "react-hooks/exhaustive-deps": "error"  // warn 改 error 更嚴格
 //   }
-// } `}
+// }   `}
 </CodeBlock>
               </CardBody>
             </Card>
@@ -745,7 +749,7 @@ const fetchUser = useCallback(() => {
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">程式碼層面的效能量測</h3>
           <CodeBlock language="tsx">
-{` // 用 React 的 Profiler 元件在程式碼層面量測
+{`   // 用 React 的 Profiler 元件在程式碼層面量測
 import { Profiler, ProfilerOnRenderCallback } from 'react';
 
 const onRenderCallback: ProfilerOnRenderCallback = (
@@ -757,10 +761,10 @@ const onRenderCallback: ProfilerOnRenderCallback = (
   commitTime,
 ) => {
   // 可以上報到 DataDog、Sentry 等效能監控服務
-  console.log(\\`[\\${id}] \\${phase} 渲染耗時：\\${actualDuration.toFixed(2)}ms\\`);
+  console.log(\`[\${id}] \${phase} 渲染耗時：\${actualDuration.toFixed(2)}ms\`);
 
   if (actualDuration > 16) {
-    console.warn(\\`⚠️ \\${id} 渲染超過一個 frame（\\${actualDuration.toFixed(2)}ms）\\`);
+    console.warn(\`⚠️ \${id} 渲染超過一個 frame（\${actualDuration.toFixed(2)}ms）\`);
   }
 };
 
@@ -771,7 +775,7 @@ function App() {
     </Profiler>
   );
 }
-// 注意：Profiler 只在開發模式有效，production build 中會自動移除 `}
+// 注意：Profiler 只在開發模式有效，production build 中會自動移除   `}
 </CodeBlock>
 
           <Card className="border-0 shadow-lg mt-8 bg-gradient-to-r from-amber-600 to-orange-600 text-white">

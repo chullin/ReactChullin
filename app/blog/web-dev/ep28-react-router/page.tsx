@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -16,8 +19,9 @@ import {
   Search,
   Database,
   AlertTriangle,
-  CheckCircle,
+  CheckCircle
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -163,11 +167,11 @@ export default function WebDevEP28() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">安裝</h3>
               <CodeBlock language="bash">
-{` npm install react-router-dom
+{`   npm install react-router-dom
 
 # react-router-dom 是專給 web 環境的版本
 # react-router-native 是 React Native 版本
-# 一般 web 專案只需要安裝 react-router-dom `}
+# 一般 web 專案只需要安裝 react-router-dom   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">入口點設定（main.tsx）</h3>
@@ -175,7 +179,7 @@ export default function WebDevEP28() {
                 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">BrowserRouter</code> 必須包在最外層，提供路由的 context 給所有子元件使用。它內部使用瀏覽器的 History API 來同步 URL 與 UI。
               </p>
               <CodeBlock language="tsx">
-{` // main.tsx
+{`   // main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -194,12 +198,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 // 其他可用的 Router 類型（依場景選擇）：
 // <HashRouter>    → URL 使用 # 符號（不需要伺服器配置，如 /#/about）
 // <MemoryRouter>  → URL 儲存在記憶體（測試環境、React Native）
-// <StaticRouter>  → SSR 伺服器端渲染使用 `}
+// <StaticRouter>  → SSR 伺服器端渲染使用   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">App.tsx — 定義所有路由</h3>
               <CodeBlock language="tsx">
-{` // App.tsx
+{`   // App.tsx
 import { Routes, Route, Link, NavLink } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -246,7 +250,7 @@ function App() {
       </Routes>
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-pink-50 rounded-lg border border-pink-200">
@@ -280,7 +284,7 @@ function App() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">useParams 基本用法</h3>
               <CodeBlock language="tsx">
-{` // pages/BlogPost.tsx
+{`   // pages/BlogPost.tsx
 // 對應路由：<Route path="/blog/:id" element={<BlogPost />} />
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -303,7 +307,7 @@ function BlogPost() {
     if (!id) return;
 
     setLoading(true);
-    fetch(\\`/api/posts/\\${id}\\`)
+    fetch(\`/api/posts/\${id}\`)
       .then(r => {
         if (!r.ok) throw new Error('文章不存在');
         return r.json();
@@ -329,7 +333,7 @@ function BlogPost() {
       <div className="prose">{post.content}</div>
     </article>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">多層動態路由</h3>
@@ -337,7 +341,7 @@ function BlogPost() {
                 一個路由中可以有多個動態參數。例如「某位使用者的特定文章」，URL 結構為 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">/users/:userId/posts/:postId</code>。
               </p>
               <CodeBlock language="tsx">
-{` // 路由定義
+{`   // 路由定義
 <Route path="/users/:userId/posts/:postId" element={<UserPost />} />
 
 // 元件中取得多個參數
@@ -362,12 +366,12 @@ function UserPost() {
 // 更多動態路由範例：
 // /products/:category/:productId
 // /dashboard/:orgId/settings/:settingId
-// /files/:folderId/:fileId/preview `}
+// /files/:folderId/:fileId/preview   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Optional 參數與萬用路由</h3>
               <CodeBlock language="tsx">
-{` // v6.4+ 語法：? 表示可選參數
+{`   // v6.4+ 語法：? 表示可選參數
 <Route path="/blog/:id?" element={<BlogPost />} />
 // 匹配 /blog 和 /blog/123
 
@@ -380,7 +384,7 @@ function FileExplorer() {
   const params = useParams();
   const filePath = params['*'];  // "documents/2026/report.pdf"
   return <div>檔案路徑：{filePath}</div>;
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -410,7 +414,7 @@ function FileExplorer() {
                 最典型的例子是後台 Dashboard：左側有導覽列（Sidebar），右側渲染不同的子頁面，但 Sidebar 永遠保持在畫面上。
               </p>
               <CodeBlock language="tsx">
-{` // App.tsx — 定義巢狀路由結構
+{`   // App.tsx — 定義巢狀路由結構
 import { Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -439,12 +443,12 @@ function App() {
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">DashboardLayout 元件</h3>
               <CodeBlock language="tsx">
-{` // layouts/DashboardLayout.tsx
+{`   // layouts/DashboardLayout.tsx
 import { Outlet, NavLink } from 'react-router-dom';
 
 function DashboardLayout() {
@@ -458,7 +462,7 @@ function DashboardLayout() {
             to="/dashboard"
             end  // 加上 end 才只在精確匹配 /dashboard 時 active
             className={({ isActive }) =>
-              \\`block px-4 py-2 rounded \\${isActive ? 'bg-blue-600' : 'hover:bg-gray-700'}\\`
+              \`block px-4 py-2 rounded \${isActive ? 'bg-blue-600' : 'hover:bg-gray-700'}\`
             }
           >
             總覽
@@ -466,7 +470,7 @@ function DashboardLayout() {
           <NavLink
             to="/dashboard/profile"
             className={({ isActive }) =>
-              \\`block px-4 py-2 rounded \\${isActive ? 'bg-blue-600' : 'hover:bg-gray-700'}\\`
+              \`block px-4 py-2 rounded \${isActive ? 'bg-blue-600' : 'hover:bg-gray-700'}\`
             }
           >
             個人資料
@@ -474,7 +478,7 @@ function DashboardLayout() {
           <NavLink
             to="/dashboard/settings"
             className={({ isActive }) =>
-              \\`block px-4 py-2 rounded \\${isActive ? 'bg-blue-600' : 'hover:bg-gray-700'}\\`
+              \`block px-4 py-2 rounded \${isActive ? 'bg-blue-600' : 'hover:bg-gray-700'}\`
             }
           >
             設定
@@ -506,7 +510,7 @@ function DashboardLayout() {
 // }
 //
 // // 子路由中取得
-// const { user } = useOutletContext<{ user: User }>(); `}
+// const { user } = useOutletContext<{ user: User }>();   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-pink-50 rounded-lg border border-pink-200">
@@ -540,7 +544,7 @@ function DashboardLayout() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">基本用法</h3>
               <CodeBlock language="tsx">
-{` // pages/Login.tsx
+{`   // pages/Login.tsx
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -577,12 +581,12 @@ function LoginForm() {
       </button>
     </form>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">navigate 的各種用法</h3>
               <CodeBlock language="tsx">
-{` import { useNavigate } from 'react-router-dom';
+{`   import { useNavigate } from 'react-router-dom';
 
 function SomeComponent() {
   const navigate = useNavigate();
@@ -622,7 +626,7 @@ function CheckoutPage() {
   // 如果需要持久化，改用 useSearchParams 或 localStorage
 
   return <div>結帳頁</div>;
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Protected Route — 路由守衛</h3>
@@ -630,7 +634,7 @@ function CheckoutPage() {
                 結合 useNavigate 和 useEffect 可以實作「需要登入才能訪問」的路由保護：
               </p>
               <CodeBlock language="tsx">
-{` // components/ProtectedRoute.tsx
+{`   // components/ProtectedRoute.tsx
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
 
@@ -663,7 +667,7 @@ function App() {
       </Route>
     </Routes>
   );
-} `}
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -693,7 +697,7 @@ function App() {
                 使用 Loader/Action 需要改用 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">createBrowserRouter</code> 的物件定義方式，而不是 JSX 的 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">&lt;Route&gt;</code> 元件。
               </p>
               <CodeBlock language="tsx">
-{` // main.tsx — 使用 createBrowserRouter
+{`   // main.tsx — 使用 createBrowserRouter
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import BlogPost, { loader as blogLoader } from './pages/BlogPost';
 import NewPost, { action as createPostAction } from './pages/NewPost';
@@ -733,17 +737,17 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <RouterProvider router={router} />
   // 注意：不再使用 <BrowserRouter>，改用 <RouterProvider>
-); `}
+);   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Loader — 路由級別的資料載入</h3>
               <CodeBlock language="tsx">
-{` // pages/BlogPost.tsx
+{`   // pages/BlogPost.tsx
 
 // Loader 函式：在路由切換時自動執行
 // 參數 params 對應路由中的 :id
 export async function loader({ params }: { params: { id: string } }) {
-  const response = await fetch(\\`/api/posts/\\${params.id}\\`);
+  const response = await fetch(\`/api/posts/\${params.id}\`);
 
   if (!response.ok) {
     // 拋出 Response 物件，React Router 會自動顯示 errorElement
@@ -772,12 +776,12 @@ function BlogPost() {
   );
 }
 
-export default BlogPost; `}
+export default BlogPost;   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Action — 處理表單提交</h3>
               <CodeBlock language="tsx">
-{` // pages/NewPost.tsx
+{`   // pages/NewPost.tsx
 import { Form, redirect, useActionData } from 'react-router-dom';
 
 // Action 函式：處理 <Form> 的 POST 請求
@@ -842,7 +846,7 @@ function NewPost() {
   );
 }
 
-export default NewPost; `}
+export default NewPost;   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-pink-50 rounded-lg border border-pink-200">
@@ -893,7 +897,7 @@ export default NewPost; `}
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">基本用法</h3>
               <CodeBlock language="tsx">
-{` // pages/ProductList.tsx
+{`   // pages/ProductList.tsx
 import { useSearchParams } from 'react-router-dom';
 
 function ProductList() {
@@ -966,12 +970,12 @@ function ProductList() {
       {/* 使用者可以書籤、分享這個 URL，下次打開還是同樣的篩選狀態 */}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">搜尋功能實作</h3>
               <CodeBlock language="tsx">
-{` // 搜尋列：即時更新 URL 的查詢字串
+{`   // 搜尋列：即時更新 URL 的查詢字串
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 
@@ -1022,7 +1026,7 @@ function ProductGrid() {
   }, [query, category, page]);
 
   return <div>{/* 商品列表 */}</div>;
-} `}
+}   `}
 </CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-3 gap-4">

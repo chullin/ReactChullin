@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -18,8 +21,9 @@ import {
   MousePointerClick,
   Globe,
   BarChart3,
-  Settings,
+  Settings
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -214,12 +218,12 @@ export default function WebDevEP26() {
 
           <p className="text-slate-700 font-semibold mb-3">安裝所有依賴：</p>
           <CodeBlock language="bash">
-{` npm install -D vitest @testing-library/react @testing-library/user-event @testing-library/jest-dom msw `}
+{`   npm install -D vitest @testing-library/react @testing-library/user-event @testing-library/jest-dom msw   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">vitest.config.ts — 測試框架設定：</p>
           <CodeBlock language="typescript">
-{` import { defineConfig } from 'vitest/config';
+{`   import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
@@ -229,13 +233,13 @@ export default defineConfig({
     globals: true,            // 不需要手動 import describe/test/expect
     setupFiles: ['./src/test/setup.ts'],
   },
-}); `}
+});   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">src/test/setup.ts — 全域 setup：</p>
           <CodeBlock language="typescript">
-{` import '@testing-library/jest-dom';
-// 讓 expect() 可以使用 .toBeInTheDocument()、.toBeDisabled() 等 DOM matchers `}
+{`   import '@testing-library/jest-dom';
+// 讓 expect() 可以使用 .toBeInTheDocument()、.toBeDisabled() 等 DOM matchers   `}
 </CodeBlock>
 
           <Card className="mt-6 border border-amber-200 bg-amber-50">
@@ -274,7 +278,7 @@ export default defineConfig({
 
           <p className="text-slate-700 font-semibold mb-3">UserCard 元件與對應測試：</p>
           <CodeBlock language="tsx">
-{` // components/UserCard.tsx
+{`   // components/UserCard.tsx
 type User = {
   id: string;
   name: string;
@@ -292,12 +296,12 @@ function UserCard({ user }: { user: User }) {
   );
 }
 
-export default UserCard; `}
+export default UserCard;   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">UserCard.test.tsx：</p>
           <CodeBlock language="tsx">
-{` // components/UserCard.test.tsx
+{`   // components/UserCard.test.tsx
 import { render, screen } from '@testing-library/react';
 import UserCard from './UserCard';
 
@@ -326,7 +330,7 @@ describe('UserCard', () => {
     // queryByText 找不到時回傳 null，不會拋錯
     expect(screen.queryByText('管理員')).not.toBeInTheDocument();
   });
-}); `}
+});   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-4 mt-8">常用 Query 速查表：</p>
@@ -399,7 +403,7 @@ describe('UserCard', () => {
 
           <p className="text-slate-700 font-semibold mb-3">Counter 元件與互動測試：</p>
           <CodeBlock language="tsx">
-{` // components/Counter.tsx
+{`   // components/Counter.tsx
 import { useState } from 'react';
 
 function Counter() {
@@ -415,12 +419,12 @@ function Counter() {
   );
 }
 
-export default Counter; `}
+export default Counter;   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">Counter.test.tsx — 點擊與狀態驗證：</p>
           <CodeBlock language="tsx">
-{` // components/Counter.test.tsx
+{`   // components/Counter.test.tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Counter from './Counter';
@@ -451,12 +455,12 @@ describe('Counter', () => {
     await user.click(screen.getByText('+1'));
     expect(screen.getByText('-1')).not.toBeDisabled();
   });
-}); `}
+});   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">表單輸入測試 — user.type() 模擬鍵盤輸入：</p>
           <CodeBlock language="tsx">
-{` // components/LoginForm.test.tsx
+{`   // components/LoginForm.test.tsx
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import LoginForm from './LoginForm';
@@ -505,7 +509,7 @@ describe('LoginForm', () => {
 
     expect(emailInput).toHaveValue('new@example.com');
   });
-}); `}
+});   `}
 </CodeBlock>
 
           <Card className="mt-6 border border-violet-200 bg-violet-50">
@@ -540,7 +544,7 @@ describe('LoginForm', () => {
 
           <p className="text-slate-700 font-semibold mb-3">src/test/handlers.ts — 定義 API mock：</p>
           <CodeBlock language="typescript">
-{` // src/test/handlers.ts
+{`   // src/test/handlers.ts
 import { http, HttpResponse } from 'msw';
 
 export const handlers = [
@@ -574,12 +578,12 @@ export const handlers = [
     const { id } = params;
     return HttpResponse.json({ deleted: id });
   }),
-]; `}
+];   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">src/test/setup.ts — 啟動 msw server：</p>
           <CodeBlock language="typescript">
-{` // src/test/setup.ts
+{`   // src/test/setup.ts
 import '@testing-library/jest-dom';
 import { setupServer } from 'msw/node';
 import { handlers } from './handlers';
@@ -596,12 +600,12 @@ afterEach(() => server.resetHandlers());
 // 所有測試結束後關閉 server
 afterAll(() => server.close());
 
-export { server }; `}
+export { server };   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">UserList.test.tsx — 測試 API 呼叫：</p>
           <CodeBlock language="typescript">
-{` // components/UserList.test.tsx
+{`   // components/UserList.test.tsx
 import { render, screen } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '../test/setup';
@@ -649,7 +653,7 @@ describe('UserList', () => {
     // 刪除後 Joseph Chen 應該消失
     expect(screen.queryByText('Joseph Chen')).not.toBeInTheDocument();
   });
-}); `}
+});   `}
 </CodeBlock>
         </motion.div>
 
@@ -677,7 +681,7 @@ describe('UserList', () => {
 
           <p className="text-slate-700 font-semibold mb-3">useCounter Hook 測試：</p>
           <CodeBlock language="typescript">
-{` // hooks/useCounter.test.ts
+{`   // hooks/useCounter.test.ts
 import { renderHook, act } from '@testing-library/react';
 import { useCounter } from './useCounter';
 
@@ -722,12 +726,12 @@ test('reset 回到初始值', () => {
   });
 
   expect(result.current.count).toBe(10);
-}); `}
+});   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">useLocalStorage Hook 測試 — 需要 mock localStorage：</p>
           <CodeBlock language="typescript">
-{` // hooks/useLocalStorage.test.ts
+{`   // hooks/useLocalStorage.test.ts
 import { renderHook, act } from '@testing-library/react';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -763,7 +767,7 @@ test('setValue 更新值並同步到 localStorage', () => {
 test('帶有 initializer 的 hook 應傳入初始值', () => {
   const { result } = renderHook(() => useCounter(5));
   expect(result.current.count).toBe(5);
-}); `}
+});   `}
 </CodeBlock>
 
           <Card className="mt-6 border border-teal-200 bg-teal-50">
@@ -798,7 +802,7 @@ test('帶有 initializer 的 hook 應傳入初始值', () => {
 
           <p className="text-slate-700 font-semibold mb-3">常用指令：</p>
           <CodeBlock language="bash">
-{` # 啟動 watch mode（開發時使用）
+{`   # 啟動 watch mode（開發時使用）
 npx vitest
 
 # 執行一次並產生 coverage 報告（需要安裝 @vitest/coverage-v8）
@@ -808,19 +812,19 @@ npx vitest --coverage
 npx vitest run
 
 # 只跑符合條件的測試
-npx vitest run --reporter=verbose UserCard `}
+npx vitest run --reporter=verbose UserCard   `}
 </CodeBlock>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">package.json scripts 建議配置：</p>
           <CodeBlock language="json">
-{` {
+{`   {
   "scripts": {
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui"
   }
-} `}
+}   `}
 </CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4 my-8">
@@ -873,7 +877,7 @@ npx vitest run --reporter=verbose UserCard `}
 
           <p className="text-slate-700 font-semibold mb-3">GitHub Actions CI 整合 — 只需加 3 行：</p>
           <CodeBlock language="yaml">
-{` # .github/workflows/ci.yml
+{`   # .github/workflows/ci.yml
 name: CI
 
 on: [push, pull_request]
@@ -895,7 +899,7 @@ jobs:
 
       # 選配：上傳 coverage 報告到 Codecov
       - name: Upload coverage
-        uses: codecov/codecov-action@v4 `}
+        uses: codecov/codecov-action@v4   `}
 </CodeBlock>
 
           <Card className="mt-6 border border-emerald-200 bg-emerald-50">

@@ -1,7 +1,26 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Globe,
+  Layers,
+  Zap,
+  Shield,
+  GitCompare,
+  CheckCircle,
+  XCircle,
+  AlertTriangle
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, Globe, Layers, Zap, Shield, GitCompare, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -87,10 +106,10 @@ export default function SystemDesignEP05() {
                   <h3 className="font-bold text-gray-800">設計糟糕的 API</h3>
                 </div>
                 <CodeBlock language="text">
-{` GET /getUser?userId=123
+{`   GET /getUser?userId=123
 POST /createNewOrder
 GET /fetchAllProductsFromDB
-DELETE /deleteUserAndAllHisData?id=456 `}
+DELETE /deleteUserAndAllHisData?id=456   `}
 </CodeBlock>
                 <p className="text-red-600 text-sm mt-3">
                   動詞混入 URL、命名不一致、欄位語義不清、難以維護
@@ -105,10 +124,10 @@ DELETE /deleteUserAndAllHisData?id=456 `}
                   <h3 className="font-bold text-gray-800">設計良好的 RESTful API</h3>
                 </div>
                 <CodeBlock language="text">
-{` GET    /users/123
+{`   GET    /users/123
 POST   /orders
 GET    /products
-DELETE /users/456 `}
+DELETE /users/456   `}
 </CodeBlock>
                 <p className="text-green-600 text-sm mt-3">
                   以資源為核心、HTTP Method 語義清晰、URL 簡潔可預測
@@ -160,11 +179,11 @@ DELETE /users/456 `}
               URL 代表的是「資源」，動作由 HTTP Method 表達。不要把動詞塞進 URL——那是 RPC 風格，不是 REST。
             </p>
             <CodeBlock language="text">
-{` ❌ POST /createUser       →  ✅ POST /users
+{`   ❌ POST /createUser       →  ✅ POST /users
 ❌ GET  /getUserById/1    →  ✅ GET  /users/1
 ❌ POST /deletePost       →  ✅ DELETE /posts/1
 ❌ GET  /getAllOrders      →  ✅ GET  /orders
-❌ POST /updateProfile    →  ✅ PATCH /users/1/profile `}
+❌ POST /updateProfile    →  ✅ PATCH /users/1/profile   `}
 </CodeBlock>
           </div>
 
@@ -235,7 +254,7 @@ DELETE /users/456 `}
               這讓監控系統無法正確判斷錯誤率，也讓前端工程師非常困惑。正確使用 HTTP Status Code 是專業度的體現。
             </p>
             <CodeBlock language="text">
-{` 200 OK            - 讀取/更新成功
+{`   200 OK            - 讀取/更新成功
 201 Created       - 建立成功（POST 後回傳，附上新資源 URL）
 204 No Content    - 刪除成功（不回傳 body）
 400 Bad Request   - 用戶端請求錯誤（欄位缺失、格式錯誤）
@@ -245,7 +264,7 @@ DELETE /users/456 `}
 422 Unprocessable - 格式對但業務邏輯錯（Email 已被使用）
 429 Too Many Req  - 超過 Rate Limit
 500 Internal Err  - 你的 bug（伺服器端錯誤）
-502 Bad Gateway   - 上游服務（資料庫、微服務）掛了 `}
+502 Bad Gateway   - 上游服務（資料庫、微服務）掛了   `}
 </CodeBlock>
             <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
               <p className="text-amber-800 text-sm">
@@ -266,7 +285,7 @@ DELETE /users/456 `}
               常見的版本控制策略有三種：URL 路徑（最直覺）、Header（最乾淨）、Query String（最懶惰）。
             </p>
             <CodeBlock language="text">
-{` // URL 路徑版本（推薦：最直覺，可書籤）
+{`   // URL 路徑版本（推薦：最直覺，可書籤）
 GET /api/v1/users   ← 穩定的舊版，繼續維護
 GET /api/v2/users   ← 新版，有破壞性更改（response 結構改變）
 
@@ -275,7 +294,7 @@ GET /api/users
 Accept: application/vnd.myapp.v2+json
 
 // Query String 版本（不推薦：會被 cache 搞混）
-GET /api/users?version=2 `}
+GET /api/users?version=2   `}
 </CodeBlock>
             <p className="text-gray-600 mt-4 text-sm leading-relaxed">
               為什麼需要版本？行動端 App 用戶可能還在使用三個月前的舊版本，這些用戶仍在呼叫 v1 API。
@@ -294,7 +313,7 @@ GET /api/users?version=2 `}
               用 Query Parameters 提供篩選、排序、分頁能力。
             </p>
             <CodeBlock language="text">
-{` // 篩選 + 排序 + 分頁
+{`   // 篩選 + 排序 + 分頁
 GET /products?category=electronics&sort=-price&page=2&limit=20
 
 // -price 表示降序（負號前綴），+price 或 price 表示升序
@@ -310,7 +329,7 @@ GET /products?category=electronics&sort=-price&page=2&limit=20
 }
 
 // Cursor-based Pagination（更適合大資料集）
-GET /posts?after=eyJpZCI6MTAwfQ==&limit=20 `}
+GET /posts?after=eyJpZCI6MTAwfQ==&limit=20   `}
 </CodeBlock>
           </div>
 
@@ -324,7 +343,7 @@ GET /posts?after=eyJpZCI6MTAwfQ==&limit=20 `}
               統一的回應格式讓前端工程師能寫通用的 error handler，而不是每個 endpoint 都要特殊處理。
             </p>
             <CodeBlock language="json">
-{` // 成功回應
+{`   // 成功回應
 {
   "data": {
     "id": 1,
@@ -353,7 +372,7 @@ GET /posts?after=eyJpZCI6MTAwfQ==&limit=20 `}
       { "field": "password", "message": "密碼至少需要 8 個字元" }
     ]
   }
-} `}
+}   `}
 </CodeBlock>
           </div>
         </motion.section>
@@ -385,7 +404,7 @@ GET /posts?after=eyJpZCI6MTAwfQ==&limit=20 `}
                 <h3 className="font-bold text-gray-800">REST 的困境：N+1 查詢問題</h3>
               </div>
               <CodeBlock language="javascript">
-{` // 你要顯示用戶的個人資料頁（包含他的文章和留言）
+{`   // 你要顯示用戶的個人資料頁（包含他的文章和留言）
 // REST 需要這樣做：
 
 GET /users/123           // 第 1 個請求：拿用戶資料（20 個欄位，你只需要 3 個）
@@ -396,7 +415,7 @@ GET /posts/789/comments  // 第 4 個請求：拿第二篇文章的留言
 
 // 如果要顯示 10 個用戶的所有文章：
 // 1 個（獲取用戶列表）+ 10 個（每個用戶的文章）= 11 個請求
-// 這就是 N+1 問題 `}
+// 這就是 N+1 問題   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -406,7 +425,7 @@ GET /posts/789/comments  // 第 4 個請求：拿第二篇文章的留言
           </p>
 
           <CodeBlock language="graphql">
-{` # 一次請求，只拿你要的欄位，深度任意
+{`   # 一次請求，只拿你要的欄位，深度任意
 query {
   user(id: "123") {
     name           # 只拿 name，不要其他 19 個欄位
@@ -419,7 +438,7 @@ query {
       }
     }
   }
-} `}
+}   `}
 </CodeBlock>
 
           <div className="mt-8 mb-6">
@@ -429,7 +448,7 @@ query {
               這個強約束同時也是它的優勢——IDE 可以提供完整的自動補全。
             </p>
             <CodeBlock language="graphql">
-{` # Schema 定義（後端，通常是 schema.graphql 檔案）
+{`   # Schema 定義（後端，通常是 schema.graphql 檔案）
 
 type User {
   id: ID!           # ! 表示不可為 null
@@ -471,17 +490,17 @@ type Mutation {
 type Subscription {
   postCreated: Post!
   commentAdded(postId: ID!): Comment!
-} `}
+}   `}
 </CodeBlock>
           </div>
 
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">React 中使用 GraphQL（Apollo Client）</h3>
             <CodeBlock language="tsx">
-{` import { gql, useQuery, useMutation } from '@apollo/client';
+{`   import { gql, useQuery, useMutation } from '@apollo/client';
 
 // 定義 Query（放在元件外，避免每次 render 重新建立）
-const GET_USER = gql\\`
+const GET_USER = gql\`
   query GetUser($id: ID!) {
     user(id: $id) {
       name
@@ -492,16 +511,16 @@ const GET_USER = gql\\`
       }
     }
   }
-\\`;
+\`;
 
-const CREATE_POST = gql\\`
+const CREATE_POST = gql\`
   mutation CreatePost($title: String!, $content: String) {
     createPost(title: $title, content: $content) {
       id
       title
     }
   }
-\\`;
+\`;
 
 function UserProfile({ id }: { id: string }) {
   // useQuery 自動處理 loading、error、data 狀態
@@ -528,7 +547,7 @@ function UserProfile({ id }: { id: string }) {
       </ul>
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
           </div>
 
@@ -573,7 +592,7 @@ function UserProfile({ id }: { id: string }) {
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">後端定義（Next.js API Routes）</h3>
             <CodeBlock language="typescript">
-{` // server/router.ts
+{`   // server/router.ts
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 
@@ -621,14 +640,14 @@ export const appRouter = t.router({
 });
 
 // 匯出型別（這是 tRPC 魔法的關鍵）
-export type AppRouter = typeof appRouter; `}
+export type AppRouter = typeof appRouter;   `}
 </CodeBlock>
           </div>
 
           <div className="mb-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">前端使用（完整型別，零配置）</h3>
             <CodeBlock language="tsx">
-{` // utils/trpc.ts
+{`   // utils/trpc.ts
 import { createTRPCReact } from '@trpc/react-query';
 import type { AppRouter } from '@/server/router';
 
@@ -673,7 +692,7 @@ function UserProfile({ id }: { id: string }) {
       </button>
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
           </div>
 
@@ -809,7 +828,7 @@ function UserProfile({ id }: { id: string }) {
             <CardBody className="p-8">
               <h3 className="font-bold text-gray-800 mb-6 text-lg">API 技術選型決策樹</h3>
               <CodeBlock language="text">
-{` 你的 API 需要對外公開（第三方開發者、行動端 App、合作夥伴）？
+{`   你的 API 需要對外公開（第三方開發者、行動端 App、合作夥伴）？
   ↓ 是
   → 用 REST（最通用，開發者熟悉，有 HTTP 快取，文件工具完整）
   ↓ 否
@@ -825,7 +844,7 @@ function UserProfile({ id }: { id: string }) {
   → 用 GraphQL（但要評估團隊學習成本）
   ↓ 否
   ↓
-→ 用 REST（最穩健的預設選擇） `}
+→ 用 REST（最穩健的預設選擇）   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -898,7 +917,7 @@ function UserProfile({ id }: { id: string }) {
               <h3 className="text-lg font-bold text-gray-800">Authentication：JWT Bearer Token</h3>
             </div>
             <CodeBlock language="typescript">
-{` // 每個需要登入的 API，必須驗證 JWT Token
+{`   // 每個需要登入的 API，必須驗證 JWT Token
 import jwt from 'jsonwebtoken';
 
 function authMiddleware(req: Request, res: Response, next: NextFunction) {
@@ -921,7 +940,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
       error: { code: 'INVALID_TOKEN', message: 'Token 已過期或無效' }
     });
   }
-} `}
+}   `}
 </CodeBlock>
           </div>
 
@@ -932,7 +951,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
               <h3 className="text-lg font-bold text-gray-800">Rate Limiting：防止濫用</h3>
             </div>
             <CodeBlock language="typescript">
-{` import rateLimit from 'express-rate-limit';
+{`   import rateLimit from 'express-rate-limit';
 
 // 全域 Rate Limit
 const globalLimiter = rateLimit({
@@ -953,7 +972,7 @@ const loginLimiter = rateLimit({
 });
 
 app.use('/api', globalLimiter);
-app.post('/api/auth/login', loginLimiter, loginHandler); `}
+app.post('/api/auth/login', loginLimiter, loginHandler);   `}
 </CodeBlock>
           </div>
 
@@ -964,7 +983,7 @@ app.post('/api/auth/login', loginLimiter, loginHandler); `}
               <h3 className="text-lg font-bold text-gray-800">CORS：只允許你的前端 Domain</h3>
             </div>
             <CodeBlock language="typescript">
-{` import cors from 'cors';
+{`   import cors from 'cors';
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -985,7 +1004,7 @@ app.use(cors({
   },
   credentials: true,       // 允許攜帶 Cookie
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-})); `}
+}));   `}
 </CodeBlock>
           </div>
 
@@ -996,7 +1015,7 @@ app.use(cors({
               <h3 className="text-lg font-bold text-gray-800">Input Validation：永遠不相信用戶輸入</h3>
             </div>
             <CodeBlock language="typescript">
-{` import { z } from 'zod';
+{`   import { z } from 'zod';
 
 // 用 Zod 定義嚴格的 Schema
 const createUserSchema = z.object({
@@ -1025,7 +1044,7 @@ app.post('/api/users', (req, res) => {
   // result.data 已經過驗證且型別安全
   const { email, password, name } = result.data;
   // ... 繼續處理
-}); `}
+});   `}
 </CodeBlock>
           </div>
 
@@ -1036,8 +1055,8 @@ app.post('/api/users', (req, res) => {
               <h3 className="text-lg font-bold text-gray-800">SQL Injection 防範：用 ORM 或 Prepared Statement</h3>
             </div>
             <CodeBlock language="typescript">
-{` // ❌ 危險：直接拼接 SQL 字串
-const query = \\`SELECT * FROM users WHERE email = '\\${email}'\\`;
+{`   // ❌ 危險：直接拼接 SQL 字串
+const query = \`SELECT * FROM users WHERE email = '\${email}'\`;
 // 攻擊者可以輸入：' OR '1'='1 來繞過驗證
 
 // ✅ 安全：Prisma ORM（自動防 SQL Injection）
@@ -1049,7 +1068,7 @@ const user = await prisma.user.findUnique({
 const result = await db.query(
   'SELECT * FROM users WHERE email = $1',
   [email]  // 參數化查詢，不直接插入字串
-); `}
+);   `}
 </CodeBlock>
 
             <Card className="border-l-4 border-red-400 bg-red-50 shadow-sm mt-4">

@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -18,8 +21,9 @@ import {
   AlertTriangle,
   Code2,
   Cpu,
-  FlaskConical,
+  FlaskConical
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -96,7 +100,7 @@ export default function JSEP08() {
           </p>
 
           <CodeBlock language="javascript">
-{` // 命令式（Imperative）：告訴電腦「怎麼做」
+{`   // 命令式（Imperative）：告訴電腦「怎麼做」
 // 思維：我需要一個空陣列 → 遍歷每個元素 → 判斷是否符合 → 加入陣列
 const numbers = [1, 2, 3, 4, 5];
 const evens = [];
@@ -112,7 +116,7 @@ for (let i = 0; i < numbers.length; i++) {
 const evens = numbers
   .filter(n => n % 2 === 0)
   .map(n => n * 2);
-// evens = [4, 8] `}
+// evens = [4, 8]   `}
 </CodeBlock>
 
           <p className="text-gray-700 leading-relaxed mb-6 mt-4">
@@ -193,7 +197,7 @@ const evens = numbers
           </ul>
 
           <CodeBlock language="javascript">
-{` // ❌ 不純函數：有副作用——修改了外部變數
+{`   // ❌ 不純函數：有副作用——修改了外部變數
 let total = 0;
 function addToTotal(amount) {
   total += amount; // 修改了外部狀態！
@@ -247,7 +251,7 @@ const expensiveCalc = memoize((n) => {
 
 expensiveCalc(10); // Computing... → 110
 expensiveCalc(10); // Cache hit!   → 110（直接從快取拿）
-expensiveCalc(20); // Computing... → 420 `}
+expensiveCalc(20); // Computing... → 420   `}
 </CodeBlock>
 
           <p className="text-gray-700 leading-relaxed mt-4 mb-6">
@@ -263,7 +267,7 @@ expensiveCalc(20); // Computing... → 420 `}
           </p>
 
           <CodeBlock language="tsx">
-{` // ❌ 不純的 component（每次渲染結果不同，即使 props 完全相同）
+{`   // ❌ 不純的 component（每次渲染結果不同，即使 props 完全相同）
 function TimeDisplay() {
   // new Date() 是副作用！每次呼叫結果都不同
   return <div>{new Date().toLocaleString()}</div>;
@@ -287,7 +291,7 @@ function UserGreeting({ userName }: { userName: string }) {
 // React 18 的 Strict Mode 就是在利用純函數特性：
 // 它會在開發模式下故意把 useEffect 執行兩次，
 // 讓你發現那些「你以為只執行一次」的副作用。
-// 如果你的 component 是純的，雙重執行不會造成問題。 `}
+// 如果你的 component 是純的，雙重執行不會造成問題。   `}
 </CodeBlock>
 
           <Card className="border border-green-200 bg-green-50 mt-6">
@@ -326,7 +330,7 @@ function UserGreeting({ userName }: { userName: string }) {
           </p>
 
           <CodeBlock language="javascript">
-{` // ❌ 可變（Mutable）- 難以追蹤是誰改了資料
+{`   // ❌ 可變（Mutable）- 難以追蹤是誰改了資料
 const user = { name: 'Joseph', age: 28, role: 'admin' };
 
 function updateAge(user, newAge) {
@@ -372,7 +376,7 @@ const newState = {
 console.log(state.users[0].scores);    // [85, 90, 78]（原始未變）
 console.log(newState.users[0].scores); // [85, 90, 78, 95]（新物件）
 console.log(state === newState);       // false
-console.log(state.users[0] === newState.users[0]); // false `}
+console.log(state.users[0] === newState.users[0]); // false   `}
 </CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-8">Immer — 讓不可變更直觀</h3>
@@ -384,7 +388,7 @@ console.log(state.users[0] === newState.users[0]); // false `}
           </p>
 
           <CodeBlock language="typescript">
-{` import { produce } from 'immer';
+{`   import { produce } from 'immer';
 
 const state = {
   users: [
@@ -416,7 +420,7 @@ console.log(newState.users[0].scores);       // [85, 90, 78, 95]
 
 // Immer 的結構共享（Structural Sharing）：
 // 沒有被修改的部分，Immer 會重用原始物件的參考
-// 這讓 React 的 shouldComponentUpdate / memo 能正確偵測到哪些部分改變了 `}
+// 這讓 React 的 shouldComponentUpdate / memo 能正確偵測到哪些部分改變了   `}
 </CodeBlock>
 
           <Card className="border border-blue-200 bg-blue-50 mt-6">
@@ -452,7 +456,7 @@ console.log(newState.users[0].scores);       // [85, 90, 78, 95]
           </p>
 
           <CodeBlock language="javascript">
-{` // ── 1. map：轉換每個元素 ──
+{`   // ── 1. map：轉換每個元素 ──
 const prices = [100, 200, 300];
 const withTax = prices.map(price => price * 1.1);
 // [110, 220, 330]
@@ -532,7 +536,7 @@ const formatDate = curry((locale, format, date) =>
 
 const formatTW     = formatDate('zh-TW');
 const formatTWFull = formatTW({ dateStyle: 'full' });
-formatTWFull(new Date()); // "2026年5月8日 星期五" `}
+formatTWFull(new Date()); // "2026年5月8日 星期五"   `}
 </CodeBlock>
         </motion.section>
 
@@ -568,7 +572,7 @@ formatTWFull(new Date()); // "2026年5月8日 星期五" `}
           </Card>
 
           <CodeBlock language="javascript">
-{` // ── compose 與 pipe 的實作 ──
+{`   // ── compose 與 pipe 的實作 ──
 
 // compose：右到左（數學慣例）
 // compose(f, g, h)(x) 等於 f(g(h(x)))
@@ -597,7 +601,7 @@ const formatPrice = pipe(
   (price) => parseFloat(price),                     // "100.506" → 100.506
   (price) => Math.round(price * 100) / 100,         // → 100.51
   (price) => price.toFixed(2),                      // → "100.51"
-  (price) => \\`NT$ \\${price}\\`                         // → "NT$ 100.51"
+  (price) => \`NT$ \${price}\`                         // → "NT$ 100.51"
 );
 
 formatPrice("100.506"); // "NT$ 100.51"
@@ -627,7 +631,7 @@ const withAuth = (Component) => (props) =>
 
 const withLogging = (Component) => (props) => {
   useEffect(() => {
-    console.log(\\`Rendered: \\${Component.displayName ?? Component.name}\\`);
+    console.log(\`Rendered: \${Component.displayName ?? Component.name}\`);
   });
   return <Component {...props} />;
 };
@@ -643,7 +647,7 @@ const EnhancedDashboard = compose(
   withAuth,
   withLogging,
   withErrorBoundary
-)(Dashboard); `}
+)(Dashboard);   `}
 </CodeBlock>
         </motion.section>
 
@@ -673,7 +677,7 @@ const EnhancedDashboard = compose(
           </p>
 
           <CodeBlock language="typescript">
-{` // ── 問題：深層取值的 null 地獄 ──
+{`   // ── 問題：深層取值的 null 地獄 ──
 function getUserCity(data: any) {
   if (data && data.user && data.user.address && data.user.address.city) {
     return data.user.address.city;
@@ -714,7 +718,7 @@ class Maybe<T> {
 
   // 用於 debug
   toString(): string {
-    return this.isNothing() ? 'Nothing' : \\`Just(\\${this.value})\\`;
+    return this.isNothing() ? 'Nothing' : \`Just(\${this.value})\`;
   }
 }
 
@@ -753,7 +757,7 @@ function parseJSON(str: string): Either<string, unknown> {
   try {
     return Right(JSON.parse(str));
   } catch (e) {
-    return Left(\\`Parse error: \\${e instanceof Error ? e.message : String(e)}\\`);
+    return Left(\`Parse error: \${e instanceof Error ? e.message : String(e)}\`);
   }
 }
 
@@ -776,13 +780,13 @@ const result = parseJSON(input);
 if (result.tag === 'Right') {
   const userResult = validateUser(result.value);
   if (userResult.tag === 'Right') {
-    console.log(\\`Welcome, \\${userResult.value.name}!\\`); // "Welcome, Joseph!"
+    console.log(\`Welcome, \${userResult.value.name}!\`); // "Welcome, Joseph!"
   } else {
     console.error(userResult.value);
   }
 } else {
   console.error(result.value);
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border border-indigo-200 bg-indigo-50 mt-6">
@@ -824,7 +828,7 @@ if (result.tag === 'Right') {
           <h3 className="text-lg font-bold text-gray-800 mb-4">a. 資料轉換管道</h3>
 
           <CodeBlock language="tsx">
-{` // 使用 pipe 思維串接資料轉換
+{`   // 使用 pipe 思維串接資料轉換
 interface User {
   id: number;
   firstName: string;
@@ -841,8 +845,8 @@ const UserList = ({ users }: { users: User[] }) => {
     .sort((a, b) => a.firstName.localeCompare(b.firstName))
     .map(u => ({
       ...u,
-      displayName: \\`\\${u.firstName} \\${u.lastName}\\`,
-      initials: \\`\\${u.firstName[0]}\\${u.lastName[0]}\\`.toUpperCase(),
+      displayName: \`\${u.firstName} \${u.lastName}\`,
+      initials: \`\${u.firstName[0]}\${u.lastName[0]}\`.toUpperCase(),
     }));
 
   return (
@@ -852,13 +856,13 @@ const UserList = ({ users }: { users: User[] }) => {
       ))}
     </ul>
   );
-}; `}
+};   `}
 </CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-8">b. useReducer 就是純函數</h3>
 
           <CodeBlock language="tsx">
-{` // useReducer 的 reducer 本身就是一個純函數！
+{`   // useReducer 的 reducer 本身就是一個純函數！
 // 簽章：(state, action) => newState
 // 完全符合 FP 的「相同輸入，相同輸出，沒有副作用」
 
@@ -895,13 +899,13 @@ function counterReducer(state: CounterState, action: Action): CounterState {
 //   const next  = counterReducer(state, { type: 'INCREMENT' });
 //   expect(next.count).toBe(1);
 //   expect(state.count).toBe(0); // 原始 state 未改變
-// }); `}
+// });   `}
 </CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-8">c. 自定義 Hook 的函數組合</h3>
 
           <CodeBlock language="tsx">
-{` // 把多個小 Hook 組合成一個大 Hook，就是 FP 的函數組合概念
+{`   // 把多個小 Hook 組合成一個大 Hook，就是 FP 的函數組合概念
 function useUser(userId: string) {
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -942,7 +946,7 @@ function useUserData(userId: string) {
 function Dashboard({ userId }: { userId: string }) {
   const { user, permissions, preferences } = useUserData(userId);
   // ...
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border border-rose-200 bg-rose-50 mt-6">

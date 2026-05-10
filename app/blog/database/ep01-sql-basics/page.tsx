@@ -1,7 +1,21 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Database,
+  Table,
+  Search,
+  Layers
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowRight, Quote, Clock, Eye, Database, Table, Search, Layers } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';

@@ -1,5 +1,4 @@
 'use client';
-
 import {
   Card,
   CardBody,
@@ -7,8 +6,20 @@ import {
   Button,
   Link as HeroLink,
   Chip,
-} from '@heroui/react';
-import { Calendar, User, ArrowLeft, Bookmark, Share2, Code2, Quote, AlertTriangle, CheckCircle, Clock, Eye } from 'lucide-react';
+  } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  Bookmark,
+  Share2,
+  Code2,
+  Quote,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Eye
+} from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';

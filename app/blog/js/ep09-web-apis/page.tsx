@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -17,8 +20,9 @@ import {
   Zap,
   CheckCircle,
   AlertTriangle,
-  Monitor,
+  Monitor
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -174,7 +178,7 @@ export default function JSEP09() {
               <h3 className="text-lg font-bold text-gray-700 mb-3">問題 vs 解法</h3>
 
               <CodeBlock language="javascript">
-{` // ❌ 問題：在主執行緒跑大計算 → UI 凍結
+{`   // ❌ 問題：在主執行緒跑大計算 → UI 凍結
 function heavyCalc(n) {
   let result = 0;
   for (let i = 0; i < n; i++) {
@@ -217,7 +221,7 @@ document.querySelector('button').addEventListener('click', () => {
   worker.postMessage({ n: 100_000_000 }); // 送給 Worker，主執行緒不卡
   // 這行會立刻執行完畢，不會等 Worker 算完
   console.log('計算已送出，UI 繼續回應！');
-}); `}
+});   `}
 </CodeBlock>
 
               <div className="p-5 bg-slate-900 rounded-xl border border-slate-700 my-6 font-mono text-sm">
@@ -246,7 +250,7 @@ document.querySelector('button').addEventListener('click', () => {
               </p>
 
               <CodeBlock language="typescript">
-{` // workers/calculator.worker.ts
+{`   // workers/calculator.worker.ts
 import { expose } from 'comlink';
 
 const calculator = {
@@ -267,13 +271,13 @@ const calculator = {
   },
 };
 
-expose(calculator); // Comlink：把物件暴露給主執行緒 `}
+expose(calculator); // Comlink：把物件暴露給主執行緒   `}
 </CodeBlock>
 
               <div className="h-4" />
 
               <CodeBlock language="typescript">
-{` // hooks/useWorker.ts
+{`   // hooks/useWorker.ts
 import { wrap } from 'comlink';
 import { useRef, useEffect } from 'react';
 
@@ -319,7 +323,7 @@ function MyComponent() {
       {result && <p>結果：{result}</p>}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
@@ -370,7 +374,7 @@ function MyComponent() {
               <h3 className="text-lg font-bold text-gray-700 mb-3">傳統做法 vs Intersection Observer</h3>
 
               <CodeBlock language="javascript">
-{` // ❌ 舊方法：監聽 scroll 事件（效能差！）
+{`   // ❌ 舊方法：監聽 scroll 事件（效能差！）
 window.addEventListener('scroll', () => {
   // 每次滾動都觸發（可能每秒幾十次）
   // 每次都要重新計算所有元素的位置
@@ -415,13 +419,13 @@ document.querySelectorAll('.lazy-load').forEach(el => {
 // 0   → 元素剛剛碰到視口邊緣就觸發
 // 0.5 → 元素出現一半才觸發
 // 1   → 元素完整出現才觸發
-// [0, 0.25, 0.5, 0.75, 1] → 每達到這些比例都觸發 `}
+// [0, 0.25, 0.5, 0.75, 1] → 每達到這些比例都觸發   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-6">React Hook 封裝</h3>
 
               <CodeBlock language="typescript">
-{` // hooks/useIntersectionObserver.ts
+{`   // hooks/useIntersectionObserver.ts
 import { useEffect, useRef, useState } from 'react';
 
 interface Options {
@@ -485,9 +489,9 @@ function AnimatedCard({ children }: { children: React.ReactNode }) {
   return (
     <div
       ref={ref as any}
-      className={\\`transition-all duration-700 \\${
+      className={\`transition-all duration-700 \${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-      }\\`}
+      }\`}
     >
       {children}
     </div>
@@ -521,8 +525,8 @@ function InfiniteList() {
 
 async function fetchNextPage(page: number): Promise<string[]> {
   // 模擬 API 呼叫
-  return Array.from({ length: 10 }, (_, i) => \\`Item \\${(page - 1) * 10 + i + 1}\\`);
-} `}
+  return Array.from({ length: 10 }, (_, i) => \`Item \${(page - 1) * 10 + i + 1}\`);
+}   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -579,13 +583,13 @@ async function fetchNextPage(page: number): Promise<string[]> {
               </p>
 
               <CodeBlock language="bash">
-{` npm install idb `}
+{`   npm install idb   `}
 </CodeBlock>
 
               <div className="h-4" />
 
               <CodeBlock language="typescript">
-{` import { openDB, DBSchema } from 'idb';
+{`   import { openDB, DBSchema } from 'idb';
 
 // 定義 DB Schema（TypeScript 型別安全）
 interface BlogDB extends DBSchema {
@@ -674,7 +678,7 @@ async function clearExpiredCache() {
 
   await tx.done;
   console.log('過期快取已清除');
-} `}
+}   `}
 </CodeBlock>
 
               <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 mt-6">
@@ -715,7 +719,7 @@ async function clearExpiredCache() {
               </p>
 
               <CodeBlock language="typescript">
-{` // hooks/useElementSize.ts
+{`   // hooks/useElementSize.ts
 import { useEffect, useRef, useState } from 'react';
 
 interface Size {
@@ -766,7 +770,7 @@ function ResponsiveGrid({ children }: { children: React.ReactNode }) {
       ref={ref as any}
       style={{
         display: 'grid',
-        gridTemplateColumns: \\`repeat(\\${columns}, 1fr)\\`,
+        gridTemplateColumns: \`repeat(\${columns}, 1fr)\`,
         gap: '1rem',
       }}
     >
@@ -793,7 +797,7 @@ function ClampedText({ text }: { text: string }) {
     <div>
       <p
         ref={ref as any}
-        className={\\`\\${isExpanded ? '' : 'line-clamp-3'} text-gray-600\\`}
+        className={\`\${isExpanded ? '' : 'line-clamp-3'} text-gray-600\`}
       >
         {text}
       </p>
@@ -804,7 +808,7 @@ function ClampedText({ text }: { text: string }) {
       )}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
@@ -853,7 +857,7 @@ function ClampedText({ text }: { text: string }) {
               </p>
 
               <CodeBlock language="typescript">
-{` // hooks/usePageVisibility.ts
+{`   // hooks/usePageVisibility.ts
 import { useState, useEffect } from 'react';
 
 export function usePageVisibility() {
@@ -926,7 +930,7 @@ function useActiveTime() {
 async function fetchLatestData() {
   const res = await fetch('/api/data');
   return res.json();
-} `}
+}   `}
 </CodeBlock>
 
               <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 mt-6">
@@ -987,7 +991,7 @@ async function fetchLatestData() {
               </div>
 
               <CodeBlock language="typescript">
-{` // ── AES-GCM 對稱加密 ──────────────────────────────────────
+{`   // ── AES-GCM 對稱加密 ──────────────────────────────────────
 
 // 生成加密金鑰
 async function generateKey(): Promise<CryptoKey> {
@@ -1075,7 +1079,7 @@ async function demo() {
     ['encrypt', 'decrypt']
   );
   console.log('金鑰匯入成功：', importedKey);
-} `}
+}   `}
 </CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-3 gap-4">

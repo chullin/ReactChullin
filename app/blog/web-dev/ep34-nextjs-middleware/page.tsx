@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -16,8 +19,9 @@ import {
   MapPin,
   CheckCircle,
   AlertTriangle,
-  Server,
+  Server
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -186,14 +190,14 @@ export default function WebDevEP34() {
               </p>
 
               <CodeBlock language="typescript">
-{` // middleware.ts（放在專案根目錄，與 app/ 同層）
+{`   // middleware.ts（放在專案根目錄，與 app/ 同層）
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
-  console.log(\\`[Middleware] \\${request.method} \\${pathname}\\`);
+  console.log(\`[Middleware] \${request.method} \${pathname}\`);
 
   // 1. 讀取 Cookie
   const token = request.cookies.get('auth-token')?.value;
@@ -221,7 +225,7 @@ export const config = {
     // 排除靜態資源（避免 Middleware 處理 _next/static 等不必要的請求）
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
-}; `}
+};   `}
 </CodeBlock>
 
               <div className="grid md:grid-cols-3 gap-4 mt-6">
@@ -299,7 +303,7 @@ export const config = {
               </div>
 
               <CodeBlock language="typescript">
-{` // middleware.ts
+{`   // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
@@ -351,13 +355,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth).*)'],
-}; `}
+};   `}
 </CodeBlock>
 
               <div className="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <p className="text-slate-700 text-sm font-medium mb-3">在 Page 中讀取 Middleware 注入的 Header</p>
                 <CodeBlock language="typescript">
-{` // app/dashboard/page.tsx（Server Component）
+{`   // app/dashboard/page.tsx（Server Component）
 import { headers } from 'next/headers';
 
 export default async function DashboardPage() {
@@ -376,7 +380,7 @@ export default async function DashboardPage() {
       {userRole === 'admin' && <AdminPanel />}
     </div>
   );
-} `}
+}   `}
 </CodeBlock>
               </div>
             </CardBody>
@@ -404,7 +408,7 @@ export default async function DashboardPage() {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">A/B Testing 實作</h3>
               <CodeBlock language="typescript">
-{` // middleware.ts
+{`   // middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -417,7 +421,7 @@ export function middleware(request: NextRequest) {
 
     // 改寫路徑（用戶看到的 URL 還是 /pricing）
     const response = NextResponse.rewrite(
-      new URL(\\`/pricing-\\${group}\\`, request.url)
+      new URL(\`/pricing-\${group}\`, request.url)
     );
 
     // 記住這次的分組（7天），確保用戶每次看到同一個版本
@@ -431,7 +435,7 @@ export function middleware(request: NextRequest) {
 
     return response;
   }
-} `}
+}   `}
 </CodeBlock>
 
               <div className="p-4 bg-purple-50 rounded-lg border border-purple-200 my-6">
@@ -448,7 +452,7 @@ export function middleware(request: NextRequest) {
                 部署在 Vercel 上時，Edge Network 會自動在每個請求中注入地理位置相關的 Header，你在 Middleware 中可以直接讀取，不需要額外的 IP 查詢服務。
               </p>
               <CodeBlock language="typescript">
-{` export function middleware(request: NextRequest) {
+{`   export function middleware(request: NextRequest) {
   // Vercel 自動注入地理位置 header
   const country = request.headers.get('x-vercel-ip-country') ?? 'US';
   const city = request.headers.get('x-vercel-ip-city');
@@ -468,7 +472,7 @@ export function middleware(request: NextRequest) {
   response.headers.set('x-country', country);
   if (city) response.headers.set('x-city', city);
   return response;
-} `}
+}   `}
 </CodeBlock>
 
               <div className="grid md:grid-cols-2 gap-4 mt-6">
@@ -543,7 +547,7 @@ export function middleware(request: NextRequest) {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">明確指定 Edge Runtime</h3>
               <CodeBlock language="typescript">
-{` // 在 Middleware 中預設就是 Edge Runtime
+{`   // 在 Middleware 中預設就是 Edge Runtime
 // 不需要額外宣告
 
 // 明確指定 Edge Runtime（用於 API Route）：
@@ -571,7 +575,7 @@ export async function GET(request: Request) {
 // - URL、URLSearchParams
 // - TextEncoder / TextDecoder
 // - jose（JWT 的 Edge 相容版本）
-// - cookies、headers `}
+// - cookies、headers   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">Edge Runtime 的資料庫存取方案</h3>
@@ -643,7 +647,7 @@ export async function GET(request: Request) {
 
               <h3 className="text-lg font-bold text-gray-700 mb-3">用 Upstash Redis 實作邊緣層速率限制</h3>
               <CodeBlock language="typescript">
-{` // middleware.ts
+{`   // middleware.ts
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { NextResponse } from 'next/server';
@@ -683,12 +687,12 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ['/api/:path*'],
-}; `}
+};   `}
 </CodeBlock>
 
               <h3 className="text-lg font-bold text-gray-700 mb-3 mt-8">根據用戶角色設定不同的限流規則</h3>
               <CodeBlock language="typescript">
-{` // 進階：依用戶角色動態設定 Rate Limit
+{`   // 進階：依用戶角色動態設定 Rate Limit
 export async function middleware(request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith('/api/')) {
     return NextResponse.next();
@@ -723,7 +727,7 @@ export async function middleware(request: NextRequest) {
   });
 
   const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
-  const key = \\`\\${userRole}:\\${ip}\\`; // 用角色+IP 組合 key
+  const key = \`\${userRole}:\${ip}\`; // 用角色+IP 組合 key
   const { success, remaining } = await ratelimit.limit(key);
 
   if (!success) {
@@ -737,7 +741,7 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   response.headers.set('X-RateLimit-Remaining', remaining.toString());
   return response;
-} `}
+}   `}
 </CodeBlock>
 
               <div className="mt-6 grid md:grid-cols-2 gap-4">

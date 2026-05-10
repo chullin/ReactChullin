@@ -1,7 +1,24 @@
 'use client';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
+import { Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Quote,
+  Clock,
+  Eye,
+  Server,
+  Monitor,
+  FolderOpen,
+  Globe,
+  Layout,
+  Tag
+} from 'lucide-react';
 
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Quote, Clock, Eye, Server, Monitor, FolderOpen, Globe, Layout, Tag } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -97,7 +114,7 @@ export default function WebDevEP18() {
 
 async function BlogPost({ slug }: { slug: string }) {
   // 在伺服器上直接請求，沒有 Loading 狀態問題
-  const res = await fetch(\\`https://api.example.com/posts/\\${slug}\\`);
+  const res = await fetch(\`https://api.example.com/posts/\${slug}\`);
   const post = await res.json();
 
   return (
@@ -555,7 +572,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: \\`\\${post.title} | 我的部落格\\`,
+    title: \`\${post.title} | 我的部落格\`,
     description: post.excerpt,
     openGraph: {
       title: post.title,
@@ -667,7 +684,7 @@ export default async function BlogListPage() {
       <h1>所有文章</h1>
       <div className="grid gap-6">
         {posts.map((post: Post) => (
-          <Link key={post.id} href={\\`/blog/\\${post.slug}\`}>
+          <Link key={post.id} href={\`/blog/\${post.slug}\`}>
             <article>
               <h2>{post.title}</h2>
               <p>{post.excerpt}</p>

@@ -1,6 +1,9 @@
 'use client';
-
-import { Card, CardBody, Chip, Divider } from '@heroui/react';
+import {
+  Card,
+  CardBody,
+  Chip,
+  Divider } from '@heroui/react';
 import {
   Calendar,
   User,
@@ -17,8 +20,9 @@ import {
   XCircle,
   Zap,
   RefreshCw,
-  BookOpen,
+  BookOpen
 } from 'lucide-react';
+
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
@@ -82,7 +86,7 @@ export default function SystemDesignEP11() {
                 傳統 CRUD 的痛點（以電商訂單為例）
               </h3>
               <CodeBlock language="text">
-{` 傳統方式：資料庫永遠只存「最新狀態」
+{`   傳統方式：資料庫永遠只存「最新狀態」
 orders 表：
   id: 123
   status: "SHIPPED"  ← 但我怎麼知道訂單之前是什麼狀態？
@@ -93,7 +97,7 @@ orders 表：
   - 用戶說「我沒有取消訂單」，但資料庫說 status = CANCELLED
   - 無法重播過去的業務邏輯
   - 審計日誌需要額外設計
-  - 多個微服務的資料同步複雜 `}
+  - 多個微服務的資料同步複雜   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -111,7 +115,7 @@ orders 表：
                 Event Sourcing 的核心思想
               </h3>
               <CodeBlock language="text">
-{` Event Sourcing：把「發生的事情」存下來，而非「最終狀態」
+{`   Event Sourcing：把「發生的事情」存下來，而非「最終狀態」
 
 events 表（只能新增，不能修改/刪除）：
   { type: "OrderCreated",    data: {...}, timestamp: T1 }
@@ -119,7 +123,7 @@ events 表（只能新增，不能修改/刪除）：
   { type: "OrderShipped",    data: {...}, timestamp: T3 }
 
 當前狀態 = 重播所有事件的結果
-歷史記錄 = 免費贈送！ `}
+歷史記錄 = 免費贈送！   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -178,7 +182,7 @@ events 表（只能新增，不能修改/刪除）：
           </p>
 
           <CodeBlock language="typescript">
-{` // 定義 Domain Events（不可變）
+{`   // 定義 Domain Events（不可變）
 type OrderEvent =
   | { type: 'OrderCreated';   data: { orderId: string; userId: string; items: OrderItem[]; total: number } }
   | { type: 'PaymentReceived'; data: { orderId: string; paymentId: string; amount: number } }
@@ -203,7 +207,7 @@ class EventStore {
 
     // Optimistic Concurrency Control（樂觀鎖）
     if (currentVersion !== expectedVersion) {
-      throw new Error(\\`Concurrency conflict: expected version \\${expectedVersion}, got \\${currentVersion}\\`);
+      throw new Error(\`Concurrency conflict: expected version \${expectedVersion}, got \${currentVersion}\`);
     }
 
     const storedEvents = events.map((event, i) => ({
@@ -239,7 +243,7 @@ class EventStore {
     const events = await this.getEvents(aggregateId);
     return events.length;
   }
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border border-violet-200 bg-violet-50">
@@ -279,7 +283,7 @@ class EventStore {
           </p>
 
           <CodeBlock language="typescript">
-{` // Order Aggregate：從事件重建狀態
+{`   // Order Aggregate：從事件重建狀態
 interface OrderState {
   id: string;
   status: 'PENDING' | 'PAID' | 'SHIPPED' | 'CANCELLED';
@@ -321,7 +325,7 @@ class Order {
   // 業務邏輯：確認付款
   confirmPayment(paymentId: string, amount: number) {
     if (this.state.status !== 'PENDING') {
-      throw new Error(\\`Cannot pay order in status: \\${this.state.status}\\`);
+      throw new Error(\`Cannot pay order in status: \${this.state.status}\`);
     }
 
     this.raise({
@@ -333,7 +337,7 @@ class Order {
   // 業務邏輯：確認出貨
   ship(trackingNumber: string, carrier: string) {
     if (this.state.status !== 'PAID') {
-      throw new Error(\\`Cannot ship order in status: \\${this.state.status}\\`);
+      throw new Error(\`Cannot ship order in status: \${this.state.status}\`);
     }
 
     this.raise({
@@ -376,7 +380,7 @@ class Order {
   getState() { return this.state as OrderState; }
   getUncommittedEvents() { return this.uncommittedEvents; }
   getVersion() { return this.version; }
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border border-indigo-200 bg-indigo-50">
@@ -418,7 +422,7 @@ class Order {
           <Card className="border border-gray-200 bg-gray-50">
             <CardBody className="p-5">
               <CodeBlock language="text">
-{` 傳統方式（CRUD）：
+{`   傳統方式（CRUD）：
   同一個資料模型同時負責讀取和寫入
   問題：寫入模型（正規化）不適合複雜讀取查詢
 
@@ -432,7 +436,7 @@ CQRS（Command Query Responsibility Segregation）：
   Read Side（Query）：
     - 訂閱事件，更新「讀取優化的視圖」（Projection）
     - 回應查詢請求
-    - 可以有多種不同的 Projection `}
+    - 可以有多種不同的 Projection   `}
 </CodeBlock>
             </CardBody>
           </Card>
@@ -444,7 +448,7 @@ CQRS（Command Query Responsibility Segregation）：
           </p>
 
           <CodeBlock language="typescript">
-{` // Command Handler（寫入端）
+{`   // Command Handler（寫入端）
 interface CreateOrderCommand {
   orderId: string;
   userId: string;
@@ -556,7 +560,7 @@ class OrderProjection {
     return Array.from(this.readModel.values())
       .filter(o => o.status === status);
   }
-} `}
+}   `}
 </CodeBlock>
 
           <Card className="border border-violet-200 bg-violet-50">
@@ -595,7 +599,7 @@ class OrderProjection {
           </p>
 
           <CodeBlock language="typescript">
-{` // 當你需要新的查詢方式時，建立新的 Projection
+{`   // 當你需要新的查詢方式時，建立新的 Projection
 class OrderByStatusProjection {
   private byStatus: Map<string, string[]> = new Map();
 
@@ -609,7 +613,7 @@ class OrderByStatusProjection {
       await this.onEvent(event);
     }
 
-    console.log(\\`Rebuild complete! Processed \\${allEvents.length} events\\`);
+    console.log(\`Rebuild complete! Processed \${allEvents.length} events\`);
   }
 
   async onEvent(event: StoredEvent) {
@@ -673,7 +677,7 @@ class MonthlyRevenueProjection {
 // 不需要修改任何已存在的資料，只需要：
 // 1. 建立新的 MonthlyRevenueProjection
 // 2. 從 Event Store 重播所有事件
-// 3. Done！歷史資料全部有了 `}
+// 3. Done！歷史資料全部有了   `}
 </CodeBlock>
 
           <Card className="border border-purple-200 bg-purple-50">
@@ -718,7 +722,7 @@ class MonthlyRevenueProjection {
           </p>
 
           <CodeBlock language="typescript">
-{` // 問題：Command 成功，但 Projection 還沒更新
+{`   // 問題：Command 成功，但 Projection 還沒更新
 // 解法一：輪詢直到一致（適合非即時場景）
 async function createOrderAndWait(command: CreateOrderCommand) {
   // 發送 Command
@@ -762,7 +766,7 @@ function useCreateOrder() {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
   });
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-6">Event Schema 演化</h3>
@@ -773,7 +777,7 @@ function useCreateOrder() {
           </p>
 
           <CodeBlock language="typescript">
-{` // 問題：事件格式演化了，舊事件要怎麼處理？
+{`   // 問題：事件格式演化了，舊事件要怎麼處理？
 // ❌ 直接修改事件格式（會導致舊事件重播失敗）
 type OrderCreatedV1 = { type: 'OrderCreated'; data: { orderId: string; total: number } };
 // 改成
@@ -807,7 +811,7 @@ function applyOrderCreated(event: OrderCreatedV1 | OrderCreatedV2) {
   }
   // 處理新格式
   return event.data;
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-6">何時適合 Event Sourcing？</h3>
@@ -915,7 +919,7 @@ function applyOrderCreated(event: OrderCreatedV1 | OrderCreatedV2) {
           </p>
 
           <CodeBlock language="typescript">
-{` // EventStoreDB（專為 Event Sourcing 設計的資料庫）
+{`   // EventStoreDB（專為 Event Sourcing 設計的資料庫）
 import { EventStoreDBClient, jsonEvent, START, StreamNotFoundError } from '@eventstore/db-client';
 
 const client = EventStoreDBClient.connectionString(
@@ -930,11 +934,11 @@ async function appendOrderEvent(orderId: string, eventType: string, data: unknow
   });
 
   try {
-    await client.appendToStream(\\`order-\\${orderId}\\`, event, {
+    await client.appendToStream(\`order-\${orderId}\`, event, {
       // 使用 expectedRevision 做樂觀鎖
       // expectedRevision: BigInt(currentVersion)
     });
-    console.log(\\`Event \\${eventType} appended to order-\\${orderId}\\`);
+    console.log(\`Event \${eventType} appended to order-\${orderId}\`);
   } catch (err) {
     console.error('Failed to append event:', err);
     throw err;
@@ -946,7 +950,7 @@ async function readOrderEvents(orderId: string) {
   const events = [];
 
   try {
-    const result = client.readStream(\\`order-\\${orderId}\\`, {
+    const result = client.readStream(\`order-\${orderId}\`, {
       fromRevision: START,
       direction: 'forwards',
     });
@@ -982,7 +986,7 @@ async function subscribeToAllOrderEvents(projection: OrderProjection) {
   for await (const { event } of subscription) {
     if (!event) continue;
 
-    console.log(\\`Processing event: \\${event.type} @ \\${event.streamId}\\`);
+    console.log(\`Processing event: \${event.type} @ \${event.streamId}\`);
     await projection.onEvent({
       id: event.id,
       aggregateId: event.streamId.replace('order-', ''),
@@ -1016,7 +1020,7 @@ async function createOrder(command: CreateOrderCommand) {
   }
 
   return { orderId: command.orderId, status: 'created' };
-} `}
+}   `}
 </CodeBlock>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-6">Snapshot 優化（解決 Replay 效能問題）</h3>
@@ -1028,7 +1032,7 @@ async function createOrder(command: CreateOrderCommand) {
           </p>
 
           <CodeBlock language="typescript">
-{` // Snapshot 優化策略
+{`   // Snapshot 優化策略
 interface Snapshot {
   aggregateId: string;
   version: number;      // 這個 Snapshot 是在 version N 時建立的
@@ -1064,7 +1068,7 @@ async function rebuildOrderWithSnapshot(
     // 2. 從 Snapshot 恢復狀態（不需要重播 Snapshot 之前的事件）
     order = Order.fromSnapshot(snapshot.state);
     fromVersion = snapshot.version;
-    console.log(\\`Restored from snapshot at version \\${fromVersion}\\`);
+    console.log(\`Restored from snapshot at version \${fromVersion}\`);
   } else {
     order = new Order();
     fromVersion = 0;
@@ -1084,11 +1088,11 @@ async function rebuildOrderWithSnapshot(
       state: order.getState(),
       createdAt: new Date(),
     });
-    console.log(\\`Snapshot created at version \\${order.getVersion()}\\`);
+    console.log(\`Snapshot created at version \${order.getVersion()}\`);
   }
 
   return order;
-} `}
+}   `}
 </CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

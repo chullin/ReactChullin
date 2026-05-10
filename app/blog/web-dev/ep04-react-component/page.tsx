@@ -1,14 +1,35 @@
 'use client';
-
-import { Card, CardBody, Button, Chip, Divider } from '@heroui/react';
-import { Calendar, User, ArrowLeft, ArrowRight, Bookmark, Share2, Quote, Clock, Eye } from 'lucide-react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import {
+  Card,
+  CardBody,
+  Button,
+  Chip,
+  Divider } from '@heroui/react';
+import {
+  motion
+} from 'framer-motion';
+import {
+  Calendar,
+  User,
+  ArrowLeft,
+  ArrowRight,
+  Bookmark,
+  Share2,
+  Quote,
+  Clock,
+  Eye
+} from 'lucide-react';
 import CodeBlock from '@/components/blog/CodeBlock';
+import Link from 'next/link';
 
-const Callout = ({ type, children }: { type: 'info' | 'warn' | 'tip'; children: React.ReactNode }) => {
-  const styles = { info: 'bg-blue-50 border-blue-100 text-blue-800', warn: 'bg-amber-50 border-amber-100 text-amber-800', tip: 'bg-green-50 border-green-100 text-green-800' };
-  const icons = { info: '💡', warn: '⚠️', tip: '✅' };
+const Callout = ({ type,
+  children }: { type: 'info' | 'warn' | 'tip'; children: React.ReactNode }) => {
+  const styles = { info: 'bg-blue-50 border-blue-100 text-blue-800',
+  warn: 'bg-amber-50 border-amber-100 text-amber-800',
+  tip: 'bg-green-50 border-green-100 text-green-800' };
+  const icons = { info: '💡',
+  warn: '⚠️',
+  tip: '✅' };
   return (
     <div className={`border rounded-2xl p-5 ${styles[type]}`}>
       <div className="flex items-start gap-3"><span className="text-xl shrink-0">{icons[type]}</span><div className="text-sm leading-relaxed">{children}</div></div>
@@ -16,7 +37,10 @@ const Callout = ({ type, children }: { type: 'info' | 'warn' | 'tip'; children: 
   );
 };
 
-const Comparison = ({ left, right, leftLabel, rightLabel }: { left: string; right: string; leftLabel: string; rightLabel: string }) => (
+const Comparison = ({ left,
+  right,
+  leftLabel,
+  rightLabel }: { left: string; right: string; leftLabel: string; rightLabel: string }) => (
   <div className="grid sm:grid-cols-2 gap-4 my-6">
     <div>
       <p className="text-xs font-black text-red-500 uppercase mb-2">{leftLabel}</p>
@@ -38,9 +62,16 @@ export default function WebDevEP04Page() {
     <div className="bg-white min-h-screen">
       {/* Hero */}
       <div className="relative h-[52vh] min-h-[360px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-cyan-900 via-blue-900 to-slate-900">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(circle at 25% 25%, #06b6d4 0%, transparent 50%), radial-gradient(circle at 75% 75%, #3b82f6 0%, transparent 50%)` }} />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(circle at 25% 25%,
+  #06b6d4 0%,
+  transparent 50%),
+  radial-gradient(circle at 75% 75%,
+  #3b82f6 0%,
+  transparent 50%)` }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <motion.div initial={{ opacity: 0,
+  y: 20 }} animate={{ opacity: 1,
+  y: 0 }} transition={{ duration: 0.6 }}>
             <div className="flex justify-center gap-2 mb-5">
               <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">個人網頁開發</Chip>
               <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">EP.04</Chip>
@@ -80,7 +111,8 @@ export default function WebDevEP04Page() {
             打開我的個人網頁任何一個 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">page.tsx</code> 檔案，你會看到滿滿的這種東西：
           </p>
           <CodeBlock title="你看到但還不懂的程式碼" code={`export default function BlogPage() {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded,
+  setExpanded] = useState(false);
 
   return (
     <div className="bg-gray-50 min-h-screen pt-20">
@@ -180,10 +212,14 @@ export default function RootLayout({ children }) {
 
           <div className="space-y-3">
             {[
-              { h: 'class → className', d: 'class 是 JavaScript 的保留字，JSX 改用 className' },
-              { h: 'for → htmlFor', d: 'for 也是保留字（for 迴圈），改用 htmlFor' },
-              { h: '自閉合 tag 必須加 /', d: '<img />、<br />、<input /> 必須有結尾斜線' },
-            ].map(({ h, d }) => (
+              { h: 'class → className',
+  d: 'class 是 JavaScript 的保留字，JSX 改用 className' },
+  { h: 'for → htmlFor',
+  d: 'for 也是保留字（for 迴圈），改用 htmlFor' },
+  { h: '自閉合 tag 必須加 /',
+  d: '<img />、<br />、<input /> 必須有結尾斜線' },
+  ].map(({ h,
+  d }) => (
               <div key={h} className="flex items-start gap-3 bg-gray-50 rounded-xl p-4">
                 <span className="text-amber-500 font-black text-sm shrink-0">⚠</span>
                 <div><p className="font-bold text-gray-900 text-sm">{h}</p><p className="text-gray-500 text-xs mt-0.5">{d}</p></div>
@@ -198,7 +234,9 @@ export default function RootLayout({ children }) {
           <CodeBlock title="JSX 嵌入 JavaScript" code={`function ProfileCard() {
   const name = "Joseph Chen";
   const year = 2024;
-  const skills = ["Python", "React", "Next.js"];
+  const skills = ["Python",
+  "React",
+  "Next.js"];
 
   return (
     <div>
@@ -214,8 +252,9 @@ export default function RootLayout({ children }) {
             看一個我的網頁的實際例子，blog/page.tsx 裡的這段：
           </p>
           <CodeBlock title="blog/page.tsx — 實際應用" code={`// series 是一個陣列，.map() 讓每個元素都產生一張卡片
-{series.map((s, i) => (
-  <a key={s.id} href={\\`#\\${s.id}\`}>
+{series.map((s,
+  i) => (
+  <a key={s.id} href={\`#\${s.id}\`}>
     <p className="text-lg font-black">{s.posts.length}</p>  {/* 顯示文章數 */}
     <p>{s.label}</p>                                        {/* 顯示系列名稱 */}
   </a>
@@ -236,7 +275,9 @@ export default function RootLayout({ children }) {
             Props 讓同一個 Component 能顯示不同的內容。
           </p>
           <CodeBlock title="Props 基本概念" code={`// 定義接收 props 的元件
-function PostTitle({ title, date, author }) {   // 解構 props
+function PostTitle({ title,
+  date,
+  author }) {   // 解構 props
   return (
     <div>
       <h2>{title}</h2>
@@ -268,7 +309,8 @@ function BlogPage() {
             接收一個 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">post</code> 物件和 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">color</code>：
           </p>
           <CodeBlock title="blog/page.tsx — 實際的 Props 使用" code={`// 定義：接收 post 和 color 兩個 props
-function EpRow({ post, color }: { post: Post; color: string }) {
+function EpRow({ post,
+  color }: { post: Post; color: string }) {
   return (
     <Link href={post.href}>
       <span className={color}>{post.ep}</span>
@@ -279,7 +321,8 @@ function EpRow({ post, color }: { post: Post; color: string }) {
 }
 
 // 使用：傳入 post 和 color
-{visiblePosts.map((post, i) => (
+{visiblePosts.map((post,
+  i) => (
   <EpRow key={i} post={post} color={s.color} />
 ))}`} />
 
@@ -301,7 +344,8 @@ type Post = {
 };
 
 // 然後在 props 裡使用這個型別
-function EpRow({ post, color }: { post: Post; color: string }) {
+function EpRow({ post,
+  color }: { post: Post; color: string }) {
   // TypeScript 現在知道 post.title 一定存在
   // 如果你打 post.xxx（不存在的欄位），VS Code 立即報錯
 }`} />
@@ -324,8 +368,10 @@ function EpRow({ post, color }: { post: Post; color: string }) {
           <CodeBlock title="useState 基本語法" code={`import { useState } from 'react';
 
 function Counter() {
-  // [當前值, 更新函式] = useState(初始值)
-  const [count, setCount] = useState(0);
+  // [當前值,
+  更新函式] = useState(初始值)
+  const [count,
+  setCount] = useState(0);
 
   return (
     <div>
@@ -341,10 +387,12 @@ function Counter() {
           </p>
           <CodeBlock title="blog/page.tsx — 實際的 useState" code={`function SeriesSection({ s }) {
   // expanded：目前是否展開（初始值 false = 收起）
-  const [expanded, setExpanded] = useState(false);
+  const [expanded,
+  setExpanded] = useState(false);
 
   // 根據 expanded 決定要顯示幾篇
-  const visiblePosts = !expanded ? s.posts.slice(0, 5) : s.posts;
+  const visiblePosts = !expanded ? s.posts.slice(0,
+  5) : s.posts;
 
   return (
     <div>
@@ -415,8 +463,14 @@ setCount(count + 1);`}
           </p>
           <CodeBlock title="app/page.tsx（首頁片段）" code={`'use client';                         // 有 framer-motion，需要在瀏覽器執行
 
-import { Button, Link, Chip } from '@heroui/react';  // 引入元件庫的元件
-import { ArrowRight } from 'lucide-react';            // 引入圖示
+import { Button,
+  Link,
+  Chip } from '@heroui/react';  // 引入元件庫的元件
+import { ArrowRight
+} from 'lucide-react';
+
+import Link from 'next/link';
+            // 引入圖示
 import { motion } from 'framer-motion';               // 引入動畫庫
 
 export default function Home() {       // ← Component（大寫開頭的函式）

@@ -4,7 +4,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeBlockProps {
-  code: string;
+  code?: string;
+  children?: string;
   title?: string;
   filename?: string; // Alias for title
   lang?: string;
@@ -12,7 +13,8 @@ interface CodeBlockProps {
   minimal?: boolean; // New prop for small snippets
 }
 
-const CodeBlock = ({ code, title, filename, lang, language, minimal = false }: CodeBlockProps) => {
+const CodeBlock = ({ code, children, title, filename, lang, language, minimal = false }: CodeBlockProps) => {
+  const displayCode = (code || children || '').trim();
   const displayLang = lang || language || 'bash';
   const displayTitle = title || filename;
   return (
@@ -47,7 +49,7 @@ const CodeBlock = ({ code, title, filename, lang, language, minimal = false }: C
             }
           }}
         >
-          {code.trim()}
+          {displayCode}
         </SyntaxHighlighter>
       </div>
     </div>
