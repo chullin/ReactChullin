@@ -39,13 +39,13 @@ export default function HomeHero() {
           <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
             <Button
               as={Link}
-              href="/resume"
+              href="/about"
               color="primary"
               size="lg"
               className="font-bold px-8 shadow-lg shadow-blue-500/20 w-full sm:w-auto"
               endContent={<ArrowRight size={20} />}
             >
-              View Resume
+              View About / CV
             </Button>
             <Button
               as={Link}

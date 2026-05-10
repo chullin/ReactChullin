@@ -27,8 +27,7 @@ export default function Navbar() {
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
   const portfolioLinks = [
-    { name: 'About', href: '/about' },
-    { name: 'Resume', href: '/resume' },
+    { name: 'About / CV', href: '/about' },
     { name: 'Projects', href: '/projects' },
     { name: 'Blog', href: '/blog' },
   ];
@@ -84,12 +83,12 @@ export default function Navbar() {
         </NavbarItem>
 
         <Dropdown>
-          <NavbarItem isActive={isGroupActive(['/resume', '/projects', '/blog'])}>
+          <NavbarItem isActive={isGroupActive(['/about', '/projects', '/blog'])}>
             <DropdownTrigger>
               <Button
                 disableRipple
                 className={`p-0 bg-transparent data-[hover=true]:bg-transparent h-auto px-3 py-2 rounded-lg transition-colors ${
-                  isGroupActive(['/resume', '/projects', '/blog'])
+                  isGroupActive(['/about', '/projects', '/blog'])
                     ? 'text-primary font-bold bg-primary/5'
                     : 'text-gray-600 hover:text-primary hover:bg-gray-50'
                 }`}

@@ -2,7 +2,8 @@
 
 import { Card, CardBody, CardHeader, Chip, Button } from '@heroui/react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Code2, Cpu, Eye, Database, ShieldCheck } from 'lucide-react';
+import { ExternalLink, Eye, Database, ShieldCheck, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 const projects = [
   {
@@ -11,7 +12,7 @@ const projects = [
     description: "Built and deployed offline Large Language Model (LLM) solutions using Ollama and Dify for secure, air-gapped manufacturing environments.",
     icon: <ShieldCheck className="text-emerald-500" />,
     tags: ["Ollama", "Dify", "Docker", "Linux"],
-    color: "emerald"
+    href: "/blog/ai/ep01-airgapped-intro",
   },
   {
     title: "Test Management System (TMS)",
@@ -19,15 +20,15 @@ const projects = [
     description: "Architected a comprehensive test management platform to streamline factory-wide testing processes and data collection for global production lines.",
     icon: <Database className="text-blue-500" />,
     tags: ["FastAPI", "PostgreSQL", "React", "Python"],
-    color: "blue"
+    href: "/blog/ai/ep09-tms",
   },
   {
-    title: "OpenCV Robot Vision",
+    title: "OpenCV Vision Automation",
     category: "Robotics",
-    description: "Developed high-precision robotic arm alignment systems using OpenCV for automated manufacturing and quality inspection.",
+    description: "Developed high-precision vision systems for XY automation devices using OpenCV, enabling dynamic UI recognition and automated mobile testing.",
     icon: <Eye className="text-purple-500" />,
-    tags: ["OpenCV", "Python", "Robotics", "Automation"],
-    color: "purple"
+    tags: ["OpenCV", "Python", "Automation", "Computer Vision"],
+    href: "/blog/ai/ep10-opencv-robot",
   }
 ];
 
@@ -60,29 +61,35 @@ export default function HomeProjects() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-white">
-                <CardHeader className="flex gap-3 px-6 pt-8 pb-0">
-                  <div className={`p-3 rounded-2xl bg-slate-50 border border-slate-100`}>
-                    {project.icon}
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{project.category}</p>
-                    <h3 className="text-xl font-black text-slate-900 leading-tight mt-1">{project.title}</h3>
-                  </div>
-                </CardHeader>
-                <CardBody className="px-6 py-8">
-                  <p className="text-slate-500 text-sm leading-relaxed mb-6">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-auto">
-                    {project.tags.map(tag => (
-                      <Chip key={tag} size="sm" variant="flat" className="bg-slate-100 text-slate-600 font-bold text-[10px]">
-                        {tag}
-                      </Chip>
-                    ))}
-                  </div>
-                </CardBody>
-              </Card>
+              <Link href={project.href} className="block h-full group/card">
+                <Card className="h-full border border-slate-200 shadow-sm group-hover/card:shadow-xl group-hover/card:-translate-y-2 transition-all duration-300 bg-white cursor-pointer">
+                  <CardHeader className="flex gap-3 px-6 pt-8 pb-0">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                      {project.icon}
+                    </div>
+                    <div className="flex flex-col flex-1">
+                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{project.category}</p>
+                      <h3 className="text-xl font-black text-slate-900 leading-tight mt-1">{project.title}</h3>
+                    </div>
+                    <ArrowRight
+                      size={16}
+                      className="text-slate-300 group-hover/card:text-slate-700 group-hover/card:translate-x-1 transition-all duration-200 mt-1 shrink-0"
+                    />
+                  </CardHeader>
+                  <CardBody className="px-6 py-8">
+                    <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-auto">
+                      {project.tags.map(tag => (
+                        <Chip key={tag} size="sm" variant="flat" className="bg-slate-100 text-slate-600 font-bold text-[10px]">
+                          {tag}
+                        </Chip>
+                      ))}
+                    </div>
+                  </CardBody>
+                </Card>
+              </Link>
             </motion.div>
           ))}
         </div>
@@ -94,6 +101,8 @@ export default function HomeProjects() {
           viewport={{ once: true }}
         >
           <Button
+            as={Link}
+            href="/blog"
             variant="light"
             radius="lg"
             className="font-bold text-slate-500 group"
