@@ -34,6 +34,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/blog/system-design/ep03-cache',
     '/blog/web-dev/ep09-advanced-nav',
     '/blog/web-dev/ep11-bootstrap-basics',
+    '/blog/ai/ep09-tms',
+    '/blog/ai/ep10-opencv-robot',
   ].map((post) => ({
     url: `${baseUrl}${post}`,
     lastModified,

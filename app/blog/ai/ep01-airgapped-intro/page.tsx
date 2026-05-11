@@ -14,7 +14,9 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
+import Script from 'next/script';
 import { motion } from 'framer-motion';
+import BlogRelatedPosts from '@/components/blog/BlogRelatedPosts';
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -321,16 +323,18 @@ export default function AiEP01Page() {
 
         <Divider className="my-12 opacity-50" />
 
+        {/* Related Posts */}
+        <BlogRelatedPosts currentPostHref="/blog/ai/ep01-airgapped-intro" category="ai" />
+
         {/* Navigation */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 pt-10">
           <div className="bg-gray-50 rounded-2xl p-6 opacity-50">
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">上一篇</p>
-            <p className="font-black text-gray-400">這是系列第一篇</p>
+            <p className="font-black text-gray-400 italic">這是系列的第一篇</p>
           </div>
-          <Link href="/blog/ai/ep02-ollama-local-llm" className="group block bg-gray-50 hover:bg-purple-50 transition-colors rounded-2xl p-6 text-right">
+          <Link href="/blog/ai/ep05-tts-models" className="group block bg-gray-50 hover:bg-purple-50 transition-colors rounded-2xl p-6 text-right">
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">下一篇</p>
-            <p className="font-black text-gray-900 group-hover:text-purple-600 transition-colors">EP.02 — Ollama 本地 LLM 部署</p>
-            <p className="text-sm text-gray-500 mt-1">從安裝到第一個推論，含離線搬檔教學</p>
+            <p className="font-black text-gray-900 group-hover:text-purple-600 transition-colors">EP.05 — TTS 模型語音合成技術</p>
             <ArrowRight size={18} className="ml-auto mt-3 text-gray-400 group-hover:text-purple-500 transition-colors" />
           </Link>
         </div>
@@ -341,6 +345,34 @@ export default function AiEP01Page() {
           ))}
         </div>
       </article>
+
+      {/* Structured Data for SEO */}
+      <Script id="blog-json-ld" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "AI 離線部署系列 EP.01：架構簡介與環境整備",
+          "description": "探討在無網路環境下（Air-gapped）部署 AI 模型的技術挑戰與解決方案。第一篇：基礎架構與硬體評估。",
+          "author": {
+            "@type": "Person",
+            "name": "陳憲億 Joseph Chen"
+          },
+          "datePublished": "2024-03-20",
+          "image": "https://chullin.tw/assets/profile3.png",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Joseph Chen Portfolio",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://chullin.tw/favicon.ico"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://chullin.tw/blog/ai/ep01-airgapped-intro"
+          }
+        })}
+      </Script>
     </div>
   );
 }

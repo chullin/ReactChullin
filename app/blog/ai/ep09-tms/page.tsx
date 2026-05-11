@@ -20,7 +20,9 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
+import Script from 'next/script';
 import { motion } from 'framer-motion';
+import BlogRelatedPosts from '@/components/blog/BlogRelatedPosts';
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -233,6 +235,9 @@ export default function AiEP09Page() {
           </div>
         </section>
 
+        {/* Related Posts */}
+        <BlogRelatedPosts currentPostHref="/blog/ai/ep09-tms" category="ai" />
+
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4 pt-10">
           <Link href="/blog/ai/ep08-transformer-to-gpt" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -246,6 +251,34 @@ export default function AiEP09Page() {
           </Link>
         </div>
       </article>
+
+      {/* Structured Data for SEO */}
+      <Script id="blog-json-ld" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "Test Management System (TMS) | Legacy System 重構實戰",
+          "description": "分享如何在不中斷實驗室運作的前提下，重構一套每天被大量使用的測試管理系統。",
+          "author": {
+            "@type": "Person",
+            "name": "陳憲億 Joseph Chen"
+          },
+          "datePublished": "2025-05-10",
+          "image": "https://chullin.tw/assets/profile3.png",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Joseph Chen Portfolio",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://chullin.tw/favicon.ico"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://chullin.tw/blog/ai/ep09-tms"
+          }
+        })}
+      </Script>
     </div>
   );
 }

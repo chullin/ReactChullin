@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     'Air-gapped AI',
     'Technical Transfer'
   ],
+  alternates: {
+    canonical: 'https://chullin.tw/about',
+  },
 };
 
 export default function AboutPage() {

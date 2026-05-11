@@ -6,9 +6,12 @@ import { Providers } from './providers';
 
 export const metadata = {
     metadataBase: new URL('https://chullin.tw'),
-    title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
-    description: '陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。分享技術筆記與開發心得。',
-    keywords: ['Joseph Chen', '陳憲億', 'Software Engineer', 'AI Developer', 'Foxconn', '鴻海', 'Python', 'React', '系統開發', '自動化'],
+    title: {
+        default: '陳憲億 Joseph Chen | AI Application & Automation Engineer',
+        template: '%s | Joseph Chen'
+    },
+    description: '陳憲億（Joseph Chen）是 AI 應用與自動化工程師，專注於離線 AI 部署、智慧製造、React 與 Python 系統整合。分享深度技術筆記。',
+    keywords: ['Joseph Chen', '陳憲億', 'AI Application Engineer', 'Automation Engineer', 'Foxconn', '鴻海', 'Python Automation', 'OpenCV', 'React', '離線 AI', '系統重構'],
     authors: [{ name: '陳憲億 Joseph Chen' }],
     creator: '陳憲億 Joseph Chen',
     // 加入 Google Search Console 驗證碼

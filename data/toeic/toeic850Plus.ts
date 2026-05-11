@@ -848,5 +848,36 @@ export const toeic850Plus: DifficultyCategory = {
             sentence: "She complimented him on his new haircut.",
             translate: "她稱讚他的新髮型。"
         },
+        {
+            word: "procurement",
+            pos: "n.",
+            phonetic: "/prəˈkjʊərmənt/",
+            definition: "採購；採購部門",
+            memory_tip: "procurement (採購) department is hiring.",
+            homophonic: "發窟呀門特",
+            sentence: "The procurement department is responsible for purchasing new equipment.",
+            translate: "採購部門負責採購新設備。"
+        },
+        {
+            word: "procurement specialist",
+            pos: "n.",
+            phonetic: "/prəˈkjʊərmənt ˈspɛʃəlɪst/",
+            definition: "採購專員",
+            memory_tip: "procurement (採購) specialist (專員) is a good job.",
+            homophonic: "發窟呀門特 斯佩修利斯特",
+            sentence: "The procurement specialist is responsible for purchasing new equipment.",
+            translate: "採購專員負責採購新設備。"
+        },
+        {
+            word: "procure",
+            pos: "v.",
+            phonetic: "/prəˈkjʊər/",
+            definition: "採購；設法獲得",
+            memory_tip: "procure (採購) is a good job.",
+            homophonic: "發窟啊",
+            sentence: "The procurement specialist is responsible for purchasing new equipment.",
+            translate: "採購專員負責採購新設備。"
+        },
+
     ]
 };

@@ -23,7 +23,9 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
+import Script from 'next/script';
 import { motion } from 'framer-motion';
+import BlogRelatedPosts from '@/components/blog/BlogRelatedPosts';
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -246,6 +248,9 @@ export default function AiEP10Page() {
           </div>
         </section>
 
+        {/* Related Posts */}
+        <BlogRelatedPosts currentPostHref="/blog/ai/ep10-opencv-robot" category="ai" />
+
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4 pt-10">
           <Link href="/blog/ai/ep09-tms" className="group block bg-gray-50 hover:bg-slate-100 transition-colors rounded-2xl p-6">
@@ -258,6 +263,34 @@ export default function AiEP10Page() {
           </div>
         </div>
       </article>
+
+      {/* Structured Data for SEO */}
+      <Script id="blog-json-ld" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": "OpenCV Vision Automation | 智慧化視覺辨識與自動化操作系統",
+          "description": "透過 OpenCV 視覺辨識與座標轉換，實現高彈性的自動化測試。",
+          "author": {
+            "@type": "Person",
+            "name": "陳憲億 Joseph Chen"
+          },
+          "datePublished": "2025-05-10",
+          "image": "https://chullin.tw/assets/profile3.png",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Joseph Chen Portfolio",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://chullin.tw/favicon.ico"
+            }
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://chullin.tw/blog/ai/ep10-opencv-robot"
+          }
+        })}
+      </Script>
     </div>
   );
 }
