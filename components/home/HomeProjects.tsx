@@ -32,81 +32,110 @@ const projects = [
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.8, ease: "circOut" } as any
+  },
+};
+
 export default function HomeProjects() {
   return (
-    <section className="py-24 bg-[#fafafa]">
+    <section className="py-32 bg-[#fafafa] overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h2 className="text-4xl font-black mb-4 tracking-tight text-slate-900">
-              精選專案 <span className="text-gradient">Featured Projects</span>
+            <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-slate-900 leading-tight">
+              精選專案 <span className="text-gradient underline decoration-blue-500/10 decoration-8 underline-offset-8">Featured Projects</span>
             </h2>
-            <p className="text-slate-500 font-medium max-w-2xl mx-auto">
+            <p className="text-slate-500 font-medium max-w-2xl mx-auto text-lg leading-relaxed">
               專注於解決智慧製造中的核心痛點，從 AI 基礎設施到自動化視覺系統。
             </p>
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          {projects.map((project) => (
             <motion.div
               key={project.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              variants={cardVariants}
             >
-              <Link href={project.href} className="block h-full group/card">
-                <Card className="h-full border border-slate-200 shadow-sm group-hover/card:shadow-xl group-hover/card:-translate-y-2 transition-all duration-300 bg-white cursor-pointer">
-                  <CardHeader className="flex gap-3 px-6 pt-8 pb-0">
-                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100">
+              <Link href={project.href} className="block h-full group/card relative">
+                <Card className="h-full border border-slate-200 shadow-sm group-hover/card:shadow-2xl group-hover/card:shadow-blue-500/10 group-hover/card:-translate-y-3 transition-all duration-500 bg-white cursor-pointer overflow-hidden">
+                  <CardHeader className="flex flex-col items-start gap-4 px-8 pt-10 pb-0">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 group-hover/card:bg-blue-50 group-hover/card:border-blue-100 transition-colors duration-300">
                       {project.icon}
                     </div>
-                    <div className="flex flex-col flex-1">
-                      <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{project.category}</p>
-                      <h3 className="text-xl font-black text-slate-900 leading-tight mt-1">{project.title}</h3>
+                    <div className="flex flex-col w-full">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{project.category}</p>
+                        <ArrowRight
+                          size={18}
+                          className="text-slate-300 group-hover/card:text-blue-500 group-hover/card:translate-x-1 transition-all duration-300"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-black text-slate-900 leading-tight mt-2 group-hover/card:text-blue-600 transition-colors duration-300">{project.title}</h3>
                     </div>
-                    <ArrowRight
-                      size={16}
-                      className="text-slate-300 group-hover/card:text-slate-700 group-hover/card:translate-x-1 transition-all duration-200 mt-1 shrink-0"
-                    />
                   </CardHeader>
-                  <CardBody className="px-6 py-8">
-                    <p className="text-slate-500 text-sm leading-relaxed mb-6">
+                  <CardBody className="px-8 py-8">
+                    <p className="text-slate-500 text-sm leading-relaxed mb-8 font-medium">
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-auto">
                       {project.tags.map(tag => (
-                        <Chip key={tag} size="sm" variant="flat" className="bg-slate-100 text-slate-600 font-bold text-[10px]">
+                        <Chip key={tag} size="sm" variant="flat" className="bg-slate-100 text-slate-500 font-bold text-[10px] px-3">
                           {tag}
                         </Chip>
                       ))}
                     </div>
                   </CardBody>
+                  
+                  {/* Subtle Accent Bar */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600 translate-y-1 group-hover/card:translate-y-0 transition-transform duration-300" />
                 </Card>
               </Link>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
         
         <motion.div 
-          className="text-center mt-16"
+          className="text-center mt-20"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
         >
           <Button
             as={Link}
             href="/blog"
             variant="light"
             radius="lg"
-            className="font-bold text-slate-500 group"
-            endContent={<ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />}
+            size="lg"
+            className="font-bold text-slate-400 hover:text-slate-900 group transition-all"
+            endContent={<ExternalLink size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />}
           >
             查看更多實戰案例
           </Button>
