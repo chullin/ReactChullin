@@ -125,18 +125,22 @@ export default function HomeHero() {
           className="flex justify-center relative pt-10 lg:pt-0"
         >
           <div className="relative w-[260px] h-[260px] md:w-[340px] md:h-[340px] group">
-            {/* Outer Breathing Ring */}
-            <motion.div
-              animate={{ scale: [1, 1.1, 1], opacity: [0.25, 0.55, 0.25] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-tr from-blue-400 to-indigo-500 rounded-full blur-xl"
-            />
+            {/* Outer Breathing Ring - wrapper handles centering, motion.div handles animation only */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                animate={{ scale: [1, 1.12, 1], opacity: [0.2, 0.5, 0.2] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="w-full h-full bg-gradient-to-tr from-blue-400 to-indigo-500 rounded-full blur-xl"
+              />
+            </div>
             {/* Inner Breathing Ring */}
-            <motion.div
-              animate={{ scale: [1, 1.06, 1], opacity: [0.4, 0.75, 0.4] }}
-              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-16px)] h-[calc(100%-16px)] bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full blur-md"
-            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <motion.div
+                animate={{ scale: [1, 1.07, 1], opacity: [0.35, 0.7, 0.35] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="w-[calc(100%-16px)] h-[calc(100%-16px)] bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full blur-md"
+              />
+            </div>
 
             {/* Profile Image */}
             <div className="absolute inset-3 bg-white rounded-full p-2 shadow-2xl ring-4 ring-blue-100/50 overflow-hidden relative z-10">

@@ -878,6 +878,76 @@ export const toeic850Plus: DifficultyCategory = {
             sentence: "The procurement specialist is responsible for purchasing new equipment.",
             translate: "採購專員負責採購新設備。"
         },
+        {
+            word: "obey",
+            pos: "v.",
+            phonetic: "/oʊˈbeɪ/",
+            definition: "服從；遵守",
+            memory_tip: "obey (服從) the rules.",
+            homophonic: "歐北",
+            sentence: "The soldiers obey the commander's orders.",
+            translate: "士兵們服從指揮官的命令。"
+        },
+        {
+            word: "regulation",
+            pos: "n.",
+            phonetic: "/ˌreɡjuˈleɪʃn/",
+            definition: "法規；規定",
+            memory_tip: "regulation (規定) is a good job.",
+            homophonic: "雷股雷香",
+            sentence: "The regulation is a good job.",
+            translate: "規定是個好工作。"
+        },
+        {
+            word: "security regulation",
+            pos: "n.",
+            phonetic: "/sɪˈkjʊərətiˌreɡjuˈleɪʃn/",
+            definition: "安全法規；安全規定",
+            memory_tip: "security (安全) regulation (規定) is a good job.",
+            homophonic: "斯給挖ity 雷股雷香",
+            sentence: "The security regulation is a good job.",
+            translate: "安全規定是個好工作。"
+        },
+        {
+            word: "meeting minutes",
+            pos: "n.",
+            phonetic: "/ˈmiːtɪŋ ˈmɪnɪts/",
+            definition: "會議記錄",
+            memory_tip: "meeting (會議) minutes (記錄) is a good job.",
+            homophonic: "密ting milits",
+            sentence: "The meeting minutes is a good job.",
+            translate: "會議記錄是個好工作。"
+        },
+        {
+            word: "minute",
+            pos: "n.",
+            phonetic: "/ˈmɪnɪt/",
+            definition: "會議記錄",
+            memory_tip: "會議上分分鐘都很重要",
+            homophonic: "咪 nuit",
+            sentence: "To take a minutes",
+            translate: "做會議記錄"
+        },
+        {
+            word: "record",
+            pos: "v. n.",
+            phonetic: "as a verb: /rɪˈkɔːrd/, as a noun: /ˈrekərd/",
+            definition: "紀錄",
+            memory_tip: "verb (動詞) /rɪˈkɔːrd/ 錄音、記錄；noun (名詞) /ˈrekərd/ 記錄、唱片",
+            homophonic: "瑞寇德",
+            sentence: "The secretary will record the meeting minutes.",
+            translate: "秘書會記錄會議記錄。"
+        },
+        {
+            word: "board meeting",
+            pos: "",
+            phonetic: "",
+            definition: "委員會會議",
+            memory_tip: "",
+            homophonic: "",
+            sentence: "",
+            translate: ""
+        }
 
     ]
 };

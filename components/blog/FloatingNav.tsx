@@ -21,7 +21,7 @@ import { Input } from '@heroui/react';
 
 export default function FloatingNav() {
   const pathname = usePathname();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [bookmarkedHrefs, setBookmarkedHrefs] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -45,6 +45,12 @@ export default function FloatingNav() {
       window.removeEventListener('bookmarkChange', handleStorage);
     };
   }, [pathname, isArticlePage]);
+
+  // Auto-close drawer when pathname changes (navigated to a new article)
+  useEffect(() => {
+    onClose();
+    setSearchTerm('');
+  }, [pathname]);
 
   if (!isArticlePage) return null;
 
@@ -153,7 +159,6 @@ export default function FloatingNav() {
                               <Link
                                 key={idx}
                                 href={post.href}
-                                onClick={onClose}
                                 className={`group relative flex flex-col py-2 px-3 rounded-xl transition-all ${
                                   isActive 
                                     ? 'bg-primary-50 text-primary shadow-sm' 
