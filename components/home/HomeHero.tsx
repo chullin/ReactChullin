@@ -125,22 +125,35 @@ export default function HomeHero() {
           className="flex justify-center relative pt-10 lg:pt-0"
         >
           <div className="relative w-[260px] h-[260px] md:w-[340px] md:h-[340px] group">
-            {/* Outer Breathing Ring - wrapper handles centering, motion.div handles animation only */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                animate={{ scale: [1, 1.12, 1], opacity: [0.2, 0.5, 0.2] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="w-full h-full bg-gradient-to-tr from-blue-400 to-indigo-500 rounded-full blur-xl"
-              />
-            </div>
+            {/* Outer Breathing Ring - Robust centering using Motion internal transforms */}
+            <motion.div
+              style={{ x: "-50%", y: "-50%", left: "50%", top: "50%" }}
+              animate={{ 
+                scale: [1, 1.15, 1], 
+                opacity: [0.15, 0.45, 0.15] 
+              }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              }}
+              className="absolute w-full h-full bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400 rounded-full blur-2xl pointer-events-none"
+            />
             {/* Inner Breathing Ring */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                animate={{ scale: [1, 1.07, 1], opacity: [0.35, 0.7, 0.35] }}
-                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="w-[calc(100%-16px)] h-[calc(100%-16px)] bg-gradient-to-br from-blue-300 to-indigo-400 rounded-full blur-md"
-              />
-            </div>
+            <motion.div
+              style={{ x: "-50%", y: "-50%", left: "50%", top: "50%" }}
+              animate={{ 
+                scale: [1, 1.08, 1], 
+                opacity: [0.3, 0.6, 0.3] 
+              }}
+              transition={{ 
+                duration: 2.5, 
+                repeat: Infinity, 
+                ease: "easeInOut", 
+                delay: 0.5 
+              }}
+              className="absolute w-[95%] h-[95%] bg-gradient-to-tr from-blue-300 via-sky-300 to-indigo-300 rounded-full blur-xl pointer-events-none"
+            />
 
             {/* Profile Image */}
             <div className="absolute inset-3 bg-white rounded-full p-2 shadow-2xl ring-4 ring-blue-100/50 overflow-hidden relative z-10">
