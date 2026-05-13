@@ -699,16 +699,6 @@ export const toeic850Plus: DifficultyCategory = {
             translate: "園丁正蹲著種植花朵。"
         },
         {
-            word: "grab",
-            pos: "v.",
-            phonetic: "/ɡræb/",
-            definition: "抓；拿取",
-            memory_tip: "抓著 (Grab) 它！",
-            homophonic: "割拉不",
-            sentence: "She is grabbing a bag from the shelf.",
-            translate: "她正從架子上拿一個袋子。"
-        },
-        {
             word: "bending over",
             pos: "v.",
             phonetic: "/ˈbendɪŋ ˈoʊvər/",
@@ -940,13 +930,73 @@ export const toeic850Plus: DifficultyCategory = {
         },
         {
             word: "board meeting",
-            pos: "",
-            phonetic: "",
-            definition: "委員會會議",
-            memory_tip: "",
-            homophonic: "",
-            sentence: "",
-            translate: ""
+            pos: "n.",
+            phonetic: "/bɔːrd ˈmiːtɪŋ/",
+            definition: "委員會會議；董事會會議",
+            memory_tip: "board (委員會；董事會) meeting (會議) is a good job.",
+            homophonic: "boar密ting",
+            sentence: "The board meeting will be held tomorrow.",
+            translate: "董事會會議將於明天舉行。"
+        },
+        {
+            word: "director",
+            pos: "n.",
+            phonetic: "/dəˈrektər/",
+            definition: "董事；導演；總監（個人）",
+            memory_tip: "director (董事) 的職位很高。",
+            homophonic: "得肉特兒",
+            sentence: "The director will attend the board meeting.",
+            translate: "董事將出席董事會會議。"
+        },
+        {
+            word: "board",
+            pos: "n.",
+            phonetic: "/bɔːrd/",
+            definition: "委員會；董事會；董事（整個組織）",
+            memory_tip: "board (委員會；董事會；董事) 的職位很高。",
+            homophonic: "boar",
+            sentence: "The director will attend the board meeting.",
+            translate: "董事將出席董事會會議。"
+        },
+        {
+            word: "supervisor",
+            pos: "n.",
+            phonetic: "/ˈsuːpərvaɪzər/",
+            definition: "監督；主管（個人）",
+            memory_tip: "supervisor (監督；主管) 的職位很高。",
+            homophonic: "蘇坡挖伊zuu",
+            sentence: "You need to get approval from your supervisor first.",
+            translate: "你必須先取得主管的批准。"
+        },
+        {
+            word: "foreman",
+            pos: "n.",
+            phonetic: "/ˈfɔːrmən/",
+            definition: "領班；工頭",
+            memory_tip: "foreman (領班；工頭) 的職位很高。",
+            homophonic: "furman",
+            sentence: "The foreman laid out the job for the new mechanic.",
+            translate: "領班對新來的技工說明了工作任務。"
+        },
+        {
+            word: "authority",
+            pos: "n.",
+            phonetic: "/ɔːˈθɔːrəti/",
+            definition: "當局；官方；權威",
+            memory_tip: "authority (當局；官方；權威) 的職位很高。",
+            homophonic: "歐特瑞tee",
+            sentence: "The authority approved the new regulation.",
+            translate: "當局批准了新規定。"
+        },
+        {
+            word: "board of directors",
+            pos: "n.",
+            phonetic: "/bɔːrd əv dəˈrektərz/",
+            definition: "董事會（是完整正式名稱）",
+            memory_tip: "board of directors (董事會) 的職位很高。",
+            homophonic: "boar ov derakterz",
+            sentence: "The board of directors will meet tomorrow.",
+            translate: "董事會將於明天召開。"
         }
 
     ]

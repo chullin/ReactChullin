@@ -20,8 +20,35 @@ body {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 font-bold py-1;
   }
   
+  .text-gradient-cyan {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 font-bold;
+  }
+
   .bg-gradient-primary-to-secondary {
     background: linear-gradient(135deg, #006FEE 0%, #7828C8 100%);
+  }
+
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-slate-200/80 shadow-lg;
+  }
+
+  .identity-card {
+    @apply bg-white/40 backdrop-blur-xl border border-white/40 shadow-2xl;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  .grid-bg {
+    background-image: radial-gradient(circle at 2px 2px, rgba(0, 0, 0, 0.07) 1px, transparent 0);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 80%);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.1);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);
   }
 }
 
