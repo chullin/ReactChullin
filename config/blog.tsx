@@ -240,7 +240,7 @@ export const series: Series[] = [
       },
       {
             title: "Python 算法學習復盤 投票、鏈表與 Top-K 的深度解析",
-            subtitle: "{bad} {goodLabel} {good} {note && ( {note}",
+            subtitle: "從投票法、鏈表操作到 Top-K 問題，整理 Python 演算法練習中的關鍵觀念與常見陷阱。",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/leetcode/python-review",
@@ -1085,6 +1085,24 @@ export const series: Series[] = [
     description: '在隔離網路環境部署本地 LLM — Ollama、Dify、Transformer TTS 完整實戰。',
     posts: [
       {
+            title: "OpenCV XY Vision Automation | 智慧化視覺辨識與自動化操作系統",
+            subtitle: "透過 OpenCV 視覺辨識與座標轉換，讓傳統依賴固定 XY 座標的自動化測試，升級為可動態辨識 UI 的智慧化操作系統。",
+            date: "2026",
+            author: "Joseph Chen",
+            href: "/blog/ai/ep10-opencv-robot",
+            isExternal: false,
+            ep: "EP.10"
+      },
+      {
+            title: "Test Management System (TMS) | Legacy System 重構實戰",
+            subtitle: "分享如何在不中斷實驗室運作的前提下，重構一套每天被大量使用的測試管理系統。",
+            date: "2026",
+            author: "Joseph Chen",
+            href: "/blog/ai/ep09-tms",
+            isExternal: false,
+            ep: "EP.09"
+      },
+      {
             title: "從 Transformer 延伸到 ChatGPT",
             subtitle: "Attention 機制如何從語音合成走向通用語言智慧 — BERT 雙向編碼器、GPT 系列、RLHF、到 ChatGPT 的誕生",
             date: "2026",
@@ -1203,8 +1221,17 @@ export const series: Series[] = [
     color: 'text-green-600',
     bgColor: 'bg-green-50',
     chipColor: 'success',
-    description: 'OpenCV 自動化、PyTorch 入門、Tkinter GUI — Python 在工作中的實際應用。',
+    description: '正規表達式、OpenCV 自動化、PyTorch 入門、Tkinter GUI — Python 在全棧開發中的實際應用。',
     posts: [
+      {
+            title: "Python 與 Shell 正規表達式 (Regex) 完全指南",
+            subtitle: "從原子組件到實戰提取，掌握全棧開發中最核心的萬用字元搜尋技術。",
+            date: "2026",
+            author: "Joseph Chen",
+            href: "/blog/python/ep04-regex",
+            isExternal: false,
+            ep: "EP.04"
+      },
       {
             title: "Tkinter GUI 開發 Python 桌面應用",
             subtitle: "事件驅動設計、Grid 佈局、與 Raspberry Pi 自動化測試的實際整合",

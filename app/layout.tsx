@@ -98,11 +98,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
                         strategy="afterInteractive"
                     />
+                    <Script
+                        src="https://www.googletagmanager.com/gtag/js?id=G-V99XQTJ30E"
+                        strategy="afterInteractive"
+                    />
+                    <Script id="google-analytics" strategy="afterInteractive">
+                        {`
+                            window.dataLayer = window.dataLayer || [];
+                            function gtag(){dataLayer.push(arguments);}
+                            gtag('js', new Date());
+
+                            gtag('config', 'G-V99XQTJ30E');
+                        `}
+                    </Script>
                     <Navbar />
                     <main>
                         {children}
                     </main>
-                    <Footer />
+                    <Footer className="relative z-20" />
                 </Providers>
             </body>
         </html>

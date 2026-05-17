@@ -3,15 +3,13 @@ import {
   Card,
   CardBody,
   Divider,
-  Image,
   Button,
   Link as HeroLink 
 } from '@heroui/react';
+import NextImage from 'next/image';
 import { Calendar,
   User,
   ArrowLeft,
-  Bookmark,
-  Share2,
   Globe,
   Quote,
   Clock,
@@ -26,12 +24,12 @@ export default function ManMustExplorePage() {
     <div className="bg-white min-h-screen">
       {/* Page Header / Hero */}
       <div className="relative h-[60vh] min-h-[400px] flex items-center justify-center overflow-hidden">
-        <Image
-          src="/assets/post-bg.jpg"
+        <NextImage
+          src="/assets/post-bg.webp"
           alt="Space Exploration"
+          fill
           className="absolute inset-0 w-full h-full object-cover z-0"
-          radius="none"
-          removeWrapper
+          priority
         />
         <div className="absolute inset-0 bg-black/60 z-10" />
         
@@ -139,11 +137,15 @@ export default function ManMustExplorePage() {
               </p>
               
               <div className="flex flex-col items-center gap-4 py-10">
-                <Image 
-                  className="w-full max-w-4xl shadow-2xl rounded-[2rem]" 
-                  src="/assets/post-sample-image.jpg" 
-                  alt="Post Sample" 
-                />
+                <div className="relative w-full max-w-4xl aspect-video shadow-2xl rounded-[2rem] overflow-hidden">
+                  <NextImage 
+                    fill
+                    className="object-cover"
+                    src="/assets/post-sample-image.webp" 
+                    alt="Post Sample" 
+                    sizes="(max-width: 768px) 100vw, 800px"
+                  />
+                </div>
                 <p className="text-sm font-bold text-gray-400 bg-gray-50 px-6 py-2 rounded-full flex items-center gap-2">
                   <Globe size={14} className="text-blue-400" />
                   To go places and do things that have never been done before – that’s what living is all about.

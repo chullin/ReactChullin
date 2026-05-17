@@ -14,13 +14,13 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
   return (
     <BlogOverlay>
       {isArticlePage && <ReadingProgress />}
-      {isArticlePage && <TOC />}
       <FloatingNav />
       {isArticlePage ? (
-        <div className="pt-24">
+        <div className="pt-24 relative">
           <div className="max-w-3xl mx-auto px-6">
             <Breadcrumbs />
           </div>
+          {isArticlePage && <TOC />}
           {children}
         </div>
       ) : (

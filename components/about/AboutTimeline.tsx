@@ -35,9 +35,9 @@ export default function AboutTimeline() {
   const [expanded, setExpanded] = useState<number | null>(0);
 
   return (
-    <section className="py-24 px-6 relative z-10">
+    <section className="py-8 px-6 relative z-10">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-16">
+        <div className="flex items-center gap-4 mb-6">
             <div className="w-10 h-10 rounded-xl bg-violet-500 flex items-center justify-center text-white">
               <ArrowRight size={20} />
             </div>

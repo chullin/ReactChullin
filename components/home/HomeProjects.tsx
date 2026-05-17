@@ -9,7 +9,7 @@ const projects = [
   {
     title: "Air-gapped AI Deployment",
     category: "AI Infrastructure",
-    description: "Built and deployed offline Large Language Model (LLM) solutions using Ollama and Dify for secure, air-gapped manufacturing environments.",
+    description: "針對高資安要求的工業生產現場，在完全無網路的隔離環境中部署本地 LLM 解決方案 (Ollama & Dify)，在確保商業機密安全的前提下，成功讓工廠端安全導入本地 AI 應用。",
     icon: <ShieldCheck className="text-emerald-500" />,
     tags: ["Ollama", "Dify", "Docker", "Linux"],
     href: "/blog/ai/ep01-airgapped-intro",
@@ -17,7 +17,7 @@ const projects = [
   {
     title: "Test Management System (TMS)",
     category: "Automation",
-    description: "Architected a comprehensive test management platform to streamline factory-wide testing processes and data collection for global production lines.",
+    description: "架構並重構集中化測試管理平台，將複雜分散的工廠測試流程與數據收集全面自動化，大幅減少人工追蹤誤差與溝通成本，顯著提升測試資料管理與決策效率。",
     icon: <Database className="text-blue-500" />,
     tags: ["FastAPI", "PostgreSQL", "React", "Python"],
     href: "/blog/ai/ep09-tms",
@@ -25,7 +25,7 @@ const projects = [
   {
     title: "OpenCV Vision Automation",
     category: "Robotics",
-    description: "Developed high-precision vision systems for XY automation devices using OpenCV, enabling dynamic UI recognition and automated mobile testing.",
+    description: "基於 OpenCV 開發高精度 XY 點擊設備的視覺導航系統，將傳統固定座標升級為動態 UI 智慧辨識，大幅改善手機自動化測試流程，顯著降低人工操作與校正成本。",
     icon: <Eye className="text-purple-500" />,
     tags: ["OpenCV", "Python", "Automation", "Computer Vision"],
     href: "/blog/ai/ep10-opencv-robot",

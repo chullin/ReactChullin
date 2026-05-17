@@ -23,12 +23,12 @@ const education = [
 
 export default function AboutEducation() {
   return (
-    <section className="py-32 px-6 relative z-10 overflow-hidden">
+    <section className="py-10 px-6 relative z-10 overflow-hidden">
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8">
           
           {/* Left Column: Typography driven education list */}
-          <div className="md:col-span-7 space-y-16">
+          <div className="md:col-span-7 space-y-8">
             <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ export default function AboutEducation() {
                 <div className="w-12 h-1 bg-cyan-500 rounded-full" />
             </motion.div>
 
-            <div className="space-y-16">
+            <div className="space-y-8">
               {education.map((edu, i) => (
                 <motion.div
                   key={i}

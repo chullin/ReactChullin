@@ -997,6 +997,216 @@ export const toeic850Plus: DifficultyCategory = {
             homophonic: "boar ov derakterz",
             sentence: "The board of directors will meet tomorrow.",
             translate: "董事會將於明天召開。"
+        },
+        {
+            word: "production costs",
+            pos: "n.pl",
+            phonetic: "/prəˈdʌkʃən kɔːsts/",
+            definition: "生產成本",
+            memory_tip: "production costs (生產成本) 太高時，公司可能會漲價。",
+            homophonic: "普拉達克宣 costs",
+            sentence: "The company is trying to reduce production costs.",
+            translate: "公司正試圖降低生產成本。"
+        },
+        {
+            word: "budget cuts",
+            pos: "n.pl",
+            phonetic: "/ˈbʌdʒɪt kʌts/",
+            definition: "預算削減",
+            memory_tip: "budget cuts (預算削減) 後，很多計畫都被取消。",
+            homophonic: "八接 cuts",
+            sentence: "Several projects were canceled because of budget cuts.",
+            translate: "由於預算削減，數個專案被取消了。"
+        },
+        {
+            word: "badge",
+            pos: "n.",
+            phonetic: "/bædʒ/",
+            definition: "徽章；識別證",
+            memory_tip: "badge (識別證) 通常需要掛在胸前。",
+            homophonic: "掰幾",
+            sentence: "Employees must wear their badges at work.",
+            translate: "員工上班時必須佩戴識別證。"
+        },
+        {
+            word: "visitor badge",
+            pos: "n.",
+            phonetic: "/ˈvɪzɪtər bædʒ/",
+            definition: "訪客證",
+            memory_tip: "visitor badge (訪客證) 能讓警衛知道你不是正式員工。",
+            homophonic: "V字特 badge",
+            sentence: "Please return your visitor badge before leaving.",
+            translate: "離開前請歸還訪客證。"
+        },
+        {
+            word: "once",
+            pos: "adv.",
+            phonetic: "/wʌns/",
+            definition: "一旦；當…就（as soon as）",
+            memory_tip: "once (一旦) 常用來表示某件事發生後，另一件事立刻發生。",
+            homophonic: "汪斯",
+            sentence: "Once you finish the report, send it to me.",
+            translate: "你一完成報告，就把它寄給我。"
+        },
+        {
+            word: "application letter",
+            pos: "n.",
+            phonetic: "/ˌæplɪˈkeɪʃən ˈletər/",
+            definition: "求職信；申請信",
+            memory_tip: "application letter (求職信) 通常會和履歷一起寄出。",
+            homophonic: "欸普利K宣 letter",
+            sentence: "She submitted her application letter yesterday.",
+            translate: "她昨天提交了她的求職信。"
+        },
+        {
+            word: "job applicant",
+            pos: "n.",
+            phonetic: "/dʒɑːb ˈæplɪkənt/",
+            definition: "求職者；應徵者",
+            memory_tip: "job applicant (求職者) 正在申請工作。",
+            homophonic: "假博 艾普利肯特",
+            sentence: "The company interviewed several job applicants.",
+            translate: "公司面試了幾位求職者。"
+        },
+        {
+            word: "confidential document",
+            pos: "adj. + n.",
+            phonetic: "/ˌkɑːnfɪˈdenʃəl ˈdɑːkjəmənt/",
+            definition: "機密文件",
+            memory_tip: "confidential document (機密文件) 不能隨便給別人看。",
+            homophonic: "康飛丹秀 document",
+            sentence: "This confidential document must be kept secure.",
+            translate: "這份機密文件必須妥善保管。"
+        },
+        {
+            word: "lecturer",
+            pos: "n.",
+            phonetic: "/ˈlektʃərər/",
+            definition: "講師；大學講師",
+            memory_tip: "lecturer (講師) 常在大學裡授課。",
+            homophonic: "雷克卻熱",
+            sentence: "The lecturer explained the topic clearly.",
+            translate: "講師清楚地解釋了這個主題。"
+        },
+        {
+            word: "instructor",
+            pos: "n.",
+            phonetic: "/ɪnˈstrʌktər/",
+            definition: "指導員；講師；教練",
+            memory_tip: "instructor (指導員) 會一步一步教你怎麼做。",
+            homophonic: "音史抓可特",
+            sentence: "The instructor taught us how to use the machine.",
+            translate: "指導員教我們如何操作這台機器。"
+        },
+        {
+            word: "attendance",
+            pos: "n.",
+            phonetic: "/əˈtendəns/",
+            definition: "出席；到場人數",
+            memory_tip: "attendance (出席人數) 越多，代表活動越熱門。",
+            homophonic: "欸ten等斯",
+            sentence: "Attendance at the meeting was very high.",
+            translate: "這場會議的出席人數非常高。"
+        },
+        {
+            word: "attendees",
+            pos: "n.pl",
+            phonetic: "/əˌtendiz/",
+            definition: "出席者；與會者",
+            memory_tip: "attendees (出席者) 都是來參加會議的人。",
+            homophonic: "欸 tend ease",
+            sentence: "The conference has 500 attendees.",
+            translate: "這場研討會有500位出席者。"
+        },
+        {
+            word: "certified",
+            pos: "adj.",
+            phonetic: "/ˈsɜːrtɪfaɪd/",
+            definition: "經認證的；合格的",
+            memory_tip: "certified (經認證的) 代表已經通過官方認可。",
+            homophonic: "瑟提fied",
+            sentence: "She is a certified engineer.",
+            translate: "她是一位合格認證的工程師。"
+        },
+        {
+            word: "qualified",
+            pos: "adj.",
+            phonetic: "/ˈkwɑːləfaɪd/",
+            definition: "有資格的；勝任的",
+            memory_tip: "qualified (有資格的) 表示能力與條件都符合要求。",
+            homophonic: "夸了fied",
+            sentence: "We need a qualified technician for this job.",
+            translate: "我們需要一位合格的技術人員來做這份工作。"
+        },
+        {
+            word: "inspector",
+            pos: "n.",
+            phonetic: "/ɪnˈspektər/",
+            definition: "檢查員；巡查員",
+            memory_tip: "inspector (檢查員) 會確認事情是否符合規定。",
+            homophonic: "音speck特",
+            sentence: "The inspector checked the equipment carefully.",
+            translate: "檢查員仔細檢查了設備。"
+        },
+        {
+            word: "health inspections",
+            pos: "n.pl",
+            phonetic: "/helθ ɪnˈspekʃənz/",
+            definition: "衛生檢查",
+            memory_tip: "health inspections (衛生檢查) 常見於餐廳或工廠。",
+            homophonic: "health 音speck宣s",
+            sentence: "The restaurant passed all health inspections.",
+            translate: "這家餐廳通過了所有衛生檢查。"
+        },
+        {
+            word: "examine",
+            pos: "v.",
+            phonetic: "/ɪgˈzæmɪn/",
+            definition: "檢查；仔細查看",
+            memory_tip: "examine (檢查) 表示很仔細地觀察或確認。",
+            homophonic: "一個讚民",
+            sentence: "The doctor will examine the patient tomorrow.",
+            translate: "醫生明天會檢查病人。"
+        },
+        {
+            word: "examination",
+            pos: "n.",
+            phonetic: "/ɪgˌzæməˈneɪʃən/",
+            definition: "檢查；考試",
+            memory_tip: "examination (檢查；考試) 通常需要花時間仔細進行。",
+            homophonic: "一個讚麼內宣",
+            sentence: "The examination took two hours.",
+            translate: "這場檢查花了兩個小時。"
+        },
+        {
+            word: "examiner",
+            pos: "n.",
+            phonetic: "/ɪgˈzæmɪnər/",
+            definition: "檢查員；主考官",
+            memory_tip: "examiner (主考官) 負責評估或檢查結果。",
+            homophonic: "一個讚民兒",
+            sentence: "The examiner asked several difficult questions.",
+            translate: "主考官問了幾個困難的問題。"
+        },
+        {
+            word: "power plant",
+            pos: "n.",
+            phonetic: "/ˈpaʊər plænt/",
+            definition: "發電廠",
+            memory_tip: "power plant (發電廠) 是產生電力的大型工廠。",
+            homophonic: "趴歐兒 普蘭特",
+            sentence: "The power plant supplies electricity to the city.",
+            translate: "這座發電廠為城市供應電力。"
+        },
+        {
+            word: "power station",
+            pos: "n.",
+            phonetic: "/ˈpaʊər ˈsteɪʃən/",
+            definition: "發電站；發電廠",
+            memory_tip: "power station (發電站) 負責生產與輸送電力。",
+            homophonic: "趴歐兒 stei宣",
+            sentence: "The old power station was closed last year.",
+            translate: "那座舊發電站去年關閉了。"
         }
 
     ]

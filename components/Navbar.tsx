@@ -26,21 +26,18 @@ export default function Navbar() {
   const isActive = (path: string) => pathname === path;
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
-  const portfolioLinks = [
-    { name: 'About / CV', href: '/about' },
-    { name: 'Projects', href: '/projects' },
-    { name: 'Blog', href: '/blog' },
-  ];
-
   const playgroundLinks = [
     { name: 'Snake Game', href: '/snake' },
     { name: 'Vocab Quiz', href: '/vocab-quiz' },
     { name: 'Tetris Battle', href: '/tetris-battle', color: 'danger' as const },
+    { name: 'Demo Hub', href: '/demo' },
   ];
 
-  const labLinks = [
-    { name: 'Demo Hub', href: '/demo' },
-    { name: 'Contact Info', href: '/contact' },
+  const mainLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'About', href: '/about' },
+    { name: 'Projects', href: '/projects' },
+    { name: 'Blog', href: '/blog' },
   ];
 
   return (
@@ -67,69 +64,34 @@ export default function Navbar() {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarItem isActive={isActive('/')}>
-          <Link
-            href="/"
-            aria-current={isActive('/') ? 'page' : undefined}
-            className={`px-3 py-2 rounded-lg transition-colors ${
-              isActive('/') 
-                ? 'text-primary font-bold bg-primary/5' 
-                : 'text-gray-600 hover:text-primary hover:bg-gray-50'
-            }`}
-          >
-            Home
-          </Link>
-        </NavbarItem>
-
-        <Dropdown>
-          <NavbarItem isActive={isGroupActive(['/about', '/projects', '/blog'])}>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className={`p-0 bg-transparent data-[hover=true]:bg-transparent h-auto px-3 py-2 rounded-lg transition-colors ${
-                  isGroupActive(['/about', '/projects', '/blog'])
-                    ? 'text-primary font-bold bg-primary/5'
-                    : 'text-gray-600 hover:text-primary hover:bg-gray-50'
-                }`}
-                endContent={<ChevronDown size={16} />}
-                radius="sm"
-                variant="light"
-              >
-                Portfolio
-              </Button>
-            </DropdownTrigger>
+      <NavbarContent className="hidden sm:flex gap-2" justify="center">
+        {mainLinks.map((link) => (
+          <NavbarItem key={link.href} isActive={isActive(link.href)}>
+            <Link
+              href={link.href}
+              aria-current={isActive(link.href) ? 'page' : undefined}
+              className={`px-3 py-2 rounded-lg transition-colors text-sm font-semibold ${
+                isActive(link.href) 
+                  ? 'text-primary font-bold bg-primary/5' 
+                  : 'text-gray-600 hover:text-primary hover:bg-gray-50'
+              }`}
+            >
+              {link.name}
+            </Link>
           </NavbarItem>
-          <DropdownMenu
-            aria-label="Portfolio actions"
-            className="w-[200px]"
-            itemClasses={{
-              base: "gap-4",
-            }}
-          >
-            {portfolioLinks.map((link) => (
-              <DropdownItem
-                key={link.href}
-                href={link.href}
-                className={isActive(link.href) ? "text-primary font-bold" : ""}
-              >
-                {link.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
+        ))}
 
         <Dropdown>
-          <NavbarItem isActive={isGroupActive(['/snake', '/vocab-quiz', '/tetris-battle'])}>
+          <NavbarItem isActive={isGroupActive(playgroundLinks.map(l => l.href))}>
             <DropdownTrigger>
               <Button
                 disableRipple
-                className={`p-0 bg-transparent data-[hover=true]:bg-transparent h-auto px-3 py-2 rounded-lg transition-colors ${
-                  isGroupActive(['/snake', '/vocab-quiz', '/tetris-battle'])
+                className={`p-0 bg-transparent data-[hover=true]:bg-transparent h-auto px-3 py-2 rounded-lg transition-colors text-sm font-semibold ${
+                  isGroupActive(playgroundLinks.map(l => l.href))
                     ? 'text-primary font-bold bg-primary/5'
                     : 'text-gray-600 hover:text-primary hover:bg-gray-50'
                 }`}
-                endContent={<ChevronDown size={16} />}
+                endContent={<ChevronDown size={14} />}
                 radius="sm"
                 variant="light"
               >
@@ -154,55 +116,36 @@ export default function Navbar() {
           </DropdownMenu>
         </Dropdown>
 
-        <Dropdown>
-          <NavbarItem isActive={isGroupActive(['/demo', '/contact'])}>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className={`p-0 bg-transparent data-[hover=true]:bg-transparent h-auto px-3 py-2 rounded-lg transition-colors ${
-                  isGroupActive(['/demo', '/contact'])
-                    ? 'text-primary font-bold bg-primary/5'
-                    : 'text-gray-600 hover:text-primary hover:bg-gray-50'
-                }`}
-                endContent={<ChevronDown size={16} />}
-                radius="sm"
-                variant="light"
-              >
-                Lab & Connect
-              </Button>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu
-            aria-label="Lab actions"
-            className="w-[200px]"
+        <NavbarItem isActive={isActive('/contact')}>
+          <Link
+            href="/contact"
+            aria-current={isActive('/contact') ? 'page' : undefined}
+            className={`px-3 py-2 rounded-lg transition-colors text-sm font-semibold ${
+              isActive('/contact') 
+                ? 'text-primary font-bold bg-primary/5' 
+                : 'text-gray-600 hover:text-primary hover:bg-gray-50'
+            }`}
           >
-            {labLinks.map((link) => (
-              <DropdownItem
-                key={link.href}
-                href={link.href}
-                className={isActive(link.href) ? "text-primary font-bold" : ""}
-              >
-                {link.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
+            Contact
+          </Link>
+        </NavbarItem>
       </NavbarContent>
 
       <NavbarContent justify="end">
         <NavbarItem>
-          <Button as={Link} color="primary" href="/contact" variant="flat" className="font-bold">
-            Hire Me
-          </Button>
+          <Link href="/contact" className="p-0">
+            <Button color="primary" variant="flat" className="font-bold">
+              Let’s Talk
+            </Button>
+          </Link>
         </NavbarItem>
       </NavbarContent>
 
       <NavbarMenu>
         {[
-          { name: 'Home', href: '/' },
-          ...portfolioLinks,
+          ...mainLinks,
           ...playgroundLinks,
-          ...labLinks,
+          { name: 'Contact', href: '/contact' },
         ].map((item, index) => (
           <NavbarMenuItem key={`${item.name}-${index}`}>
             <Link
@@ -221,3 +164,4 @@ export default function Navbar() {
     </HeroNavbar>
   );
 }
+

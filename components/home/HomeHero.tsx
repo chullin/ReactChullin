@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Card, CardBody, Chip, Image, Link } from '@heroui/react';
+import { Button, Card, CardBody, Chip, Link } from '@heroui/react';
+import NextImage from 'next/image';
 import { Code2, Cpu, ArrowRight, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -83,37 +84,37 @@ export default function HomeHero() {
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
-            <Button
-              as={Link}
-              href="/about"
-              color="primary"
-              size="lg"
-              className="font-bold px-8 h-14 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all w-full sm:w-auto"
-              endContent={<ArrowRight size={20} />}
-            >
-              View About / CV
-            </Button>
-            <Button
-              as={Link}
-              href="/blog"
-              variant="flat"
-              color="primary"
-              size="lg"
-              className="font-bold px-8 h-14 w-full sm:w-auto hover:bg-blue-100 transition-colors"
-              startContent={<BookOpen size={18} />}
-            >
-              Read Blog
-            </Button>
-            <Button
-              as={Link}
-              href="/projects"
-              variant="bordered"
-              color="default"
-              size="lg"
-              className="font-bold px-8 h-14 w-full sm:w-auto hover:bg-slate-50 transition-colors border-slate-200"
-            >
-              Projects
-            </Button>
+            <Link href="/about">
+              <Button
+                color="primary"
+                size="lg"
+                className="font-bold px-8 h-14 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all w-full sm:w-auto"
+                endContent={<ArrowRight size={20} />}
+              >
+                View About / CV
+              </Button>
+            </Link>
+            <Link href="/blog">
+              <Button
+                variant="flat"
+                color="primary"
+                size="lg"
+                className="font-bold px-8 h-14 w-full sm:w-auto hover:bg-blue-100 transition-colors"
+                startContent={<BookOpen size={18} />}
+              >
+                Read Blog
+              </Button>
+            </Link>
+            <Link href="/projects">
+              <Button
+                variant="bordered"
+                color="default"
+                size="lg"
+                className="font-bold px-8 h-14 w-full sm:w-auto hover:bg-slate-50 transition-colors border-slate-200"
+              >
+                Projects
+              </Button>
+            </Link>
           </motion.div>
         </motion.div>
 
@@ -143,11 +144,13 @@ export default function HomeHero() {
 
             {/* Profile Image Wrapper */}
             <div className="relative w-[calc(100%-24px)] h-[calc(100%-24px)] bg-white rounded-full p-2 shadow-2xl ring-4 ring-blue-100/50 overflow-hidden z-10">
-              <Image
-                src="/assets/profile3.png"
+              <NextImage
+                src="/assets/profile3.webp"
                 alt="Joseph Chen Profile"
-                className="w-full h-full object-cover rounded-full hover:scale-105 transition-transform duration-700"
-                loading="eager"
+                fill
+                sizes="(max-width: 768px) 260px, 340px"
+                className="object-cover rounded-full hover:scale-105 transition-transform duration-700"
+                priority
               />
             </div>
 

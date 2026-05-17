@@ -3,15 +3,15 @@
 import { motion } from 'framer-motion';
 
 const stats = [
-  { label: 'Foxconn @present', value: '2024', sub: 'Software Engineer' },
-  { label: 'India Bangalore', value: 'Global', sub: 'Tech Transfer' },
-  { label: 'Air-Gap AI', value: 'LLM', sub: 'Deployments' },
-  { label: 'M.Sc. CS', value: 'CCU', sub: 'Information Eng.' },
+  { label: 'Global Scale', value: '3+', sub: 'Technical Transfers' },
+  { label: 'Deployment', value: '100%', sub: 'Air-gap Security' },
+  { label: 'AI Solutions', value: '5+', sub: 'Production Systems' },
+  { label: 'Academic', value: 'M.Sc.', sub: 'CS Research @CCU' },
 ];
 
 export default function AboutStats() {
   return (
-    <section className="py-10 px-6 relative z-10">
+    <section className="py-1 px-6 relative z-10">
       <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
           <motion.div

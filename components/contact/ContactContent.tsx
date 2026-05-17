@@ -88,7 +88,7 @@ export default function ContactContent() {
                                 <Avatar
                                     isBordered
                                     color="primary"
-                                    src="https://github.com/chullin.png"
+                                    src="/assets/github-avatar.webp"
                                     className="w-24 h-24 text-large relative z-10"
                                 />
                                 <div className="absolute -bottom-1 -right-1 bg-success w-6 h-6 rounded-full border-4 border-white z-20" />
@@ -102,17 +102,17 @@ export default function ContactContent() {
                                 </p>
                             </div>
 
-                            <Button
-                                as={Link}
-                                href="mailto:fg6ts15@gmail.com"
-                                color="primary"
-                                size="lg"
-                                className="w-full font-black py-8 text-xl shadow-xl shadow-blue-500/20"
-                                radius="full"
-                                startContent={<Mail size={24} />}
-                            >
-                                聯絡我 (Email Me)
-                            </Button>
+                            <Link href="mailto:fg6ts15@gmail.com" className="w-full">
+                                <Button
+                                    color="primary"
+                                    size="lg"
+                                    className="w-full font-black py-8 text-xl shadow-xl shadow-blue-500/20"
+                                    radius="full"
+                                    startContent={<Mail size={24} />}
+                                >
+                                    聯絡我 (Email Me)
+                                </Button>
+                            </Link>
 
                             <div className="w-full space-y-6 pt-4">
                                 <div className="flex items-center gap-4">
@@ -122,45 +122,42 @@ export default function ContactContent() {
                                 </div>
 
                                 <div className="flex justify-center gap-6">
-                                    <Button
-                                        isIconOnly
-                                        as={Link}
-                                        href="https://github.com/chullin"
-                                        target="_blank"
-                                        variant="flat"
-                                        color="primary"
-                                        size="lg"
-                                        radius="full"
-                                        className="bg-primary/5 hover:bg-primary/10 w-16 h-16"
-                                    >
-                                        <Github size={28} />
-                                    </Button>
-                                    <Button
-                                        isIconOnly
-                                        as={Link}
-                                        href="https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about?utm_source=104&utm_medium=resumes"
-                                        target="_blank"
-                                        variant="flat"
-                                        color="primary"
-                                        size="lg"
-                                        radius="full"
-                                        className="bg-primary/5 hover:bg-primary/10 w-16 h-16 overflow-hidden flex items-center justify-center"
-                                    >
-                                        <OneZeroFourLogo className="w-[80%] h-auto" />
-                                    </Button>
-                                    <Button
-                                        isIconOnly
-                                        as={Link}
-                                        href="https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en"
-                                        target="_blank"
-                                        variant="flat"
-                                        color="primary"
-                                        size="lg"
-                                        radius="full"
-                                        className="bg-primary/5 hover:bg-primary/10 w-16 h-16"
-                                    >
-                                        <LinkedinIcon size={28} />
-                                    </Button>
+                                    <Link href="https://github.com/chullin" isExternal className="p-0">
+                                        <Button
+                                            isIconOnly
+                                            variant="flat"
+                                            color="primary"
+                                            size="lg"
+                                            radius="full"
+                                            className="bg-primary/5 hover:bg-primary/10 w-16 h-16"
+                                        >
+                                            <Github size={28} />
+                                        </Button>
+                                    </Link>
+                                    <Link href="https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about?utm_source=104&utm_medium=resumes" isExternal className="p-0">
+                                        <Button
+                                            isIconOnly
+                                            variant="flat"
+                                            color="primary"
+                                            size="lg"
+                                            radius="full"
+                                            className="bg-primary/5 hover:bg-primary/10 w-16 h-16 overflow-hidden flex items-center justify-center"
+                                        >
+                                            <OneZeroFourLogo className="w-[80%] h-auto" />
+                                        </Button>
+                                    </Link>
+                                    <Link href="https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en" isExternal className="p-0">
+                                        <Button
+                                            isIconOnly
+                                            variant="flat"
+                                            color="primary"
+                                            size="lg"
+                                            radius="full"
+                                            className="bg-primary/5 hover:bg-primary/10 w-16 h-16"
+                                        >
+                                            <LinkedinIcon size={28} />
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
 
@@ -171,7 +168,7 @@ export default function ContactContent() {
                                     </div>
                                     <div className="text-left">
                                         <p className="text-[10px] font-black text-gray-400 uppercase">Location</p>
-                                        <p className="text-sm font-bold text-gray-700">Taipei, Taiwan</p>
+                                        <p className="text-sm font-bold text-gray-700">Kaohsiung, Taiwan</p>
                                     </div>
                                 </div>
                             </div>

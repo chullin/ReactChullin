@@ -3,7 +3,7 @@
 import { Link, Divider, Button } from '@heroui/react';
 import { Phone, Mail, UserCircle } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ className }: { className?: string }) {
     const socialLinks = [
         { icon: "bi-person-circle", href: "https://www.cake.me/s--g59SDSH82OEybvapXS0q5A--/fg6ts15", label: "Cake" },
         { icon: "bi-github", href: "https://github.com/chullin", label: "GitHub" },
@@ -11,7 +11,7 @@ export default function Footer() {
     ];
 
     return (
-        <footer className="bg-white pt-16 pb-8 border-t border-gray-100">
+        <footer className={`bg-white pt-16 pb-8 border-t border-gray-100 ${className}`}>
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
                     <div className="text-center md:text-left">

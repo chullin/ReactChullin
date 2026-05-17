@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { series } from '@/config/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://chullin.tw';
@@ -7,10 +8,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // 靜態頁面
   const routes = [
     '',
+    '/about',
     '/blog',
     '/projects',
     '/contact',
-    '/about',
     '/flashcards',
     '/tetris-battle',
     '/snake',
@@ -22,26 +23,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1 : 0.8,
   }));
 
-  // 部落格文章路徑 (這裡可以手動維護或透過 API 抓取)
-  const blogPosts = [
-    '/blog/ai/ep05-tts-models',
-    '/blog/ai/ep07-finetune-lora',
-    '/blog/backend/ep02-csharp-aspnet',
-    '/blog/devops/ep02-github-actions',
-    '/blog/network/ep04-jwt-oauth2',
-    '/blog/system-design/ep01-intro',
-    '/blog/system-design/ep02-load-balancer',
-    '/blog/system-design/ep03-cache',
-    '/blog/web-dev/ep09-advanced-nav',
-    '/blog/web-dev/ep11-bootstrap-basics',
-    '/blog/ai/ep09-tms',
-    '/blog/ai/ep10-opencv-robot',
-  ].map((post) => ({
-    url: `${baseUrl}${post}`,
-    lastModified,
-    changeFrequency: 'monthly' as const,
-    priority: 0.6,
-  }));
+  // Blog 文章：從 series.flatMap 取得 href，排除 isExternal === true
+  const blogPosts = series
+    .flatMap((s) => s.posts)
+    .filter((post) => !post.isExternal)
+    .map((post) => ({
+      url: `${baseUrl}${post.href}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
 
   return [...routes, ...blogPosts];
 }
