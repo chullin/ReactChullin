@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -15,8 +10,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'HTML / CSS 核心概念 前端面試基礎題 | Joseph Chen',
+  description: 'Box Model、Flexbox、Grid、RWD、Selector — 寫前端 10 年都用得到的基礎，面試必考',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep10-html-css',
+  },
+};
+
+
 
 /* ─── Inline Components ─────────────────────────────────────── */
 
@@ -44,7 +50,7 @@ export default function WebDevEP10Page() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/25 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.10</span>
               <span className="bg-white/15 text-white/85 px-3 py-1 rounded-full text-xs font-medium">網頁開發實戰</span>
@@ -63,7 +69,7 @@ export default function WebDevEP10Page() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 10 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> HTML · CSS · RWD · Flexbox · Grid</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -71,9 +77,9 @@ export default function WebDevEP10Page() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-orange-300 shrink-0 mt-1" />
                 <div>
@@ -87,11 +93,11 @@ export default function WebDevEP10Page() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 1. HTML 語意化標籤 */}
         <section className="space-y-6">
@@ -147,7 +153,7 @@ export default function WebDevEP10Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 2. CSS Box Model */}
         <section className="space-y-6">
@@ -208,7 +214,7 @@ export default function WebDevEP10Page() {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 3. Flexbox */}
         <section className="space-y-6">
@@ -219,26 +225,26 @@ export default function WebDevEP10Page() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-blue-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-blue-50">
+              <div className="p-6">
                 <p className="font-black text-blue-800 mb-2">主軸（Main Axis）</p>
                 <p className="text-sm text-blue-700">
                   <code>flex-direction: row</code> → 主軸是<strong>水平</strong>方向（預設）<br />
                   <code>flex-direction: column</code> → 主軸是<strong>垂直</strong>方向<br />
                   <code>justify-content</code> 控制主軸對齊
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-purple-50">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-purple-50">
+              <div className="p-6">
                 <p className="font-black text-purple-800 mb-2">交叉軸（Cross Axis）</p>
                 <p className="text-sm text-purple-700">
                   永遠垂直於主軸<br />
                   <code>align-items</code> 控制交叉軸對齊<br />
                   <code>align-self</code> 可覆蓋單一子元素的對齊
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <div className="overflow-x-auto">
@@ -271,7 +277,7 @@ export default function WebDevEP10Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 4. Grid */}
         <section className="space-y-6">
@@ -337,7 +343,7 @@ export default function WebDevEP10Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 5. Selector Specificity */}
         <section className="space-y-6">
@@ -390,7 +396,7 @@ p { color: purple !important; }`}
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 6. RWD */}
         <section className="space-y-6">
@@ -458,7 +464,7 @@ p { color: purple !important; }`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 7. Position */}
         <section className="space-y-6">
@@ -505,7 +511,7 @@ p { color: purple !important; }`}
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 8. 面試 Q&A */}
         <section className="space-y-6">
@@ -543,8 +549,8 @@ p { color: purple !important; }`}
                 a: 'BFC 是一個獨立的渲染區域，裡面的元素不會影響外部佈局。常見觸發方式：overflow 不為 visible、display:flex/grid/inline-block、position:absolute/fixed。BFC 的主要作用：① 清除浮動（內部 float 不溢出）② 防止 margin collapse（相鄰 block 的 margin 合併）。',
               },
             ].map(({ q, a }, i) => (
-              <Card key={i} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-6 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="bg-orange-100 text-orange-600 font-black text-sm px-2.5 py-1 rounded-full shrink-0">Q{i + 1}</span>
                     <p className="font-black text-gray-900">{q}</p>
@@ -552,13 +558,13 @@ p { color: purple !important; }`}
                   <div className="pl-10">
                     <p className="text-gray-600 leading-relaxed text-sm">{a}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -578,7 +584,7 @@ p { color: purple !important; }`}
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['HTML', 'CSS', 'Box Model', 'Flexbox', 'Grid', 'RWD', 'EP.10'].map((tag) => (
-            <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

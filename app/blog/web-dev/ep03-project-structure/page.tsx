@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +14,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '認識 Next.js 專案結構 每個資料夾都有它的職責 | Joseph Chen',
+  description: '打開 VS Code 看到一堆資料夾和檔案不知道從哪裡下手？ 這篇帶你一個一個搞清楚它們的用途',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep03-project-structure',
+  },
+};
+
+
 
 const FileTree = ({ items }: { items: { indent: number; name: string; type: 'folder' | 'file'; desc?: string; highlight?: boolean }[] }) => (
   <div className="bg-gray-900 rounded-2xl p-6 font-mono text-sm space-y-1.5 my-6">
@@ -63,10 +68,10 @@ export default function WebDevEP03Page() {
           <Folder size={400} strokeWidth={0.5} />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">個人網頁開發</Chip>
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.03</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">個人網頁開發</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.03</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               認識 Next.js 專案結構<br />
@@ -76,7 +81,7 @@ export default function WebDevEP03Page() {
               打開 VS Code 看到一堆資料夾和檔案不知道從哪裡下手？<br />
               這篇帶你一個一個搞清楚它們的用途
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -122,7 +127,7 @@ export default function WebDevEP03Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* app/ 資料夾 */}
         <section className="space-y-6">
@@ -199,7 +204,7 @@ export default function WebDevEP03Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* components/ */}
         <section className="space-y-6">
@@ -237,7 +242,7 @@ export default function WebDevEP03Page() {
           <p className="text-gray-700 leading-relaxed">
             以 Navbar 為例，它的程式碼大概長這樣：
           </p>
-          <CodeBlock title="components/Navbar.tsx（簡化版）" lang="tsx" code={`'use client';  // 這個元件要在瀏覽器執行（有互動）
+          <CodeBlock title="components/Navbar.tsx（簡化版）" lang="tsx" code={`// 這個元件要在瀏覽器執行（有互動）
 
 import Link from 'next/link';
 import { Button } from '@heroui/react';
@@ -258,7 +263,7 @@ export default function Navbar() {
 }`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* public/ */}
         <section className="space-y-6">
@@ -279,7 +284,7 @@ export default function Navbar() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 設定檔 */}
         <section className="space-y-6">
@@ -331,7 +336,7 @@ export default function Navbar() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 我的個人網頁完整結構 */}
         <section className="space-y-6">
@@ -363,7 +368,7 @@ export default function Navbar() {
           </Callout>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 實戰：新增一個頁面 */}
         <section className="space-y-6">
@@ -408,7 +413,7 @@ export default function Navbar() {
           </Callout>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -435,7 +440,7 @@ export default function Navbar() {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -455,7 +460,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Web Dev', 'Next.js', 'App Router', '專案結構', 'EP.03'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

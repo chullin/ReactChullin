@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -19,8 +14,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '限流設計：保護你的系統不被打垮 Token Bucket、Leaky Bucket、Sliding Window、Redis 實作 | Joseph Chen',
+  description: '面試最常考的限流演算法完整指南。從演算法原理到 Node.js 單機實作， 再到 Redis 分散式方案，最後討論不同資源的限流策略設計。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep07-rate-limiting',
+  },
+};
+
+
 
 export default function SysDesignEP07() {
   return (
@@ -29,11 +35,7 @@ export default function SysDesignEP07() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-red-900 via-red-800 to-orange-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.07
@@ -67,18 +69,18 @@ export default function SysDesignEP07() {
                 <Shield size={14} /> Rate Limiting · Token Bucket · Redis · System Design
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 為什麼需要限流 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-red-600" size={28} />
@@ -89,8 +91,8 @@ export default function SysDesignEP07() {
             但流量突然暴增時，整個系統可能直接崩潰。
           </p>
 
-          <Card className="border-0 bg-gray-900 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gray-900 text-white">
+            <div className="p-6">
               <p className="text-gray-400 text-xs mb-4 font-mono uppercase tracking-wider">
                 有 vs 沒有限流
               </p>
@@ -123,8 +125,8 @@ export default function SysDesignEP07() {
                   <span className="text-gray-400 text-xs ml-1">9,900 → 429</span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-800">三種需要限流的場景</h3>
           <div className="grid sm:grid-cols-3 gap-4">
@@ -151,18 +153,18 @@ export default function SysDesignEP07() {
                 titleColor: 'text-amber-800',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border ${item.color}`}>
-                <CardBody className="p-5">
+              <div key={i} className={`border ${item.color}`}>
+                <div className="p-5">
                   <div className="text-3xl mb-3">{item.icon}</div>
                   <p className={`font-black text-sm mb-2 ${item.titleColor}`}>{item.title}</p>
                   <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
-          <Card className="border-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white">
+            <div className="p-5">
               <p className="font-black mb-2">類比：捷運站閘門</p>
               <p className="text-slate-300 text-sm leading-relaxed">
                 限流就像捷運站的閘門。正常流量下大家都能快速刷卡進站。
@@ -170,18 +172,18 @@ export default function SysDesignEP07() {
                 如果超過承載量就暫時關閘（429 Too Many Requests），
                 等人潮散去再開放。閘門的目的不是阻止乘客，而是讓系統有序運作。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: 四種限流演算法 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Cpu className="text-red-600" size={28} />
@@ -195,8 +197,8 @@ export default function SysDesignEP07() {
           <div className="space-y-6">
 
             {/* Fixed Window */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <p className="font-black text-gray-900 text-lg">1. Fixed Window（固定視窗）</p>
@@ -216,12 +218,12 @@ export default function SysDesignEP07() {
                 <p className="text-gray-600 text-sm">
                   固定視窗計數器在視窗切換瞬間有明顯漏洞，適合對精確度要求不高的場景（如每日 API 配額）。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Sliding Window */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <p className="font-black text-gray-900 text-lg">2. Sliding Window（滑動視窗）</p>
@@ -242,12 +244,12 @@ export default function SysDesignEP07() {
                   每次請求都需要記錄時間戳（用 Redis Sorted Set），儲存成本隨請求量線性增加。
                   Section 4 的 Redis 實作就是基於滑動視窗。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Token Bucket */}
-            <Card className="border-0 shadow-md border-l-4 border-orange-400">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-orange-400">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <p className="font-black text-gray-900 text-lg">3. Token Bucket（令牌桶）</p>
@@ -272,12 +274,12 @@ export default function SysDesignEP07() {
                   用戶偶爾的批次操作可以被吸收，但長期平均速率仍然受控。
                   AWS API Gateway、Stripe API 都採用類似機制。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Leaky Bucket */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <p className="font-black text-gray-900 text-lg">4. Leaky Bucket（漏桶）</p>
@@ -299,12 +301,12 @@ export default function SysDesignEP07() {
                   Leaky Bucket 強制輸出速率恆定，非常適合保護下游系統（DB、第三方 API）。
                   缺點是突發流量會在佇列中等待，可能增加延遲；適合後台批次處理，不適合需要低延遲的 API。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 bg-slate-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-slate-50">
+            <div className="p-5">
               <p className="font-black text-gray-800 mb-3 text-sm">快速選型指南</p>
               <div className="grid sm:grid-cols-2 gap-3 text-sm">
                 <div>
@@ -324,18 +326,18 @@ export default function SysDesignEP07() {
                   <p className="text-gray-500 text-xs">每日/每月 API 配額，精確度要求低</p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: Node.js 實作 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Server className="text-red-600" size={28} />
@@ -458,24 +460,24 @@ const loginLimiter = rateLimit({
 });
 app.post('/api/login', loginLimiter, loginHandler);`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: Redis 分散式限流 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Layers className="text-red-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">Redis 分散式限流</h2>
           </div>
 
-          <Card className="border-l-4 border-amber-400 bg-amber-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-amber-400 bg-amber-50 border-0">
+            <div className="p-5">
               <p className="font-black text-amber-800 mb-2">單機記憶體的致命缺點</p>
               <p className="text-amber-700 text-sm leading-relaxed">
                 Section 3 的 TokenBucket 把狀態存在應用層記憶體中。
@@ -483,8 +485,8 @@ app.post('/api/login', loginLimiter, loginHandler);`}
                 同一個 IP 可以打每台伺服器各 100 次，實際通過的請求是設定值的 N 倍。
                 解法：用 Redis 作為共享狀態存儲，讓所有 Server 讀寫同一個計數器。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <CodeBlock
             title="Redis Sliding Window 分散式實作（Next.js API Route）"
@@ -653,16 +655,16 @@ async function tokenBucketRedis(
   return { allowed: allowed === 1, remaining };
 }`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: 限流策略設計 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Shield className="text-red-600" size={28} />
@@ -673,8 +675,8 @@ async function tokenBucketRedis(
             以下是一個典型電商/內容平台的限流設計參考。
           </p>
 
-          <Card className="border-0 shadow-md">
-            <CardBody className="p-0 overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+            <div className="p-0 overflow-hidden">
               <div className="bg-red-800 text-white px-6 py-3">
                 <p className="font-black">各端點限流策略建議</p>
               </div>
@@ -753,8 +755,8 @@ async function tokenBucketRedis(
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-800">限流的分層架構</h3>
           <p className="text-gray-600 text-sm leading-relaxed">
@@ -795,16 +797,16 @@ async function tokenBucketRedis(
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: 處理被限流的請求 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <RefreshCw className="text-red-600" size={28} />
@@ -935,8 +937,8 @@ const { data } = useQuery({
           />
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-green-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-green-50">
+              <div className="p-5">
                 <p className="font-black text-green-800 mb-3 text-sm">好的限流客戶端行為</p>
                 <ul className="text-sm text-green-700 space-y-2">
                   <li className="flex gap-2"><span className="font-black">✓</span>讀取 Retry-After header，等待建議時間後重試</li>
@@ -945,10 +947,10 @@ const { data } = useQuery({
                   <li className="flex gap-2"><span className="font-black">✓</span>讀取 X-RateLimit-Remaining，提前降速</li>
                   <li className="flex gap-2"><span className="font-black">✓</span>在 UI 顯示「稍後再試」而非直接報錯</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-red-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-red-50">
+              <div className="p-5">
                 <p className="font-black text-red-800 mb-3 text-sm">常見的錯誤行為</p>
                 <ul className="text-sm text-red-700 space-y-2">
                   <li className="flex gap-2"><span className="font-black">✗</span>收到 429 立即重試（讓問題更嚴重）</li>
@@ -957,16 +959,16 @@ const { data } = useQuery({
                   <li className="flex gap-2"><span className="font-black">✗</span>無限重試（耗盡資源）</li>
                   <li className="flex gap-2"><span className="font-black">✗</span>對 404 也重試（沒有判斷錯誤類型）</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* ─── 總結 ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="bg-gradient-to-br from-red-900 to-orange-800 rounded-3xl p-8 text-white">
             <h2 className="text-2xl font-black mb-6">本篇重點回顧</h2>
@@ -1004,9 +1006,9 @@ const { data } = useQuery({
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
         <div className="grid grid-cols-2 gap-4">
@@ -1054,9 +1056,9 @@ const { data } = useQuery({
             'API Security',
             'Distributed Systems',
           ].map((tag) => (
-            <Chip key={tag} variant="flat" color="danger" className="font-bold">
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">
               {tag}
-            </Chip>
+            </span>
           ))}
         </div>
       </article>

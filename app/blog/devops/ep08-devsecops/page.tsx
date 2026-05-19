@@ -1,11 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider,
-  Button,
-  Code } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { 
   ShieldCheck,
   Lock,
@@ -24,19 +17,24 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'DevSecOps： 將安全植入自動化流程 | Joseph Chen',
+  description: '不要讓「安全」成為部署的阻礙。學習如何在 CI/CD 的每一秒鐘，自動偵測漏洞、掃描秘密資訊與保護容器鏡像。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep08-devsecops',
+  },
+};
+
+
+
 const SectionWrapper = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay }}
-    className="space-y-6"
-  >
+  <FadeIn>
     {children}
-  </motion.div>
+  </FadeIn>
 );
 
 export default function DevSecOpsPage() {
@@ -50,17 +48,13 @@ export default function DevSecOpsPage() {
         </div>
         
         <div className="max-w-4xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Chip 
-              variant="flat" 
-              className="bg-blue-500/20 text-blue-300 border-blue-500/30 mb-6 font-bold"
+          <FadeIn>
+            <span 
+               
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-500/20 text-blue-300 border-blue-500/30 mb-6 font-bold"
             >
               EP.08 — DevOps 實戰系列
-            </Chip>
+            </span>
             <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight leading-tight">
               DevSecOps：<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
@@ -84,7 +78,7 @@ export default function DevSecOpsPage() {
                 25 分鐘閱讀
               </div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -124,7 +118,7 @@ export default function DevSecOpsPage() {
           </p>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 1: SAST - Static Analysis Security Testing */}
         <SectionWrapper>
@@ -143,22 +137,22 @@ export default function DevSecOpsPage() {
             它可以抓到常見的人為錯誤，例如：
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-            <Card shadow="none" className="bg-slate-50 border border-slate-100">
-              <CardBody className="p-6">
+            <div  className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-slate-50 border border-slate-100">
+              <div className="p-6">
                 <p className="font-black text-red-600 mb-2">❌ 不安全的寫法 (SQLi)</p>
                 <CodeBlock language="typescript" code={`// 極度危險！直接拼接字串
 const query = "SELECT * FROM users WHERE id = '" + userInput + "'";
 db.execute(query);`} />
-              </CardBody>
-            </Card>
-            <Card shadow="none" className="bg-slate-50 border border-slate-100">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div  className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-slate-50 border border-slate-100">
+              <div className="p-6">
                 <p className="font-black text-emerald-600 mb-2">✅ 安全的寫法 (Prepared Statement)</p>
                 <CodeBlock language="typescript" code={`// 安全：使用參數化查詢
 const query = "SELECT * FROM users WHERE id = ?";
 db.execute(query, [userInput]);`} />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <p className="text-slate-600">
@@ -183,7 +177,7 @@ jobs:
           />
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 2: SCA - Software Composition Analysis */}
         <SectionWrapper>
@@ -221,7 +215,7 @@ snyk test`}
           />
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 3: Secret Detection */}
         <SectionWrapper>
@@ -237,14 +231,14 @@ snyk test`}
             駭客通常在 1 分鐘內就會掃描到並盜用你的帳號。
           </p>
 
-          <Card shadow="none" className="bg-slate-900 text-slate-300 border-none my-6">
-            <CardBody className="p-8">
+          <div  className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-slate-900 text-slate-300 border-none my-6">
+            <div className="p-8">
               <p className="font-mono text-sm mb-4 text-red-400 font-bold">// ❌ 千萬不要這樣做！</p>
               <p className="font-mono text-sm mb-2">const STRIPE_API_KEY = "sk_test_51...your_secret_key";</p>
               <p className="font-mono text-sm mb-4 text-emerald-400 font-bold">// ✅ 正確做法：使用環境變數</p>
               <p className="font-mono text-sm">const STRIPE_API_KEY = process.env.STRIPE_SECRET;</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-slate-600">
             我們可以使用 <strong className="text-slate-900">gitleaks</strong> 這樣的工具，在 CI 流程中阻斷包含敏感資訊的提交：
@@ -267,7 +261,7 @@ jobs:
           />
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 4: Container Security */}
         <SectionWrapper>
@@ -331,7 +325,7 @@ trivy image --severity CRITICAL --format json --output results.json my-app:lates
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 5: IaC Scanning - Infrastructure as Code Security */}
         <SectionWrapper>
@@ -373,7 +367,7 @@ checkov -d . --check CKV_AWS_20,CKV_AWS_52`}
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 6: Software Supply Chain Security */}
         <SectionWrapper>
@@ -424,7 +418,7 @@ cat sbom.json | jq '.artifacts[].name'`}
           />
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 7: DAST - Dynamic Analysis Security Testing */}
         <SectionWrapper>
@@ -464,7 +458,7 @@ docker run -t owasp/zap2docker-stable zap-baseline.py \\
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Conclusion: The Full Lifecycle */}
         <SectionWrapper>
@@ -500,7 +494,7 @@ docker run -t owasp/zap2docker-stable zap-baseline.py \\
         <div className="mt-20 pt-10 border-t border-slate-100">
           <div className="flex flex-wrap gap-2 mb-12">
             {['DevOps', 'Security', 'CI/CD', 'GitHub Actions', 'Docker', 'DevSecOps', 'SAST', 'SCA'].map(tag => (
-              <Chip key={tag} variant="flat" className="bg-slate-100 text-slate-600 font-bold">#{tag}</Chip>
+              <span key={tag}  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-slate-100 text-slate-600 font-bold">#{tag}</span>
             ))}
           </div>
           

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,15 +12,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '交易與鎖定：ACID 不只是面試題 隔離層級、髒讀、幻讀與死鎖實戰 | Joseph Chen',
+  description: '「帳戶轉帳扣了錢卻沒入帳」、「庫存超賣」——這些都是交易設計錯誤的結果。 ACID 保證的不只是理論，而是你的資料在並發情況下不會壞掉的底線。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep03-transaction',
+  },
+};
+
+
 
 export default function DBEP03() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50 to-emerald-50">
       <div className="bg-gradient-to-br from-teal-700 via-emerald-700 to-green-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.03</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">資料庫與 SQL</span>
@@ -44,15 +50,15 @@ export default function DBEP03() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 13 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> ACID · Transaction · Lock · Isolation · Deadlock</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-teal-300 shrink-0 mt-1" />
                 <div>
@@ -66,9 +72,9 @@ export default function DBEP03() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 什麼是交易 */}
         <section className="space-y-6">
@@ -111,7 +117,7 @@ try {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ACID */}
         <section className="space-y-6">
@@ -151,21 +157,21 @@ try {
                 letter_color: 'bg-cyan-600',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border ${item.color}`}>
-                <CardBody className="p-5">
+              <div key={i} className={`border ${item.color}`}>
+                <div className="p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <span className={`w-9 h-9 rounded-full ${item.letter_color} text-white font-black text-lg flex items-center justify-center shrink-0`}>{item.letter}</span>
                     <p className="font-black text-gray-800 text-sm">{item.name}</p>
                   </div>
                   <p className="text-sm text-gray-600 mb-2">{item.desc}</p>
                   <p className="text-xs text-gray-500 italic">📌 {item.example}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 並發問題 */}
         <section className="space-y-6">
@@ -217,7 +223,7 @@ try {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 隔離層級 */}
         <section className="space-y-6">
@@ -277,7 +283,7 @@ SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED;`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 鎖定 */}
         <section className="space-y-6">
@@ -287,20 +293,20 @@ SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL READ COMMITTED;`}
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-blue-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-blue-50">
+              <div className="p-5">
                 <p className="font-black text-blue-800 mb-3">共享鎖（Shared Lock / S Lock）</p>
                 <p className="text-sm text-blue-700 mb-3">讀取時獲取。多個交易可以同時持有同一列的共享鎖（多讀不互斥）。</p>
                 <code className="text-xs bg-blue-100 px-2 py-1 rounded font-mono">SELECT ... FOR SHARE</code>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-red-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-red-50">
+              <div className="p-5">
                 <p className="font-black text-red-800 mb-3">排他鎖（Exclusive Lock / X Lock）</p>
                 <p className="text-sm text-red-700 mb-3">寫入時獲取。只有一個交易能持有，其他交易無論讀寫都必須等待。</p>
                 <code className="text-xs bg-red-100 px-2 py-1 rounded font-mono">SELECT ... FOR UPDATE</code>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <CodeBlock
@@ -358,7 +364,7 @@ async function buyProduct(productId: number, userId: number) {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 死鎖 */}
         <section className="space-y-6">
@@ -431,7 +437,7 @@ async function buyProduct(productId: number, userId: number) {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         <div className="grid grid-cols-2 gap-4">
           <Link href="/blog/database/ep02-index" className="group block bg-gray-50 hover:bg-teal-50 transition-colors rounded-2xl p-6">
@@ -450,7 +456,7 @@ async function buyProduct(productId: number, userId: number) {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['ACID', 'Transaction', 'Lock', 'Isolation', 'Deadlock', 'SELECT FOR UPDATE', 'Database', 'EP.03'].map(tag => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

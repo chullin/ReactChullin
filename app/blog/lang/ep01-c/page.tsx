@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowRight,
@@ -13,8 +8,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'C 語言面試必備 指標與記憶體管理 | Joseph Chen',
+  description: '指標基礎、Stack vs Heap、struct、常見面試 Coding 題解析',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/lang/ep01-c',
+  },
+};
+
+
 
 export default function LangEP01Page() {
   return (
@@ -29,14 +35,14 @@ export default function LangEP01Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-gray-500/20 text-gray-300 border-gray-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-gray-500/20 text-gray-300 border-gray-500/30 font-bold uppercase text-[10px]">
                 後端語言
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-gray-500/20 text-gray-300 border-gray-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-gray-500/20 text-gray-300 border-gray-500/30 font-bold uppercase text-[10px]">
                 EP.01
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               C 語言面試必備<br />
@@ -45,7 +51,7 @@ export default function LangEP01Page() {
             <p className="text-gray-300 text-lg font-medium max-w-2xl mx-auto">
               指標基礎、Stack vs Heap、struct、常見面試 Coding 題解析
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -73,19 +79,19 @@ export default function LangEP01Page() {
 
         {/* Opening Quote */}
         <section>
-          <Card className="border border-gray-200 bg-gradient-to-br from-gray-50 to-slate-50 shadow-none">
-            <CardBody className="p-7">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 bg-gradient-to-br from-gray-50 to-slate-50 shadow-none">
+            <div className="p-7">
               <div className="flex items-start gap-4">
                 <Quote size={28} className="text-gray-300 shrink-0 mt-1" />
                 <p className="text-gray-700 text-lg leading-relaxed italic font-medium">
                   大學修 C 語言時，指標讓我痛苦了整整一個學期。後來才理解：指標只是一個儲存記憶體地址的變數。搞懂這句話，C 語言就開竅了一半。
                 </p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 1: C 語言特色 */}
         <section className="space-y-6">
@@ -122,7 +128,7 @@ export default function LangEP01Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: 指標 */}
         <section className="space-y-6">
@@ -186,7 +192,7 @@ int main() {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: Stack vs Heap */}
         <section className="space-y-6">
@@ -285,7 +291,7 @@ int main() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: struct */}
         <section className="space-y-6">
@@ -341,7 +347,7 @@ int main() {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: 常用字串函數 */}
         <section className="space-y-6">
@@ -378,7 +384,7 @@ int main() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 6: C vs C++ vs Python */}
         <section className="space-y-6">
@@ -413,7 +419,7 @@ int main() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 7: 面試常考題 */}
         <section className="space-y-6">
@@ -445,17 +451,17 @@ int main() {
                 a: 'const int *p（pointer to const int）：p 本身可以改變（指向不同地址），但不能透過 p 修改所指的值。int * const p（const pointer to int）：p 本身不可改變（固定指向某地址），但可以透過 p 修改所指的值。',
               },
             ].map((item, i) => (
-              <Card key={i} className="border border-gray-100 shadow-none">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-none">
+                <div className="p-6 space-y-3">
                   <p className="font-black text-gray-900">Q{i + 1}. {item.q}</p>
                   <p className="text-gray-600 leading-relaxed text-sm">{item.a}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -475,7 +481,7 @@ int main() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['C語言', '指標', '記憶體管理', 'struct', '面試題', 'EP.01'].map((tag) => (
-            <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

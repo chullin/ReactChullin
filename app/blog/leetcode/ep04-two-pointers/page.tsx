@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -19,8 +13,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Two Pointers 從 "0P" 踩坑說起 | Joseph Chen',
+  description: '#125 Valid Palindrome — 一個 Bug 讓我徹底理解 Two Pointers',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep04-two-pointers',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -36,10 +41,10 @@ export default function LeetcodeEP04Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `repeating-linear-gradient(45deg, #f97316 0, #f97316 1px, transparent 0, transparent 50%)`, backgroundSize: '20px 20px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">EP.04</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">EP.04</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Two Pointers<br />
@@ -50,14 +55,14 @@ export default function LeetcodeEP04Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-orange-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-orange-400" /><span>August 2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -76,8 +81,8 @@ export default function LeetcodeEP04Page() {
                 題目
               </h2>
               <p>給一個字串，只考慮英文字母和數字（忽略大小寫、忽略所有其他符號），判斷它是不是回文（Palindrome）。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`Input:  "Was it a car or a cat I saw?"
 Output: True
 # 只取英數字，全小寫 → "wasitacaroracatisaw" → 是回文
@@ -85,8 +90,8 @@ Output: True
 Input:  "0P"
 Output: False
 # 只取英數字，全小寫 → "0p" → 不是回文`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* First attempt */}
@@ -264,17 +269,17 @@ Output: False
               </div>
             </div>
 
-            <Card className="bg-orange-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-orange-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-orange-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-orange-900 leading-snug relative z-10">
                   踩坑的那次 "0P" 讓我記住：永遠用語言內建的方法（<code>isalnum()</code>）而不是自己推 ASCII 範圍。內建方法有完整的邊界處理，自己推很容易遺漏。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep03-group-anagrams" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -292,7 +297,7 @@ Output: False
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Two Pointers', 'String', 'Python', 'EP.04'].map((tag) => (
-              <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

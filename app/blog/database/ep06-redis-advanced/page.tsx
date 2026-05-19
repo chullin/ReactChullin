@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -24,8 +19,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Redis 進階應用：Pub/Sub、Lua Script、分散式鎖 不只是快取的完整應用指南 | Joseph Chen',
+  description: 'Redis Streams、HyperLogLog、Bloom Filter、分散式鎖實作 — Redis 不只是快取的完整應用指南，從 Pub/Sub 到 Lua Script 原子操作， 解鎖 Redis 的全部潛能。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep06-redis-advanced',
+  },
+};
+
+
 
 export default function DBEP06() {
   return (
@@ -34,11 +40,7 @@ export default function DBEP06() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-red-700 via-rose-700 to-pink-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.06
@@ -71,18 +73,18 @@ export default function DBEP06() {
                 <Database size={14} /> Redis · Pub/Sub · Distributed Lock · HyperLogLog
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: Redis 不只是快取 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Database className="text-rose-600" size={28} />
@@ -140,16 +142,16 @@ export default function DBEP06() {
                 tagColor: 'primary' as const,
               },
             ].map(({ icon, title, desc, tag, tagColor }) => (
-              <Card key={title} className="border-0 shadow-md">
-                <CardBody className="p-5 space-y-3">
+              <div key={title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5 space-y-3">
                   <div className="flex items-center justify-between">
                     {icon}
-                    <Chip size="sm" variant="flat" color={tagColor}>{tag}</Chip>
+                    <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">{tag}</span>
                   </div>
                   <h3 className="font-black text-gray-800">{title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -184,16 +186,16 @@ ZSet:   ZADD leaderboard 1500 "Joseph" 1200 "Alice"
   Set)  ZREVRANK leaderboard "Joseph"           → Joseph 的排名
         → 排行榜、帶權重的任務佇列、延遲佇列`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: Pub/Sub ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Radio className="text-purple-600" size={28} />
@@ -344,8 +346,8 @@ const pending = await redis.xpending(
             />
           </div>
 
-          <Card className="border-l-4 border-purple-400 bg-purple-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-purple-400 bg-purple-50 border-0">
+            <div className="p-5">
               <p className="font-black text-purple-800 mb-2 flex items-center gap-2">
                 <Info size={16} /> 何時用 Pub/Sub，何時用 Streams？
               </p>
@@ -354,18 +356,18 @@ const pending = await redis.xpending(
                 如果你需要「可靠的任務佇列」（每條訊息只被處理一次，且保證送達），用 Redis Streams。
                 Kafka 適合更大規模（每秒百萬級），Redis Streams 適合中小規模但要比 Pub/Sub 更可靠的場景。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: 分散式鎖 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Lock className="text-red-600" size={28} />
@@ -477,8 +479,8 @@ async function releaseLock(key: string, token: string): Promise<boolean> {
 }`}
           />
 
-          <Card className="border-l-4 border-red-400 bg-red-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-red-400 bg-red-50 border-0">
+            <div className="p-5">
               <p className="font-black text-red-800 mb-2 flex items-center gap-2">
                 <AlertTriangle size={16} /> 分散式鎖的正確使用方式
               </p>
@@ -487,18 +489,18 @@ async function releaseLock(key: string, token: string): Promise<boolean> {
                 釋放鎖時一定要用 Lua Script 或 Redlock，確認 token 是自己的再刪除，
                 否則可能不小心釋放了別人的鎖。生產環境強烈建議使用成熟的 Redlock 函式庫而不是自己實作。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: Lua Script ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Zap className="text-orange-600" size={28} />
@@ -612,26 +614,26 @@ async function safeDeductStock(
 }`}
           />
 
-          <Card className="border-l-4 border-orange-400 bg-orange-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-orange-400 bg-orange-50 border-0">
+            <div className="p-5">
               <p className="font-black text-orange-800 mb-2">Lua Script 的使用場景</p>
               <p className="text-orange-700 text-sm leading-relaxed">
                 任何需要「讀取 → 判斷 → 修改」三步驟的操作，都應該考慮用 Lua Script 包起來。
                 典型場景：扣庫存、限流器（Rate Limiter）、計數+判斷閾值、帶條件的快取更新。
                 注意：Lua Script 執行期間 Redis 是阻塞的，不要在 Script 中做複雜的計算或大量遍歷。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: HyperLogLog 與 Bloom Filter ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <BarChart3 className="text-teal-600" size={28} />
@@ -713,8 +715,8 @@ async function getWeeklyUV(): Promise<number> {
                 但絕對不會「誤判為不存在」（False Negative）。
               </p>
 
-              <Card className="border-0 shadow-md bg-indigo-50">
-                <CardBody className="p-5 space-y-3">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-indigo-50">
+                <div className="p-5 space-y-3">
                   <p className="font-black text-indigo-800">Bloom Filter 的保證：</p>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-3">
@@ -731,8 +733,8 @@ async function getWeeklyUV(): Promise<number> {
                       </p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <CodeBlock
                 title="Bloom Filter 實作：Email 重複判斷（Redis Stack 模組）"
@@ -785,16 +787,16 @@ await redis.call('BF.MADD', 'registered-emails',
               />
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: Sorted Set 排行榜 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Trophy className="text-orange-600" size={28} />
@@ -907,8 +909,8 @@ async function getPlayersByScoreRange(minScore: number, maxScore: number) {
 }`}
           />
 
-          <Card className="border-l-4 border-orange-400 bg-orange-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-orange-400 bg-orange-50 border-0">
+            <div className="p-5">
               <p className="font-black text-orange-800 mb-2">為什麼不用資料庫來做排行榜？</p>
               <p className="text-orange-700 text-sm leading-relaxed">
                 用資料庫 ORDER BY score DESC 在資料量小時沒問題，但隨著玩家增加，
@@ -916,18 +918,18 @@ async function getPlayersByScoreRange(minScore: number, maxScore: number) {
                 Sorted Set 的 ZINCRBY 和 ZREVRANK 都是 O(log N)，且 Redis 的記憶體操作遠快於磁碟 I/O。
                 每秒更新百萬次分數，Redis 輕鬆應對，資料庫早崩了。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 7: 部署與監控 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Server className="text-gray-600" size={28} />
@@ -1055,13 +1057,13 @@ SLOWLOG RESET`}
                 textColor: 'text-orange-700',
               },
             ].map(({ metric, cmd, desc, color, textColor }) => (
-              <Card key={metric} className={`border ${color} shadow-sm`}>
-                <CardBody className="p-4 space-y-2">
+              <div key={metric} className={`border ${color} shadow-sm`}>
+                <div className="p-4 space-y-2">
                   <code className={`text-xs font-black ${textColor}`}>{metric}</code>
                   <p className="text-gray-400 text-xs">{cmd}</p>
                   <p className="text-gray-600 text-xs leading-relaxed">{desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -1088,36 +1090,36 @@ Cloud 託管（最推薦）：
   → AWS ElastiCache、GCP Memorystore、Upstash
   → 自動處理 HA、備份、版本升級，工程師不用管運維`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Tags ─── */}
-        <motion.section
+        <section
           className="space-y-4"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <h3 className="text-lg font-black text-gray-700">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {['Redis', 'Pub/Sub', 'Distributed Lock', 'HyperLogLog', 'Bloom Filter', 'Redis Streams', 'Lua Script', 'Sorted Set'].map(
               (tag) => (
-                <Chip key={tag} variant="flat" color="danger" size="sm">
+                <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                   {tag}
-                </Chip>
+                </span>
               ),
             )}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Link
@@ -1142,7 +1144,7 @@ Cloud 託管（最推薦）：
               <ArrowRight className="text-gray-400" size={20} />
             </div>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -25,8 +20,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CDN 與 Edge Computing： 讓資源在全球 50ms 內送達 | Joseph Chen',
+  description: 'CDN 原理、Edge Caching、Cache Invalidation、Cloudflare Workers — 大流量系統的靜態資源加速策略',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep10-cdn-edge',
+  },
+};
+
+
 
 export default function SystemDesignEP10() {
   return (
@@ -35,7 +41,7 @@ export default function SystemDesignEP10() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-indigo-700 via-blue-700 to-cyan-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.10</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計系列</span>
@@ -53,17 +59,17 @@ export default function SystemDesignEP10() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 16 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> CDN · Edge · Cache Invalidation · Cloudflare</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ── Section 1：沒有 CDN 的世界 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
@@ -77,8 +83,8 @@ export default function SystemDesignEP10() {
             每一個請求——HTML、CSS、JavaScript、圖片——都需要跑完整的美洲太平洋路線。
           </p>
 
-          <Card className="border border-red-200 bg-red-50 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50 mb-6">
+            <div className="p-5">
               <h3 className="font-bold text-red-800 mb-3 flex items-center gap-2">
                 <AlertTriangle size={18} className="text-red-600" />
                 沒有 CDN：台灣用戶訪問美國伺服器
@@ -99,11 +105,11 @@ TCP 單次往返（RTT）：150-200ms
 如果頁面有 20 個資源（HTML + CSS + JS + 圖片）：
 最壞情況：300ms × 20 = 6 秒才能載入完畢   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="border border-green-200 bg-green-50 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-green-200 bg-green-50 mb-6">
+            <div className="p-5">
               <h3 className="font-bold text-green-800 mb-3 flex items-center gap-2">
                 <CheckCircle size={18} className="text-green-600" />
                 有 CDN：資料近在咫尺
@@ -122,8 +128,8 @@ RTT：10-40ms（縮短 10 倍以上）
 
 使用者感受：頁面「秒開」   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed mb-6">
             CDN 的核心理念只有一句話：<strong>「把資料放到距離用戶最近的地方」</strong>。
@@ -133,34 +139,34 @@ RTT：10-40ms（縮短 10 倍以上）
           <h3 className="text-lg font-bold text-gray-800 mb-4">為什麼延遲很重要？數字說話</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="border border-indigo-200 bg-indigo-50">
-              <CardBody className="p-4 text-center">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50">
+              <div className="p-4 text-center">
                 <p className="text-3xl font-black text-indigo-700 mb-1">100ms</p>
                 <p className="text-indigo-600 text-sm">Amazon 研究：每 100ms 延遲損失 1% 銷售額</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardBody className="p-4 text-center">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200 bg-blue-50">
+              <div className="p-4 text-center">
                 <p className="text-3xl font-black text-blue-700 mb-1">53%</p>
                 <p className="text-blue-600 text-sm">Google 研究：行動用戶在 3 秒內未載入完成就會離開</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-cyan-200 bg-cyan-50">
-              <CardBody className="p-4 text-center">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-cyan-200 bg-cyan-50">
+              <div className="p-4 text-center">
                 <p className="text-3xl font-black text-cyan-700 mb-1">10×</p>
                 <p className="text-cyan-600 text-sm">CDN 帶來的延遲改善倍數（跨洲際場景）</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：CDN 如何工作 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -237,8 +243,8 @@ Last-Modified: Thu, 08 May 2026 00:00:00 GMT
 # 精度較低（秒級），推薦優先使用 ETag   `}
 </CodeBlock>
 
-          <Card className="border border-blue-200 bg-blue-50 mt-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200 bg-blue-50 mt-6">
+            <div className="p-5">
               <p className="text-blue-800 text-sm leading-relaxed">
                 <strong>s-maxage vs max-age：</strong>
                 <code className="bg-blue-100 px-1 rounded mx-1">max-age</code> 對瀏覽器和 CDN 都有效，
@@ -246,17 +252,17 @@ Last-Modified: Thu, 08 May 2026 00:00:00 GMT
                 當兩個同時出現，CDN 優先使用 <code className="bg-blue-100 px-1 rounded mx-1">s-maxage</code>。
                 這讓你可以給 CDN 更長的快取時間，同時控制瀏覽器更短的快取時間。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：Cache Invalidation ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
@@ -265,14 +271,14 @@ Last-Modified: Thu, 08 May 2026 00:00:00 GMT
             <h2 className="text-2xl font-black text-gray-900">Section 3：Cache Invalidation — 快取更新的藝術</h2>
           </div>
 
-          <Card className="border border-amber-200 bg-amber-50 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-amber-200 bg-amber-50 mb-6">
+            <div className="p-5">
               <p className="text-amber-800 text-base font-medium italic leading-relaxed">
                 「電腦科學中有兩件真正難的事：命名，以及快取失效（Cache Invalidation）。」
                 — Phil Karlton（Netscape 工程師）
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed mb-6">
             快取的問題在於：當你設定了 1 小時的快取，但 5 分鐘後你發現內容有錯誤需要更新，怎麼辦？
@@ -389,24 +395,24 @@ async function onArticleUpdate(articleId: string) {
 // 或在 CMS 操作完成後，由 Next.js Server Action 呼叫   `}
 </CodeBlock>
 
-          <Card className="border border-indigo-200 bg-indigo-50 mt-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50 mt-6">
+            <div className="p-5">
               <p className="text-indigo-800 text-sm leading-relaxed">
                 <strong>三種策略的選用時機：</strong>靜態資源（JS/CSS）優先用 Cache-Busting（Build 工具自動處理）；
                 API 響應且有明確 URL 時用 Purge by URL；API 響應且一個資源會影響多個 URL 時，用 Surrogate Keys。
                 大型系統通常三種策略並用。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：Edge Computing ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -559,15 +565,15 @@ export default {
   },
 };   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：Next.js 與 CDN 最佳實踐 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
@@ -725,15 +731,15 @@ export async function PATCH(
   return Response.json(updated);
 }   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：CDN 選型與架構決策 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
@@ -748,8 +754,8 @@ export async function PATCH(
 
           <div className="grid grid-cols-1 gap-6 mb-8">
             {/* Cloudflare */}
-            <Card className="border border-orange-200 bg-orange-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-orange-200 bg-orange-50">
+              <div className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
                     <Shield size={20} className="text-orange-600" />
@@ -782,12 +788,12 @@ export async function PATCH(
                     <p className="text-gray-600 text-sm">大多數網站，尤其需要安全保護時</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* AWS CloudFront */}
-            <Card className="border border-yellow-200 bg-yellow-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-yellow-200 bg-yellow-50">
+              <div className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
                     <Server size={20} className="text-yellow-600" />
@@ -820,12 +826,12 @@ export async function PATCH(
                     <p className="text-gray-600 text-sm">已在 AWS 生態的企業團隊</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Vercel Edge Network */}
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200 bg-blue-50">
+              <div className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
                     <Zap size={20} className="text-blue-600" />
@@ -858,8 +864,8 @@ export async function PATCH(
                     <p className="text-gray-600 text-sm">Next.js 應用，快速交付優先</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4">CDN 快取命中率診斷</h3>
@@ -909,8 +915,8 @@ done
 # 可在 Cloudflare Dashboard 的 Analytics 頁面直接查看   `}
 </CodeBlock>
 
-          <Card className="border border-green-200 bg-green-50 mt-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-green-200 bg-green-50 mt-6">
+            <div className="p-5">
               <div className="flex items-start gap-3">
                 <CheckCircle size={20} className="text-green-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -925,17 +931,17 @@ done
                   </ul>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="flex flex-wrap gap-2"
         >
           {[
@@ -948,19 +954,14 @@ done
             'Next.js',
             'HTTP Headers',
           ].map(tag => (
-            <Chip key={tag} variant="flat" className="bg-blue-100 text-blue-800">
+            <span key={tag}  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-100 text-blue-800">
               {tag}
-            </Chip>
+            </span>
           ))}
-        </motion.section>
+        </section>
 
         {/* ── Navigation ── */}
-        <motion.div
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
-          className="flex justify-between items-center pt-4"
-        >
+        <FadeIn>
           <Link
             href="/blog/system-design/ep09-microservices"
             className="flex items-center gap-2 text-blue-700 hover:text-blue-900 font-semibold transition-colors group"
@@ -972,7 +973,7 @@ done
             <span>EP.11 →（Coming Soon）</span>
             <ArrowRight size={18} />
           </div>
-        </motion.div>
+        </FadeIn>
 
       </article>
     </div>

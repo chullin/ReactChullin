@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   ArrowLeft,
   ArrowRight,
@@ -18,8 +12,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Promise vs async/await 非同步 JS 的現代寫法 | Joseph Chen',
+  description: '從 Promise chain 到 async/await，理解非同步流程、錯誤處理與實務中更容易維護的寫法。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/js/promise-async',
+  },
+};
+
+
 
 const Callout = ({ type, children }: { type: 'info' | 'warn' | 'tip' | 'error'; children: React.ReactNode }) => {
   const styles = {
@@ -73,24 +78,24 @@ export default function JSPromiseAsyncPage() {
     <div className="bg-white min-h-screen">
       {/* Hero */}
       <div className="relative h-[52vh] min-h-[380px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-amber-900 via-yellow-900 to-slate-900">
-        <motion.div
+        <div
           className="absolute inset-0 opacity-15"
-          animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-          transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse' }}
+          
+          
           style={{
             backgroundImage:
               'radial-gradient(circle at 35% 45%, rgba(251,191,36,0.7) 0%, transparent 50%), radial-gradient(circle at 65% 60%, rgba(234,179,8,0.4) 0%, transparent 50%)',
           }}
-        />
+         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
                 JavaScript 深度
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
                 非同步 JS
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Promise vs async/await<br />
@@ -100,19 +105,14 @@ export default function JSPromiseAsyncPage() {
               從 Callback Hell 到 Promise 鏈，再到 async/await，<br />
               徹底搞懂現代非同步 JavaScript 的寫法與陷阱
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-3xl mx-auto px-6 py-16 space-y-20">
 
         {/* Author */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center justify-between flex-wrap gap-4"
-        >
+        <FadeIn>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-white font-black text-sm">
               J
@@ -133,13 +133,13 @@ export default function JSPromiseAsyncPage() {
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Chip size="sm" variant="flat" color="warning">Promise</Chip>
-            <Chip size="sm" variant="flat" color="warning">async/await</Chip>
-            <Chip size="sm" variant="flat" color="warning">非同步</Chip>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Promise</span>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">async/await</span>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">非同步</span>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 一、非同步的起點：Callback */}
         <section className="space-y-6">
@@ -190,8 +190,8 @@ login(user, (err, session) => {
             它有三種狀態，且狀態只能單向轉換：
           </p>
 
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
                 {[
                   { state: 'Pending', color: 'bg-gray-100 text-gray-600', desc: '等待中，初始狀態' },
@@ -231,8 +231,8 @@ login(user, (err, session) => {
                 Promise 一旦 settle（resolve 或 reject），狀態就<strong>永遠不變</strong>。
                 再次呼叫 resolve 或 reject 都不會有任何效果。
               </Callout>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-800">Promise 的基本寫法</h3>
 
@@ -332,29 +332,23 @@ const result = await Promise.race([
 ]);`,
               },
             ].map((item) => (
-              <motion.div
-                key={item.method}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-              >
-                <Card className="shadow-sm border border-gray-100">
-                  <CardBody className="p-5 space-y-3">
+              <FadeIn>
+                <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+                  <div className="p-5 space-y-3">
                     <div className="flex items-center gap-3 flex-wrap">
                       <code className="font-mono font-black text-gray-800">{item.method}</code>
-                      <Chip size="sm" className={`${item.badgeColor} font-bold text-xs`}>{item.badge}</Chip>
+                      <span  className={`${item.badgeColor} font-bold text-xs`}>{item.badge}</span>
                     </div>
                     <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
                     <CodeBlock title={item.method} code={item.code} />
-                  </CardBody>
-                </Card>
-              </motion.div>
+                  </div>
+                </div>
+              </FadeIn>
             ))}
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 三、async/await */}
         <section className="space-y-6">
@@ -439,17 +433,17 @@ async function main() {
           </Callout>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 四、常見陷阱 */}
         <section className="space-y-8">
           <SectionTitle icon={<AlertTriangle size={18} />}>四、async/await 最常見的陷阱</SectionTitle>
 
           {/* 陷阱 1 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">陷阱 #1</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">陷阱 #1</span>
                 <h4 className="font-black text-gray-800">在迴圈裡 await，變成依序執行</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -479,14 +473,14 @@ async function parallel(ids) {
 }`}
                 note="獨立的非同步任務應該用 Promise.all 並行執行。只有當後面的任務依賴前面的結果時，才需要 await 依序執行。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 陷阱 2 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">陷阱 #2</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">陷阱 #2</span>
                 <h4 className="font-black text-gray-800">忘記 await 導致拿到 Promise 物件而非值</h4>
               </div>
               <CompareBlock
@@ -511,14 +505,14 @@ async function main() {
 }`}
                 note="async 函式的回傳值是 Promise，呼叫時也需要 await。一個常見 bug 是呼叫 async 函式忘記 await，拿到的是 Promise 物件而不是實際的值。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 陷阱 3 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">陷阱 #3</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">陷阱 #3</span>
                 <h4 className="font-black text-gray-800">未處理的 Promise rejection</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -546,14 +540,14 @@ main(); // UnhandledPromiseRejection！`}
 main();`}
                 note="每個 async 函式的呼叫處都應該有 try/catch，或者在呼叫時加 .catch()。Promise.all 只要有一個 reject 就整個失敗，考慮用 Promise.allSettled 代替。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 陷阱 4 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">陷阱 #4</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">陷阱 #4</span>
                 <h4 className="font-black text-gray-800">async 函式不能用在 forEach</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -586,18 +580,18 @@ async function processAllParallel(items) {
 }`}
                 note="forEach 不支援非同步等待。需要依序處理就用 for...of，需要並行處理就用 Promise.all + .map()。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 五、核心重點 */}
         <section className="space-y-5">
           <SectionTitle icon={<CheckCircle size={18} />}>五、核心重點整理</SectionTitle>
 
-          <Card className="shadow-sm border border-amber-100 bg-amber-50/30">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-amber-100 bg-amber-50/30">
+            <div className="p-6 space-y-3">
               {[
                 { key: 'Callback Hell', val: '深層巢狀讓程式碼難以閱讀和維護，是 Promise 出現的動機' },
                 { key: 'Promise 狀態', val: 'Pending → Fulfilled 或 Rejected，狀態不可逆' },
@@ -614,21 +608,21 @@ async function processAllParallel(items) {
                   <p className="text-sm text-gray-600 flex-1 leading-relaxed">{r.val}</p>
                 </div>
               ))}
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
         {/* Navigation */}
         <div className="flex items-center justify-between gap-4 flex-wrap pt-4">
           <Link href="/blog/js/event-loop">
-            <Button variant="flat" startContent={<ArrowLeft size={16} />} className="font-bold text-gray-600 hover:text-gray-900">
+            <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold text-gray-600 hover:text-gray-900"><ArrowLeft size={16} /> 
               Event Loop 圖解
-            </Button>
+            </button>
           </Link>
           <Link href="/blog">
-            <Button variant="flat" endContent={<ArrowRight size={16} />} className="font-bold text-gray-600 hover:text-gray-900">
+            <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold text-gray-600 hover:text-gray-900">
               所有文章
-            </Button>
+             <ArrowRight size={16} /></button>
           </Link>
         </div>
       </article>

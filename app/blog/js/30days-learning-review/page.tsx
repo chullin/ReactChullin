@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +14,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'JS 算法學習復盤 閉包、高階函式與那些坑 | Joseph Chen',
+  description: '整理 JavaScript 閉包、高階函式與常見踩坑情境，從錯誤寫法對照正確寫法，建立更穩定的 JS 思維。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/js/30days-learning-review',
+  },
+};
+
+
 
 const Callout = ({ type, children }: { type: 'info' | 'warn' | 'tip' | 'error'; children: React.ReactNode }) => {
   const styles = {
@@ -61,25 +66,20 @@ const ProblemCard = ({
   tagColor: string;
   children: React.ReactNode;
 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5 }}
-  >
-    <Card className="shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-      <CardBody className="p-6 space-y-4">
+  <FadeIn>
+    <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="p-6 space-y-4">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <p className="text-xs font-black text-gray-400 tracking-widest uppercase mb-1">{num}</p>
             <h3 className="text-lg font-black text-gray-800">{title}</h3>
           </div>
-          <Chip size="sm" className={`${tagColor} font-bold text-xs shrink-0`}>{tag}</Chip>
+          <span  className={`${tagColor} font-bold text-xs shrink-0`}>{tag}</span>
         </div>
         {children}
-      </CardBody>
-    </Card>
-  </motion.div>
+      </div>
+    </div>
+  </FadeIn>
 );
 
 const MistakeRow = ({ bad, good, note }: { bad: string; good: string; note: string }) => (
@@ -109,24 +109,24 @@ export default function JS30DaysReviewPage() {
     <div className="bg-white min-h-screen">
       {/* Hero */}
       <div className="relative h-[52vh] min-h-[380px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-amber-900 via-yellow-900 to-slate-900">
-        <motion.div
+        <div
           className="absolute inset-0 opacity-15"
-          animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-          transition={{ duration: 18, repeat: Infinity, repeatType: 'reverse' }}
+          
+          
           style={{
             backgroundImage:
               'radial-gradient(circle at 25% 45%, rgba(251,191,36,0.7) 0%, transparent 50%), radial-gradient(circle at 75% 55%, rgba(245,158,11,0.4) 0%, transparent 50%)',
           }}
-        />
+         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
                 JavaScript 深度
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
                 30 Days of JS
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               JS 算法學習復盤<br />
@@ -136,19 +136,14 @@ export default function JS30DaysReviewPage() {
               從 LeetCode 30 Days of JavaScript 學習紀錄出發，<br />
               整理那些讓我卡關最久、理解最深的 JS 核心觀念
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-3xl mx-auto px-6 py-16 space-y-20">
 
         {/* Author */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center justify-between flex-wrap gap-4"
-        >
+        <FadeIn>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center text-white font-black text-sm">
               J
@@ -169,13 +164,13 @@ export default function JS30DaysReviewPage() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Chip size="sm" variant="flat" color="warning">閉包</Chip>
-            <Chip size="sm" variant="flat" color="warning">高階函式</Chip>
-            <Chip size="sm" variant="flat" color="warning">函式組合</Chip>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">閉包</span>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">高階函式</span>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">函式組合</span>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 1 — 學習背景與難點 */}
         <section className="space-y-6">
@@ -187,8 +182,8 @@ export default function JS30DaysReviewPage() {
             我把每一個卡關的地方都留了下來。
           </p>
 
-          <Card className="shadow-sm border border-amber-100">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-amber-100">
+            <div className="p-6">
               <p className="text-sm font-black text-amber-700 uppercase tracking-widest mb-4">本次學習覆蓋的題目</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
@@ -206,12 +201,12 @@ export default function JS30DaysReviewPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-gray-700 truncate">{p.title}</p>
                     </div>
-                    <Chip size="sm" variant="flat" color="warning" className="text-[10px] shrink-0">{p.tag}</Chip>
+                    <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-[10px] shrink-0">{p.tag}</span>
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed">
             我在這個學習計畫中遇到的難點，大致可以分成三類：
@@ -235,18 +230,18 @@ export default function JS30DaysReviewPage() {
                 desc: 'reduceRight 的執行順序、高階函式為什麼要 return function，腦袋需要建立新的抽象層。',
               },
             ].map((item) => (
-              <Card key={item.title} className="shadow-sm border border-gray-100">
-                <CardBody className="p-5 space-y-2">
+              <div key={item.title} className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+                <div className="p-5 space-y-2">
                   <span className="text-2xl">{item.icon}</span>
                   <p className="font-black text-gray-800">{item.title}</p>
                   <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 2 — 核心知識問題點 */}
         <section className="space-y-10">
@@ -330,8 +325,8 @@ const expect = (val) => {
               把 fn 回傳值為 <strong>truthy</strong> 的元素留下來。
               JS 的 Falsy 值只有 6 個，其他所有值都是 Truthy。
             </p>
-            <Card className="shadow-sm border border-gray-100">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+              <div className="p-6">
                 <p className="text-sm font-black text-gray-500 uppercase tracking-widest mb-4">JS 的 6 個 Falsy 值</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {[
@@ -352,8 +347,8 @@ const expect = (val) => {
                   <strong>易混淆</strong>：<code className="font-mono">"0"</code>（字串的零）、<code className="font-mono">[]</code>（空陣列）、
                   <code className="font-mono">{'{}'}</code>（空物件）通通是 <strong>Truthy</strong>！只有數字 <code className="font-mono">0</code> 是 Falsy。
                 </Callout>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* 2-4 Rest 參數 */}
@@ -431,7 +426,7 @@ const square = (x) => x * x;
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 3 — 經典例題復盤 */}
         <section className="space-y-8">
@@ -582,7 +577,7 @@ var filter = function(arr, fn) {
           </ProblemCard>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 4 — 避坑指南 */}
         <section className="space-y-8">
@@ -593,10 +588,10 @@ var filter = function(arr, fn) {
           </p>
 
           {/* Pit 1 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">坑 #1</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">坑 #1</span>
                 <h4 className="font-black text-gray-800">n++ 後置遞增的回傳值</h4>
               </div>
               <MistakeRow
@@ -617,14 +612,14 @@ return {
 }`}
                 note="n++ 是「先回傳，再遞增」；++n 是「先遞增，再回傳」。Counter 題目要求第一次回傳初始值，所以必須用 n++。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* Pit 2 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">坑 #2</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">坑 #2</span>
                 <h4 className="font-black text-gray-800">物件方法參數名稱遮蔽閉包變數</h4>
               </div>
               <MistakeRow
@@ -648,14 +643,14 @@ return {
 };`}
                 note="方法不應該接受和閉包變數同名的參數。命名衝突時，內層的參數會遮蔽（shadow）外層的變數，讓閉包失效。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* Pit 3 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">坑 #3</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">坑 #3</span>
                 <h4 className="font-black text-gray-800">filter 回傳 fn 的結果而非元素本身</h4>
               </div>
               <MistakeRow
@@ -671,14 +666,14 @@ return {
 }`}
                 note="filter 的語義是「保留元素」，fn 只是「判斷是否保留」的謂詞（predicate）函式。push 的一定是原始元素 arr[i]，不是 fn 的回傳值。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* Pit 4 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">坑 #4</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">坑 #4</span>
                 <h4 className="font-black text-gray-800">== vs === 的嚴格性</h4>
               </div>
               <MistakeRow
@@ -692,14 +687,14 @@ null == 0   // false ← 不一致的行為`}
 null === undefined // false ← 就是不一樣`}
                 note="JavaScript 預設應該始終用 ===（三個等號）。== 的型別轉換規則極其複雜且容易出錯。只有在刻意要利用寬鬆比較（例如 null == undefined）時才考慮 ==。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* Pit 5 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">坑 #5</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">坑 #5</span>
                 <h4 className="font-black text-gray-800">function 是關鍵字，不能當變數名</h4>
               </div>
               <MistakeRow
@@ -713,12 +708,12 @@ functions.reduceRight((acc, fn) => {
 }, x);`}
                 note="JS 的保留關鍵字（function、return、class、const、let 等）不能用作變數名或參數名。一般慣例用 fn 代表「某個函式參數」，cb 代表 callback。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 總結表 */}
-          <Card className="shadow-sm border border-amber-100 bg-amber-50/30">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-amber-100 bg-amber-50/30">
+            <div className="p-6">
               <p className="text-sm font-black text-amber-700 uppercase tracking-widest mb-4">快速複習：本次學到的 JS 特性一覽</p>
               <div className="space-y-3">
                 {[
@@ -735,21 +730,21 @@ functions.reduceRight((acc, fn) => {
                   <div key={r.concept} className="flex items-start gap-3 bg-white rounded-xl px-4 py-3">
                     <code className="font-mono text-sm font-black text-amber-700 w-36 shrink-0 mt-0.5">{r.concept}</code>
                     <p className="text-sm text-gray-600 flex-1 leading-relaxed">{r.rule}</p>
-                    <Chip size="sm" variant="flat" color="warning" className="text-[10px] shrink-0">{r.level}</Chip>
+                    <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-[10px] shrink-0">{r.level}</span>
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Closing */}
         <section className="space-y-5">
           <SectionTitle icon={<Target size={18} />}>學習心得</SectionTitle>
-          <Card className="shadow-sm border border-gray-100 bg-gradient-to-br from-amber-50 to-yellow-50">
-            <CardBody className="p-8 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100 bg-gradient-to-br from-amber-50 to-yellow-50">
+            <div className="p-8 space-y-4">
               <p className="text-gray-700 leading-relaxed">
                 30 Days of JavaScript 的前幾題看起來很簡單，但每一題都藏著一個 JS 的核心觀念。
                 我犯的每一個錯誤——<em>n++ 回傳值搞混、變數遮蔽、filter push 錯對象、function 關鍵字打字錯誤</em>——
@@ -765,16 +760,16 @@ functions.reduceRight((acc, fn) => {
                 重點放在 <code className="font-mono">Promise</code>、<code className="font-mono">async/await</code>、
                 <code className="font-mono">Event Loop</code>，這三個主題在非同步 JS 開發中至關重要。
               </Callout>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
         {/* Navigation */}
         <div className="flex items-center justify-between gap-4 flex-wrap pt-4">
           <Link href="/blog">
-            <Button variant="flat" startContent={<ArrowLeft size={16} />} className="font-bold text-gray-600 hover:text-gray-900">
+            <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold text-gray-600 hover:text-gray-900"><ArrowLeft size={16} /> 
               所有文章
-            </Button>
+            </button>
           </Link>
           <p className="text-xs text-gray-400 font-medium">JavaScript Deep Dive Series</p>
         </div>

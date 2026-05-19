@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dynamic Programming 把大問題拆成子問題，然後記住答案 | Joseph Chen',
+  description: '#70 Climbing Stairs · #198 House Robber — 用兩題打通 1D DP 的思維',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep11-dp-basics',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -44,10 +49,10 @@ export default function LeetcodeEP11Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `linear-gradient(135deg, #8b5cf6 25%, transparent 25%), linear-gradient(225deg, #8b5cf6 25%, transparent 25%), linear-gradient(315deg, #8b5cf6 25%, transparent 25%), linear-gradient(45deg, #8b5cf6 25%, transparent 25%)`, backgroundSize: '20px 20px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.11</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.11</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Dynamic Programming<br />
@@ -58,14 +63,14 @@ export default function LeetcodeEP11Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-violet-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-violet-400" /><span>2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -106,15 +111,15 @@ export default function LeetcodeEP11Page() {
                 #70 Climbing Stairs
               </h2>
               <p>爬 n 階樓梯，每次可以爬 1 階或 2 階，有幾種方法？</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="範例" code={`n = 3
 → 3 種：(1+1+1)、(1+2)、(2+1)
 
 n = 4
 → 5 種：(1+1+1+1)、(1+1+2)、(1+2+1)、(2+1+1)、(2+2)`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>先嘗試暴力遞迴的思維：到達第 n 階，只可能從第 n-1 階跨一步上來，或從第 n-2 階跨兩步上來。所以：</p>
               <div className="bg-violet-50 border border-violet-200 rounded-2xl p-5 font-mono text-center text-lg font-black text-violet-900">
@@ -238,15 +243,15 @@ n = 4
                 #198 House Robber
               </h2>
               <p>一排房子，每間有不同金額。你不能搶相鄰的兩間（會觸發警報），求能搶到的最大金額。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="範例" code={`nums = [2, 7, 9, 3, 1]
 → 12：搶 index 0(2) + index 2(9) + index 4(1)
 
 nums = [1, 2, 3, 1]
 → 4：搶 index 0(1) + index 2(3)`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>套入 DP 框架：</p>
               <div className="space-y-3 pl-4 text-sm">
@@ -365,14 +370,14 @@ nums = [1, 2, 3, 1]
               <p>兩者的核心都是：<strong>dp[i] 只依賴 dp[i-1] 和 dp[i-2]</strong>，因此都可以用兩個變數把空間壓到 O(1)。這個優化技巧幾乎適用所有 1D DP。</p>
             </div>
 
-            <Card className="bg-violet-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-violet-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-violet-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-violet-900 leading-snug relative z-10">
                   DP 最難的不是寫程式，而是想出「狀態定義」和「轉移方程」。只要這兩件事清楚，程式幾乎自己寫出來。每次看到 DP 題，先問：「dp[i] 代表什麼，它和更小的子問題之間的關係是什麼？」
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-[2rem] p-8 space-y-4">
               <p className="font-black text-gray-900 text-lg">本篇重點整理</p>
@@ -393,7 +398,7 @@ nums = [1, 2, 3, 1]
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep10-tree-bfs-bst" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -411,7 +416,7 @@ nums = [1, 2, 3, 1]
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'DP', 'Python', '1D DP', 'EP.11'].map((tag) => (
-              <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

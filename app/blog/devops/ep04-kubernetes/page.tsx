@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -28,8 +23,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Kubernetes 入門： Container 編排的下一步 | Joseph Chen',
+  description: 'Pod、Deployment、Service、Ingress — 從 Docker Compose 到 K8s 的思維轉換，以及為什麼大公司都在用',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep04-kubernetes',
+  },
+};
+
+
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -45,7 +51,7 @@ export default function DevOpsEP04() {
       {/* ── Hero ──────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-blue-800 via-indigo-800 to-violet-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.04</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">工程品質與 DevOps</span>
@@ -63,7 +69,7 @@ export default function DevOpsEP04() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 18 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Kubernetes · K8s · Container · DevOps</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -71,7 +77,7 @@ export default function DevOpsEP04() {
       <div className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Section 1: Docker Compose 的限制 */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center">
               <AlertTriangle size={20} className="text-white" />
@@ -110,8 +116,8 @@ services:
 </CodeBlock>
 
           <div className="grid md:grid-cols-2 gap-4 my-8">
-            <Card className="border border-red-200 bg-red-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50">
+              <div className="p-5">
                 <p className="font-bold text-slate-800 mb-3 flex items-center gap-2">
                   <AlertTriangle size={16} className="text-red-500" />
                   Docker Compose 的生產問題
@@ -134,10 +140,10 @@ services:
                     <span>只能運行在單台主機</span>
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border border-indigo-200 bg-indigo-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50">
+              <div className="p-5">
                 <p className="font-bold text-slate-800 mb-3 flex items-center gap-2">
                   <CheckCircle size={16} className="text-indigo-500" />
                   Kubernetes 解決的問題
@@ -160,25 +166,25 @@ services:
                     <span>跨多台機器調度，高可用</span>
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border border-indigo-200 bg-indigo-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50">
+            <div className="p-5">
               <p className="text-slate-700 leading-relaxed">
                 <strong>一句話定位：</strong>
                 Docker Compose 是「開發環境的工具」，Kubernetes 是「生產環境的 Docker Compose」——
                 但多了自動重啟、自動擴展、滾動更新、跨機器排程，以及一套宣告式的期望狀態管理機制。
               </p>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Section 2: K8s 核心概念架構圖 */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
               <Layers size={20} className="text-white" />
@@ -219,8 +225,8 @@ services:
 </CodeBlock>
 
           <div className="grid md:grid-cols-2 gap-4 mt-6">
-            <Card className="border border-blue-200">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200">
+              <div className="p-5">
                 <p className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
                   <Server size={16} className="text-blue-500" />
                   Control Plane 各元件職責
@@ -239,10 +245,10 @@ services:
                     <p className="text-slate-500">Cluster 的「真相來源」，所有狀態都存在這裡</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
-            <Card className="border border-blue-200">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200">
+              <div className="p-5">
                 <p className="font-semibold text-slate-800 mb-3 flex items-center gap-2">
                   <HardDrive size={16} className="text-indigo-500" />
                   Worker Node 各元件職責
@@ -261,25 +267,25 @@ services:
                     <p className="text-slate-500">實際跑 container（通常是 containerd 或 Docker）</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="mt-6 border border-amber-200 bg-amber-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mt-6 border border-amber-200 bg-amber-50">
+            <div className="p-5">
               <p className="text-slate-700 text-sm leading-relaxed">
                 <strong>K8s 的核心設計哲學：宣告式（Declarative）而非命令式（Imperative）。</strong>
                 你告訴 K8s「我要 3 個 Pod」，K8s 負責讓實際狀態達到期望狀態，並持續監控維護。
                 如果一個 Pod 掛了，Controller 會自動建立新的 Pod 來補齊。
               </p>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Section 3: Pod 和 Deployment */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
               <Package size={20} className="text-white" />
@@ -369,31 +375,31 @@ spec:
 </CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4 mt-6">
-            <Card className="border border-violet-200 bg-violet-50">
-              <CardBody className="p-4 text-center">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+              <div className="p-4 text-center">
                 <p className="text-2xl font-black text-violet-600 mb-1">replicas</p>
                 <p className="text-slate-600 text-sm">指定副本數，K8s 自動維持這個數量</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-violet-200 bg-violet-50">
-              <CardBody className="p-4 text-center">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+              <div className="p-4 text-center">
                 <p className="text-2xl font-black text-violet-600 mb-1">resources</p>
                 <p className="text-slate-600 text-sm">requests 用於排程，limits 防止資源濫用</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-violet-200 bg-violet-50">
-              <CardBody className="p-4 text-center">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+              <div className="p-4 text-center">
                 <p className="text-2xl font-black text-violet-600 mb-1">RollingUpdate</p>
                 <p className="text-slate-600 text-sm">新版 Pod 一個個替換舊版，用戶無感</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Section 4: Service */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
               <Network size={20} className="text-white" />
@@ -438,8 +444,8 @@ spec:
           </p>
 
           <p className="text-slate-700 font-semibold mb-4">三種 Service 類型：</p>
-          <Card className="border border-slate-200">
-            <CardBody className="p-0">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200">
+            <div className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -468,8 +474,8 @@ spec:
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-slate-700 font-semibold mb-3 mt-8">前後端服務各自的 Service 範例：</p>
           <CodeBlock language="yaml">
@@ -500,12 +506,12 @@ spec:
       targetPort: 3000
   type: ClusterIP    # 同樣只讓 Ingress 存取，不直接對外   `}
 </CodeBlock>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Section 5: Ingress */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
               <Globe size={20} className="text-white" />
@@ -574,45 +580,45 @@ spec:
 </CodeBlock>
 
           <div className="grid md:grid-cols-3 gap-4 mt-6">
-            <Card className="border border-emerald-200 bg-emerald-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-emerald-200 bg-emerald-50">
+              <div className="p-5">
                 <CheckCircle size={18} className="text-emerald-500 mb-2" />
                 <p className="font-semibold text-slate-800 mb-1">節省費用</p>
                 <p className="text-slate-600 text-sm">一個 Load Balancer 服務所有 Service，不需要每個 Service 各一個 LB</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-emerald-200 bg-emerald-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-emerald-200 bg-emerald-50">
+              <div className="p-5">
                 <CheckCircle size={18} className="text-emerald-500 mb-2" />
                 <p className="font-semibold text-slate-800 mb-1">SSL 集中管理</p>
                 <p className="text-slate-600 text-sm">TLS 終止在 Ingress 層，後端 Service 不需要各自管理憑證</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-emerald-200 bg-emerald-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-emerald-200 bg-emerald-50">
+              <div className="p-5">
                 <CheckCircle size={18} className="text-emerald-500 mb-2" />
                 <p className="font-semibold text-slate-800 mb-1">靈活路由</p>
                 <p className="text-slate-600 text-sm">根據 host 或 path 路由，/api/* → backend，/* → frontend</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="mt-6 border border-amber-200 bg-amber-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mt-6 border border-amber-200 bg-amber-50">
+            <div className="p-5">
               <p className="text-slate-700 text-sm leading-relaxed">
                 <strong>安裝 ingress-nginx：</strong>
                 Ingress 資源只是定義路由規則，需要搭配 Ingress Controller 才能運作。
                 最常用的是 <code className="bg-slate-200 px-1 rounded text-xs">ingress-nginx</code>，
                 可以用 Helm 安裝：<code className="bg-slate-200 px-1 rounded text-xs">helm install ingress-nginx ingress-nginx/ingress-nginx</code>。
               </p>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Section 6: kubectl 速查 */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-600 to-slate-800 flex items-center justify-center">
               <Terminal size={20} className="text-white" />
@@ -714,12 +720,12 @@ kubectl delete -f deployment.yaml
 # 臨時 port-forward（本機訪問 cluster 內的 Service，用於 debug）
 kubectl port-forward service/my-app-service 8080:80   `}
 </CodeBlock>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Section 7: HPA 自動水平擴展 */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center">
               <BarChart3 size={20} className="text-white" />
@@ -784,20 +790,20 @@ spec:
           periodSeconds: 60             # 每分鐘最多減少 20%   `}
 </CodeBlock>
 
-          <Card className="mt-6 mb-8 border border-amber-200 bg-amber-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mt-6 mb-8 border border-amber-200 bg-amber-50">
+            <div className="p-5">
               <p className="font-semibold text-slate-800 mb-2">HPA 運作前提</p>
               <p className="text-slate-700 text-sm leading-relaxed">
                 HPA 需要 Deployment 的 Pod 設定了 <code className="bg-slate-200 px-1 rounded text-xs">resources.requests</code>，
                 才能計算使用率百分比。同時 cluster 需要安裝 <code className="bg-slate-200 px-1 rounded text-xs">metrics-server</code>
                 才能收集 Pod 的即時資源使用數據。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-slate-700 font-semibold mb-4">Docker Compose vs Kubernetes 功能完整對比：</p>
-          <Card className="border border-slate-200">
-            <CardBody className="p-0">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200">
+            <div className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -866,11 +872,11 @@ spec:
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="mt-6 border border-indigo-200 bg-indigo-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mt-6 border border-indigo-200 bg-indigo-50">
+            <div className="p-5">
               <p className="font-semibold text-slate-800 mb-2">什麼時候該從 Compose 遷移到 K8s？</p>
               <div className="space-y-2 text-sm text-slate-600">
                 <div className="flex items-center gap-2">
@@ -890,55 +896,55 @@ spec:
                   <span>多個環境（dev/staging/prod）需要一致的部署方式</span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Tags */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <p className="text-slate-500 text-sm font-semibold uppercase tracking-wider mb-3">Tags</p>
           <div className="flex flex-wrap gap-2">
             {['Kubernetes', 'K8s', 'Docker', 'DevOps', 'Container', 'HPA', 'Deployment'].map(tag => (
-              <Chip key={tag} size="sm" variant="flat" className="bg-indigo-100 text-indigo-800">
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-100 text-indigo-800">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* Navigation */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/devops/ep03-docker-compose">
-              <Card className="border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer h-full">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer h-full">
+                <div className="p-5">
                   <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
                     <ArrowLeft size={14} />
                     <span>上一篇</span>
                   </div>
                   <p className="font-semibold text-slate-800">EP.03 Docker Compose</p>
                   <p className="text-slate-500 text-sm mt-1">一個指令啟動整個開發環境</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <Link href="/blog/devops/ep01-test-pyramid">
-              <Card className="border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer h-full">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer h-full">
+                <div className="p-5">
                   <div className="flex items-center gap-2 text-slate-500 text-sm mb-2 justify-end">
                     <span>回到系列起點</span>
                     <ArrowRight size={14} />
                   </div>
                   <p className="font-semibold text-slate-800 text-right">EP.01 測試金字塔</p>
                   <p className="text-slate-500 text-sm mt-1 text-right">DevOps 系列從這裡開始</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.div>
+        </FadeIn>
 
       </div>
     </div>

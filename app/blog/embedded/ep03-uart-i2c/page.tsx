@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -15,8 +10,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'UART &amp; I2C 嵌入式硬體溝通基礎原理 | Joseph Chen',
+  description: '不需要深入硬體，只需理解軟體工程師該懂的通訊概念 — Python pyserial / smbus 實作',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/embedded/ep03-uart-i2c',
+  },
+};
+
+
 
 /* ─── Inline Components ─────────────────────────────────────── */
 
@@ -53,7 +59,7 @@ export default function EmbeddedEP03Page() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-cyan-600 via-teal-600 to-emerald-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.03</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs font-medium">嵌入式與系統</span>
@@ -72,7 +78,7 @@ export default function EmbeddedEP03Page() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 10 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> UART · I2C · Python · Raspberry Pi</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -80,9 +86,9 @@ export default function EmbeddedEP03Page() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-cyan-300 shrink-0 mt-1" />
                 <div>
@@ -96,11 +102,11 @@ export default function EmbeddedEP03Page() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 1. 為什麼軟體工程師要懂通訊協定 */}
         <section className="space-y-6">
@@ -111,50 +117,50 @@ export default function EmbeddedEP03Page() {
           </p>
 
           <div className="grid sm:grid-cols-3 gap-4">
-            <Card className="border-0 shadow-sm bg-cyan-50">
-              <CardBody className="p-6 space-y-2">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm bg-cyan-50">
+              <div className="p-6 space-y-2">
                 <p className="font-black text-cyan-800">Raspberry Pi 控制感測器</p>
                 <p className="text-sm text-cyan-700 leading-relaxed">
                   溫濕度、距離、加速度感測器大多透過 UART 或 I2C 介面連接，
                   Python 幾行程式就能讀取數據。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-sm bg-teal-50">
-              <CardBody className="p-6 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm bg-teal-50">
+              <div className="p-6 space-y-2">
                 <p className="font-black text-teal-800">測試儀器 UART Console</p>
                 <p className="text-sm text-teal-700 leading-relaxed">
                   嵌入式設備的 debug console 幾乎都走 UART，
                   透過 pyserial 可以自動化擷取設備 log 與發送指令。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-sm bg-emerald-50">
-              <CardBody className="p-6 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm bg-emerald-50">
+              <div className="p-6 space-y-2">
                 <p className="font-black text-emerald-800">I2C 多感測器整合</p>
                 <p className="text-sm text-emerald-700 leading-relaxed">
                   一條 I2C bus 可同時連接多個感測器，用地址區分，
                   特別適合 IoT 設備中需要整合多種感測器的場景。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 2. UART */}
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">2. UART — 點對點非同步通訊</h2>
 
-          <Card className="border-0 bg-cyan-50 shadow-sm">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-cyan-50 shadow-sm">
+            <div className="p-6">
               <p className="font-black text-cyan-800 text-lg mb-2">一句話理解 UART</p>
               <p className="text-cyan-700 text-base">
                 「兩條線，Tx 發、Rx 收，點對點非同步通訊。雙方不需要共用時鐘，但必須事先約定好相同的 Baud rate。」
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 關鍵參數表格 */}
           <div className="overflow-x-auto">
@@ -256,20 +262,20 @@ ser.close()`}
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 3. I2C */}
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">3. I2C — 一主多從匯流排</h2>
 
-          <Card className="border-0 bg-teal-50 shadow-sm">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-teal-50 shadow-sm">
+            <div className="p-6">
               <p className="font-black text-teal-800 text-lg mb-2">一句話理解 I2C</p>
               <p className="text-teal-700 text-base">
                 「兩條線（SDA 資料 + SCL 時鐘），一個主設備（Master）可以連接最多 127 個從設備（Slave），用 7-bit 地址區分每個設備。」
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 視覺化：I2C Bus */}
           <div className="space-y-3">
@@ -386,7 +392,7 @@ bus.close()`}
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 4. UART vs I2C 比較表 */}
         <section className="space-y-6">
@@ -425,7 +431,7 @@ bus.close()`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 5. 常見問題排查 */}
         <section className="space-y-6">
@@ -459,7 +465,7 @@ bus.close()`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 6. 面試常考題 */}
         <section className="space-y-6">
@@ -481,8 +487,8 @@ bus.close()`}
                 a: '用 pyserial 套件：先 import serial，然後用 serial.Serial() 建立連線，傳入 port（如 "/dev/ttyUSB0"）、baudrate（如 115200）、timeout 等參數；用 ser.write(b"command\\n") 發送指令；用 ser.readline() 讀取一行回應並 decode("utf-8") 轉成字串；完成後呼叫 ser.close()。要注意發送的資料必須是 bytes（用 b"" 前綴），讀回來的也是 bytes，需要 decode 才能當字串處理。',
               },
             ].map(({ q, a }, i) => (
-              <Card key={i} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-6 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="bg-cyan-100 text-cyan-700 font-black text-sm px-2.5 py-1 rounded-full shrink-0">Q{i + 1}</span>
                     <p className="font-black text-gray-900">{q}</p>
@@ -490,13 +496,13 @@ bus.close()`}
                   <div className="pl-10">
                     <p className="text-gray-600 leading-relaxed text-sm">{a}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -516,7 +522,7 @@ bus.close()`}
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['UART', 'I2C', 'Python', 'pyserial', 'smbus', '嵌入式', 'Raspberry Pi', 'EP.03'].map((tag) => (
-            <Chip key={tag} variant="flat" color="default" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

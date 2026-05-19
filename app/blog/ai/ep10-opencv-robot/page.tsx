@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -24,8 +19,19 @@ import { Calendar,
 
 import Link from 'next/link';
 import Script from 'next/script';
-import { motion } from 'framer-motion';
 import BlogRelatedPosts from '@/components/blog/BlogRelatedPosts';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'OpenCV XY Vision Automation | 智慧化視覺辨識與自動化操作系統 | Joseph Chen',
+  description: '透過 OpenCV 視覺辨識與座標轉換，讓傳統依賴固定 XY 座標的自動化測試，升級為可動態辨識 UI 的智慧化操作系統。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep10-opencv-robot',
+  },
+};
+
+
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -55,14 +61,14 @@ export default function AiEP10Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
                 Computer Vision
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
                 EP.10
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4 tracking-tight">
               OpenCV XY Vision Automation<br />
@@ -72,7 +78,7 @@ export default function AiEP10Page() {
               透過 OpenCV 視覺辨識與座標轉換，讓傳統依賴固定 XY 座標的自動化測試，<br />
               升級為可動態辨識 UI 的智慧化操作系統。
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -111,7 +117,7 @@ export default function AiEP10Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* System Pipeline Section - New Visual Flow */}
         <section className="space-y-8">
@@ -141,28 +147,28 @@ export default function AiEP10Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Before vs After Scenario - Added Storytelling with Impact */}
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">實戰案例：維護成本的轉變</h2>
           <div className="grid sm:grid-cols-2 gap-6">
-            <Card className="bg-slate-50 border-none shadow-none p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-slate-50 border-none shadow-none p-6">
               <p className="text-xs font-black text-red-500 uppercase mb-3">Before (傳統模式)</p>
               <p className="text-sm text-slate-600 leading-relaxed">
                 iPhone 更新後，確認按鈕位移了 20px。由於腳本採用固定座標，導致後續數百筆自動化測試全部失效，工程師需花費整天重新手動校正所有相關座標。
               </p>
-            </Card>
-            <Card className="bg-cyan-50 border-none shadow-none p-6">
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-cyan-50 border-none shadow-none p-6">
               <p className="text-xs font-black text-cyan-600 uppercase mb-3">After (視覺導航模式)</p>
               <p className="text-sm text-slate-600 leading-relaxed">
                 系統透過 OpenCV 自動搜尋「確認」圖示位置。即使 UI 版面微調，系統仍能精確鎖定動態座標並觸發 XY 設備，達成無人值守的零維護轉型。
               </p>
-            </Card>
+            </div>
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Technical Deep Dive - Enhanced Technical Content */}
         <section className="space-y-8">
@@ -178,7 +184,7 @@ export default function AiEP10Page() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {['比例換算 (Scaling)', 'Offset Calibration', '座標系映射', '透視校正 (Perspective Transform)'].map(t => (
-                  <Chip key={t} size="sm" variant="flat" className="bg-white text-slate-500 font-bold border border-slate-200">{t}</Chip>
+                  <span key={t}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white text-slate-500 font-bold border border-slate-200">{t}</span>
                 ))}
               </div>
             </div>
@@ -204,7 +210,7 @@ export default function AiEP10Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* My Work Section - Added Personal Contribution */}
         <section className="space-y-6">
@@ -224,7 +230,7 @@ export default function AiEP10Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Future Roadmap - Refined Future Direction */}
         <section className="space-y-6">
@@ -276,7 +282,7 @@ export default function AiEP10Page() {
             "name": "陳憲億 Joseph Chen"
           },
           "datePublished": "2025-05-10",
-          "image": "https://chullin.tw/assets/profile3.png",
+          "image": "https://chullin.tw/assets/profile3.webp",
           "publisher": {
             "@type": "Organization",
             "name": "Joseph Chen Portfolio",

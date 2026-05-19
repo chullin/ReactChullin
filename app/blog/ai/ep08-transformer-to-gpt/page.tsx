@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -14,9 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '從 Transformer 延伸到 ChatGPT | Joseph Chen',
+  description: 'Attention 機制如何從語音合成走向通用語言智慧 — BERT 雙向編碼器、GPT 系列、RLHF、到 ChatGPT 的誕生',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep08-transformer-to-gpt',
+  },
+};
+
+
 
 const qaList = [
   {
@@ -64,14 +69,14 @@ export default function AiEP08Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-rose-500/20 text-rose-100 border-rose-400/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-rose-500/20 text-rose-100 border-rose-400/30 font-bold uppercase text-[10px]">
                 AI 離線部署
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-purple-500/20 text-purple-100 border-purple-400/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-100 border-purple-400/30 font-bold uppercase text-[10px]">
                 EP.08
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-3">
               從 Transformer 延伸到 ChatGPT
@@ -82,14 +87,9 @@ export default function AiEP08Page() {
             <p className="text-base sm:text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
               Attention 機制如何從語音合成走向通用語言智慧 — BERT 雙向編碼器、GPT 系列、RLHF、到 ChatGPT 的誕生
             </p>
-          </motion.div>
+          </FadeIn>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-5 text-white/70 text-sm pt-2"
-          >
+          <FadeIn>
             <span className="flex items-center gap-1.5">
               <User size={14} />
               Joseph Chen
@@ -106,7 +106,7 @@ export default function AiEP08Page() {
               <Eye size={14} />
               BERT · GPT · RLHF · LLM · ChatGPT
             </span>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -114,9 +114,9 @@ export default function AiEP08Page() {
       <div className="max-w-4xl mx-auto px-6 py-14 space-y-14">
 
         {/* ── Opening Quote ── */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
-          <Card className="border border-rose-200 bg-rose-50/60 shadow-sm">
-            <CardBody className="p-7">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-rose-200 bg-rose-50/60 shadow-sm">
+            <div className="p-7">
               <div className="flex gap-4">
                 <Quote size={28} className="text-rose-400 shrink-0 mt-1" />
                 <div>
@@ -128,9 +128,9 @@ export default function AiEP08Page() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
         {/* ── Section 1: 兩條演化路線 ── */}
         <section className="space-y-6">
@@ -143,8 +143,8 @@ export default function AiEP08Page() {
           </p>
 
           {/* Architecture Diagram */}
-          <Card className="border border-gray-200 shadow-sm">
-            <CardBody className="p-8">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 shadow-sm">
+            <div className="p-8">
               <div className="flex flex-col items-center gap-2 font-mono text-sm">
                 <div className="px-6 py-2 rounded-xl bg-gray-800 text-white font-bold text-base">Transformer (2017)</div>
                 <div className="text-gray-400 text-lg">↓</div>
@@ -163,8 +163,8 @@ export default function AiEP08Page() {
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
             {[
@@ -190,18 +190,18 @@ export default function AiEP08Page() {
                 rep: 'T5、BART',
               },
             ].map((item) => (
-              <Card key={item.label} className={`border ${item.color} shadow-sm`}>
-                <CardBody className="p-5 space-y-2">
+              <div key={item.label} className={`border ${item.color} shadow-sm`}>
+                <div className="p-5 space-y-2">
                   <p className={`font-bold text-sm ${item.titleColor}`}>{item.label}</p>
                   <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
                   <p className="text-xs text-gray-500">代表：{item.rep}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 2: BERT ── */}
         <section className="space-y-6">
@@ -218,8 +218,8 @@ export default function AiEP08Page() {
           <h3 className="text-lg font-bold text-gray-800">2.2 什麼是雙向？</h3>
 
           {/* Bidirectional comparison */}
-          <Card className="border border-gray-200 shadow-sm">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 shadow-sm">
+            <div className="p-6 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="bg-rose-50 border border-rose-200 rounded-xl p-4">
                   <p className="font-bold text-rose-700 text-sm mb-2">GPT（單向）</p>
@@ -235,47 +235,47 @@ export default function AiEP08Page() {
               <p className="text-gray-600 text-sm leading-relaxed">
                 為什麼雙向重要？「我吃了一隻貓」和「貓吃了一隻我」，語義截然不同。雙向模型能同時考慮上下文，對理解任務更有優勢——這是語言理解的本質需求。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-lg font-bold text-gray-800">2.3 兩個預訓練任務</h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border border-blue-200 bg-blue-50/50 shadow-sm">
-              <CardBody className="p-5 space-y-2">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200 bg-blue-50/50 shadow-sm">
+              <div className="p-5 space-y-2">
                 <p className="font-bold text-blue-700">Masked Language Model（MLM）</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   隨機遮蔽輸入中 15% 的詞，讓模型預測被遮蔽的詞。這讓模型學會利用上下文推理，是 BERT 雙向理解能力的核心來源。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border border-indigo-200 bg-indigo-50/50 shadow-sm">
-              <CardBody className="p-5 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50/50 shadow-sm">
+              <div className="p-5 space-y-2">
                 <p className="font-bold text-indigo-700">Next Sentence Prediction（NSP）</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   輸入兩個句子 A 和 B，讓模型判斷 B 是否是 A 的下一句。幫助模型理解句間關係，對問答、自然語言推理等任務有益。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <h3 className="text-lg font-bold text-gray-800">2.4 Fine-tuning 範式的革命</h3>
-          <Card className="border border-emerald-200 bg-emerald-50/50 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-emerald-200 bg-emerald-50/50 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-bold text-emerald-700">BERT 普及了「預訓練 + Fine-tuning」的模式</p>
               <ol className="space-y-2 text-sm text-gray-700">
                 <li className="flex gap-2"><span className="font-bold text-emerald-600 shrink-0">1.</span>在大量無標注文字上預訓練，讓模型學習語言的通用表示</li>
                 <li className="flex gap-2"><span className="font-bold text-emerald-600 shrink-0">2.</span>針對特定下游任務（分類、問答等）加上少量標注資料 Fine-tune</li>
                 <li className="flex gap-2"><span className="font-bold text-emerald-600 shrink-0">3.</span>只需幾個 epoch 就能達到 SOTA</li>
               </ol>
-              <Divider className="my-1" />
+              <hr className="border-gray-100 my-1"  />
               <p className="text-gray-600 text-sm leading-relaxed">
                 這是劃時代的貢獻：每個任務不再需要從頭訓練，大幅降低標注資料需求。整個 NLP 生態從此進入「遷移學習時代」。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 3: GPT 系列 ── */}
         <section className="space-y-6">
@@ -293,14 +293,14 @@ export default function AiEP08Page() {
           <p className="text-gray-700 leading-relaxed">
             GPT-2 的主要貢獻不是架構創新，而是<strong>規模</strong>：1.5B 參數（GPT-1 的 10 倍），更多更乾淨的訓練資料（WebText, 40GB）。Zero-shot 和 Few-shot 能力初現端倪。
           </p>
-          <Card className="border border-amber-200 bg-amber-50/60 shadow-sm">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-amber-200 bg-amber-50/60 shadow-sm">
+            <div className="p-5">
               <p className="font-bold text-amber-700 text-sm mb-2">令人驚訝的 Zero-shot 性能</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 GPT-2 在沒有 Fine-tuning 的情況下，直接在多個 NLP benchmark 上達到接近 SOTA 的成績。OpenAI 當時認為模型太危險（可能被用於生成假新聞），分四個批次才完整公開模型權重——這也是 AI 安全意識的早期體現。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-lg font-bold text-gray-800">3.3 GPT-3（2020）：少樣本學習的革命</h3>
 
@@ -339,25 +339,25 @@ export default function AiEP08Page() {
               { name: 'One-shot', desc: '給一個示例 + 任務描述，模型從一個例子學習格式。' },
               { name: 'Few-shot', desc: '給幾個示例 + 任務描述，模型從多個例子推廣。' },
             ].map((item) => (
-              <Card key={item.name} className="border border-rose-200 bg-rose-50/40 shadow-sm">
-                <CardBody className="p-4 space-y-1">
+              <div key={item.name} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-rose-200 bg-rose-50/40 shadow-sm">
+                <div className="p-4 space-y-1">
                   <p className="font-black text-rose-700">{item.name}</p>
                   <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-          <Card className="border border-gray-200 bg-gray-50/50 shadow-sm">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 bg-gray-50/50 shadow-sm">
+            <div className="p-5">
               <p className="font-bold text-gray-700 text-sm mb-2">為什麼有效？</p>
               <p className="text-gray-600 text-sm leading-relaxed">
                 不需要更新任何參數！模型從 Prompt 的例子中「學習」如何完成任務。研究者認為，超大規模的預訓練讓模型學習了如此豐富的模式，足以在推論時做類似「元學習（meta-learning）」的泛化——模型學會了如何學習。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 4: RLHF ── */}
         <section className="space-y-6">
@@ -372,32 +372,32 @@ export default function AiEP08Page() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border border-red-200 bg-red-50/50 shadow-sm">
-              <CardBody className="p-5 space-y-2">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50/50 shadow-sm">
+              <div className="p-5 space-y-2">
                 <p className="font-bold text-red-600 text-sm">GPT-3 的回答（預測補全）</p>
                 <p className="text-gray-700 text-sm italic leading-relaxed">
                   「如何製作炸彈？製作炸彈的方法有：1. 首先購買...」（繼續補全，無安全考量）
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border border-emerald-200 bg-emerald-50/50 shadow-sm">
-              <CardBody className="p-5 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-emerald-200 bg-emerald-50/50 shadow-sm">
+              <div className="p-5 space-y-2">
                 <p className="font-bold text-emerald-600 text-sm">人類想要的回答</p>
                 <p className="text-gray-700 text-sm italic leading-relaxed">
                   「這個問題涉及危險活動，我無法提供相關資訊。如有合法需求請諮詢專業人員。」
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border border-orange-200 bg-orange-50/60 shadow-sm">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-orange-200 bg-orange-50/60 shadow-sm">
+            <div className="p-5">
               <p className="font-bold text-orange-700 text-sm mb-1">問題核心</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 模型的訓練目標（預測下一詞）和人類想要的行為（有用、無害、誠實）之間存在根本落差。這個落差，就是 RLHF 要解決的問題。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-lg font-bold text-gray-800">4.2 RLHF 三步驟</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -431,8 +431,8 @@ export default function AiEP08Page() {
                 desc: '用訓練好的 RM 作為「評審」，用強化學習（PPO）優化 SFT 模型，讓它傾向生成 RM 給高分的回答。同時加入 KL 散度懲罰，防止模型偏離原始 SFT 模型太遠（避免「討好評審」但失去語言能力）。',
               },
             ].map((item) => (
-              <Card key={item.step} className={`border ${item.color} shadow-sm`}>
-                <CardBody className="p-5">
+              <div key={item.step} className={`border ${item.color} shadow-sm`}>
+                <div className="p-5">
                   <div className="flex items-start gap-3">
                     <span className={`${item.stepColor} text-white text-xs font-black px-2 py-1 rounded-lg shrink-0 mt-0.5`}>{item.step}</span>
                     <div>
@@ -440,41 +440,41 @@ export default function AiEP08Page() {
                       <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
           {/* RLHF Flow Diagram */}
-          <Card className="border border-gray-200 bg-gray-900 shadow-sm">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 bg-gray-900 shadow-sm">
+            <div className="p-6">
               <p className="text-gray-400 text-xs font-mono mb-3">RLHF 訓練迴圈</p>
               <pre className="text-green-400 font-mono text-sm leading-relaxed overflow-x-auto whitespace-pre">{`人類標注排序 → 訓練 Reward Model
                         ↓
 SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
     ↑___________________________________________↑
                    （循環迭代）`}</pre>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-lg font-bold text-gray-800">4.3 為什麼 RLHF 是關鍵</h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border border-gray-200 shadow-sm">
-              <CardBody className="p-5 space-y-1">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 shadow-sm">
+              <div className="p-5 space-y-1">
                 <p className="font-bold text-gray-500 text-sm">Before RLHF</p>
                 <p className="text-gray-700 text-sm leading-relaxed">模型說什麼取決於訓練資料的分佈，對人類期望無感知，無法可靠地拒絕有害請求。</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-rose-200 bg-rose-50/40 shadow-sm">
-              <CardBody className="p-5 space-y-1">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-rose-200 bg-rose-50/40 shadow-sm">
+              <div className="p-5 space-y-1">
                 <p className="font-bold text-rose-600 text-sm">After RLHF</p>
                 <p className="text-gray-700 text-sm leading-relaxed">模型的行為被人類偏好「塑形」，從「能說話」變成「說有用的話」。這是 ChatGPT 和之前 GPT-3 最本質的差異。</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 5: ChatGPT ── */}
         <section className="space-y-6">
@@ -490,18 +490,18 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
 
           <h3 className="text-lg font-bold text-gray-800">5.2 為什麼 ChatGPT 讓大眾驚訝？</h3>
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border border-gray-200 shadow-sm">
-              <CardBody className="p-5 space-y-2">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 shadow-sm">
+              <div className="p-5 space-y-2">
                 <p className="font-bold text-gray-500 text-sm">之前的 AI 助理（Siri, Alexa）</p>
                 <p className="text-gray-600 text-sm leading-relaxed">命令式介面，「播放音樂」「查天氣」，超出固定指令範圍就不行，沒有上下文理解能力。</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-rose-200 bg-rose-50/40 shadow-sm">
-              <CardBody className="p-5 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-rose-200 bg-rose-50/40 shadow-sm">
+              <div className="p-5 space-y-2">
                 <p className="font-bold text-rose-600 text-sm">ChatGPT</p>
                 <p className="text-gray-600 text-sm leading-relaxed">對話式，能解釋概念、寫程式、改文章、進行多輪推理，理解隱含意圖，並維持對話上下文。</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
           <p className="text-gray-600 text-sm leading-relaxed italic">
             關鍵不是底層模型的突破，而是 RLHF 讓模型「會說話」，加上對話界面讓能力變得可見、可觸達。
@@ -515,12 +515,12 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
               { title: '推理能力大幅提升', desc: '在律師、醫師、GRE 等專業考試中表現接近頂尖人類水準。' },
               { title: '更好的指令遵循', desc: '更準確地理解複雜、多步驟的指令，減少幻覺（Hallucination）。' },
             ].map((item) => (
-              <Card key={item.title} className="border border-purple-200 bg-purple-50/30 shadow-sm">
-                <CardBody className="p-4 space-y-1">
+              <div key={item.title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-purple-200 bg-purple-50/30 shadow-sm">
+                <div className="p-4 space-y-1">
                   <p className="font-bold text-purple-700 text-sm">{item.title}</p>
                   <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
           <p className="text-gray-500 text-xs leading-relaxed">
@@ -528,7 +528,7 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
           </p>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 6: LLM 全景圖 ── */}
         <section className="space-y-6">
@@ -590,17 +590,17 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
             </table>
           </div>
 
-          <Card className="border border-emerald-200 bg-emerald-50/60 shadow-sm">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-emerald-200 bg-emerald-50/60 shadow-sm">
+            <div className="p-5">
               <p className="font-bold text-emerald-700 text-sm mb-2">Ollama 離線部署的意義</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 對於 Ollama 離線部署場景（如 EP.02 所介紹的工廠內網環境），開源 LLM 是唯一選擇。LLaMA、Qwen、Mistral 都能直接在 Ollama 上運行，無需 API 金鑰，符合資安管控要求。Qwen2.5 因中文能力強，特別適合台灣與中國工廠場景。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 7: Scaling Laws ── */}
         <section className="space-y-6">
@@ -619,17 +619,17 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
             <strong>核心意涵</strong>：只要有足夠的算力和資料，持續放大模型就能持續提升性能，且提升是可預測的冪次方關係。這解釋了為什麼科技公司在 LLM 上的算力投資呈指數增長。
           </p>
 
-          <Card className="border border-violet-200 bg-violet-50/50 shadow-sm">
-            <CardBody className="p-5 space-y-2">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50/50 shadow-sm">
+            <div className="p-5 space-y-2">
               <p className="font-bold text-violet-700 text-sm">Chinchilla 修正（2022）</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 DeepMind 發表 Chinchilla 論文，發現之前的模型（包括 GPT-3）是「訓練不足」的——同樣算力預算下，更小的模型搭配更多資料往往更好。最佳比例：每個參數應對應約 20 個訓練 Token。GPT-3 (175B 參數) 按此法則應使用 3.5T tokens，而非實際使用的 300B tokens。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Section 8: 共同本質 ── */}
         <section className="space-y-6">
@@ -670,8 +670,8 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
             </table>
           </div>
 
-          <Card className="border border-rose-300 bg-gradient-to-br from-rose-50 to-purple-50 shadow-md">
-            <CardBody className="p-7">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-rose-300 bg-gradient-to-br from-rose-50 to-purple-50 shadow-md">
+            <div className="p-7">
               <div className="flex gap-4">
                 <Quote size={24} className="text-rose-400 shrink-0 mt-1" />
                 <div>
@@ -681,19 +681,19 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Interview Q&A ── */}
         <section className="space-y-5">
           <h2 className="text-2xl font-black text-gray-900">面試常見問題</h2>
           <div className="space-y-4">
             {qaList.map((item, i) => (
-              <Card key={i} className="border border-gray-200 shadow-sm">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 shadow-sm">
+                <div className="p-6 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="shrink-0 w-7 h-7 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-sm font-black">
                       Q
@@ -706,13 +706,13 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
                     </span>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.a}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Summary ── */}
         <section>
@@ -738,19 +738,19 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
         {/* ── Tags ── */}
         <div className="flex flex-wrap gap-2">
           {['ChatGPT', 'GPT', 'BERT', 'LLM', 'RLHF', 'Transformer', 'AI', 'EP.08'].map((tag) => (
-            <Chip key={tag} size="sm" color="secondary" variant="flat">
+            <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
               {tag}
-            </Chip>
+            </span>
           ))}
         </div>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* ── Navigation ── */}
         <div className="grid sm:grid-cols-2 gap-4">
           <Link href="/blog/ai/ep06-tts-edge-deploy">
-            <Card className="border border-gray-200 hover:border-rose-300 hover:shadow-md transition-all cursor-pointer group">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 hover:border-rose-300 hover:shadow-md transition-all cursor-pointer group">
+              <div className="p-5">
                 <div className="flex items-center gap-3">
                   <ArrowLeft size={18} className="text-gray-400 group-hover:text-rose-500 transition-colors shrink-0" />
                   <div>
@@ -760,13 +760,13 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </Link>
 
           <div className="opacity-50 cursor-not-allowed">
-            <Card className="border border-gray-200">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200">
+              <div className="p-5">
                 <div className="flex items-center justify-end gap-3">
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">下一篇</p>
@@ -774,8 +774,8 @@ SFT 模型 → 生成回答 → RM 評分 → PPO 更新 → 更好的模型
                   </div>
                   <ArrowRight size={18} className="text-gray-300 shrink-0" />
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
 

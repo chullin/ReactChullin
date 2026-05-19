@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -15,8 +10,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Ollama 本地 LLM 部署全攻略 含離線環境搬檔教學 | Joseph Chen',
+  description: '從安裝 Ollama 到在本地跑第一個推論， 再到如何在完全沒有網路的工廠環境部署模型',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep02-ollama-local-llm',
+  },
+};
+
+
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -46,14 +52,14 @@ export default function AiEP02Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
                 AI 離線部署
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
                 EP.02
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Ollama 本地 LLM 部署全攻略<br />
@@ -63,7 +69,7 @@ export default function AiEP02Page() {
               從安裝 Ollama 到在本地跑第一個推論，<br />
               再到如何在完全沒有網路的工廠環境部署模型
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -101,7 +107,7 @@ export default function AiEP02Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Ollama 是什麼 */}
         <section className="space-y-6">
@@ -126,7 +132,7 @@ export default function AiEP02Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 一般安裝流程 */}
         <section className="space-y-6">
@@ -188,7 +194,7 @@ curl http://localhost:11434/v1/chat/completions \\
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 離線部署的關鍵 */}
         <section className="space-y-6">
@@ -288,7 +294,7 @@ systemctl start ollama`,
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 模型選擇建議 */}
         <section className="space-y-6">
@@ -333,7 +339,7 @@ systemctl start ollama`,
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 總結 */}
         <section>
@@ -358,7 +364,7 @@ systemctl start ollama`,
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -378,7 +384,7 @@ systemctl start ollama`,
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['AI 離線部署', 'Ollama', 'LLM', 'Docker', 'Air-gapped', 'qwen2.5', 'EP.02'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

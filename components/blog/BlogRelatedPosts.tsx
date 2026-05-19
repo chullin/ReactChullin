@@ -29,7 +29,7 @@ const ALL_POSTS: Record<string, Post[]> = {
   ],
   'web-dev': [
     { title: '進階導航組件設計', href: '/blog/web-dev/ep09-advanced-nav', description: 'React 與 Framer Motion 的動畫整合。' },
-    { title: 'Bootstrap 基礎與現代化', href: '/blog/web-dev/ep11-bootstrap-basics', description: '在 Next.js 中優化 legacy UI。' },
+    { title: 'Bootstrap 基礎與現代化', href: '/blog/web-dev/ep11-bootstrap', description: '在 Next.js 中優化 legacy UI。' },
   ],
 };
 

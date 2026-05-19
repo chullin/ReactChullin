@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +14,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '開發環境建置 從零到跑起第一個畫面 | Joseph Chen',
+  description: '安裝 Node.js、設定 VS Code、建立 Next.js 專案， 讓你的電腦能跑和我的個人網頁一樣的技術棧',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep02-setup-env',
+  },
+};
+
+
 
 const Step = ({ n, title, children }: { n: number; title: string; children: React.ReactNode }) => (
   <div className="space-y-4">
@@ -59,10 +64,10 @@ export default function WebDevEP02Page() {
           <Terminal size={400} strokeWidth={0.5} />
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">個人網頁開發</Chip>
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.02</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">個人網頁開發</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.02</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               開發環境建置<br />
@@ -72,7 +77,7 @@ export default function WebDevEP02Page() {
               安裝 Node.js、設定 VS Code、建立 Next.js 專案，<br />
               讓你的電腦能跑和我的個人網頁一樣的技術棧
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -117,7 +122,7 @@ export default function WebDevEP02Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Steps */}
         <section className="space-y-12">
@@ -247,7 +252,7 @@ code .`} />
           </Step>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 安裝額外套件 */}
         <section className="space-y-6">
@@ -268,7 +273,7 @@ npm install lucide-react`} />
           </Callout>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 常見問題 */}
         <section className="space-y-6">
@@ -303,7 +308,7 @@ npm install lucide-react`} />
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -329,7 +334,7 @@ npm install lucide-react`} />
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -349,7 +354,7 @@ npm install lucide-react`} />
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Web Dev', 'Node.js', 'VS Code', 'Next.js', '環境建置', 'EP.02'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

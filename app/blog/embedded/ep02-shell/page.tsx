@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -19,8 +14,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Shell Script 入門 讓工作自動化 | Joseph Chen',
+  description: '變數、迴圈、條件判斷、函數 — 10 個工程師實際用到的腳本模板',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/embedded/ep02-shell',
+  },
+};
+
+
 
 /* ─── Section Heading ─── */
 const SectionHeading = ({ color, children }: { color: string; children: React.ReactNode }) => (
@@ -83,18 +89,14 @@ export default function EmbeddedEP02Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65 }}
-          >
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
                 嵌入式與系統
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-slate-300/30 text-slate-100 border-slate-300/40 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-slate-300/30 text-slate-100 border-slate-300/40 font-bold uppercase text-[10px]">
                 EP.02
-              </Chip>
+              </span>
             </div>
 
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
@@ -120,7 +122,7 @@ export default function EmbeddedEP02Page() {
                 <span>15 min read</span>
               </div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -129,15 +131,15 @@ export default function EmbeddedEP02Page() {
         <div className="max-w-3xl mx-auto space-y-14">
 
           {/* Opening Quote */}
-          <Card className="border border-slate-100 shadow-sm bg-slate-50/50">
-            <CardBody className="p-7 relative overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-100 shadow-sm bg-slate-50/50">
+            <div className="p-7 relative overflow-hidden">
               <Quote size={44} className="text-slate-200 absolute -top-2 -left-1 rotate-6" />
               <p className="text-lg font-black text-slate-900 leading-snug relative z-10">
                 「一個會寫 Shell Script 的工程師，等於多了一個 24 小時不休息的助手。」
               </p>
               <p className="text-sm text-slate-500 mt-3 font-medium relative z-10">— 每個深夜還在手動備份資料的工程師</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="space-y-12 text-gray-600 leading-relaxed">
 
@@ -817,13 +819,13 @@ SELECT COUNT(*) FROM users;
 EOF`,
                 },
               ].map((item, i) => (
-                <Card key={i} className="border border-gray-100 shadow-sm">
-                  <CardBody className="p-6 space-y-3">
+                <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+                  <div className="p-6 space-y-3">
                     <p className="font-black text-gray-900 text-base">{item.q}</p>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.a}</p>
                     {item.code && <CodeBlock lang="bash" code={item.code} />}
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               ))}
             </section>
 
@@ -847,7 +849,7 @@ EOF`,
             </div>
           </div>
 
-          <Divider className="my-12 opacity-40" />
+          <hr className="border-gray-100 my-12 opacity-40"  />
 
           {/* Series Navigation */}
           <div className="grid grid-cols-2 gap-4">
@@ -879,7 +881,7 @@ EOF`,
           {/* Tags */}
           <div className="flex items-center gap-3 flex-wrap pt-2">
             {['Shell Script', 'Bash', '自動化', 'Linux', '嵌入式', 'EP.02'].map((tag) => (
-              <Chip key={tag} variant="flat" color="default" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

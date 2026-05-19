@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'OpenCV + 機械手臂 電腦視覺自動定位系統實戰 | Joseph Chen',
+  description: '如何用 Python + OpenCV 讓機械手臂「看到」目標並自動移動到正確位置， 從影像辨識到 XY 軸座標轉換的完整技術拆解',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/python/ep01-opencv-automation',
+  },
+};
+
+
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -45,14 +51,14 @@ export default function PythonEP01Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">
                 Python 自動化
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">
                 EP.01
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               OpenCV + 機械手臂<br />
@@ -62,7 +68,7 @@ export default function PythonEP01Page() {
               如何用 Python + OpenCV 讓機械手臂「看到」目標並自動移動到正確位置，<br />
               從影像辨識到 XY 軸座標轉換的完整技術拆解
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -103,7 +109,7 @@ export default function PythonEP01Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 系統架構 */}
         <section className="space-y-6">
@@ -150,7 +156,7 @@ export default function PythonEP01Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* OpenCV 核心：找目標 */}
         <section className="space-y-6">
@@ -220,7 +226,7 @@ while True:
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 座標轉換 */}
         <section className="space-y-6">
@@ -284,7 +290,7 @@ print(f"Robot should move to: ({robot_x:.2f}mm, {robot_y:.2f}mm)")`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 機械手臂控制 */}
         <section className="space-y-6">
@@ -355,7 +361,7 @@ def auto_targeting(camera_index=0):
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 實際成果 */}
         <section className="space-y-6">
@@ -396,7 +402,7 @@ def auto_targeting(camera_index=0):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 總結 */}
         <section>
@@ -421,7 +427,7 @@ def auto_targeting(camera_index=0):
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -439,7 +445,7 @@ def auto_targeting(camera_index=0):
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Python 自動化', 'OpenCV', '電腦視覺', '機械手臂', '工廠自動化', '仿射變換', 'EP.01'].map((tag) => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

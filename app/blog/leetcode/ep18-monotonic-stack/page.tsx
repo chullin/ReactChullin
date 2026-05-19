@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.18 — Monotonic Stack： 維持單調的 Stack | Joseph Chen',
+  description: '#739 Daily Temperatures · #496 Next Greater Element · #42 Trapping Rain Water — 從 O(n²) 暴力到 O(n) 的關鍵資料結構',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep18-monotonic-stack',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -97,14 +103,14 @@ export default function LeetcodeEP18Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
                 LeetCode 刷題日記
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">
                 EP.18
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.18 — Monotonic Stack：<br />
@@ -114,7 +120,7 @@ export default function LeetcodeEP18Page() {
               #739 Daily Temperatures · #496 Next Greater Element · #42 Trapping Rain Water<br />
               — 從 O(n²) 暴力到 O(n) 的關鍵資料結構
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -154,7 +160,7 @@ export default function LeetcodeEP18Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 核心概念 */}
         <section className="space-y-6">
@@ -200,7 +206,7 @@ for i, val in enumerate(nums):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: Daily Temperatures ===== */}
         <section className="space-y-6">
@@ -212,8 +218,8 @@ for i, val in enumerate(nums):
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個每日氣溫陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">temperatures</code>，
@@ -224,8 +230,8 @@ for i, val in enumerate(nums):
                 <p>temperatures = [73,74,75,71,69,72,76,73]</p>
                 <p>answer       = [1, 1, 4, 2, 1, 1, 0, 0]</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">視覺化：棒狀圖 + stack 變化</h3>
 
@@ -289,7 +295,7 @@ for i, val in enumerate(nums):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: Next Greater Element I ===== */}
         <section className="space-y-6">
@@ -301,8 +307,8 @@ for i, val in enumerate(nums):
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nums1</code> 是
@@ -314,8 +320,8 @@ for i, val in enumerate(nums):
                 <p>Output: [-1,3,-1]</p>
                 <p className="text-xs text-gray-400">4 的右邊沒有更大的 → -1；1 的右邊第一個更大的是 3；2 的右邊沒有更大的 → -1</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">思路：先預處理 nums2，再查表</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -380,7 +386,7 @@ for i, val in enumerate(nums):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 3: Trapping Rain Water ===== */}
         <section className="space-y-6">
@@ -392,8 +398,8 @@ for i, val in enumerate(nums):
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個表示地形高度的陣列，計算下雨後整個地形能接住多少單位的雨水。
@@ -402,8 +408,8 @@ for i, val in enumerate(nums):
                 <p>height = [0,1,0,2,1,0,1,3,1,0,1,2]</p>
                 <p>Output: 6</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="bg-gray-50 rounded-2xl p-6 space-y-3">
             <p className="text-sm font-bold text-gray-500 uppercase">高度示意（height = [0,1,0,2,1,0,1,3,1,0,1,2]）</p>
@@ -505,7 +511,7 @@ for i, val in enumerate(nums):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 三題對比 */}
         <section className="space-y-6">
@@ -562,7 +568,7 @@ for i, val in enumerate(nums):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -588,7 +594,7 @@ for i, val in enumerate(nums):
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -609,7 +615,7 @@ for i, val in enumerate(nums):
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Monotonic Stack', 'Daily Temperatures', 'Next Greater', 'Trapping Rain Water', 'Python', 'EP.18'].map((tag) => (
-            <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

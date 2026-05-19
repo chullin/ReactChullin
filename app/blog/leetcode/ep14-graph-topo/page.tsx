@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.14 — Graph 進階： 拓撲排序與環的偵測 | Joseph Chen',
+  description: '#207 Course Schedule · #210 Course Schedule II — Kahn\'s Algorithm、DFS Cycle Detection、有向圖的排序問題',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep14-graph-topo',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -51,10 +56,10 @@ export default function LeetcodeEP14Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `repeating-linear-gradient(45deg, rgba(251,146,60,0.3) 0, rgba(251,146,60,0.3) 1px, transparent 0, transparent 50%)`, backgroundSize: '20px 20px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">EP.14</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">EP.14</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.14 — Graph 進階：<br />
@@ -64,7 +69,7 @@ export default function LeetcodeEP14Page() {
               #207 Course Schedule · #210 Course Schedule II
               <br />— Kahn's Algorithm、DFS Cycle Detection、有向圖的排序問題
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -128,7 +133,7 @@ export default function LeetcodeEP14Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: COURSE SCHEDULE ===== */}
         <section className="space-y-6">
@@ -140,8 +145,8 @@ export default function LeetcodeEP14Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 有 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">numCourses</code> 門課，
@@ -152,8 +157,8 @@ export default function LeetcodeEP14Page() {
                 <p>numCourses=2, prerequisites=[[1,0]] → True（先修0再修1）</p>
                 <p>numCourses=2, prerequisites=[[1,0],[0,1]] → False（互相依賴，有環）</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900 mt-8">解法一：Kahn's Algorithm（BFS 拓撲排序）</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -302,7 +307,7 @@ def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: COURSE SCHEDULE II ===== */}
         <section className="space-y-6">
@@ -349,7 +354,7 @@ def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
           <ComplexityBadge time="O(V + E)" space="O(V + E)" />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 拓撲排序模板 */}
         <section className="space-y-6">
@@ -392,7 +397,7 @@ def topological_sort(n: int, edges: list[tuple]) -> list[int]:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Graph 系列總結 */}
         <section className="space-y-6">
@@ -437,7 +442,7 @@ def topological_sort(n: int, edges: list[tuple]) -> list[int]:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -463,7 +468,7 @@ def topological_sort(n: int, edges: list[tuple]) -> list[int]:
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -483,7 +488,7 @@ def topological_sort(n: int, edges: list[tuple]) -> list[int]:
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Graph', 'Topological Sort', 'BFS', 'Python', 'EP.14'].map((tag) => (
-            <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

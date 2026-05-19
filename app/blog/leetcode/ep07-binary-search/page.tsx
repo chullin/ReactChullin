@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -18,8 +12,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Binary Search 每次砍掉一半，O(log n) 的魔法 | Joseph Chen',
+  description: '#704 Binary Search · #33 Search in Rotated Sorted Array — 深入二分搜尋的邊界控制與旋轉陣列查找，寫出 bug-free 的高效 O(log n) 解法。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep07-binary-search',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -35,10 +40,10 @@ export default function LeetcodeEP07Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `linear-gradient(to right, #818cf8 1px, transparent 1px), linear-gradient(to bottom, #818cf8 1px, transparent 1px)`, backgroundSize: '40px 40px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">EP.07</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">EP.07</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Binary Search<br />
@@ -49,14 +54,14 @@ export default function LeetcodeEP07Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-indigo-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-indigo-400" /><span>October 2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -103,15 +108,15 @@ export default function LeetcodeEP07Page() {
                 <div className="w-8 h-1.5 bg-indigo-500 rounded-full" />
                 #704 基本解法
               </h2>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`Input:  nums = [-1, 0, 3, 5, 9, 12], target = 9
 Output: 4   ← nums[4] = 9
 
 Input:  nums = [-1, 0, 3, 5, 9, 12], target = 2
 Output: -1  ← 不存在`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <CodeBlock title="Binary Search — 你的解法" code={`class Solution:
     def search(self, nums: list[int], target: int) -> int:
@@ -199,8 +204,8 @@ left=3, right=5 → mid=4, nums[4]=9 == 9 → return 4 ✅`} />
                 變形題：#33 Search in Rotated Sorted Array
               </h2>
               <p>如果陣列被「旋轉」過呢？</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`# 原本：[0, 1, 2, 4, 5, 6, 7]
 # 旋轉：[4, 5, 6, 7, 0, 1, 2]  ← 從 index 4 切開並旋轉
 
@@ -209,8 +214,8 @@ Output: 4
 
 Input:  nums = [4, 5, 6, 7, 0, 1, 2], target = 3
 Output: -1`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>直接用 Binary Search 行不行？不行——旋轉後整個陣列已經不是單調遞增了，mid 的大小無法直接告訴你目標在左還是右。</p>
 
@@ -262,14 +267,14 @@ Output: -1`} />
               </div>
             </div>
 
-            <Card className="bg-indigo-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-indigo-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-indigo-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-indigo-900 leading-snug relative z-10">
                   Binary Search 的所有變形題，核心都是同一件事：<strong>在每一步，確保你能丟掉「目標一定不在那裡」的那一半</strong>。條件怎麼寫，取決於你能做出什麼保證。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Summary */}
             <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-[2rem] p-8 space-y-4">
@@ -290,7 +295,7 @@ Output: -1`} />
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep06-stack" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -308,7 +313,7 @@ Output: -1`} />
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Binary Search', 'Array', 'Python', 'EP.07'].map((tag) => (
-              <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

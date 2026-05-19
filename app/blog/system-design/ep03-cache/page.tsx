@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -21,15 +16,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '快取策略： 讓系統快 10 倍的關鍵決策 | Joseph Chen',
+  description: '「加快取就好了」是最常見的回答，也是最危險的回答。 Cache-aside？Write-through？TTL 設多長？資料更新時怎麼辦？ 這篇帶你搞清楚每一種快取策略的原理與取捨。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep03-cache',
+  },
+};
+
+
 
 export default function SystemDesignEP03() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-50">
       <div className="bg-gradient-to-br from-indigo-800 via-violet-700 to-purple-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.03</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計</span>
@@ -49,16 +55,16 @@ export default function SystemDesignEP03() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 14 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Cache · Redis · Cache Invalidation · System Design</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-violet-300 shrink-0 mt-1" />
                 <div>
@@ -71,12 +77,12 @@ export default function SystemDesignEP03() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 為什麼要快取 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">為什麼要快取？速度差距有多大？</h2>
 
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
@@ -108,29 +114,29 @@ export default function SystemDesignEP03() {
             ))}
           </div>
 
-          <Card className="border-0 shadow-md bg-violet-50 border border-violet-200">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-violet-50 border border-violet-200">
+            <div className="p-5">
               <p className="text-violet-800 font-semibold mb-2">數量級差距的實際影響</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 Redis 讀取（~1ms）vs DB 無索引查詢（~100ms）差 100 倍。
                 如果你的 API 每次請求都打 DB，加了 Redis 後同樣的硬體可以多撐 100 倍的流量。
                 這不是優化，是量級的改變。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Redis 基礎 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">Redis 常用資料結構</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             Redis 不只是 key-value store，它有多種資料結構，選對結構能大幅簡化實作。
           </p>
 
-          <Card className="border-0 shadow-md bg-indigo-50 border border-indigo-200 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-indigo-50 border border-indigo-200 mb-6">
+            <div className="p-5">
               <p className="text-indigo-800 font-semibold mb-2">String vs Hash：最常被問到的選擇題</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
@@ -145,8 +151,8 @@ export default function SystemDesignEP03() {
                 </div>
               </div>
               <p className="text-gray-600 text-xs mt-3">⚡ 實務上，String + JSON 更普遍：程式語言都有 JSON 序列化，且通常整筆讀取。Hash 適合欄位數量多且頻繁部分更新的場景（如用戶設定頁）。</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {[
@@ -187,33 +193,33 @@ export default function SystemDesignEP03() {
                 example: 'PFADD uv:2026-05-05 userId1 userId2\nPFCOUNT uv:2026-05-05  # 約 1% 誤差，省記憶體'
               }
             ].map(({ type, cmd, useCase, example }) => (
-              <Card key={type} className="border-0 shadow-md">
-                <CardBody className="p-5">
+              <div key={type} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-bold text-violet-700">{type}</h3>
                     <code className="text-xs bg-gray-100 px-2 py-0.5 rounded font-mono text-gray-600">{cmd}</code>
                   </div>
                   <p className="text-gray-600 text-xs leading-relaxed mb-3">{useCase}</p>
                   <div className="bg-slate-900 rounded p-2 font-mono text-xs text-green-400 whitespace-pre">{example}</div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 快取策略 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">快取策略：四種模式</h2>
 
           {/* Cache-aside */}
           <div className="space-y-6">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-800">Cache-aside（Lazy Loading）</h3>
-                  <Chip size="sm" color="secondary" variant="flat">最常用</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">最常用</span>
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed mb-4">
                   應用程式直接管理快取：讀時先查 Cache，沒有才查 DB 並回寫 Cache（稱為 Cache Miss 後填入）。
@@ -275,15 +281,15 @@ async function updateUser(userId: string, data: Partial<User>) {
                     <p className="text-gray-600">Cache Miss 時需要 3 次操作（讀 Cache + 讀 DB + 寫 Cache），首次較慢</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Write-through */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-800">Write-through</h3>
-                  <Chip size="sm" color="secondary" variant="flat">寫多場景</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">寫多場景</span>
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed mb-4">
                   每次寫入時，<strong>同時</strong>寫 DB 和 Cache。保持 Cache 與 DB 強一致，但寫入延遲較高。
@@ -325,15 +331,15 @@ async function updateUser(userId: string, data: Partial<User>) {
                     <p className="text-gray-600">寫入延遲翻倍；寫多讀少時快取中大量資料從未被讀取（浪費記憶體）</p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Write-behind */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-800">Write-behind（Write-back）</h3>
-                  <Chip size="sm" color="warning" variant="flat">高吞吐量</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">高吞吐量</span>
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed mb-4">
                   寫入只寫 Cache，非同步批次寫入 DB。寫入延遲最低，
@@ -350,28 +356,28 @@ async function updateUser(userId: string, data: Partial<User>) {
                     金融、訂單等關鍵資料不應使用此策略。
                   </p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Read-through */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-800">Read-through</h3>
-                  <Chip size="sm" color="default" variant="flat">框架整合</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">框架整合</span>
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   與 Cache-aside 流程相同，但由快取庫（而非應用程式）自動處理 Cache Miss 時的 DB 查詢。
                   應用程式只與快取層互動，不直接調用 DB。
                   適合使用支援 Read-through 的快取中間件（如 Caffeine + 自定義 CacheLoader）。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* 策略選擇表 */}
-          <Card className="border-0 shadow-md mt-6">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mt-6">
+            <div className="p-6">
               <h3 className="font-bold text-gray-800 mb-4">快取策略選擇指南</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -398,14 +404,14 @@ async function updateUser(userId: string, data: Partial<User>) {
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* TTL 與快取失效 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">快取失效（Cache Invalidation）策略</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             快取失效是最難的部分。有兩種思路：<strong>被動失效（TTL 到期）</strong>和<strong>主動失效（資料更新時刪除）</strong>。
@@ -413,8 +419,8 @@ async function updateUser(userId: string, data: Partial<User>) {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <Card className="border-0 shadow-md border-l-4 border-violet-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-violet-500">
+              <div className="p-5">
                 <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <Timer size={18} className="text-violet-500" />
                   被動失效：TTL 過期
@@ -429,11 +435,11 @@ async function updateUser(userId: string, data: Partial<User>) {
                   <p>靜態設定檔：TTL = 24 小時</p>
                   <p>Session Token：TTL = 15 分鐘</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md border-l-4 border-purple-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-purple-500">
+              <div className="p-5">
                 <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <RefreshCw size={18} className="text-purple-500" />
                   主動失效：事件驅動刪除
@@ -452,8 +458,8 @@ await redis.del(\`user:\${userId}\`);
 const keys = await redis.keys(\`product:cat:\${catId}:*\`);
 if (keys.length > 0) await redis.del(...keys);`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* 三大問題 */}
@@ -520,8 +526,8 @@ const jitter = Math.floor(Math.random() * 300);  // 0~5 分鐘隨機
 await redis.setex(key, baseTTL + jitter, value);`
               }
             ].map(({ name, icon: Icon, color, desc, solution, code }) => (
-              <Card key={name} className={`border-0 shadow-md border-l-4 border-${color}-400`}>
-                <CardBody className="p-6">
+              <div key={name} className={`border-0 shadow-md border-l-4 border-${color}-400`}>
+                <div className="p-6">
                   <h4 className={`font-bold text-${color}-700 mb-2 flex items-center gap-2`}>
                     <Icon size={18} />
                     {name}
@@ -531,16 +537,16 @@ await redis.setex(key, baseTTL + jitter, value);`
                     <strong className="text-green-700">解法：</strong>{solution}
                   </div>
                   <CodeBlock language="typescript" filename="" code={code} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Redis 生產環境注意事項 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">生產環境 Redis 最佳實踐</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -566,8 +572,8 @@ await redis.setex(key, baseTTL + jitter, value);`
                 content: '關注以下指標：\n· Cache Hit Rate（>90% 才有意義）\n· Memory Usage（<80% 可用）\n· Evicted Keys（非 0 表示記憶體不足）\n· Latency（p99 <5ms）'
               }
             ].map(({ title, icon: Icon, content }) => (
-              <Card key={title} className="border-0 shadow-md">
-                <CardBody className="p-5">
+              <div key={title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-9 h-9 bg-violet-100 rounded-lg flex items-center justify-center">
                       <Icon size={18} className="text-violet-600" />
@@ -575,16 +581,16 @@ await redis.setex(key, baseTTL + jitter, value);`
                     <h3 className="font-bold text-gray-800">{title}</h3>
                   </div>
                   <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono leading-relaxed">{content}</pre>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 重點整理 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">重點整理</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
@@ -604,15 +610,15 @@ await redis.setex(key, baseTTL + jitter, value);`
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Navigation */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-          <Divider className="mb-8" />
+        <section   >
+          <hr className="border-gray-100 mb-8"  />
           <div className="flex justify-between items-center">
             <Link href="/blog/system-design/ep02-load-balancer">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
-                <CardBody className="p-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
+                <div className="p-4">
                   <div className="flex items-center gap-3">
                     <ArrowLeft size={20} className="text-violet-500" />
                     <div>
@@ -620,17 +626,17 @@ await redis.setex(key, baseTTL + jitter, value);`
                       <p className="text-sm font-semibold text-gray-700">EP.02 負載均衡</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <div className="flex gap-2">
-              <Chip size="sm" color="secondary" variant="flat">Cache</Chip>
-              <Chip size="sm" color="secondary" variant="flat">Redis</Chip>
-              <Chip size="sm" color="secondary" variant="flat">System Design</Chip>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Cache</span>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Redis</span>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">System Design</span>
             </div>
             <div className="w-64" />
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

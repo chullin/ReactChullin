@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: 'Joseph Chen Portfolio',
     images: [
       {
-        url: '/assets/profile3.png',
+        url: '/assets/profile3.webp',
         width: 800,
         height: 800,
       },

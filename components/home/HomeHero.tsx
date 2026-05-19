@@ -77,10 +77,12 @@ export default function HomeHero() {
           
           <motion.p 
             variants={itemVariants}
-            className="text-xl lg:text-2xl text-gray-500 mb-10 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0"
+            className="text-lg lg:text-xl text-gray-600 mb-10 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0"
           >
-            AI Application & Automation Engineer <br className="hidden md:block" />
-            <span className="text-slate-400 text-lg lg:text-xl">Focused on Intelligent Manufacturing & Smart Systems</span>
+            專注於將 AI、自動化與軟體系統落地到製造現場，包含離線 LLM 部署、測試管理平台與 OpenCV 視覺自動化。<br className="hidden md:block" />
+            <span className="text-slate-400 text-base lg:text-lg block mt-3 font-normal">
+              I build secure AI and automation systems for manufacturing environments, from air-gapped LLM deployment to vision-based testing workflows.
+            </span>
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">

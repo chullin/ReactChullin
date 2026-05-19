@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowRight,
@@ -22,15 +17,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '負載均衡： 讓流量自己找到出路 | Joseph Chen',
+  description: '一台伺服器撐不住？加一台就好。但加了之後，誰決定每個請求去哪？ 這篇深入負載均衡的演算法、健康檢查、L4 vs L7 差異， 以及在系統設計面試中如何正確使用它。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep02-load-balancer',
+  },
+};
+
+
 
 export default function SystemDesignEP02() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-50">
       <div className="bg-gradient-to-br from-purple-800 via-violet-700 to-indigo-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.02</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計</span>
@@ -50,16 +56,16 @@ export default function SystemDesignEP02() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 12 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Load Balancer · Round Robin · Scalability · High Availability</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-violet-300 shrink-0 mt-1" />
                 <div>
@@ -72,12 +78,12 @@ export default function SystemDesignEP02() {
                   <p className="text-gray-500 text-sm">— 分散式系統工程師必修課</p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 為什麼需要 LB */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">為什麼需要負載均衡？</h2>
 
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
@@ -107,21 +113,21 @@ export default function SystemDesignEP02() {
                 desc: '滾動升級時，LB 先把流量從目標機器移走，升級完再加回來，用戶不中斷。'
               }
             ].map(({ title, icon: Icon, color, desc }) => (
-              <Card key={title} className="border-0 shadow-md">
-                <CardBody className="p-5">
+              <div key={title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5">
                   <div className={`w-10 h-10 bg-${color}-100 rounded-xl flex items-center justify-center mb-3`}>
                     <Icon size={20} className={`text-${color}-600`} />
                   </div>
                   <h3 className="font-bold text-gray-800 mb-2">{title}</h3>
                   <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
           {/* 架構圖 */}
-          <Card className="border-0 shadow-lg bg-slate-900 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg bg-slate-900 text-white">
+            <div className="p-6">
               <p className="text-violet-300 text-sm font-bold mb-6">有 / 無 負載均衡的架構對比</p>
               <div className="grid grid-cols-2 gap-8">
                 <div>
@@ -150,14 +156,14 @@ export default function SystemDesignEP02() {
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 演算法 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">負載均衡演算法</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             LB 怎麼決定把請求送到哪台？不同演算法有不同的適用場景：
@@ -207,11 +213,11 @@ export default function SystemDesignEP02() {
                 visual: null
               }
             ].map(({ name, badge, badgeColor, desc, when, weak, visual }) => (
-              <Card key={name} className="border-0 shadow-md">
-                <CardBody className="p-6">
+              <div key={name} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <h3 className="text-lg font-bold text-gray-800">{name}</h3>
-                    <Chip size="sm" color={badgeColor as 'default'} variant="flat">{badge}</Chip>
+                    <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">{badge}</span>
                   </div>
                   <p className="text-gray-600 text-sm mb-4">{desc}</p>
 
@@ -237,13 +243,13 @@ export default function SystemDesignEP02() {
                       <p className="text-xs text-gray-600">{weak}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
-          <Card className="border-0 shadow-md bg-violet-50 border border-violet-200 mt-2">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-violet-50 border border-violet-200 mt-2">
+            <div className="p-5">
               <p className="text-violet-800 font-semibold mb-3">從哪個演算法開始？</p>
               <div className="space-y-2 text-sm text-gray-700">
                 <p>• <strong>預設選 Round Robin</strong>：Nginx 和 AWS ALB 的預設值，無狀態服務 + 同規格機器的首選，夠用就不要過度設計。</p>
@@ -251,14 +257,14 @@ export default function SystemDesignEP02() {
                 <p>• <strong>機器規格不同 → 用 Weighted Round Robin</strong>：依硬體能力分配比例流量，通常設定在 Nginx upstream 的 weight 參數。</p>
                 <p>• <strong>不要用 IP Hash 解決 Session 問題</strong>：機器增減時 hash 對應改變，Session 仍會遺失，這是治標不治本的方案。</p>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* L4 vs L7 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">L4 vs L7 負載均衡</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             「L4」和「L7」指的是 OSI 模型的第 4 層（傳輸層）和第 7 層（應用層）。
@@ -305,8 +311,8 @@ export default function SystemDesignEP02() {
           </div>
 
           {/* L7 路由範例 */}
-          <Card className="border-0 shadow-md">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+            <div className="p-6">
               <h3 className="font-bold text-gray-800 mb-4">L7 路由能力示例：Nginx 設定</h3>
               <CodeBlock
                 language="nginx"
@@ -344,14 +350,14 @@ server {
     }
 }`}
               />
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 健康檢查 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">健康檢查（Health Check）</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             負載均衡器必須知道哪些後端機器是健康的，才能正確路由。
@@ -359,8 +365,8 @@ server {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <Card className="border-0 shadow-md border-l-4 border-violet-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-violet-500">
+              <div className="p-5">
                 <h3 className="font-bold text-gray-800 mb-2">被動健康檢查（Passive）</h3>
                 <p className="text-gray-600 text-sm leading-relaxed mb-3">
                   LB 觀察正常請求的回應。連續 N 次失敗（超時 / 5xx）就標記為不健康。
@@ -370,11 +376,11 @@ server {
                   <p>✅ 反映真實用戶請求的健康狀況</p>
                   <p>⚠️ 已有真實請求失敗才會偵測到</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md border-l-4 border-purple-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-purple-500">
+              <div className="p-5">
                 <h3 className="font-bold text-gray-800 mb-2">主動健康檢查（Active）</h3>
                 <p className="text-gray-600 text-sm leading-relaxed mb-3">
                   LB 定時發送探測請求（例如 GET /health 每 5 秒），在真實流量受影響前就偵測到故障。
@@ -384,8 +390,8 @@ server {
                   <p>✅ 可檢查 DB 連線、依賴服務等深層狀態</p>
                   <p>⚠️ 需要後端實作 /health 端點</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <CodeBlock
@@ -419,8 +425,8 @@ export async function GET() {
 }`}
           />
 
-          <Card className="border-0 shadow-md bg-violet-50 border border-violet-200 mt-4">
-            <CardBody className="p-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-violet-50 border border-violet-200 mt-4">
+            <div className="p-4">
               <p className="font-semibold text-violet-800 mb-2 text-sm">建議的健康檢查參數</p>
               <div className="grid grid-cols-3 gap-3 text-center text-xs">
                 {[
@@ -435,11 +441,11 @@ export async function GET() {
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="border-0 shadow-md bg-amber-50 border-l-4 border-amber-500 mt-4">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-amber-50 border-l-4 border-amber-500 mt-4">
+            <div className="p-5">
               <h4 className="font-bold text-amber-900 mb-2 flex items-center gap-2">
                 <AlertTriangle size={16} /> 健康檢查的常見陷阱
               </h4>
@@ -448,14 +454,14 @@ export async function GET() {
                 <p>• <strong>健康檢查頻率太低：</strong>30 秒一次，故障後等 30 秒才切換，期間所有請求都失敗。</p>
                 <p>• <strong>健康檢查本身造成負載：</strong>10 台機器、1 秒一次的深層檢查，等於額外 10 QPS 的 DB 查詢。</p>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Sticky Session 問題 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">Sticky Session 問題與解法</h2>
 
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
@@ -484,13 +490,13 @@ export async function GET() {
                 color: 'green'
               }
             ].map(({ title, desc, verdict, color }) => (
-              <Card key={title} className={`border-0 shadow-md border-l-4 border-${color}-400`}>
-                <CardBody className="p-5">
+              <div key={title} className={`border-0 shadow-md border-l-4 border-${color}-400`}>
+                <div className="p-5">
                   <h3 className="font-bold text-gray-800 text-sm mb-2">{title}</h3>
                   <p className="text-gray-600 text-xs leading-relaxed mb-3">{desc}</p>
                   <span className={`text-xs font-bold text-${color}-600`}>{verdict}</span>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -525,19 +531,19 @@ export const sessionOptions: IronSessionOptions = {
 // import { createClient } from 'redis';
 // const client = createClient({ url: process.env.REDIS_URL });`}
           />
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 多層 LB 架構 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">生產環境的多層負載均衡</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             大型系統通常不只一層 LB，而是多層組合：
           </p>
 
-          <Card className="border-0 shadow-lg bg-slate-900 text-white">
-            <CardBody className="p-8">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg bg-slate-900 text-white">
+            <div className="p-8">
               <div className="space-y-3 font-mono text-sm">
                 <div className="flex items-center gap-3">
                   <Globe size={16} className="text-gray-400" />
@@ -574,11 +580,11 @@ export const sessionOptions: IronSessionOptions = {
                   <span className="text-gray-300">Database Cluster（Primary / Replica）</span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="border-0 shadow-md bg-violet-50 border border-violet-200 mt-4">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-violet-50 border border-violet-200 mt-4">
+            <div className="p-5">
               <p className="text-violet-800 font-semibold mb-2">面試時的說法</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 「在 DNS 層做 Geo-routing 把流量分到最近的 Region，
@@ -586,14 +592,14 @@ export const sessionOptions: IronSessionOptions = {
                 健康檢查設 5 秒一次，連續 3 次失敗則下線。
                 Session 用 Redis Cluster 集中存放，讓 LB 可以自由分配請求而不需要 Sticky Session。」
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 重點整理 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">重點整理</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
@@ -611,15 +617,15 @@ export const sessionOptions: IronSessionOptions = {
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Navigation */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
-          <Divider className="mb-8" />
+        <section   >
+          <hr className="border-gray-100 mb-8"  />
           <div className="flex justify-between items-center">
             <Link href="/blog/system-design/ep01-intro">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
-                <CardBody className="p-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
+                <div className="p-4">
                   <div className="flex items-center gap-3">
                     <ArrowLeft size={20} className="text-violet-500" />
                     <div>
@@ -627,16 +633,16 @@ export const sessionOptions: IronSessionOptions = {
                       <p className="text-sm font-semibold text-gray-700">EP.01 系統設計思維</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <div className="flex gap-2">
-              <Chip size="sm" color="secondary" variant="flat">Load Balancer</Chip>
-              <Chip size="sm" color="secondary" variant="flat">System Design</Chip>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Load Balancer</span>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">System Design</span>
             </div>
             <Link href="/blog/system-design/ep03-cache">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
-                <CardBody className="p-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
+                <div className="p-4">
                   <div className="flex items-center justify-end gap-3">
                     <div className="text-right">
                       <p className="text-xs text-gray-400 mb-0.5">下一篇</p>
@@ -644,11 +650,11 @@ export const sessionOptions: IronSessionOptions = {
                     </div>
                     <ArrowRight size={20} className="text-violet-500" />
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

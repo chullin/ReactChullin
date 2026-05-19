@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -29,8 +24,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '藍綠部署與 Canary Release： 零 Downtime 上線策略 | Joseph Chen',
+  description: '藍綠切換、Canary 灰度發布、Feature Flag、滾動更新 — 讓每次部署都可以安全回滾',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep05-deployment-strategy',
+  },
+};
+
+
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -46,7 +52,7 @@ export default function DevOpsEP05() {
       {/* ── Hero ──────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-slate-900 via-gray-800 to-zinc-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.05</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">DevOps 系列</span>
@@ -64,7 +70,7 @@ export default function DevOpsEP05() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 14 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Blue-Green · Canary · Feature Flag · DevOps</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -72,7 +78,7 @@ export default function DevOpsEP05() {
       <div className="max-w-4xl mx-auto px-6 py-16 space-y-12">
 
         {/* ── Section 1：傳統部署的風險 ─────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-red-100 p-2 rounded-lg">
               <AlertTriangle className="text-red-600" size={22} />
@@ -99,33 +105,33 @@ pm2 restart app    # 這段時間：服務中斷！
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="border border-red-200 bg-red-50">
-              <CardBody className="p-4">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50">
+              <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <AlertCircle className="text-red-500" size={18} />
                   <span className="font-semibold text-red-700 text-sm">服務中斷</span>
                 </div>
                 <p className="text-xs text-red-600">pm2 restart 期間，所有進來的請求都會收到 connection refused 或 502</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-orange-200 bg-orange-50">
-              <CardBody className="p-4">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-orange-200 bg-orange-50">
+              <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <RefreshCw className="text-orange-500" size={18} />
                   <span className="font-semibold text-orange-700 text-sm">回滾成本高</span>
                 </div>
                 <p className="text-xs text-orange-600">新版出問題要 git revert + 重新 build + 重新部署，整個流程再來一遍</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-yellow-200 bg-yellow-50">
-              <CardBody className="p-4">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-yellow-200 bg-yellow-50">
+              <div className="p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="text-yellow-600" size={18} />
                   <span className="font-semibold text-yellow-700 text-sm">業務損失</span>
                 </div>
                 <p className="text-xs text-yellow-700">用戶在購物車結帳時遭遇中斷，這筆訂單大概就丟了</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <div className="mt-6 bg-slate-800 text-white rounded-xl p-6">
@@ -141,12 +147,12 @@ pm2 restart app    # 這段時間：服務中斷！
               </div>
             </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：藍綠部署 ───────────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-blue-100 p-2 rounded-lg">
               <Server className="text-blue-600" size={22} />
@@ -160,8 +166,8 @@ pm2 restart app    # 這段時間：服務中斷！
             整個過程對用戶而言是無感的。
           </p>
 
-          <Card className="mb-6 bg-slate-900 border-0">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mb-6 bg-slate-900 border-0">
+            <div className="p-6">
               <p className="text-xs font-mono text-slate-400 mb-3">架構示意圖</p>
               <pre className="text-sm font-mono text-green-400 leading-relaxed overflow-x-auto">{`                Load Balancer
                       │
@@ -169,8 +175,8 @@ pm2 restart app    # 這段時間：服務中斷！
          ▼                         ▼
    Blue（v1.0）              Green（v1.1）← 新版本在這裡
    [目前的 Production]        [準備好了但沒有流量]`}</pre>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="mb-6">
             <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
@@ -249,33 +255,33 @@ jobs:
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border border-blue-200 bg-blue-50">
-              <CardBody className="p-4">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200 bg-blue-50">
+              <div className="p-4">
                 <p className="font-semibold text-blue-700 text-sm mb-2">優點</p>
                 <ul className="space-y-1 text-xs text-blue-600">
                   <li>• 回滾只需更改 Load Balancer 指向，速度秒級</li>
                   <li>• 新舊版本完全隔離，不存在混合版本問題</li>
                   <li>• 可以在綠色環境做充分的預熱（warm-up）</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border border-orange-200 bg-orange-50">
-              <CardBody className="p-4">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-orange-200 bg-orange-50">
+              <div className="p-4">
                 <p className="font-semibold text-orange-700 text-sm mb-2">缺點</p>
                 <ul className="space-y-1 text-xs text-orange-600">
                   <li>• 資源成本翻倍（永遠有兩套完整環境）</li>
                   <li>• 資料庫 migration 要特別小心（兩版本都要能讀同一份 DB）</li>
                   <li>• Session / 狀態管理需要考慮切換時的用戶影響</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：Canary Release ─────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-yellow-100 p-2 rounded-lg">
               <Activity className="text-yellow-600" size={22} />
@@ -297,15 +303,15 @@ jobs:
             </div>
           </div>
 
-          <Card className="mb-6 bg-slate-900 border-0">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mb-6 bg-slate-900 border-0">
+            <div className="p-6">
               <p className="text-xs font-mono text-slate-400 mb-3">流量分配示意</p>
               <pre className="text-sm font-mono text-green-400 leading-relaxed overflow-x-auto">{`Load Balancer
     │
     ├── 90% → Stable (v1.0)
     └── 10% → Canary (v1.1)   ← 只有 10% 用戶看到新版`}</pre>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="font-bold text-slate-700 mb-3 flex items-center gap-2">
             <Layers className="text-slate-500" size={18} />
@@ -403,12 +409,12 @@ kubectl scale deployment myapp-canary --replicas=0   `}
               也可以針對特定用戶群（如 Beta 用戶、內部員工）做定向灰度，而非隨機 10%。
             </p>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：Feature Flag ───────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-green-100 p-2 rounded-lg">
               <Flag className="text-green-600" size={22} />
@@ -485,27 +491,27 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
           <div className="mt-6">
             <h3 className="font-bold text-slate-700 mb-4">推薦的 Feature Flag 服務</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="border border-slate-200">
-                <CardBody className="p-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200">
+                <div className="p-4">
                   <div className="font-bold text-slate-800 mb-1">LaunchDarkly</div>
                   <p className="text-xs text-slate-500 mb-2">業界標準，功能最完整</p>
-                  <Chip size="sm" color="warning" variant="flat">付費</Chip>
-                </CardBody>
-              </Card>
-              <Card className="border border-slate-200">
-                <CardBody className="p-4">
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">付費</span>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200">
+                <div className="p-4">
                   <div className="font-bold text-slate-800 mb-1">Flagsmith</div>
                   <p className="text-xs text-slate-500 mb-2">開源，可自行部署</p>
-                  <Chip size="sm" color="success" variant="flat">開源</Chip>
-                </CardBody>
-              </Card>
-              <Card className="border border-slate-200">
-                <CardBody className="p-4">
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">開源</span>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200">
+                <div className="p-4">
                   <div className="font-bold text-slate-800 mb-1">Vercel Edge Config</div>
                   <p className="text-xs text-slate-500 mb-2">與 Vercel 生態深度整合</p>
-                  <Chip size="sm" color="primary" variant="flat">平台內建</Chip>
-                </CardBody>
-              </Card>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">平台內建</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -518,12 +524,12 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
               </p>
             </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：Rolling Update ─────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-purple-100 p-2 rounded-lg">
               <RefreshCw className="text-purple-600" size={22} />
@@ -551,8 +557,8 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border border-purple-200 bg-purple-50">
-              <CardBody className="p-4">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-purple-200 bg-purple-50">
+              <div className="p-4">
                 <p className="font-semibold text-purple-700 text-sm mb-2 flex items-center gap-1.5">
                   <CheckCircle size={14} /> 優點
                 </p>
@@ -561,10 +567,10 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
                   <li>• 不需要雙倍資源（藍綠才需要）</li>
                   <li>• 過程可以用 <code className="bg-purple-100 px-1 rounded">kubectl rollout status</code> 監控</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border border-red-200 bg-red-50">
-              <CardBody className="p-4">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50">
+              <div className="p-4">
                 <p className="font-semibold text-red-700 text-sm mb-2 flex items-center gap-1.5">
                   <AlertCircle size={14} /> 注意事項
                 </p>
@@ -573,8 +579,8 @@ export function isFeatureEnabled(flagName: string, userId: string): boolean {
                   <li>• 必須確保兩版本的 API 相容（向後兼容）</li>
                   <li>• DB schema 異動要特別謹慎</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <div className="mt-5 bg-slate-800 text-white rounded-xl p-5">
@@ -593,12 +599,12 @@ kubectl rollout undo deployment/myapp
 kubectl rollout undo deployment/myapp --to-revision=3   `}
 </CodeBlock>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：各策略比較與選擇指南 ─────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-indigo-100 p-2 rounded-lg">
               <BarChart3 className="text-indigo-600" size={22} />
@@ -610,8 +616,8 @@ kubectl rollout undo deployment/myapp --to-revision=3   `}
             四種策略各有適用場景，沒有「最好的」，只有「最適合當下團隊規模與業務風險」的那一個。
           </p>
 
-          <Card className="mb-6 overflow-hidden">
-            <CardBody className="p-0">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm mb-6 overflow-hidden">
+            <div className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -626,10 +632,10 @@ kubectl rollout undo deployment/myapp --to-revision=3   `}
                   <tbody>
                     <tr className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-700">Downtime</td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="danger" variant="flat">有</Chip></td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="success" variant="flat">零</Chip></td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="success" variant="flat">零</Chip></td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="success" variant="flat">零</Chip></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">有</span></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">零</span></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">零</span></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">零</span></td>
                     </tr>
                     <tr className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-700">回滾速度</td>
@@ -640,10 +646,10 @@ kubectl rollout undo deployment/myapp --to-revision=3   `}
                     </tr>
                     <tr className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-700">資源成本</td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="success" variant="flat">最低</Chip></td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="success" variant="flat">低</Chip></td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="danger" variant="flat">2 倍</Chip></td>
-                      <td className="px-4 py-3 text-center"><Chip size="sm" color="success" variant="flat">低</Chip></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">最低</span></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">低</span></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">2 倍</span></td>
+                      <td className="px-4 py-3 text-center"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">低</span></td>
                     </tr>
                     <tr className="border-b border-slate-100 hover:bg-slate-50">
                       <td className="px-4 py-3 font-medium text-slate-700">複雜度</td>
@@ -669,8 +675,8 @@ kubectl rollout undo deployment/myapp --to-revision=3   `}
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="bg-gradient-to-br from-slate-800 to-zinc-900 text-white rounded-2xl p-6">
             <p className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -698,46 +704,46 @@ kubectl rollout undo deployment/myapp --to-revision=3   `}
               </div>
             </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ──────────────────────────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex flex-wrap gap-2">
             {['Blue-Green', 'Canary Release', 'Feature Flag', 'Zero Downtime', 'DevOps', 'Kubernetes'].map((tag) => (
-              <Chip key={tag} variant="flat" color="default" size="sm">{tag}</Chip>
+              <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">{tag}</span>
             ))}
           </div>
-        </motion.div>
+        </FadeIn>
 
         {/* ── Navigation ────────────────────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex flex-col sm:flex-row justify-between gap-4 pt-4">
             <Link href="/blog/devops/ep04-kubernetes">
-              <Card className="border border-slate-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
-                <CardBody className="p-4 flex flex-row items-center gap-3">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
+                <div className="p-4 flex flex-row items-center gap-3">
                   <ArrowLeft size={18} className="text-slate-500 shrink-0" />
                   <div>
                     <p className="text-xs text-slate-400 mb-0.5">上一篇</p>
                     <p className="text-sm font-semibold text-slate-700">EP.04 Kubernetes 入門</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <Link href="/blog/devops/ep01-test-pyramid">
-              <Card className="border border-slate-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
-                <CardBody className="p-4 flex flex-row items-center gap-3 justify-end">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
+                <div className="p-4 flex flex-row items-center gap-3 justify-end">
                   <div className="text-right">
                     <p className="text-xs text-slate-400 mb-0.5">跳轉</p>
                     <p className="text-sm font-semibold text-slate-700">EP.01 測試金字塔</p>
                   </div>
                   <ArrowRight size={18} className="text-slate-500 shrink-0" />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.div>
+        </FadeIn>
 
       </div>
     </div>

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -24,8 +19,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'PostgreSQL 進階：Window Functions、CTE、EXPLAIN ANALYZE 讓你從「會寫 SQL」進化到「寫好 SQL」 | Joseph Chen',
+  description: 'ROW_NUMBER、RANK、LAG/LEAD、遞迴 CTE、執行計畫優化 — 讓你從「會寫 SQL」進化到「寫好 SQL」',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep07-postgres-advanced',
+  },
+};
+
+
 
 export default function DBEP07() {
   return (
@@ -34,11 +40,7 @@ export default function DBEP07() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-blue-800 via-indigo-700 to-violet-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.07
@@ -69,18 +71,18 @@ export default function DBEP07() {
                 <Database size={14} /> PostgreSQL · Window Functions · CTE · EXPLAIN ANALYZE
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 你的 SQL 可能很慢，但你不知道 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-amber-500" size={28} />
@@ -148,25 +150,25 @@ WHERE total = max_total;
                 color: 'bg-blue-50 border-blue-200',
               },
             ].map(({ icon, title, desc, color }) => (
-              <Card key={title} className={`border ${color} shadow-sm`}>
-                <CardBody className="p-5 space-y-3">
+              <div key={title} className={`border ${color} shadow-sm`}>
+                <div className="p-5 space-y-3">
                   {icon}
                   <h3 className="font-black text-gray-800">{title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: Window Functions ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <BarChart3 className="text-indigo-600" size={28} />
@@ -277,16 +279,16 @@ FROM scores;   `}
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: LAG/LEAD ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <TrendingUp className="text-green-600" size={28} />
@@ -370,16 +372,16 @@ FROM (
 WHERE next_order_at IS NULL  -- 最後一筆訂單
    OR next_order_at - created_at > INTERVAL '30 days';  -- 或間隔超過30天   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: Sliding Window ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Activity className="text-purple-600" size={28} />
@@ -461,16 +463,16 @@ SELECT
   ) AS cumulative_pct
 FROM orders;   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: CTE ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Layers className="text-violet-600" size={28} />
@@ -597,16 +599,16 @@ ORDER BY level, name;
               務必加上 <code className="bg-violet-100 px-1 rounded font-mono">WHERE level &lt; N</code> 等防護條件，避免資料有循環時造成無限遞迴。
             </p>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: EXPLAIN ANALYZE ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Search className="text-blue-600" size={28} />
@@ -690,15 +692,15 @@ Execution Time: 145.2 ms   `}
                 desc: '這個節點被執行了 N 次。若 loops 很大，actual time 要乘以 N 才是真正花費的時間。',
               },
             ].map(({ label, icon, status, desc }) => (
-              <Card key={label} className="border-0 shadow-sm">
-                <CardBody className="p-4 space-y-2">
+              <div key={label} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+                <div className="p-4 space-y-2">
                   <div className="flex items-center gap-2">
                     {icon}
                     <span className="font-black text-gray-800 text-sm">{label}</span>
                   </div>
                   <p className="text-gray-500 text-xs leading-relaxed">{desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -725,16 +727,16 @@ GROUP BY u.id, u.name;
 -- Hash Left Join       →  Index Nested Loop（因為 orders.user_id 有 Index 了）
 -- Execution Time: 145.2 ms  →  8.3 ms  （快了 17 倍！）   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 7: 常用 PostgreSQL 進階語法彙整 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Database className="text-indigo-600" size={28} />
@@ -867,29 +869,29 @@ CREATE INDEX idx_posts_pagination ON posts(created_at DESC, id DESC);   `}
               如果業務需要跳頁，才考慮用 OFFSET 或其他方案。
             </p>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Tags ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex flex-wrap gap-2 mb-10">
             {['PostgreSQL', 'Window Functions', 'CTE', 'EXPLAIN ANALYZE', 'SQL 優化', 'UPSERT', 'JSONB', 'Keyset Pagination'].map((tag) => (
-              <Chip key={tag} variant="flat" color="primary" size="sm">
+              <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
 
           {/* ─── Navigation ─── */}
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/database/ep06-redis-advanced">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5">
                   <div className="flex items-center gap-3 text-gray-400 group-hover:text-indigo-600 transition-colors">
                     <ArrowLeft size={20} />
                     <div>
@@ -899,13 +901,13 @@ CREATE INDEX idx_posts_pagination ON posts(created_at DESC, id DESC);   `}
                       </p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
 
             <div className="ml-auto w-full">
-              <Card className="border-0 shadow-md opacity-60 cursor-not-allowed">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md opacity-60 cursor-not-allowed">
+                <div className="p-5">
                   <div className="flex items-center justify-end gap-3 text-gray-400">
                     <div className="text-right">
                       <p className="text-xs text-gray-400 mb-0.5">下一篇</p>
@@ -915,11 +917,11 @@ CREATE INDEX idx_posts_pagination ON posts(created_at DESC, id DESC);   `}
                     </div>
                     <ArrowRight size={20} />
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

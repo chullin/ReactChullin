@@ -29,7 +29,7 @@ export default function DemoPage() {
     {
       title: "Ollama Demo",
       description: "展示基於 Ollama 的模型應用與實作效果。",
-      image: "/assets/ollama.png",
+      image: "/assets/ollama.webp",
       href: "https://chullin.github.io/fullVideo/ollama-demo_small.mp4",
       isExternal: true,
       color: "primary",
@@ -39,7 +39,7 @@ export default function DemoPage() {
     {
       title: "影之強者 第一集",
       description: "陰の実力者になりたくて！ (一次載入，速度慢)",
-      image: "/assets/shadow.jpg",
+      image: "/assets/shadow.webp",
       href: "https://chullin.github.io/fullVideo/shadow.mp4",
       isExternal: true,
       color: "success",

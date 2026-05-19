@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -16,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Docker 入門：Image、Container、Compose 容器化技術一次搞懂 | Joseph Chen',
+  description: 'Image 是食譜，Container 是料理 — 從 Hello World 到 docker-compose 部署， 附面試必備概念',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep13-docker',
+  },
+};
+
+
 
 /* ── Inline CodeBlock ───────────────────────────────────────────── */
 
@@ -47,10 +53,10 @@ export default function WebDevEP13Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.3) 0, rgba(255,255,255,0.3) 1px, transparent 0, transparent 50%)`, backgroundSize: '24px 24px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-white/15 text-gray-200 border-white/25 font-bold uppercase text-[10px]">網頁開發實戰</Chip>
-              <Chip size="sm" variant="flat" className="bg-white/15 text-gray-200 border-white/25 font-bold uppercase text-[10px]">EP.13</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/15 text-gray-200 border-white/25 font-bold uppercase text-[10px]">網頁開發實戰</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/15 text-gray-200 border-white/25 font-bold uppercase text-[10px]">EP.13</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Docker 入門：Image、Container、Compose<br />
@@ -60,7 +66,7 @@ export default function WebDevEP13Page() {
               Image 是食譜，Container 是料理 — 從 Hello World 到 docker-compose 部署，<br />
               附面試必備概念
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -82,15 +88,15 @@ export default function WebDevEP13Page() {
         </div>
 
         {/* ── Opening Quote ─────────────────────────────────────── */}
-        <Card className="border border-slate-100 bg-gradient-to-br from-slate-50 to-zinc-50 shadow-none">
-          <CardBody className="p-6 space-y-3">
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-100 bg-gradient-to-br from-slate-50 to-zinc-50 shadow-none">
+          <div className="p-6 space-y-3">
             <Quote size={22} className="text-slate-400" />
             <p className="text-gray-700 text-lg font-medium leading-relaxed italic">
               「『在我電腦可以跑』是工程師最讓人頭痛的一句話。Docker 解決的就是這個問題 — 把整個執行環境打包起來一起出貨，讓它在哪裡都能跑。」
             </p>
             <p className="text-slate-600 text-sm font-black">— 容器化技術的核心價值：環境一致性（Environment Parity）。</p>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
 
         {/* ── 1. 為什麼需要 Docker ──────────────────────────────── */}
         <section className="space-y-6">
@@ -116,7 +122,7 @@ export default function WebDevEP13Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 2. VM vs Container ────────────────────────────────── */}
         <section className="space-y-6">
@@ -188,7 +194,7 @@ export default function WebDevEP13Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 3. 三個核心概念 ───────────────────────────────────── */}
         <section className="space-y-6">
@@ -257,7 +263,7 @@ export default function WebDevEP13Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 4. 常用指令速查表 ─────────────────────────────────── */}
         <section className="space-y-5">
@@ -296,7 +302,7 @@ export default function WebDevEP13Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 5. Dockerfile 語法 ────────────────────────────────── */}
         <section className="space-y-5">
@@ -356,7 +362,7 @@ CMD ["node", "server.js"]`} />
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 6. docker-compose.yml ─────────────────────────────── */}
         <section className="space-y-5">
@@ -406,7 +412,7 @@ docker compose ps            # 查看所有服務狀態
 docker compose build         # 重新 build 所有 Image`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 7. Volume vs Bind Mount ───────────────────────────── */}
         <section className="space-y-5">
@@ -446,7 +452,7 @@ volumes:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 8. 面試常考題 ─────────────────────────────────────── */}
         <section className="space-y-6">
@@ -489,18 +495,18 @@ volumes:
                 color: 'zinc',
               },
             ].map(({ q, a, color }, i) => (
-              <Card key={i} className={`border border-${color}-200 bg-${color}-50/40 shadow-none`}>
-                <CardBody className="p-5 space-y-3">
+              <div key={i} className={`border border-${color}-200 bg-${color}-50/40 shadow-none`}>
+                <div className="p-5 space-y-3">
                   <p className={`font-black text-${color}-900 text-sm`}>{q}</p>
-                  <Divider className="opacity-20" />
+                  <hr className="border-gray-100 opacity-20"  />
                   <p className="text-gray-700 text-sm leading-relaxed">{a}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── Key Takeaway ──────────────────────────────────────── */}
         <section>
@@ -527,7 +533,7 @@ volumes:
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* ── Navigation ────────────────────────────────────────── */}
         <div className="grid grid-cols-2 gap-4">
@@ -546,7 +552,7 @@ volumes:
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Docker', 'Container', 'DevOps', 'Image', 'Compose', 'Dockerfile', 'EP.13'].map((tag) => (
-            <Chip key={tag} variant="flat" color="default" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
 

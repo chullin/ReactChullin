@@ -1,12 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider,
-  Input,
-  Accordion,
-  AccordionItem } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -21,8 +13,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '部落格導航與搜尋系統 從結構設計到演算法實作 | Joseph Chen',
+  description: '如何建立一個可擴充的配置系統？如何實作高效的即時搜尋與滾動追蹤目錄？ 本篇將深度拆解 chullin.tw 的導航架構。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep09-advanced-nav',
+  },
+};
+
+
 
 const ComplexityBadge = ({ tech, complexity }: { tech: string; complexity: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -37,7 +40,7 @@ export default function WebDevEP09() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.09</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">網頁開發實戰</span>
@@ -56,7 +59,7 @@ export default function WebDevEP09() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 12 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> React · IntersectionObserver · Filter Search</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -64,9 +67,9 @@ export default function WebDevEP09() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
         
         {/* 開場 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-blue-300 shrink-0 mt-1" />
                 <div>
@@ -80,9 +83,9 @@ export default function WebDevEP09() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 核心架構：Single Source of Truth */}
         <section className="space-y-6">
@@ -123,7 +126,7 @@ export const series: Series[] = [
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 實戰一：全站即時搜尋演算法 */}
         <section className="space-y-6">
@@ -170,7 +173,7 @@ export const series: Series[] = [
           <ComplexityBadge tech="React useMemo + Filter" complexity="O(S * P) - S=類別數, P=文章數" />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 實戰二：目錄 (TOC) 的滾動追蹤 */}
         <section className="space-y-6">
@@ -183,24 +186,24 @@ export const series: Series[] = [
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-slate-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-slate-50">
+              <div className="p-6">
                 <p className="font-black text-slate-800 mb-2">自動提取</p>
                 <p className="text-sm text-slate-600">
                   使用 <code>document.querySelectorAll('h2, h3')</code>。
                   為了避免抓到頁首或頁尾，我們將範圍限制在 <code>article</code> 標籤內。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-violet-50">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-violet-50">
+              <div className="p-6">
                 <p className="font-black text-violet-800 mb-2">滾動追蹤</p>
                 <p className="text-sm text-violet-600">
                   放棄監聽 scroll 事件（效能差），改用 <code>IntersectionObserver</code>。
                   當標題進入視窗頂部 20% 範圍時，觸發高亮。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <CodeBlock
@@ -226,7 +229,7 @@ export const series: Series[] = [
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 效能優化：Framer Motion 與 Layout */}
         <section className="space-y-6">
@@ -278,7 +281,7 @@ export const series: Series[] = [
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -298,7 +301,7 @@ export const series: Series[] = [
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Next.js', 'React', 'Navigation', 'Search Algorithm', 'IntersectionObserver', 'Performance', 'EP.09'].map((tag) => (
-            <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

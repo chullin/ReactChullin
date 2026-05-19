@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -21,8 +16,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '監控告警：Prometheus + Grafana 完整實戰 Metrics 四黃金信號、AlertManager、Dashboard 設計 | Joseph Chen',
+  description: '讓問題在用戶發現之前就告警給你 — 從 Node.js 暴露 Metrics， 到 PromQL 查詢、Grafana Dashboard，再到 AlertManager 即時告警。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep06-monitoring',
+  },
+};
+
+
 
 export default function DevOpsEP06() {
   return (
@@ -31,11 +37,7 @@ export default function DevOpsEP06() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-emerald-800 via-green-700 to-teal-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.06
@@ -69,18 +71,18 @@ export default function DevOpsEP06() {
                 <Activity size={14} /> Prometheus · Grafana · SRE · Monitoring
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 為什麼需要監控 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-emerald-600" size={28} />
@@ -93,8 +95,8 @@ export default function DevOpsEP06() {
             你卻要等到用戶回報才知道。
           </p>
 
-          <Card className="border-0 bg-gray-900 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gray-900 text-white">
+            <div className="p-6">
               <p className="text-gray-400 text-xs mb-4 font-mono uppercase tracking-wider">
                 沒有監控的典型場景
               </p>
@@ -111,8 +113,8 @@ export default function DevOpsEP06() {
                   <p className="text-gray-300">用戶完全感知不到異常</p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-800">
             Four Golden Signals — SRE 黃金四信號
@@ -166,8 +168,8 @@ export default function DevOpsEP06() {
                 titleColor: 'text-amber-800',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border ${item.color}`}>
-                <CardBody className="p-5">
+              <div key={i} className={`border ${item.color}`}>
+                <div className="p-5">
                   <div className="flex items-start justify-between mb-3">
                     <p className={`font-black text-4xl ${item.numberColor}`}>{item.number}</p>
                   </div>
@@ -177,20 +179,20 @@ export default function DevOpsEP06() {
                   <code className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded font-mono block truncate">
                     {item.metric}
                   </code>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: Prometheus 資料模型 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Gauge className="text-emerald-600" size={28} />
@@ -265,8 +267,8 @@ rpc_duration_seconds{quantile="0.9"}  0.087   # P90 87ms
 rpc_duration_seconds{quantile="0.99"} 0.342   # P99 342ms   `}
 </CodeBlock>
 
-          <Card className="border-0 bg-emerald-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-emerald-50">
+            <div className="p-5">
               <p className="font-black text-emerald-800 mb-3">Histogram vs Summary 怎麼選？</p>
               <div className="grid sm:grid-cols-2 gap-4 text-sm">
                 <div>
@@ -291,18 +293,18 @@ rpc_duration_seconds{quantile="0.99"} 0.342   # P99 342ms   `}
               <p className="text-xs text-emerald-700 mt-3 font-medium">
                 結論：多機部署的生產環境一律用 Histogram，配合 histogram_quantile() 計算百分位數。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: Node.js 暴露 Metrics ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Code2 className="text-emerald-600" size={28} />
@@ -443,16 +445,16 @@ async function createOrder(data: CreateOrderDto, user: User) {
   return order;
 }   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: PromQL ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <TrendingUp className="text-emerald-600" size={28} />
@@ -524,8 +526,8 @@ rate(http_request_duration_seconds_sum[5m])
 increase(http_requests_total{status=~"5.."}[1h])   `}
 </CodeBlock>
 
-          <Card className="border-0 bg-slate-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-slate-50">
+            <div className="p-5">
               <p className="font-black text-gray-800 mb-3">PromQL 常用函數速查</p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
@@ -546,18 +548,18 @@ increase(http_requests_total{status=~"5.."}[1h])   `}
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: Grafana Dashboard ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <BarChart3 className="text-emerald-600" size={28} />
@@ -664,20 +666,20 @@ scrape_configs:
                 color: 'bg-teal-50 border-teal-200',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border ${item.color}`}>
-                <CardBody className="p-5">
+              <div key={i} className={`border ${item.color}`}>
+                <div className="p-5">
                   <p className="font-black text-gray-800 text-sm mb-2">{item.panel}</p>
                   <p className="text-gray-600 text-sm leading-relaxed mb-3">{item.desc}</p>
                   <code className="text-xs bg-gray-100 text-gray-600 px-3 py-2 rounded font-mono block">
                     {item.promql}
                   </code>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
-          <Card className="border-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gradient-to-r from-slate-800 to-slate-700 text-white">
+            <div className="p-6">
               <p className="font-black mb-3">推薦直接 Import 的社群 Dashboard</p>
               <p className="text-slate-300 text-sm mb-4">
                 Grafana 有社群分享的 Dashboard JSON，可以直接 Import 免去從頭建立的時間。
@@ -696,18 +698,18 @@ scrape_configs:
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: AlertManager ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Bell className="text-emerald-600" size={28} />
@@ -849,8 +851,8 @@ receivers:
 </CodeBlock>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-green-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-green-50">
+              <div className="p-5">
                 <p className="font-black text-green-800 mb-3 text-sm">好的告警設計原則</p>
                 <ul className="text-sm text-green-700 space-y-2">
                   <li className="flex gap-2">
@@ -874,10 +876,10 @@ receivers:
                     恢復時（resolved）也要發通知
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-red-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-red-50">
+              <div className="p-5">
                 <p className="font-black text-red-800 mb-3 text-sm">常見的告警反模式</p>
                 <ul className="text-sm text-red-700 space-y-2">
                   <li className="flex gap-2">
@@ -901,16 +903,16 @@ receivers:
                     所有告警都用 Critical 等級
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* ─── 總結 ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="bg-gradient-to-br from-emerald-800 via-green-800 to-teal-800 rounded-3xl p-8 text-white">
             <h2 className="text-2xl font-black mb-6">本篇重點回顧</h2>
@@ -948,9 +950,9 @@ receivers:
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
         <div className="grid grid-cols-2 gap-4">
@@ -999,9 +1001,9 @@ receivers:
             'SRE',
             'DevOps',
           ].map((tag) => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">
               {tag}
-            </Chip>
+            </span>
           ))}
         </div>
       </article>

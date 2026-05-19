@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +12,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Git 入門到實戰 版本控制的底層邏輯 | Joseph Chen',
+  description: 'commit / branch / merge / rebase — 工程師每天都在用， 面試最常考的 10 個問題',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep12-git',
+  },
+};
+
+
 
 /* ── Inline CodeBlock ───────────────────────────────────────────── */
 
@@ -48,10 +54,10 @@ export default function WebDevEP12Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 1px, transparent 0, transparent 50%)`, backgroundSize: '28px 28px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-white/15 text-sky-100 border-white/25 font-bold uppercase text-[10px]">網頁開發實戰</Chip>
-              <Chip size="sm" variant="flat" className="bg-white/15 text-sky-100 border-white/25 font-bold uppercase text-[10px]">EP.12</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/15 text-sky-100 border-white/25 font-bold uppercase text-[10px]">網頁開發實戰</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/15 text-sky-100 border-white/25 font-bold uppercase text-[10px]">EP.12</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Git 入門到實戰<br />
@@ -61,7 +67,7 @@ export default function WebDevEP12Page() {
               commit / branch / merge / rebase — 工程師每天都在用，<br />
               面試最常考的 10 個問題
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -83,15 +89,15 @@ export default function WebDevEP12Page() {
         </div>
 
         {/* ── Opening Quote ─────────────────────────────────────── */}
-        <Card className="border border-sky-100 bg-gradient-to-br from-sky-50 to-indigo-50 shadow-none">
-          <CardBody className="p-6 space-y-3">
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-sky-100 bg-gradient-to-br from-sky-50 to-indigo-50 shadow-none">
+          <div className="p-6 space-y-3">
             <Quote size={22} className="text-sky-400" />
             <p className="text-gray-700 text-lg font-medium leading-relaxed italic">
               「Git 不是追蹤你改了什麼文字，而是替你的整個專案拍快照（snapshot）。每次 commit 都是一張快照，branch 是一條時間線，merge 是把兩條時間線合而為一。」
             </p>
             <p className="text-sky-600 text-sm font-black">— 一旦理解這個心智模型，Git 所有指令都會變得直覺。</p>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
 
         {/* ── 1. Git 是什麼 ─────────────────────────────────────── */}
         <section className="space-y-6">
@@ -112,7 +118,7 @@ export default function WebDevEP12Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 2. 四個核心區域 ───────────────────────────────────── */}
         <section className="space-y-6">
@@ -164,7 +170,7 @@ export default function WebDevEP12Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 3. 常用指令速查表 ─────────────────────────────────── */}
         <section className="space-y-5">
@@ -206,7 +212,7 @@ export default function WebDevEP12Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 4. merge vs rebase ────────────────────────────────── */}
         <section className="space-y-6">
@@ -269,7 +275,7 @@ git rebase -i HEAD~3
 # → 可以 squash / reword / drop 最近 3 個 commit`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 5. HEAD 和 detached HEAD ──────────────────────────── */}
         <section className="space-y-5">
@@ -295,7 +301,7 @@ git checkout -b new-feat # 從 detached HEAD 建新 branch，救回改動
 git checkout main        # 回到正常狀態`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── 6. 面試常考 10 題 ─────────────────────────────────── */}
         <section className="space-y-6">
@@ -358,18 +364,18 @@ git checkout main        # 回到正常狀態`} />
                 color: 'sky',
               },
             ].map(({ q, a, color }, i) => (
-              <Card key={i} className={`border border-${color}-100 bg-${color}-50/40 shadow-none`}>
-                <CardBody className="p-5 space-y-3">
+              <div key={i} className={`border border-${color}-100 bg-${color}-50/40 shadow-none`}>
+                <div className="p-5 space-y-3">
                   <p className={`font-black text-${color}-800 text-sm`}>{q}</p>
-                  <Divider className="opacity-20" />
+                  <hr className="border-gray-100 opacity-20"  />
                   <p className="text-gray-700 text-sm leading-relaxed">{a}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ── Key Takeaway ──────────────────────────────────────── */}
         <section>
@@ -396,7 +402,7 @@ git checkout main        # 回到正常狀態`} />
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* ── Navigation ────────────────────────────────────────── */}
         <div className="grid grid-cols-2 gap-4">
@@ -416,7 +422,7 @@ git checkout main        # 回到正常狀態`} />
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Git', '版本控制', 'branch', 'merge', 'rebase', '面試題', 'EP.12'].map((tag) => (
-            <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
 

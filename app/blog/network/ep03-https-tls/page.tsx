@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -19,8 +14,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'HTTPS 是怎麼加密的？ TLS 握手完全解析 | Joseph Chen',
+  description: '對稱加密、非對稱加密、憑證鏈——理解 HTTPS 安全的完整原理。 從「為什麼需要加密」開始，到 TLS 握手的每一步，一次全部說清楚。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/network/ep03-https-tls',
+  },
+};
+
+
 
 export default function NetworkEP03() {
   return (
@@ -28,7 +34,7 @@ export default function NetworkEP03() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-green-700 via-emerald-600 to-teal-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.03</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">網路系列</span>
@@ -47,16 +53,16 @@ export default function NetworkEP03() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 14 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> HTTPS · TLS · SSL · 加密 · 憑證</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-emerald-300 shrink-0 mt-1" />
                 <div>
@@ -70,12 +76,12 @@ export default function NetworkEP03() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* Section 1: HTTP 的問題 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-red-500" size={28} />
             <h2 className="text-3xl font-black text-gray-900">HTTP 的問題：明信片寄信</h2>
@@ -137,12 +143,12 @@ Content-Type: application/json
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: 加密基本概念 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <Key className="text-emerald-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">加密的兩種方式</h2>
@@ -195,8 +201,8 @@ Bob 解密：密文 + Bob 的私鑰 → 原文 ✅
 
           {/* 對比 Card */}
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-blue-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-blue-50">
+              <div className="p-5">
                 <p className="font-black text-blue-800 mb-3">對稱加密（Symmetric）</p>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-green-700"><CheckCircle size={14} /> 速度快（AES-256 幾乎零負擔）</div>
@@ -204,10 +210,10 @@ Bob 解密：密文 + Bob 的私鑰 → 原文 ✅
                   <div className="flex items-center gap-2 text-red-600"><span className="text-base">✗</span> 金鑰分發問題：如何安全地傳鑰匙？</div>
                 </div>
                 <p className="text-xs text-blue-600 mt-3 font-medium">常見演算法：AES-128, AES-256, ChaCha20</p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-purple-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-purple-50">
+              <div className="p-5">
                 <p className="font-black text-purple-800 mb-3">非對稱加密（Asymmetric）</p>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-green-700"><CheckCircle size={14} /> 公鑰可以公開，不怕被截獲</div>
@@ -215,8 +221,8 @@ Bob 解密：密文 + Bob 的私鑰 → 原文 ✅
                   <div className="flex items-center gap-2 text-red-600"><span className="text-base">✗</span> 速度慢（比對稱加密慢 100–1000 倍）</div>
                 </div>
                 <p className="text-xs text-purple-600 mt-3 font-medium">常見演算法：RSA-2048, ECDSA, ECDH</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <div className="bg-emerald-50 rounded-2xl p-5 border border-emerald-200">
@@ -226,12 +232,12 @@ Bob 解密：密文 + Bob 的私鑰 → 原文 ✅
               之後用<strong>對稱加密</strong>傳輸實際資料。安全性 + 效能兼顧。
             </p>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: TLS 握手 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <Lock className="text-teal-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">TLS 握手：HTTPS 的核心</h2>
@@ -315,12 +321,12 @@ Bob 解密：密文 + Bob 的私鑰 → 原文 ✅
               </p>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: SSL 憑證 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <Shield className="text-emerald-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">SSL 憑證：誰說你是你？</h2>
@@ -401,12 +407,12 @@ sudo certbot --nginx -d example.com -d www.example.com
 sudo certbot renew --dry-run`}
             />
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: 常見攻擊 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-orange-500" size={28} />
             <h2 className="text-3xl font-black text-gray-900">常見的 HTTPS 相關攻擊</h2>
@@ -418,8 +424,8 @@ sudo certbot renew --dry-run`}
 
           <div className="space-y-4">
             {/* 攻擊 1 */}
-            <Card className="border-0 shadow-sm border-l-4 border-l-red-400 bg-red-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm border-l-4 border-l-red-400 bg-red-50">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <span className="text-2xl shrink-0">🎭</span>
                   <div className="flex-1">
@@ -434,12 +440,12 @@ sudo certbot renew --dry-run`}
                     </div>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* 攻擊 2 */}
-            <Card className="border-0 shadow-sm border-l-4 border-l-orange-400 bg-orange-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm border-l-4 border-l-orange-400 bg-orange-50">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <span className="text-2xl shrink-0">⬇️</span>
                   <div className="flex-1">
@@ -461,12 +467,12 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
                     />
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* 攻擊 3 */}
-            <Card className="border-0 shadow-sm border-l-4 border-l-yellow-400 bg-yellow-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm border-l-4 border-l-yellow-400 bg-yellow-50">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <span className="text-2xl shrink-0">⏰</span>
                   <div className="flex-1">
@@ -487,15 +493,15 @@ sudo certbot renew --dry-run
                     />
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 6: TLS 1.2 vs 1.3 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">TLS 1.2 vs TLS 1.3</h2>
 
           <p className="text-gray-600 leading-relaxed">
@@ -540,10 +546,10 @@ sudo certbot renew --dry-run
               如果你的系統不需要支援超舊的環境，可以只保留 TLS 1.3。
             </p>
           </div>
-        </motion.section>
+        </section>
 
         {/* 總結 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <section   >
           <div className="bg-gradient-to-br from-green-700 via-emerald-600 to-teal-700 rounded-3xl p-8 text-white">
             <h2 className="text-2xl font-black mb-6">本篇重點回顧</h2>
             <div className="space-y-3">
@@ -562,9 +568,9 @@ sudo certbot renew --dry-run
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -585,7 +591,7 @@ sudo certbot renew --dry-run
         {/* Tags */}
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['HTTPS', 'TLS', 'SSL', '加密', '憑證', '網路安全', '面試', 'EP.03'].map(tag => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
 

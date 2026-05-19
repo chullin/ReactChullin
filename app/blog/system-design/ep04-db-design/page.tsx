@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -18,8 +13,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '資料庫設計入門： ER Diagram、一對多、正規化 | Joseph Chen',
+  description: '從「一張超大表」的痛苦，到規範化設計的清爽—— 系統設計面試必備。你的表結構決定了系統的上限。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep04-db-design',
+  },
+};
+
+
 
 export default function SystemDesignEP04() {
   return (
@@ -27,7 +33,7 @@ export default function SystemDesignEP04() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-orange-600 via-amber-600 to-yellow-500 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.04</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計系列</span>
@@ -46,16 +52,16 @@ export default function SystemDesignEP04() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 16 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> 資料庫設計 · ER Diagram · 正規化 · SQL</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-orange-300 shrink-0 mt-1" />
                 <div>
@@ -72,12 +78,12 @@ export default function SystemDesignEP04() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* Section 1: 一張超大表的問題 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-red-500" size={28} />
             <h2 className="text-3xl font-black text-gray-900">從「一張超大表」開始</h2>
@@ -137,8 +143,8 @@ export default function SystemDesignEP04() {
                 icon: '🗑️',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border-0 shadow-sm border-l-4 ${item.color}`}>
-                <CardBody className="p-6">
+              <div key={i} className={`border-0 shadow-sm border-l-4 ${item.color}`}>
+                <div className="p-6">
                   <div className="flex items-start gap-4">
                     <span className="text-2xl shrink-0">{item.icon}</span>
                     <div>
@@ -146,8 +152,8 @@ export default function SystemDesignEP04() {
                       <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -159,12 +165,12 @@ export default function SystemDesignEP04() {
               解法：分開設計，用外鍵（Foreign Key）建立關聯。
             </p>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: ER Diagram */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <GitBranch className="text-orange-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">ER Diagram：用圖說清楚關係</h2>
@@ -232,12 +238,12 @@ users 追蹤 users → 同一實體的多對多（M:N）
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: 正規化 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <Layers className="text-amber-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">正規化：每個事實只存一次</h2>
@@ -399,12 +405,12 @@ CREATE TABLE users (
               實務建議：OLTP（交易型，如電商、社群）先做到 3NF；OLAP（分析型，如報表、BI）可以用星型架構（反正規化）提升查詢速度。
             </p>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: 實戰電商設計 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <div className="flex items-center gap-3">
             <Database className="text-orange-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">實戰：設計電商資料庫</h2>
@@ -537,12 +543,12 @@ CREATE TABLE order_items (
               </p>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: Index */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-6">
+        <section    className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">Index 要加在哪裡？</h2>
 
           <p className="text-gray-600 leading-relaxed text-lg">
@@ -612,10 +618,10 @@ CREATE INDEX idx_orders_user_created ON orders(user_id, created_at);
               在 Database 系列 EP.02 Index 有詳細說明，這篇先掌握「什麼情況要加」的直覺。
             </p>
           </div>
-        </motion.section>
+        </section>
 
         {/* 總結 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <section   >
           <div className="bg-gradient-to-br from-orange-600 via-amber-600 to-yellow-500 rounded-3xl p-8 text-white">
             <h2 className="text-2xl font-black mb-6">本篇重點回顧</h2>
             <div className="space-y-3">
@@ -635,9 +641,9 @@ CREATE INDEX idx_orders_user_created ON orders(user_id, created_at);
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
@@ -659,7 +665,7 @@ CREATE INDEX idx_orders_user_created ON orders(user_id, created_at);
         {/* Tags */}
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['資料庫設計', 'ER Diagram', '正規化', 'SQL', '系統設計', 'EP.04'].map(tag => (
-            <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
 

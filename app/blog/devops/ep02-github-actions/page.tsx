@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowRight,
@@ -22,15 +17,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'CI/CD 入門：GitHub Actions 自動化你的測試與部署流程 | Joseph Chen',
+  description: '每次 Push 都要手動跑測試、手動部署？這不是工程師該做的事。 這篇帶你從零開始設定 GitHub Actions，讓 CI/CD 幫你把守每一道關卡。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep02-github-actions',
+  },
+};
+
+
 
 export default function DevOpsEP02() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50">
       <div className="bg-gradient-to-br from-orange-800 via-orange-600 to-amber-500 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.02</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">工程品質與 DevOps</span>
@@ -49,16 +55,16 @@ export default function DevOpsEP02() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 13 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> CI/CD · GitHub Actions · DevOps · Automation</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-orange-300 shrink-0 mt-1" />
                 <div>
@@ -69,12 +75,12 @@ export default function DevOpsEP02() {
                   <p className="text-gray-500 text-sm">— DevOps 實踐原則</p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* CI/CD 概念 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">CI/CD 是什麼？為什麼重要？</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             CI/CD 是兩個概念的組合：<strong>Continuous Integration（持續整合）</strong>與
@@ -83,8 +89,8 @@ export default function DevOpsEP02() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="border-0 shadow-md border-l-4 border-orange-500">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-orange-500">
+              <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                     <GitBranch size={20} className="text-orange-600" />
@@ -102,11 +108,11 @@ export default function DevOpsEP02() {
                 <div className="mt-3 bg-orange-50 rounded p-2 text-xs text-orange-700">
                   目標：及早發現問題，防止壞程式碼合併進主幹
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md border-l-4 border-amber-500">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-amber-500">
+              <div className="p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
                     <Rocket size={20} className="text-amber-600" />
@@ -124,13 +130,13 @@ export default function DevOpsEP02() {
                 <div className="mt-3 bg-amber-50 rounded p-2 text-xs text-amber-700">
                   目標：消除手動部署，讓交付速度與信心同步提升
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* 傳統 vs CI/CD 流程對比 */}
-          <Card className="border-0 shadow-md bg-gray-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gray-50">
+            <div className="p-6">
               <h3 className="text-lg font-bold text-gray-800 mb-4">傳統流程 vs CI/CD 流程</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -156,14 +162,14 @@ export default function DevOpsEP02() {
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 為什麼選 GitHub Actions */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-4">為什麼選 GitHub Actions？</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             CI/CD 工具不只 GitHub Actions 一種。在決定導入之前，了解它和主流替代方案的差異，
@@ -205,12 +211,12 @@ export default function DevOpsEP02() {
               <li>• 免費額度夠用：公開 repo 無限制；私有 repo 每月 2,000 分鐘（Linux Runner），個人專案通常足夠</li>
             </ul>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* GitHub Actions 核心概念 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">GitHub Actions 核心概念</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             GitHub Actions 是 GitHub 原生提供的 CI/CD 平台，設定全部寫在 YAML 檔案裡，
@@ -249,8 +255,8 @@ export default function DevOpsEP02() {
                 detail: 'Step 可以執行 shell 命令（run）或使用既有的 Action（uses），例如 actions/checkout@v4。'
               }
             ].map(({ term, icon: Icon, color, desc, detail }) => (
-              <Card key={term} className="border-0 shadow-md">
-                <CardBody className="p-5">
+              <div key={term} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5">
                   <div className="flex items-center gap-3 mb-2">
                     <div className={`w-9 h-9 bg-${color}-100 rounded-lg flex items-center justify-center`}>
                       <Icon size={18} className={`text-${color}-600`} />
@@ -259,14 +265,14 @@ export default function DevOpsEP02() {
                   </div>
                   <p className="text-gray-700 text-sm mb-2">{desc}</p>
                   <p className="text-gray-500 text-xs leading-relaxed">{detail}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
           {/* 層級關係圖 */}
-          <Card className="border-0 shadow-md bg-gradient-to-br from-orange-50 to-amber-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gradient-to-br from-orange-50 to-amber-50">
+            <div className="p-6">
               <h3 className="text-base font-bold text-gray-800 mb-4">層級結構</h3>
               <div className="font-mono text-sm space-y-1 text-gray-700">
                 <div className="flex items-center gap-2">
@@ -298,14 +304,14 @@ export default function DevOpsEP02() {
                   <span className="text-gray-500">needs: test ← 等 test 完才跑</span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 第一個 Workflow：CI 基本設定 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">實戰 ①：基本 CI Workflow</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             這是一個 Next.js 專案的標準 CI 設定，每次 PR 開啟或更新時，自動執行 Lint、型別檢查和測試。
@@ -381,12 +387,12 @@ jobs:
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* CD：部署到 Vercel */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">實戰 ②：自動部署到 Vercel</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             CI 通過後，自動部署到 Vercel。這裡用 Vercel CLI 做部署，
@@ -394,8 +400,8 @@ jobs:
           </p>
 
           {/* Secrets 設定說明 */}
-          <Card className="border-0 shadow-md bg-slate-900 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-slate-900 mb-6">
+            <div className="p-5">
               <p className="text-amber-400 text-sm font-bold mb-3">⚙️ 先在 GitHub 設定 Secrets（Settings → Secrets and variables → Actions）</p>
               <div className="space-y-2 font-mono text-sm">
                 <div className="flex items-center gap-3">
@@ -414,8 +420,8 @@ jobs:
                   <span className="text-green-400">同上，project.json 裡的 projectId</span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <CodeBlock
             language="yaml"
@@ -485,8 +491,8 @@ jobs:
           VERCEL_PROJECT_ID: \${{ secrets.VERCEL_PROJECT_ID }}`}
           />
 
-          <Card className="border-0 shadow-md bg-amber-50 border-l-4 border-amber-500 mt-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-amber-50 border-l-4 border-amber-500 mt-6">
+            <div className="p-5">
               <h4 className="font-bold text-amber-900 mb-2 flex items-center gap-2">
                 <Shield size={16} /> environment: production 的意義
               </h4>
@@ -495,14 +501,14 @@ jobs:
                 或是只允許特定分支觸發。設定路徑：Repository → Settings → Environments。
                 對個人專案這步可省略，但團隊協作強烈建議加上。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Preview Deploy on PR */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">實戰 ③：PR Preview 環境</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             更進階的做法：每個 PR 自動部署一個獨立的 Preview URL，讓 reviewer 可以在真實環境驗證功能，
@@ -569,18 +575,18 @@ jobs:
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 進階技巧 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">進階技巧</h2>
 
           <div className="space-y-6">
             {/* Concurrency */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <Zap size={18} className="text-orange-500" />
                   避免並發衝突：concurrency 設定
@@ -596,12 +602,12 @@ concurrency:
   group: \${{ github.workflow }}-\${{ github.ref }}
   cancel-in-progress: true  # 取消同 group 的舊 run`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Reusable Workflows */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <Settings size={18} className="text-amber-500" />
                   可重用 Workflow：避免重複 YAML
@@ -646,12 +652,12 @@ jobs:
     needs: ci
     # ... 部署步驟`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* 環境變數與 Secrets */}
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
                   <Shield size={18} className="text-orange-500" />
                   環境變數與 Secrets 的層級
@@ -693,15 +699,15 @@ jobs:
                   <strong>原則：</strong>所有 API Key、Token、密碼一律用 Secrets，永遠不要直接寫在 YAML 或程式碼裡。
                   Secrets 在 log 中會被自動遮蔽顯示為 ***。
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 常見問題 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">常見錯誤與除錯方式</h2>
 
           <div className="space-y-4">
@@ -731,8 +737,8 @@ jobs:
                 icon: Zap
               }
             ].map(({ problem, cause, fix, icon: Icon }) => (
-              <Card key={problem} className="border-0 shadow-md">
-                <CardBody className="p-5">
+              <div key={problem} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5">
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                       <Icon size={16} className="text-red-500" />
@@ -743,20 +749,20 @@ jobs:
                       <p className="text-gray-700 text-sm"><strong className="text-green-600">解法：</strong>{fix}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 整合全景 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">一張圖理解完整 CI/CD 流程</h2>
 
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-slate-900 to-slate-800 text-white">
-            <CardBody className="p-8">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+            <div className="p-8">
               <div className="space-y-4 font-mono text-sm">
                 <div className="flex items-center gap-3">
                   <span className="text-yellow-400 font-bold w-24 shrink-0">Developer</span>
@@ -792,14 +798,14 @@ jobs:
                   </span>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 重點整理 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">重點整理</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
@@ -819,15 +825,15 @@ jobs:
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Navigation */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75 }}>
-          <Divider className="mb-8" />
+        <section   >
+          <hr className="border-gray-100 mb-8"  />
           <div className="flex justify-between items-center">
             <Link href="/blog/devops/ep01-test-pyramid">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
-                <CardBody className="p-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
+                <div className="p-4">
                   <div className="flex items-center gap-3">
                     <ArrowLeft size={20} className="text-orange-500" />
                     <div>
@@ -835,16 +841,16 @@ jobs:
                       <p className="text-sm font-semibold text-gray-700">EP.01 測試金字塔</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <div className="flex gap-2">
-              <Chip size="sm" color="warning" variant="flat">CI/CD</Chip>
-              <Chip size="sm" color="warning" variant="flat">DevOps</Chip>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">CI/CD</span>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">DevOps</span>
             </div>
             <div className="w-64" />
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

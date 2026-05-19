@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -13,8 +8,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'C# 與 ASP.NET .NET 工程師面試題 | Joseph Chen',
+  description: '型別系統、LINQ、Web API 設計 — C# 語法特性與後端開發核心概念',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/lang/ep02-csharp',
+  },
+};
+
+
 
 export default function LangEP02Page() {
   return (
@@ -29,14 +35,14 @@ export default function LangEP02Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-200 border-violet-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-200 border-violet-500/30 font-bold uppercase text-[10px]">
                 後端語言
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-200 border-violet-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-200 border-violet-500/30 font-bold uppercase text-[10px]">
                 EP.02
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               C# 與 ASP.NET<br />
@@ -45,7 +51,7 @@ export default function LangEP02Page() {
             <p className="text-violet-200 text-lg font-medium max-w-2xl mx-auto">
               型別系統、LINQ、Web API 設計 — C# 語法特性與後端開發核心概念
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -73,19 +79,19 @@ export default function LangEP02Page() {
 
         {/* Opening Quote */}
         <section>
-          <Card className="border border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-50 shadow-none">
-            <CardBody className="p-7">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-100 bg-gradient-to-br from-violet-50 to-fuchsia-50 shadow-none">
+            <div className="p-7">
               <div className="flex items-start gap-4">
                 <Quote size={28} className="text-violet-300 shrink-0 mt-1" />
                 <p className="text-gray-700 text-lg leading-relaxed italic font-medium">
                   在鴻海的 TMS 專案裡用過 ASP.NET，第一次看到 LINQ 的時候以為在看 SQL，後來才發現它是 C# 的內建語言整合查詢——比 Python 的 list comprehension 還強大。
                 </p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 1: C# 特色 */}
         <section className="space-y-6">
@@ -124,7 +130,7 @@ export default function LangEP02Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: C# 語法速查 */}
         <section className="space-y-6">
@@ -171,7 +177,7 @@ public class Person {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: LINQ */}
         <section className="space-y-6">
@@ -239,7 +245,7 @@ record Student(string Name, double GPA, string Major);`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: async/await */}
         <section className="space-y-6">
@@ -330,7 +336,7 @@ public class UserService : IUserService {
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: ASP.NET Web API */}
         <section className="space-y-6">
@@ -400,7 +406,7 @@ public record UpdateProductDto(string? Name, decimal? Price);`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 6: Dependency Injection */}
         <section className="space-y-6">
@@ -467,7 +473,7 @@ app.Run();`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 7: 面試常考題 */}
         <section className="space-y-6">
@@ -499,17 +505,17 @@ app.Run();`}
                 a: '.NET Framework（1.0–4.8）只能跑在 Windows，已進入維護模式。.NET Core / .NET 5+（統一品牌）是跨平台的現代版本，效能更好、更輕量。新專案全部用 .NET 8（目前 LTS），不要用舊的 .NET Framework，除非維護遺留系統。',
               },
             ].map((item, i) => (
-              <Card key={i} className="border border-gray-100 shadow-none">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-none">
+                <div className="p-6 space-y-3">
                   <p className="font-black text-gray-900">Q{i + 1}. {item.q}</p>
                   <p className="text-gray-600 leading-relaxed text-sm">{item.a}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -530,7 +536,7 @@ app.Run();`}
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['C#', 'ASP.NET', 'LINQ', 'Web API', '.NET', '面試題', 'EP.02'].map((tag) => (
-            <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

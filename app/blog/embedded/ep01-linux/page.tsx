@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -20,8 +15,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Linux 基礎指令 嵌入式工程師必知的 20 個指令 | Joseph Chen',
+  description: '檔案操作、權限管理、cron 排程、process 管理 — 附面試常考題',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/embedded/ep01-linux',
+  },
+};
+
+
 
 /* ─── Section Heading ─── */
 const SectionHeading = ({ color, children }: { color: string; children: React.ReactNode }) => (
@@ -65,18 +71,14 @@ export default function EmbeddedEP01Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65 }}
-          >
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
                 嵌入式與系統
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-teal-300/30 text-teal-100 border-teal-300/40 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-300/30 text-teal-100 border-teal-300/40 font-bold uppercase text-[10px]">
                 EP.01
-              </Chip>
+              </span>
             </div>
 
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
@@ -102,7 +104,7 @@ export default function EmbeddedEP01Page() {
                 <span>12 min read</span>
               </div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -111,15 +113,15 @@ export default function EmbeddedEP01Page() {
         <div className="max-w-3xl mx-auto space-y-14">
 
           {/* Opening Quote */}
-          <Card className="border border-teal-100 shadow-sm bg-teal-50/40">
-            <CardBody className="p-7 relative overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-teal-100 shadow-sm bg-teal-50/40">
+            <div className="p-7 relative overflow-hidden">
               <Quote size={44} className="text-teal-200 absolute -top-2 -left-1 rotate-6" />
               <p className="text-lg font-black text-teal-900 leading-snug relative z-10">
                 「會用 Linux 指令，就能和嵌入式板子對話。不會，你只是在猜。」
               </p>
               <p className="text-sm text-teal-600 mt-3 font-medium relative z-10">— 每個用 Raspberry Pi 踩過坑的工程師</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="space-y-12 text-gray-600 leading-relaxed">
 
@@ -135,15 +137,15 @@ export default function EmbeddedEP01Page() {
                   { icon: <Terminal size={20} className="text-cyan-600" />, title: '伺服器部署', desc: 'SSH 進機器、查 log、重啟服務、設定 cron' },
                   { icon: <Search size={20} className="text-sky-600" />, title: '除錯與監控', desc: 'ps/top 看 process、grep 搜 log、find 找檔案' },
                 ].map((item, i) => (
-                  <Card key={i} className="border border-gray-100 shadow-none">
-                    <CardBody className="p-5 space-y-2">
+                  <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-none">
+                    <div className="p-5 space-y-2">
                       <div className="flex items-center gap-2">
                         {item.icon}
                         <span className="font-black text-gray-900 text-sm">{item.title}</span>
                       </div>
                       <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-                    </CardBody>
-                  </Card>
+                    </div>
+                  </div>
                 ))}
               </div>
             </section>
@@ -527,13 +529,13 @@ screen -r mySession  # 重新連回`,
 10.0.0.5        build-server`,
                 },
               ].map((item, i) => (
-                <Card key={i} className="border border-gray-100 shadow-sm">
-                  <CardBody className="p-6 space-y-3">
+                <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+                  <div className="p-6 space-y-3">
                     <p className="font-black text-gray-900 text-base">{item.q}</p>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.a}</p>
                     {item.code && <CodeBlock lang="bash" code={item.code} />}
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               ))}
             </section>
 
@@ -557,7 +559,7 @@ screen -r mySession  # 重新連回`,
             </div>
           </div>
 
-          <Divider className="my-12 opacity-40" />
+          <hr className="border-gray-100 my-12 opacity-40"  />
 
           {/* Series Navigation */}
           <div className="grid grid-cols-2 gap-4">
@@ -582,7 +584,7 @@ screen -r mySession  # 重新連回`,
           {/* Tags */}
           <div className="flex items-center gap-3 flex-wrap pt-2">
             {['Linux', 'Shell', '嵌入式', 'chmod', 'cron', 'Raspberry Pi', 'EP.01'].map((tag) => (
-              <Chip key={tag} variant="flat" color="default" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.15 — Backtracking： 走不通就退回來 | Joseph Chen',
+  description: '#78 Subsets · #46 Permutations · #39 Combination Sum — 一個框架搞定所有「列出所有可能」的問題',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep15-backtracking',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -57,14 +63,14 @@ export default function LeetcodeEP15Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">
                 LeetCode 刷題日記
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">
                 EP.15
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.15 — Backtracking：<br />
@@ -74,7 +80,7 @@ export default function LeetcodeEP15Page() {
               #78 Subsets · #46 Permutations · #39 Combination Sum<br />
               — 一個框架搞定所有「列出所有可能」的問題
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -116,7 +122,7 @@ export default function LeetcodeEP15Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 核心框架 */}
         <section className="space-y-6">
@@ -160,7 +166,7 @@ export default function LeetcodeEP15Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: Subsets ===== */}
         <section className="space-y-6">
@@ -172,8 +178,8 @@ export default function LeetcodeEP15Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個不含重複元素的整數陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nums</code>，
@@ -183,8 +189,8 @@ export default function LeetcodeEP15Page() {
                 <p>Input: nums = [1, 2, 3]</p>
                 <p>Output: [[], [1], [2], [3], [1,2], [1,3], [2,3], [1,2,3]]</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">思路：每一層都是一個答案</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -242,7 +248,7 @@ export default function LeetcodeEP15Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: Permutations ===== */}
         <section className="space-y-6">
@@ -254,8 +260,8 @@ export default function LeetcodeEP15Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個不含重複數字的陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nums</code>，
@@ -265,8 +271,8 @@ export default function LeetcodeEP15Page() {
                 <p>Input: nums = [1, 2, 3]</p>
                 <p>Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">Subsets vs Permutations 的差異</h3>
 
@@ -363,7 +369,7 @@ export default function LeetcodeEP15Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 3: Combination Sum ===== */}
         <section className="space-y-6">
@@ -375,8 +381,8 @@ export default function LeetcodeEP15Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個不含重複元素的正整數陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">candidates</code> 和目標數
@@ -387,8 +393,8 @@ export default function LeetcodeEP15Page() {
                 <p>Input: candidates = [2,3,6,7], target = 7</p>
                 <p>Output: [[2,2,3], [7]]</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">兩個關鍵點</h3>
 
@@ -485,7 +491,7 @@ export default function LeetcodeEP15Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 三題對比 */}
         <section className="space-y-6">
@@ -545,7 +551,7 @@ export default function LeetcodeEP15Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 常見陷阱 */}
         <section className="space-y-6">
@@ -586,7 +592,7 @@ backtrack(i, path, remain - candidates[i])`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -612,7 +618,7 @@ backtrack(i, path, remain - candidates[i])`}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -632,7 +638,7 @@ backtrack(i, path, remain - candidates[i])`}
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Backtracking', 'Subsets', 'Permutations', 'Combination Sum', 'Python', 'EP.15'].map((tag) => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

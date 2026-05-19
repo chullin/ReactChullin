@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.13 — Graph 入門： DFS 在圖上長什麼樣子 | Joseph Chen',
+  description: '#200 Number of Islands · #133 Clone Graph — Grid DFS、visited 集合、adjacency list 三個核心概念',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep13-graph-dfs',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -49,10 +54,10 @@ export default function LeetcodeEP13Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `linear-gradient(0deg, transparent 24%, rgba(52,211,153,0.3) 25%, rgba(52,211,153,0.3) 26%, transparent 27%, transparent 74%, rgba(52,211,153,0.3) 75%, rgba(52,211,153,0.3) 76%, transparent 77%), linear-gradient(90deg, transparent 24%, rgba(52,211,153,0.3) 25%, rgba(52,211,153,0.3) 26%, transparent 27%, transparent 74%, rgba(52,211,153,0.3) 75%, rgba(52,211,153,0.3) 76%, transparent 77%)`, backgroundSize: '30px 30px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold uppercase text-[10px]">EP.13</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold uppercase text-[10px]">EP.13</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.13 — Graph 入門：<br />
@@ -62,7 +67,7 @@ export default function LeetcodeEP13Page() {
               #200 Number of Islands · #133 Clone Graph
               <br />— Grid DFS、visited 集合、adjacency list 三個核心概念
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -128,7 +133,7 @@ export default function LeetcodeEP13Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: NUMBER OF ISLANDS ===== */}
         <section className="space-y-6">
@@ -140,15 +145,15 @@ export default function LeetcodeEP13Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個二維字元矩陣，<code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">"1"</code> 代表陸地，<code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">"0"</code> 代表水。
                 上下左右相連的陸地算一座島嶼，回傳島嶼總數。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900 mt-8">思路：把「找到一塊陸地」變成「淹沒整座島」</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -253,7 +258,7 @@ export default function LeetcodeEP13Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: CLONE GRAPH ===== */}
         <section className="space-y-6">
@@ -265,16 +270,16 @@ export default function LeetcodeEP13Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個無向圖的起始節點（每個節點有 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">val</code> 和 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">neighbors</code> 列表），
                 深度複製整個圖並返回新圖的起始節點。
               </p>
               <p className="text-gray-500 text-sm">注意：Graph 可能有環（節點之間互相指向），所以不能無腦遞迴。</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900 mt-8">關鍵挑戰：有環怎麼辦？</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -365,7 +370,7 @@ def cloneGraph(node: Node) -> Node:
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Graph DFS 模板 */}
         <section className="space-y-6">
@@ -411,7 +416,7 @@ def dfs_graph(node, visited):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -436,7 +441,7 @@ def dfs_graph(node, visited):
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -456,7 +461,7 @@ def dfs_graph(node, visited):
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Graph', 'DFS', 'BFS', 'Grid', 'Python', 'EP.13'].map((tag) => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

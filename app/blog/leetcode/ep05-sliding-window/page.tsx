@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -18,8 +12,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Sliding Window 用一個視窗掃過整個陣列 | Joseph Chen',
+  description: '#121 Best Time to Buy and Sell Stock — Sliding Window 最直觀的入門題',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep05-sliding-window',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -35,10 +40,10 @@ export default function LeetcodeEP05Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `radial-gradient(ellipse at 20% 50%, #06b6d4 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, #0284c7 0%, transparent 60%)` }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">EP.05</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-cyan-300 border-cyan-500/30 font-bold uppercase text-[10px]">EP.05</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Sliding Window<br />
@@ -49,14 +54,14 @@ export default function LeetcodeEP05Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-cyan-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-cyan-400" /><span>September 2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -75,8 +80,8 @@ export default function LeetcodeEP05Page() {
                 題目
               </h2>
               <p>給一個陣列 <code className="bg-gray-100 px-2 py-0.5 rounded text-sm font-mono">prices</code>，<code className="bg-gray-100 px-2 py-0.5 rounded text-sm font-mono">prices[i]</code> 代表第 i 天的股票價格。你只能買賣一次，求最大獲利。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`Input:  prices = [10, 1, 5, 6, 7, 1]
 Output: 6
 # 第 2 天買（price=1），第 5 天賣（price=7）→ 獲利 7-1=6
@@ -84,8 +89,8 @@ Output: 6
 Input:  prices = [10, 8, 7, 5, 2]
 Output: 0
 # 一路跌，無論如何都獲利不了 → 回傳 0`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* Brute Force */}
@@ -219,14 +224,14 @@ Output: 0
               </div>
             </div>
 
-            <Card className="bg-cyan-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-cyan-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-cyan-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-cyan-900 leading-snug relative z-10">
                   Sliding Window 的精髓：右邊界推進「擴大」視窗，左邊界推進「縮小」視窗。整個過程，left 和 right 都只往右走，總共最多走 2n 步，所以是 O(n)。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Summary */}
             <div className="bg-gradient-to-r from-cyan-50 to-sky-50 rounded-[2rem] p-8 space-y-4">
@@ -247,7 +252,7 @@ Output: 0
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep04-two-pointers" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -265,7 +270,7 @@ Output: 0
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Sliding Window', 'Array', 'Python', 'EP.05'].map((tag) => (
-              <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

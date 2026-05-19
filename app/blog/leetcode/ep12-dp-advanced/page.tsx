@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.12 — DP 進階： 最佳化、序列、分割 | Joseph Chen',
+  description: '#322 Coin Change · #300 Longest Increasing Subsequence · #139 Word Break — 三種進階 DP 模板，處理無限選擇、序列比對、字串分割',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep12-dp-advanced',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -48,10 +53,10 @@ export default function LeetcodeEP12Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `radial-gradient(circle at 20% 50%, #6366f1 0%, transparent 50%), radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 50%)` }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">EP.12</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]">EP.12</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.12 — DP 進階：<br />
@@ -61,7 +66,7 @@ export default function LeetcodeEP12Page() {
               #322 Coin Change · #300 Longest Increasing Subsequence · #139 Word Break
               <br />— 三種進階 DP 模板，處理無限選擇、序列比對、字串分割
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -98,7 +103,7 @@ export default function LeetcodeEP12Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: COIN CHANGE ===== */}
         <section className="space-y-6">
@@ -110,16 +115,16 @@ export default function LeetcodeEP12Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個硬幣面額陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">coins</code> 和目標金額 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">amount</code>，
                 每種硬幣可以無限使用，求最少需要幾枚硬幣能湊出 amount。無解則返回 -1。
               </p>
               <p className="text-gray-500 text-sm font-mono">coins = [1, 5, 11], amount = 15 → 3（5+5+5）</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900 mt-8">狀態定義</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -182,7 +187,7 @@ export default function LeetcodeEP12Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: LIS ===== */}
         <section className="space-y-6">
@@ -194,16 +199,16 @@ export default function LeetcodeEP12Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個整數陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nums</code>，
                 找出最長的嚴格遞增子序列（subsequence，不要求連續）的長度。
               </p>
               <p className="text-gray-500 text-sm font-mono">nums = [10, 9, 2, 5, 3, 7, 101, 18] → 4（[2, 3, 7, 101] 或 [2, 5, 7, 101]）</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900 mt-8">狀態定義</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -295,7 +300,7 @@ export default function LeetcodeEP12Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 3: WORD BREAK ===== */}
         <section className="space-y-6">
@@ -307,8 +312,8 @@ export default function LeetcodeEP12Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個字串 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">s</code> 和一個字典 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">wordDict</code>，
@@ -317,8 +322,8 @@ export default function LeetcodeEP12Page() {
               <p className="text-gray-500 text-sm font-mono">s = "leetcode", wordDict = ["leet","code"] → True</p>
               <p className="text-gray-500 text-sm font-mono">s = "applepenapple", wordDict = ["apple","pen"] → True</p>
               <p className="text-gray-500 text-sm font-mono">s = "catsandog", wordDict = ["cats","dog","sand","cat","an"] → False</p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900 mt-8">狀態定義</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -415,7 +420,7 @@ export default function LeetcodeEP12Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== DP 模板比較 ===== */}
         <section className="space-y-6">
@@ -435,26 +440,26 @@ export default function LeetcodeEP12Page() {
                   <td className="p-4 font-bold text-gray-900">Coin Change</td>
                   <td className="p-4 text-gray-600 font-mono text-xs">湊出金額 i 的最少硬幣</td>
                   <td className="p-4 text-gray-600">每種 coin 都可以無限選，外層枚舉目標</td>
-                  <td className="p-4"><Chip size="sm" variant="flat" color="primary">最佳化（無限選）</Chip></td>
+                  <td className="p-4"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">最佳化（無限選）</span></td>
                 </tr>
                 <tr>
                   <td className="p-4 font-bold text-gray-900">LIS</td>
                   <td className="p-4 text-gray-600 font-mono text-xs">以 nums[i] 結尾的最長序列</td>
                   <td className="p-4 text-gray-600">往前找所有合法的 j，取最大</td>
-                  <td className="p-4"><Chip size="sm" variant="flat" color="secondary">序列比對</Chip></td>
+                  <td className="p-4"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">序列比對</span></td>
                 </tr>
                 <tr>
                   <td className="p-4 font-bold text-gray-900">Word Break</td>
                   <td className="p-4 text-gray-600 font-mono text-xs">前 i 個字元能否分割</td>
                   <td className="p-4 text-gray-600">往前找切割點 j，判斷子字串是否合法</td>
-                  <td className="p-4"><Chip size="sm" variant="flat" color="success">字串分割</Chip></td>
+                  <td className="p-4"><span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">字串分割</span></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key takeaway */}
         <section>
@@ -479,7 +484,7 @@ export default function LeetcodeEP12Page() {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -498,7 +503,7 @@ export default function LeetcodeEP12Page() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'DP', 'Python', 'Coin Change', 'LIS', 'Word Break', 'EP.12'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

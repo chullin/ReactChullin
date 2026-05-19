@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -23,8 +18,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Next.js Middleware 與 Edge Runtime： 在邊緣執行你的邏輯 | Joseph Chen',
+  description: 'Middleware 攔截請求、Edge Functions、Geolocation 分流 — 讓你的應用響應速度提升到 50ms 以內',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep34-nextjs-middleware',
+  },
+};
+
+
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -40,7 +46,7 @@ export default function WebDevEP34() {
       {/* ── Hero ──────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-slate-800 via-gray-800 to-zinc-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.34</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">Web 開發系列</span>
@@ -58,7 +64,7 @@ export default function WebDevEP34() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 15 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Middleware · Edge · A/B Testing · Rate Limiting</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -66,9 +72,9 @@ export default function WebDevEP34() {
       <div className="max-w-4xl mx-auto px-6 py-12 space-y-12">
 
         {/* ── Section 1：什麼是 Middleware ────────────────────── */}
-        <motion.div {...fadeInUp}>
-          <Card className="shadow-lg border border-slate-100">
-            <CardBody className="p-8">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-lg border border-slate-100">
+            <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-slate-100 rounded-lg">
                   <Server className="text-slate-700" size={22} />
@@ -166,16 +172,16 @@ export default function WebDevEP34() {
                   ))}
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：基礎 Middleware 語法 ─────────────────── */}
-        <motion.div {...fadeInUp}>
-          <Card className="shadow-lg border border-slate-100">
-            <CardBody className="p-8">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-lg border border-slate-100">
+            <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-slate-100 rounded-lg">
                   <Zap className="text-slate-700" size={22} />
@@ -267,16 +273,16 @@ export const config = {
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：身份驗證 Middleware ──────────────────── */}
-        <motion.div {...fadeInUp}>
-          <Card className="shadow-lg border border-slate-100">
-            <CardBody className="p-8">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-lg border border-slate-100">
+            <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-slate-100 rounded-lg">
                   <Lock className="text-slate-700" size={22} />
@@ -383,16 +389,16 @@ export default async function DashboardPage() {
 }   `}
 </CodeBlock>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：A/B Testing 與 Geolocation ───────────── */}
-        <motion.div {...fadeInUp}>
-          <Card className="shadow-lg border border-slate-100">
-            <CardBody className="p-8">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-lg border border-slate-100">
+            <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-slate-100 rounded-lg">
                   <FlaskConical className="text-slate-700" size={22} />
@@ -497,16 +503,16 @@ export function middleware(request: NextRequest) {
                   </ul>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：Edge Runtime 限制與優化 ──────────────── */}
-        <motion.div {...fadeInUp}>
-          <Card className="shadow-lg border border-slate-100">
-            <CardBody className="p-8">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-lg border border-slate-100">
+            <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-slate-100 rounded-lg">
                   <Zap className="text-slate-700" size={22} />
@@ -606,16 +612,16 @@ export async function GET(request: Request) {
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：Rate Limiting ─────────────────────────── */}
-        <motion.div {...fadeInUp}>
-          <Card className="shadow-lg border border-slate-100">
-            <CardBody className="p-8">
+        <FadeIn>
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-lg border border-slate-100">
+            <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-slate-100 rounded-lg">
                   <ShieldAlert className="text-slate-700" size={22} />
@@ -785,33 +791,33 @@ export async function middleware(request: NextRequest) {
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.div>
+            </div>
+          </div>
+        </FadeIn>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ───────────────────────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="flex flex-wrap gap-2">
             {['Next.js', 'Middleware', 'Edge Runtime', 'A/B Testing', 'Rate Limiting', 'Geolocation', 'Authentication'].map((tag) => (
-              <Chip
+              <span
                 key={tag}
-                variant="flat"
-                className="bg-slate-100 text-slate-700 font-medium"
+                
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-slate-100 text-slate-700 font-medium"
               >
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
-        </motion.div>
+        </FadeIn>
 
         {/* ── Navigation ─────────────────────────────────────── */}
-        <motion.div {...fadeInUp}>
+        <FadeIn>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/blog/web-dev/ep33-pwa">
-              <Card className="shadow hover:shadow-md transition-shadow cursor-pointer border border-gray-200 hover:border-slate-400">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow hover:shadow-md transition-shadow cursor-pointer border border-gray-200 hover:border-slate-400">
+                <div className="p-5">
                   <div className="flex items-center gap-3">
                     <ArrowLeft className="text-slate-500 shrink-0" size={20} />
                     <div>
@@ -820,12 +826,12 @@ export async function middleware(request: NextRequest) {
                       <p className="text-xs text-gray-400">Service Worker、Manifest、Offline First</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <div className="opacity-50 cursor-not-allowed">
-              <Card className="shadow border border-gray-200">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow border border-gray-200">
+                <div className="p-5">
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-right">
                       <p className="text-xs text-gray-400 mb-0.5">下一篇</p>
@@ -834,11 +840,11 @@ export async function middleware(request: NextRequest) {
                     </div>
                     <ArrowRight className="text-gray-400 shrink-0" size={20} />
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
       </div>
     </div>

@@ -27,7 +27,7 @@ export const metadata = {
         siteName: '陳憲億 Joseph Chen Portfolio',
         images: [
             {
-                url: '/assets/profile3.png',
+                url: '/assets/profile3.webp',
                 width: 1200,
                 height: 630,
                 alt: 'Joseph Chen Profile',
@@ -38,7 +38,7 @@ export const metadata = {
         card: 'summary_large_image',
         title: '陳憲億 Joseph Chen | Software Engineer',
         description: 'Explore the portfolio of Joseph Chen, a Software Engineer in AI & Robotics.',
-        images: ['/assets/profile3.png'],
+        images: ['/assets/profile3.webp'],
     },
     alternates: {
         canonical: 'https://chullin.tw',
@@ -65,7 +65,7 @@ const jsonLd = {
     },
     "description": "陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。",
     "knowsAbout": ["Python", "AI", "React", "Next.js", "System Design", "Automation"],
-    "image": "https://chullin.tw/assets/profile3.png",
+    "image": "https://chullin.tw/assets/profile3.webp",
     "sameAs": [
         "https://github.com/chullin",
         "https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en",
@@ -85,10 +85,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 <link
                     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Dancing+Script:wght@400;700&family=Great+Vibes&display=swap"
-                    rel="stylesheet"
-                />
-                <link
-                    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
                     rel="stylesheet"
                 />
             </head>

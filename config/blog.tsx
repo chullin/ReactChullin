@@ -142,7 +142,7 @@ export const series: Series[] = [
       },
       {
             title: "Tree BFS & BST 層序遍歷、驗證 BST、找共同祖先",
-            subtitle: "#102 Level Order · #98 Validate BST · #235 LCA",
+            subtitle: "#102 Level Order · #98 Validate BST · #235 LCA — 掌握二元搜尋樹的遍歷、驗證與共同祖先尋找，打通樹狀結構的核心操作。",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/leetcode/ep10-tree-bfs-bst",
@@ -169,7 +169,7 @@ export const series: Series[] = [
       },
       {
             title: "Binary Search 每次砍掉一半，O(log n) 的魔法",
-            subtitle: "#704 Binary Search · #33 Search in Rotated Sorted Array",
+            subtitle: "#704 Binary Search · #33 Search in Rotated Sorted Array — 深入二分搜尋的邊界控制與旋轉陣列查找，寫出 bug-free 的高效 O(log n) 解法。",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/leetcode/ep07-binary-search",
@@ -214,7 +214,7 @@ export const series: Series[] = [
       },
       {
             title: "Set vs Dict 選對資料結構，解題事半功倍",
-            subtitle: "#217 Contains Duplicate · #242 Valid Anagram",
+            subtitle: "#217 Contains Duplicate · #242 Valid Anagram — 選對適合的哈希表與集合結構，將時間複雜度降到 O(n) 的基礎實戰。",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/leetcode/ep02-set-vs-dict",
@@ -692,7 +692,7 @@ export const series: Series[] = [
       },
       {
             title: "JS 算法學習復盤 閉包、高階函式與那些坑",
-            subtitle: "{bad} ✅ 正確寫法 {good} {note}",
+            subtitle: "整理 JavaScript 閉包、高階函式與常見踩坑情境，從錯誤寫法對照正確寫法，建立更穩定的 JS 思維。",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/js/30days-learning-review",
@@ -700,7 +700,7 @@ export const series: Series[] = [
       },
       {
             title: "Promise vs async/await 非同步 JS 的現代寫法",
-            subtitle: "{bad} {goodLabel ?? '✅ 正確做法'} {good} {note && {note}",
+            subtitle: "從 Promise chain 到 async/await，理解非同步流程、錯誤處理與實務中更容易維護的寫法。",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/js/promise-async",

@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tree BFS & BST 層序遍歷、驗證 BST、找共同祖先 | Joseph Chen',
+  description: '#102 Level Order · #98 Validate BST · #235 LCA — 掌握二元搜尋樹的遍歷、驗證與共同祖先尋找，打通樹狀結構的核心操作。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep10-tree-bfs-bst',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -34,10 +39,10 @@ export default function LeetcodeEP10Page() {
         <div className="absolute inset-0 opacity-[0.08]"
           style={{ backgroundImage: `repeating-radial-gradient(circle at 0 0, transparent 0, #f59e0b 40px), repeating-linear-gradient(#f59e0b55, #f59e0b55)`, backgroundSize: '60px 60px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">EP.10</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">EP.10</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Tree BFS & BST<br />
@@ -48,14 +53,14 @@ export default function LeetcodeEP10Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-amber-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-amber-400" /><span>2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -99,8 +104,8 @@ export default function LeetcodeEP10Page() {
                 #102 Binary Tree Level Order Traversal
               </h2>
               <p>按照層次，從上到下、從左到右輸出每一層的節點值。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`     3
     / \\
    9  20
@@ -108,8 +113,8 @@ export default function LeetcodeEP10Page() {
      15   7
 
 Output: [[3], [9, 20], [15, 7]]`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>BFS 的標準實作用 <code className="bg-gray-100 px-1 rounded text-sm font-mono">collections.deque</code>。關鍵是：每次進入 while loop 時，queue 裡剛好放著「當前層的所有節點」。</p>
 
@@ -173,8 +178,8 @@ class Solution:
               </h2>
               <p>BST（Binary Search Tree）的定義：左子樹的所有節點值 &lt; 當前節點值 &lt; 右子樹的所有節點值。</p>
               <p>注意：<strong>是所有節點，不只是直接的左右子節點。</strong></p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="看起來合法，其實不合法" code={`     5
     / \\
    1   4     ← 4 < 5 ✓（看起來沒問題）
@@ -182,8 +187,8 @@ class Solution:
      3   6   ← 3 < 5 但是！3 在 5 的右子樹，必須 > 5 ✗
 
 → False（3 違反了 BST 的全局約束）`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>錯誤解法：只比較 <code className="bg-gray-100 px-1 rounded text-sm font-mono">node.left.val &lt; node.val &lt; node.right.val</code>，這樣會漏掉全局約束。</p>
               <p>正確做法：傳入合法值範圍（min_val, max_val），每往下走一層就縮緊範圍。</p>
@@ -224,8 +229,8 @@ class Solution:
                 #235 Lowest Common Ancestor（LCA）
               </h2>
               <p>給 BST 中的兩個節點 p 和 q，找它們的最近公共祖先（LCA）——兩個節點的共同祖先中，最靠近它們的那個。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`        6
        / \\
       2   8
@@ -236,8 +241,8 @@ class Solution:
 
 LCA(2, 8) = 6   ← 6 是最近的共同祖先
 LCA(2, 4) = 2   ← 2 本身就是 4 的祖先，所以答案是 2`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>利用 BST 的性質：</p>
               <div className="space-y-2 pl-4 text-sm">
@@ -292,20 +297,20 @@ LCA(2, 4) = 2   ← 2 本身就是 4 的祖先，所以答案是 2`} />
                       <p className="text-sm text-gray-700 font-medium">{item.when}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{item.example}</p>
                     </div>
-                    <Chip size="sm" variant="flat" className={`font-bold text-xs shrink-0 ${item.use.startsWith('BFS') ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>{item.use}</Chip>
+                    <span   className={`font-bold text-xs shrink-0 ${item.use.startsWith('BFS') ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>{item.use}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <Card className="bg-amber-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-amber-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-amber-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-amber-900 leading-snug relative z-10">
                   BST 題目的核心是利用大小關係「剪枝」——每次可以丟掉一半，把 O(n) 降到 O(h)。這和 Binary Search 的精神完全一樣：每步都能保證目標「不在那裡」，所以可以安全丟掉。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-[2rem] p-8 space-y-4">
               <p className="font-black text-gray-900 text-lg">本篇重點整理</p>
@@ -326,7 +331,7 @@ LCA(2, 4) = 2   ← 2 本身就是 4 的祖先，所以答案是 2`} />
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep09-tree-dfs" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -344,7 +349,7 @@ LCA(2, 4) = 2   ← 2 本身就是 4 的祖先，所以答案是 2`} />
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Tree', 'BFS', 'BST', 'Python', 'EP.10'].map((tag) => (
-              <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

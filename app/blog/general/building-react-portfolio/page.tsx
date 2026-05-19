@@ -1,12 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Divider,
-  Button,
-  Link as HeroLink,
-  Chip,
-  } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -21,8 +13,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '用 React + Next.js 打造個人作品集 | Joseph Chen',
+  description: '從零開始，到 Vercel 部署上線的完整過程',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/general/building-react-portfolio',
+  },
+};
+
+
 
 const TechBadge = ({ name, color }: { name: string; color: string }) => (
   <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold ${color}`}>
@@ -43,18 +46,14 @@ export default function BuildingReactPortfolioPage() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-6">
-              <Chip size="sm" variant="flat" className="bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
                 Web Dev
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white/20 text-white border-white/30 font-bold uppercase text-[10px]">
                 React
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               用 React + Next.js 打造個人作品集
@@ -72,7 +71,7 @@ export default function BuildingReactPortfolioPage() {
                 <span>March 2026</span>
               </div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -81,16 +80,16 @@ export default function BuildingReactPortfolioPage() {
         <div className="max-w-3xl mx-auto space-y-12">
           {/* Action Bar */}
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button
-              as={Link}
-              href="/blog"
-              variant="light"
-              color="primary"
-              className="font-bold"
-              startContent={<ArrowLeft size={18} />}
-            >
+            <Link href="/blog"
+              
+              
+              
+              
+              className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold"
+              
+            ><ArrowLeft size={18} /> 
               Back to Blog
-            </Button>
+            </Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -174,13 +173,13 @@ git merge master --allow-unrelated-histories
 git add .
 git commit -m "Merge master into main"
 git push origin main`} />
-              <Card className="bg-amber-50/50 border border-amber-200 shadow-none my-4">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-amber-50/50 border border-amber-200 shadow-none my-4">
+                <div className="p-6">
                   <p className="text-sm font-medium text-amber-800">
                     <strong>教訓：</strong>從一開始就在 <code>main</code> 分支工作，不要讓兩邊歷史分叉。如果已經分叉了，越早解決越簡單。
                   </p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* Vercel Deploy */}
@@ -223,16 +222,16 @@ module.exports = {
             </div>
 
             {/* Quote */}
-            <Card className="bg-blue-50/50 border-none shadow-none my-12">
-              <CardBody className="p-10 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-blue-50/50 border-none shadow-none my-12">
+              <div className="p-10 relative overflow-hidden">
                 <Quote size={48} className="text-blue-200 absolute -top-2 -left-2 rotate-12" />
                 <div className="relative z-10">
                   <p className="text-2xl font-black text-blue-900 leading-snug">
                     "建立個人網站最大的價值，不是給別人看，而是給未來的自己留一面鏡子。"
                   </p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* What I Learned */}
             <div className="space-y-4">
@@ -273,13 +272,13 @@ module.exports = {
             </div>
           </div>
 
-          <Divider className="my-16 opacity-50" />
+          <hr className="border-gray-100 my-16 opacity-50"  />
 
           <div className="flex items-center gap-4 flex-wrap">
             {['React', 'Next.js', 'TypeScript', 'Vercel', 'Web Dev', 'Git'].map((tag) => (
-              <Chip key={tag} variant="flat" color="primary" className="font-bold">
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
 
@@ -290,27 +289,27 @@ module.exports = {
               這個網站本身就是成品，原始碼也完全公開。
             </p>
             <div className="flex gap-3 flex-wrap justify-center">
-              <Button
-                as={HeroLink}
-                href="https://github.com/chullin/ReactChullin"
-                isExternal
-                color="primary"
-                radius="full"
-                size="lg"
-                className="font-black px-8"
+              <Link href="https://github.com/chullin/ReactChullin"
+                
+                
+                
+                
+                
+                
+                className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-black px-8"
               >
                 View Source Code
-              </Button>
-              <Button
-                as={Link}
-                href="/blog"
-                variant="flat"
-                size="lg"
-                radius="full"
-                className="font-bold"
+              </Link>
+              <Link href="/blog"
+                
+                
+                
+                
+                
+                className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold"
               >
                 More Posts
-              </Button>
+              </Link>
             </div>
           </div>
         </div>

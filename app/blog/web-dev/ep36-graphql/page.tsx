@@ -1,14 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider,
-  Tabs,
-  Tab,
-  Button,
-  Accordion,
-  AccordionItem } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { 
   Network,
   Share2,
@@ -31,19 +21,24 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'GraphQL： 重新定義 API 互動 | Joseph Chen',
+  description: '不再被 REST 的多個 Endpoint 所困擾。學習如何讓前端精確定義所需的資料，並透過 Apollo Server 打造高效能的 API 層。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep36-graphql',
+  },
+};
+
+
+
 const SectionWrapper = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay }}
-    className="space-y-8"
-  >
+  <FadeIn>
     {children}
-  </motion.div>
+  </FadeIn>
 );
 
 export default function GraphQLPage() {
@@ -58,11 +53,7 @@ export default function GraphQLPage() {
         </div>
 
         <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <FadeIn>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#e10098]/10 border border-[#e10098]/30 rounded-full mb-8">
               <div className="w-2 h-2 rounded-full bg-[#e10098] animate-pulse" />
               <span className="text-[#e10098] text-xs font-black uppercase tracking-widest">Web Dev EP.36</span>
@@ -80,14 +71,14 @@ export default function GraphQLPage() {
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <Button color="secondary" variant="shadow" className="bg-[#e10098] font-black h-12 px-8 rounded-2xl">
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors bg-[#e10098] font-black h-12 px-8 rounded-2xl">
                 開始學習
-              </Button>
-              <Button variant="bordered" className="border-slate-700 text-slate-300 font-black h-12 px-8 rounded-2xl">
+              </button>
+              <button  className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors border-slate-700 text-slate-300 font-black h-12 px-8 rounded-2xl">
                 查看範例程式碼
-              </Button>
+              </button>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -109,8 +100,8 @@ export default function GraphQLPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-10">
-            <Card shadow="none" className="bg-slate-50 border border-slate-100 rounded-[2rem] p-4">
-              <CardBody className="space-y-4">
+            <div  className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-slate-50 border border-slate-100 rounded-[2rem] p-4">
+              <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
                   <Database className="text-pink-500" />
                 </div>
@@ -118,10 +109,10 @@ export default function GraphQLPage() {
                 <p className="text-sm text-slate-500 leading-relaxed">
                   你只需要使用者的姓名，但 <code className="bg-slate-200 px-1 rounded">/api/user/1</code> 卻回傳了包含地址、電話、幾百行歷史紀錄的龐大 JSON，造成頻寬浪費。
                 </p>
-              </CardBody>
-            </Card>
-            <Card shadow="none" className="bg-slate-50 border border-slate-100 rounded-[2rem] p-4">
-              <CardBody className="space-y-4">
+              </div>
+            </div>
+            <div  className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-slate-50 border border-slate-100 rounded-[2rem] p-4">
+              <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
                   <Layers className="text-blue-500" />
                 </div>
@@ -129,8 +120,8 @@ export default function GraphQLPage() {
                 <p className="text-sm text-slate-500 leading-relaxed">
                   你想顯示一篇貼文和其作者資訊，必須先打 <code className="bg-slate-200 px-1 rounded">/api/post/1</code> 拿到作者 ID，再打一次 <code className="bg-slate-200 px-1 rounded">/api/user/ID</code>。這種 N+1 請求讓載入變慢。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <div className="bg-[#171e26] rounded-[2.5rem] p-10 text-slate-300">
@@ -173,7 +164,7 @@ export default function GraphQLPage() {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-24" />
+        <hr className="border-gray-100 my-24"  />
 
         {/* Section 1: Schema and SDL */}
         <SectionWrapper>
@@ -219,7 +210,7 @@ type Mutation {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-24" />
+        <hr className="border-gray-100 my-24"  />
 
         {/* Section 2: Apollo Server and Resolvers */}
         <SectionWrapper>
@@ -271,7 +262,7 @@ type Mutation {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-24" />
+        <hr className="border-gray-100 my-24"  />
 
         {/* Section 3: DataLoader - The N+1 Solution */}
         <SectionWrapper>
@@ -312,7 +303,7 @@ const resolvers = {
           />
         </SectionWrapper>
 
-        <Divider className="my-24" />
+        <hr className="border-gray-100 my-24"  />
 
         {/* Section 4: Apollo Client in Frontend */}
         <SectionWrapper>
@@ -357,7 +348,7 @@ function PostList() {
           />
         </SectionWrapper>
 
-        <Divider className="my-24" />
+        <hr className="border-gray-100 my-24"  />
 
         {/* Section 5: Real-time with Subscriptions */}
         <SectionWrapper>
@@ -403,7 +394,7 @@ const resolvers = {
           />
         </SectionWrapper>
 
-        <Divider className="my-24" />
+        <hr className="border-gray-100 my-24"  />
 
         {/* Comparison Table */}
         <SectionWrapper>
@@ -452,7 +443,7 @@ const resolvers = {
             </p>
             <div className="flex flex-wrap gap-2">
               {['GraphQL', 'Apollo', 'API', 'Backend', 'Fullstack', 'Schema', 'DataLoader'].map(tag => (
-                <Chip key={tag} className="bg-white text-pink-600 font-bold border border-pink-200">#{tag}</Chip>
+                <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-white text-pink-600 font-bold border border-pink-200">#{tag}</span>
               ))}
             </div>
           </div>

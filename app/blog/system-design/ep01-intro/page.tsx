@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowRight,
@@ -21,15 +16,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '系統設計思維： 從需求分解到架構決策 | Joseph Chen',
+  description: '面試官問「設計一個 Instagram」，你該從哪裡開始？ 這篇建立系統設計的思考框架：如何拆解需求、估算容量、 一步步做出有依據的架構決策。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep01-intro',
+  },
+};
+
+
 
 export default function SystemDesignEP01() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-50">
       <div className="bg-gradient-to-br from-violet-800 via-purple-700 to-indigo-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.01</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計</span>
@@ -49,16 +55,16 @@ export default function SystemDesignEP01() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 15 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> System Design · Scalability · Architecture · Interview</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-violet-300 shrink-0 mt-1" />
                 <div>
@@ -70,12 +76,12 @@ export default function SystemDesignEP01() {
                   <p className="text-gray-500 text-sm">— 大型系統設計面試核心原則</p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 為什麼系統設計很難 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">為什麼系統設計「感覺很難」？</h2>
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             系統設計難不在於技術本身，而在於它沒有固定答案。
@@ -104,8 +110,8 @@ export default function SystemDesignEP01() {
                 color: 'amber'
               }
             ].map(({ no, title, desc, color }) => (
-              <Card key={no} className={`border-0 shadow-md border-l-4 border-${color}-400`}>
-                <CardBody className="p-5">
+              <div key={no} className={`border-0 shadow-md border-l-4 border-${color}-400`}>
+                <div className="p-5">
                   <div className="flex gap-4">
                     <span className={`text-3xl font-black text-${color}-200`}>{no}</span>
                     <div>
@@ -113,13 +119,13 @@ export default function SystemDesignEP01() {
                       <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
-          <Card className="border-0 shadow-md bg-violet-50 border border-violet-200">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-violet-50 border border-violet-200">
+            <div className="p-5">
               <p className="text-violet-800 font-semibold mb-2">正確的思考順序</p>
               <div className="flex flex-wrap gap-2 items-center text-sm">
                 {['釐清需求', '→', '估算規模', '→', '確認約束', '→', '設計高層架構', '→', '深入關鍵模組', '→', '識別瓶頸', '→', '提出優化方案'].map((step, i) => (
@@ -128,14 +134,14 @@ export default function SystemDesignEP01() {
                   </span>
                 ))}
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Step 1: 需求釐清 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-2">Step 1：需求釐清（Requirements Clarification）</h2>
           <p className="text-violet-600 font-semibold mb-6">永遠是第一步，花 5 分鐘在這裡，能省 30 分鐘的冤枉路</p>
 
@@ -145,8 +151,8 @@ export default function SystemDesignEP01() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <CheckCircle size={18} className="text-violet-500" />
                   功能性需求（Functional）
@@ -159,11 +165,11 @@ export default function SystemDesignEP01() {
                   <p className="bg-gray-50 p-2 rounded">需要點擊次數統計嗎？</p>
                   <p className="bg-gray-50 p-2 rounded">需要使用者帳號系統嗎？</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <Scale size={18} className="text-purple-500" />
                   非功能性需求（Non-Functional）
@@ -176,12 +182,12 @@ export default function SystemDesignEP01() {
                   <p className="bg-gray-50 p-2 rounded">一致性 vs 可用性如何取捨？</p>
                   <p className="bg-gray-50 p-2 rounded">資料需要持久化多久？</p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 shadow-md bg-slate-900 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-slate-900 text-white">
+            <div className="p-6">
               <p className="text-violet-300 text-sm font-bold mb-3">📝 範例：URL Shortener 的需求確認結果</p>
               <div className="space-y-2 text-sm font-mono">
                 <div><span className="text-gray-400">功能：</span> <span className="text-green-400">縮短 URL、redirect、點擊統計</span></div>
@@ -191,14 +197,14 @@ export default function SystemDesignEP01() {
                 <div><span className="text-gray-400">一致性：</span> <span className="text-green-400">最終一致性可接受（統計資料）</span></div>
                 <div><span className="text-gray-400">保存期限：</span> <span className="text-green-400">預設 5 年，可自訂</span></div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Step 2: 容量估算 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-2">Step 2：容量估算（Capacity Estimation）</h2>
           <p className="text-violet-600 font-semibold mb-6">「大概」的數字比沒有數字好，數量級對了就夠了</p>
 
@@ -220,19 +226,19 @@ export default function SystemDesignEP01() {
               { val: '300ms', unit: 'RTT', desc: 'US → Asia 往返延遲' },
               { val: '100ms', unit: '上限', desc: '用戶感知到的「慢」' },
             ].map(({ val, unit, desc }) => (
-              <Card key={val + desc} className="border-0 shadow-sm">
-                <CardBody className="p-3 text-center">
+              <div key={val + desc} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+                <div className="p-3 text-center">
                   <div className="text-xl font-black text-violet-700">{val}</div>
                   <div className="text-xs text-violet-500 font-semibold">{unit}</div>
                   <div className="text-xs text-gray-400 mt-1">{desc}</div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
           {/* URL Shortener 估算示例 */}
-          <Card className="border-0 shadow-md">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+            <div className="p-6">
               <h3 className="text-lg font-bold text-gray-800 mb-4">實戰估算：URL Shortener（100M DAU）</h3>
 
               <div className="space-y-6">
@@ -269,14 +275,14 @@ export default function SystemDesignEP01() {
                 必須引入快取（Redis）。36TB 的資料量需要考慮資料庫分片（Sharding）策略。
                 這兩個數字直接影響後續的架構決策。
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Step 3: 高層架構 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-2">Step 3：高層架構設計（High-Level Design）</h2>
           <p className="text-violet-600 font-semibold mb-6">先畫方塊圖，再說每個方塊的職責</p>
 
@@ -287,8 +293,8 @@ export default function SystemDesignEP01() {
           </p>
 
           {/* URL Shortener 架構圖 */}
-          <Card className="border-0 shadow-lg bg-slate-900 text-white mb-6">
-            <CardBody className="p-8">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg bg-slate-900 text-white mb-6">
+            <div className="p-8">
               <p className="text-violet-300 text-sm font-bold mb-6">URL Shortener 高層架構</p>
               <div className="space-y-4">
                 {/* Client */}
@@ -350,20 +356,20 @@ export default function SystemDesignEP01() {
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-600 leading-relaxed text-sm">
             注意這個架構把讀寫分離成兩個服務（Write Service / Read Service）。
             這是因為我們算出讀取是 12K QPS，但寫入只有 115 QPS——兩者規模差一百倍，
             分開設計讓各自可以獨立擴縮（Scale Out）。
           </p>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Step 4: 深入關鍵模組 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-2">Step 4：深入關鍵模組</h2>
           <p className="text-violet-600 font-semibold mb-6">面試官通常會指定一個模組讓你深入</p>
 
@@ -409,8 +415,8 @@ function toBase62(id: number): string {
                 color: 'indigo'
               }
             ].map(({ title, pros, cons, code, color }) => (
-              <Card key={title} className="border-0 shadow-md">
-                <CardBody className="p-6">
+              <div key={title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-6">
                   <h3 className={`font-bold text-${color}-700 mb-3`}>{title}</h3>
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
@@ -423,8 +429,8 @@ function toBase62(id: number): string {
                     </div>
                   </div>
                   <CodeBlock language="typescript" filename="" code={code} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -439,8 +445,8 @@ function toBase62(id: number): string {
             </p>
           </div>
 
-          <Card className="border-0 shadow-md bg-violet-50 border border-violet-200 mt-4">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-violet-50 border border-violet-200 mt-4">
+            <div className="p-5">
               <p className="text-violet-800 font-bold mb-2">🎯 面試建議答法</p>
               <p className="text-gray-700 text-sm leading-relaxed">
                 「我選方案 B（自增 ID + Base62）搭配 <strong>Ticket Server</strong> 解決單點問題：
@@ -448,14 +454,14 @@ function toBase62(id: number): string {
                 服務在本地消化這 1000 個 ID 再去領下一批。
                 這樣 Ticket Server 的壓力降為 QPS / 1000，且服務有本地 ID 池不依賴 DB 每次請求。」
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 通用框架 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">通用系統設計框架（可套用任何題目）</h2>
 
           <div className="space-y-3">
@@ -470,8 +476,8 @@ function toBase62(id: number): string {
                 <div className="w-10 h-10 bg-violet-600 text-white rounded-full flex items-center justify-center font-black shrink-0">
                   {step}
                 </div>
-                <Card className="border-0 shadow-sm flex-1">
-                  <CardBody className="p-4">
+                <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm flex-1">
+                  <div className="p-4">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-bold text-gray-800 flex items-center gap-2">
                         <Icon size={16} className="text-violet-500" />
@@ -480,17 +486,17 @@ function toBase62(id: number): string {
                       <span className="text-xs text-violet-400 bg-violet-50 px-2 py-0.5 rounded-full">{time}</span>
                     </div>
                     <p className="text-gray-600 text-sm">{desc}</p>
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 常見取捨 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">必知的系統設計取捨</h2>
 
           <div className="overflow-x-auto">
@@ -521,12 +527,12 @@ function toBase62(id: number): string {
               </tbody>
             </table>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 重點整理 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+        <section   >
           <h2 className="text-3xl font-black text-gray-900 mb-6">重點整理</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
@@ -544,20 +550,20 @@ function toBase62(id: number): string {
               </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Navigation */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-          <Divider className="mb-8" />
+        <section   >
+          <hr className="border-gray-100 mb-8"  />
           <div className="flex justify-between items-center">
             <div className="w-64" />
             <div className="flex gap-2">
-              <Chip size="sm" color="secondary" variant="flat">System Design</Chip>
-              <Chip size="sm" color="secondary" variant="flat">Architecture</Chip>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">System Design</span>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Architecture</span>
             </div>
             <Link href="/blog/system-design/ep02-load-balancer">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
-                <CardBody className="p-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer w-64">
+                <div className="p-4">
                   <div className="flex items-center justify-end gap-3">
                     <div className="text-right">
                       <p className="text-xs text-gray-400 mb-0.5">下一篇</p>
@@ -565,11 +571,11 @@ function toBase62(id: number): string {
                     </div>
                     <ArrowRight size={20} className="text-violet-500" />
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

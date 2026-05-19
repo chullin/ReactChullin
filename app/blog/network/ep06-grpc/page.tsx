@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -22,8 +17,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'gRPC：微服務間通訊的 高效選擇 | Joseph Chen',
+  description: 'Protobuf 二進位編碼、Service 定義、Streaming — 比 REST 更快、強型別、自動生成客戶端',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/network/ep06-grpc',
+  },
+};
+
+
 
 export default function NetworkEP06() {
   return (
@@ -32,7 +38,7 @@ export default function NetworkEP06() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-indigo-900 via-blue-800 to-cyan-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.06</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">網路系列</span>
@@ -50,17 +56,17 @@ export default function NetworkEP06() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 15 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> gRPC · Protobuf · Microservices · HTTP/2</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ── Section 1：REST 的問題 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
@@ -74,15 +80,15 @@ export default function NetworkEP06() {
             用 REST 的話，看起來很直觀：
           </p>
 
-          <Card className="border-0 shadow-md mb-6">
-            <CardBody className="p-6 bg-gray-50">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mb-6">
+            <div className="p-6 bg-gray-50">
               <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">REST 微服務通訊示意圖</p>
               <CodeBlock language="plaintext">
 {`   Order Service  →  HTTP/1.1 POST /api/payments  →  Payment Service
                        JSON: { "orderId": "abc-123", "amount": 1000 }   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed mb-6">
             能用，但在高頻次、多服務的微服務架構下，這個做法有四個根本問題：
@@ -111,20 +117,20 @@ export default function NetworkEP06() {
                 desc: '如果要傳輸大量資料（例如批次處理結果）或即時推送（例如訂單狀態流），REST 的請求 - 回應模型非常不方便，只能靠 WebSocket 或 SSE 繞過。',
               },
             ].map((item, i) => (
-              <Card key={i} className="border-0 shadow-sm">
-                <CardBody className="p-5 flex flex-row items-start gap-4">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+                <div className="p-5 flex flex-row items-start gap-4">
                   <div className="mt-0.5 shrink-0">{item.icon}</div>
                   <div>
                     <p className="font-bold text-gray-900 mb-1">{item.title}</p>
                     <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
-          <Card className="border-0 shadow-md bg-gradient-to-r from-indigo-50 to-cyan-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gradient-to-r from-indigo-50 to-cyan-50">
+            <div className="p-6">
               <p className="text-indigo-900 font-bold mb-2">gRPC 如何解決這些問題？</p>
               <ul className="text-indigo-800 text-sm space-y-2">
                 <li className="flex items-start gap-2"><CheckCircle size={16} className="text-indigo-500 mt-0.5 shrink-0" /><span><strong>二進位格式（Protobuf）</strong>：比 JSON 小 3–10 倍，序列化速度快 5–10 倍</span></li>
@@ -132,17 +138,17 @@ export default function NetworkEP06() {
                 <li className="flex items-start gap-2"><CheckCircle size={16} className="text-indigo-500 mt-0.5 shrink-0" /><span><strong>強型別 Protobuf</strong>：從 .proto 檔自動生成雙語言的客戶端與伺服器 stub</span></li>
                 <li className="flex items-start gap-2"><CheckCircle size={16} className="text-indigo-500 mt-0.5 shrink-0" /><span><strong>原生 Streaming</strong>：四種 RPC 模式，覆蓋所有通訊需求</span></li>
               </ul>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：Protocol Buffers ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -222,8 +228,8 @@ service PaymentService {
 </CodeBlock>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-5">
                 <p className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="text-orange-500">JSON 格式</span>
                   <span className="text-gray-400 text-xs">（文字）</span>
@@ -236,10 +242,10 @@ service PaymentService {
 // 大小：38 bytes
 // key 名稱也要序列化傳輸   `}
 </CodeBlock>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-5">
                 <p className="font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <span className="text-indigo-600">Protobuf 格式</span>
                   <span className="text-gray-400 text-xs">（二進位）</span>
@@ -250,29 +256,29 @@ service PaymentService {
 // 省去了 "order_id"、"amount" 字串本身的空間
 // 數字型別直接以二進位編碼，不轉成字串   `}
 </CodeBlock>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 shadow-sm bg-amber-50 mt-4">
-            <CardBody className="p-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm bg-amber-50 mt-4">
+            <div className="p-4">
               <p className="text-amber-800 text-sm">
                 <strong>為什麼 field number 不能改？</strong> Protobuf 序列化時，欄位的識別碼是 field number 而非名稱。
                 如果你把 <code className="bg-amber-100 px-1 rounded">amount = 2</code> 改成 <code className="bg-amber-100 px-1 rounded">total = 2</code>，
                 binary 層面完全沒有影響，舊客戶端依然可以解碼。
                 但如果你把 field number 從 2 改成 5，舊客戶端就再也找不到 amount 了——這是 breaking change。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：Node.js gRPC Server ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
@@ -405,8 +411,8 @@ server.bindAsync(
 );   `}
 </CodeBlock>
 
-          <Card className="border-0 shadow-sm bg-blue-50 mt-4">
-            <CardBody className="p-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm bg-blue-50 mt-4">
+            <div className="p-4">
               <p className="text-blue-800 text-sm">
                 <strong>gRPC 錯誤狀態碼</strong>：gRPC 有自己的一套狀態碼系統（非 HTTP status），例如
                 <code className="bg-blue-100 px-1 rounded mx-1">INTERNAL</code>（5xx 類）、
@@ -415,17 +421,17 @@ server.bindAsync(
                 <code className="bg-blue-100 px-1 rounded mx-1">DEADLINE_EXCEEDED</code>（timeout）。
                 設計良好的 gRPC service 應該使用語意明確的狀態碼，而不是所有錯誤都回 INTERNAL。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：gRPC Client ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
@@ -548,15 +554,15 @@ async function main() {
 
 main();   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：gRPC vs REST 對比 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -605,8 +611,8 @@ main();   `}
               效能差異從何而來？HTTP/2 的多路複用（Multiplexing）是關鍵——多個 RPC 呼叫可以共用同一條 TCP 連線，
               消除了 HTTP/1.1 每次都要重新建立連線的開銷。加上 Protobuf 的二進位壓縮，在高流量微服務之間效果非常顯著。
             </p>
-            <Card className="border-0 shadow-sm bg-slate-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm bg-slate-50">
+              <div className="p-5">
                 <p className="font-bold text-gray-800 mb-2">HTTP/1.1 vs HTTP/2 連線模型</p>
                 <CodeBlock language="plaintext">
 {`   HTTP/1.1（REST）：
@@ -621,18 +627,18 @@ TCP 連線 ─┼─ Stream 2: Request B ─────────────
           └─ Stream 3: Request C ──────────────► Response C ─┘
 （三個請求共用一條 TCP 連線，真正並行）   `}
 </CodeBlock>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：什麼時候用 gRPC ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
@@ -646,8 +652,8 @@ TCP 連線 ─┼─ Stream 2: Request B ─────────────
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-            <Card className="border-0 shadow-md border-t-4 border-t-indigo-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-t-4 border-t-indigo-500">
+              <div className="p-5">
                 <p className="font-black text-indigo-700 text-lg mb-3">用 gRPC</p>
                 <ul className="space-y-2 text-sm text-gray-700">
                   {[
@@ -663,11 +669,11 @@ TCP 連線 ─┼─ Stream 2: Request B ─────────────
                     </li>
                   ))}
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md border-t-4 border-t-green-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-t-4 border-t-green-500">
+              <div className="p-5">
                 <p className="font-black text-green-700 text-lg mb-3">用 REST</p>
                 <ul className="space-y-2 text-sm text-gray-700">
                   {[
@@ -683,11 +689,11 @@ TCP 連線 ─┼─ Stream 2: Request B ─────────────
                     </li>
                   ))}
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md border-t-4 border-t-violet-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-t-4 border-t-violet-500">
+              <div className="p-5">
                 <p className="font-black text-violet-700 text-lg mb-3">用 tRPC</p>
                 <ul className="space-y-2 text-sm text-gray-700">
                   {[
@@ -703,12 +709,12 @@ TCP 連線 ─┼─ Stream 2: Request B ─────────────
                     </li>
                   ))}
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 shadow-md bg-gradient-to-r from-indigo-900 to-blue-900 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gradient-to-r from-indigo-900 to-blue-900 text-white">
+            <div className="p-6">
               <p className="font-bold text-lg mb-2 text-cyan-300">現實世界的架構選擇</p>
               <p className="text-blue-100 text-sm leading-relaxed mb-4">
                 Google、Netflix、Uber 等公司的微服務架構通常長這樣：
@@ -725,67 +731,67 @@ API Gateway（Nginx / Kong）
      ├──► Payment Service :50052
      └──► Inventory Service :50053   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex flex-wrap gap-2">
             {['gRPC', 'Protobuf', 'Microservices', 'HTTP/2', 'Streaming', 'Network'].map(tag => (
-              <Chip
+              <span
                 key={tag}
-                variant="flat"
-                color="primary"
-                size="sm"
-                className="text-xs font-medium"
+                
+                
+                
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-xs font-medium"
               >
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* ── Navigation ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/network/ep05-websocket">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                <div className="p-5">
                   <div className="flex items-center gap-2 text-gray-500 text-xs mb-2">
                     <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
                     <span>上一篇</span>
                   </div>
                   <p className="font-bold text-gray-900 text-sm">EP.05 WebSocket 與 SSE</p>
                   <p className="text-gray-500 text-xs mt-1">即時通訊的兩種選擇</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
 
             <Link href="/blog/network/ep01-http">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                <CardBody className="p-5 text-right">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                <div className="p-5 text-right">
                   <div className="flex items-center justify-end gap-2 text-gray-500 text-xs mb-2">
                     <span>回到系列起點</span>
                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                   <p className="font-bold text-gray-900 text-sm">EP.01 HTTP 完全指南</p>
                   <p className="text-gray-500 text-xs mt-1">從頭理解網路通訊的基礎</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

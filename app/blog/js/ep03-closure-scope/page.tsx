@@ -1,11 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider,
-  Button,
-  Code } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { 
   Zap,
   Layers,
@@ -27,19 +20,24 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Closure & Scope： 掌握 JS 的靈魂核心 | Joseph Chen',
+  description: '為什麼函式執行完畢後，還能「記得」外部的變數？這不是魔法，而是 JavaScript 最強大也最令人困惑的機制：閉包與作用域。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/js/ep03-closure-scope',
+  },
+};
+
+
+
 const SectionWrapper = ({ children }: { children: React.ReactNode }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className="space-y-10"
-  >
+  <FadeIn>
     {children}
-  </motion.div>
+  </FadeIn>
 );
 
 export default function ClosureScopePage() {
@@ -54,18 +52,14 @@ export default function ClosureScopePage() {
         </div>
 
         <div className="max-w-5xl mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-8">
               <div className="w-12 h-12 bg-[#f7df1e] text-black font-black flex items-center justify-center text-xl rounded-xl shadow-[0_0_20px_rgba(247,223,30,0.3)]">
                 JS
               </div>
-              <Chip variant="flat" className="bg-yellow-400/10 text-yellow-400 border-yellow-400/20 font-black uppercase tracking-widest">
+              <span  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-yellow-400/10 text-yellow-400 border-yellow-400/20 font-black uppercase tracking-widest">
                 JavaScript 系列 EP.03
-              </Chip>
+              </span>
             </div>
             
             <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[1.1] tracking-tighter">
@@ -85,7 +79,7 @@ export default function ClosureScopePage() {
               <div className="flex items-center gap-2"><Cpu size={18} /> 記憶體機制</div>
               <div className="flex items-center gap-2">✍️ Joseph Chen</div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -145,7 +139,7 @@ outer();`}
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 1: Lexical Scope */}
         <SectionWrapper>
@@ -187,7 +181,7 @@ wrapper(); // 答案是 "Global"！`}
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 2: What is Closure? */}
         <SectionWrapper>
@@ -229,7 +223,7 @@ counter(); // 3`}
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 3: Practical Application - Private Variables */}
         <SectionWrapper>
@@ -289,7 +283,7 @@ console.log(myAcc.balance); // undefined (安全！)
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Section 4: The Closure Loop Problem */}
         <SectionWrapper>
@@ -335,7 +329,7 @@ console.log(myAcc.balance); // undefined (安全！)
           </div>
         </SectionWrapper>
 
-        <Divider className="my-20 opacity-50" />
+        <hr className="border-gray-100 my-20 opacity-50"  />
 
         {/* Conclusion */}
         <SectionWrapper>
@@ -349,7 +343,7 @@ console.log(myAcc.balance); // undefined (安全！)
             
             <div className="flex flex-wrap gap-3">
               {['JavaScript', 'Closure', 'Scope', 'LexicalScope', 'MemoryManagement', 'Frontend'].map(tag => (
-                <Chip key={tag} className="bg-black text-white font-black">#{tag}</Chip>
+                <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-black text-white font-black">#{tag}</span>
               ))}
             </div>
           </div>
@@ -357,7 +351,7 @@ console.log(myAcc.balance); // undefined (安全！)
 
         {/* Navigation */}
         <div className="mt-24 space-y-12">
-          <Divider className="opacity-50" />
+          <hr className="border-gray-100 opacity-50"  />
 
           <div className="flex justify-between items-center gap-6">
             <Link 

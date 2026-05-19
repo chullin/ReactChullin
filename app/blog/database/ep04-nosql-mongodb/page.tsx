@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -19,8 +14,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'NoSQL 入門：MongoDB 與選型指南 Document Model、Schema 設計、Aggregation Pipeline、Mongoose | Joseph Chen',
+  description: '什麼時候用 NoSQL，什麼時候堅持 SQL？從 Document Model 的本質出發， 一路走到 Aggregation Pipeline 與實際的 Mongoose 開發，再給你一份清晰的選型決策表。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep04-nosql-mongodb',
+  },
+};
+
+
 
 export default function DBEP04() {
   return (
@@ -29,11 +35,7 @@ export default function DBEP04() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-green-800 via-emerald-700 to-teal-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.04
@@ -67,18 +69,18 @@ export default function DBEP04() {
                 <Database size={14} /> MongoDB · Mongoose · Aggregation · Schema Design
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 為什麼需要 NoSQL ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertCircle className="text-emerald-600" size={28} />
@@ -163,26 +165,26 @@ CREATE TABLE posts (
 // 同一個 Collection，完全不同的結構 ─ 沒有 NULL，沒有 ALTER TABLE`}
           />
 
-          <Card className="border-l-4 border-emerald-400 bg-emerald-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-emerald-400 bg-emerald-50 border-0">
+            <div className="p-5">
               <p className="font-black text-emerald-800 mb-2">NoSQL 不是「比 SQL 更好」</p>
               <p className="text-emerald-700 text-sm leading-relaxed">
                 NoSQL（Not Only SQL）的設計初衷是解決特定問題：彈性 Schema、水平擴展、非結構化資料。
                 它犧牲了 SQL 的強一致性和複雜查詢能力，換取了靈活性和擴展性。
                 理解這個取捨，才是選型的起點。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: MongoDB 基本概念 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Database className="text-emerald-600" size={28} />
@@ -193,8 +195,8 @@ CREATE TABLE posts (
             概念是相通的，只是換了一套命名邏輯。
           </p>
 
-          <Card className="border-0 shadow-md">
-            <CardBody className="p-0 overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+            <div className="p-0 overflow-hidden">
               <div className="bg-emerald-700 text-white px-6 py-3">
                 <p className="font-black">SQL vs MongoDB 術語對照</p>
               </div>
@@ -226,8 +228,8 @@ CREATE TABLE posts (
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="space-y-3">
             <h3 className="text-xl font-black text-gray-800">BSON 型別：MongoDB 的 JSON 超集</h3>
@@ -264,16 +266,16 @@ CREATE TABLE posts (
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: CRUD 操作 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Zap className="text-emerald-600" size={28} />
@@ -452,16 +454,16 @@ await Post.updateMany(
 await Post.findByIdAndDelete(postId);
 await Post.deleteMany({ tags: 'draft', 'metadata.views': 0 });`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: Aggregation Pipeline ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Layers className="text-emerald-600" size={28} />
@@ -475,8 +477,8 @@ await Post.deleteMany({ tags: 'draft', 'metadata.views': 0 });`}
             組合。資料流過一個個 Stage，每個 Stage 對資料做轉換，前一個 Stage 的輸出是下一個 Stage 的輸入。
           </p>
 
-          <Card className="border-0 bg-gray-900 text-white">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gray-900 text-white">
+            <div className="p-5">
               <p className="text-gray-400 text-xs mb-3 font-mono">Pipeline 概念示意</p>
               <div className="flex items-center gap-2 flex-wrap text-sm font-mono">
                 {[
@@ -503,8 +505,8 @@ await Post.deleteMany({ tags: 'draft', 'metadata.views': 0 });`}
                   )
                 )}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <CodeBlock
             title="Aggregation 實戰：計算每個標籤的文章統計"
@@ -596,16 +598,16 @@ const authorStats = await Post.aggregate([
   }},
 ]);`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: Schema 設計原則 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <GitBranch className="text-emerald-600" size={28} />
@@ -614,16 +616,16 @@ const authorStats = await Post.aggregate([
             </h2>
           </div>
 
-          <Card className="border-l-4 border-amber-400 bg-amber-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-amber-400 bg-amber-50 border-0">
+            <div className="p-5">
               <p className="font-black text-amber-800 mb-2">最常見的 NoSQL 誤區</p>
               <p className="text-amber-700 text-sm leading-relaxed">
                 很多人從 SQL 轉過來，直覺是「把每個實體拆成獨立 Collection，再用 $lookup JOIN 起來」。
                 但 MongoDB 的 $lookup 沒有 SQL JOIN 的效能優化，過度引用反而比嵌入慢 10 倍以上。
                 <strong> MongoDB Schema 的設計原則應該以「查詢模式」為起點，而不是以「資料結構」為起點。</strong>
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-800">嵌入（Embed）vs 引用（Reference）</h3>
 
@@ -668,8 +670,8 @@ const authorStats = await Post.aggregate([
           />
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-emerald-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-emerald-50">
+              <div className="p-5">
                 <p className="font-black text-emerald-800 mb-3 text-sm">選擇嵌入（Embed）的情況</p>
                 <ul className="text-sm text-emerald-700 space-y-2">
                   <li className="flex gap-2"><span className="text-emerald-500 font-black">✓</span>「一對少」關聯（文章對評論，通常幾十則）</li>
@@ -678,10 +680,10 @@ const authorStats = await Post.aggregate([
                   <li className="flex gap-2"><span className="text-emerald-500 font-black">✓</span>子文件總大小不會超過幾 MB</li>
                   <li className="flex gap-2"><span className="text-emerald-500 font-black">✓</span>子文件不會被多個父文件共用</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-blue-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-blue-50">
+              <div className="p-5">
                 <p className="font-black text-blue-800 mb-3 text-sm">選擇引用（Reference）的情況</p>
                 <ul className="text-sm text-blue-700 space-y-2">
                   <li className="flex gap-2"><span className="text-blue-500 font-black">✓</span>「一對多/很多」關聯（用戶對訂單，可能幾萬筆）</li>
@@ -690,12 +692,12 @@ const authorStats = await Post.aggregate([
                   <li className="flex gap-2"><span className="text-blue-500 font-black">✓</span>子文件需要頻繁更新（不想重複修改多個地方）</li>
                   <li className="flex gap-2"><span className="text-blue-500 font-black">✓</span>子文件數量不可預測，可能無限增長</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 bg-gray-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gray-50">
+            <div className="p-5">
               <p className="font-black text-gray-800 mb-3 text-sm">實務決策流程</p>
               <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
                 <li>先問：<strong>「最常見的查詢是什麼？」</strong> — 以查詢效率為設計起點</li>
@@ -704,18 +706,18 @@ const authorStats = await Post.aggregate([
                 <li>資料量是否可能無限增長？→ 引用（避免 document 超過 16MB 上限）</li>
                 <li>在不確定時：先嵌入，性能問題出現後再拆分</li>
               </ol>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: SQL vs NoSQL 選型 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Scale className="text-emerald-600" size={28} />
@@ -729,8 +731,8 @@ const authorStats = await Post.aggregate([
             MongoDB 管用戶行為、內容、IoT 資料。
           </p>
 
-          <Card className="border-0 shadow-md">
-            <CardBody className="p-0 overflow-hidden">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+            <div className="p-0 overflow-hidden">
               <div className="bg-emerald-700 text-white px-6 py-3">
                 <p className="font-black">選型決策表</p>
               </div>
@@ -785,8 +787,8 @@ const authorStats = await Post.aggregate([
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="bg-blue-50 rounded-2xl p-5 border border-blue-100">
@@ -811,8 +813,8 @@ const authorStats = await Post.aggregate([
             </div>
           </div>
 
-          <Card className="border-0 bg-gradient-to-r from-emerald-700 to-teal-700 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-gradient-to-r from-emerald-700 to-teal-700 text-white">
+            <div className="p-6">
               <p className="font-black text-lg mb-3">結論：工具，不是信仰</p>
               <p className="text-emerald-100 leading-relaxed">
                 不是 NoSQL 比 SQL 好，而是不同工具解決不同問題。
@@ -821,15 +823,15 @@ const authorStats = await Post.aggregate([
                 Elasticsearch 做全文搜尋。
                 選型的最佳答案永遠是：<strong>「哪個讓你的團隊能最快解決眼前的問題」</strong>。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* ─── 總結 ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="bg-gradient-to-br from-green-800 to-teal-700 rounded-3xl p-8 text-white">
             <h2 className="text-2xl font-black mb-6">本篇重點回顧</h2>
@@ -867,9 +869,9 @@ const authorStats = await Post.aggregate([
               ))}
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
         <div className="grid grid-cols-2 gap-4">
@@ -911,9 +913,9 @@ const authorStats = await Post.aggregate([
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['MongoDB', 'NoSQL', 'Mongoose', 'Aggregation', 'Database', 'Schema Design'].map(
             (tag) => (
-              <Chip key={tag} variant="flat" color="success" className="font-bold">
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">
                 {tag}
-              </Chip>
+              </span>
             )
           )}
         </div>

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.16 — Greedy： 每一步都選當下最好的 | Joseph Chen',
+  description: '#55 Jump Game · #45 Jump Game II · #134 Gas Station — 貪心演算法不是亂猜，是有數學保證的局部最優',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep16-greedy',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -75,14 +81,14 @@ export default function LeetcodeEP16Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">
                 LeetCode 刷題日記
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">
                 EP.16
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.16 — Greedy：<br />
@@ -92,7 +98,7 @@ export default function LeetcodeEP16Page() {
               #55 Jump Game · #45 Jump Game II · #134 Gas Station<br />
               — 貪心演算法不是亂猜，是有數學保證的局部最優
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -134,7 +140,7 @@ export default function LeetcodeEP16Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Greedy 思維 */}
         <section className="space-y-6">
@@ -179,7 +185,7 @@ export default function LeetcodeEP16Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: Jump Game ===== */}
         <section className="space-y-6">
@@ -191,8 +197,8 @@ export default function LeetcodeEP16Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個非負整數陣列 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nums</code>，
@@ -203,8 +209,8 @@ export default function LeetcodeEP16Page() {
                 <p>nums = [2,3,1,1,4] → True（0→1→4 或 0→2→3→4）</p>
                 <p>nums = [3,2,1,0,4] → False（第 3 格必定卡住）</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">Greedy 直覺：維護「最遠能到哪」</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -274,7 +280,7 @@ export default function LeetcodeEP16Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: Jump Game II ===== */}
         <section className="space-y-6">
@@ -286,8 +292,8 @@ export default function LeetcodeEP16Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 同樣的陣列設定，但這次保證一定能到達終點，問<strong>最少需要幾跳</strong>。
@@ -296,8 +302,8 @@ export default function LeetcodeEP16Page() {
                 <p>nums = [2,3,1,1,4] → 2（0→1→4，跳 2 次）</p>
                 <p>nums = [2,3,0,1,4] → 2（0→1→4）</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">思路：把每一跳視為一個「層」（BFS 概念）</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -388,7 +394,7 @@ export default function LeetcodeEP16Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 3: Gas Station ===== */}
         <section className="space-y-6">
@@ -400,8 +406,8 @@ export default function LeetcodeEP16Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 n 個加油站排成一圈，
@@ -414,8 +420,8 @@ export default function LeetcodeEP16Page() {
                 <p>cost = [3,4,5,1,2]</p>
                 <p>→ 3（從 index 3 出發可繞一圈）</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">兩個關鍵觀察</h3>
 
@@ -511,7 +517,7 @@ export default function LeetcodeEP16Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 三題對比 */}
         <section className="space-y-6">
@@ -568,7 +574,7 @@ export default function LeetcodeEP16Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -594,7 +600,7 @@ export default function LeetcodeEP16Page() {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -614,7 +620,7 @@ export default function LeetcodeEP16Page() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Greedy', 'Jump Game', 'Gas Station', 'Python', 'EP.16'].map((tag) => (
-            <Chip key={tag} variant="flat" color="danger" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

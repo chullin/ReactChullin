@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dify 工作流程設計 在本地 LLM 前加 Orchestration 層 | Joseph Chen',
+  description: 'No-code AI Pipeline、Knowledge Base、Agent 串接 打造可控的企業級 AI 應用',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep03-dify',
+  },
+};
+
+
 
 const nodeTypes = [
   { label: 'Start', color: 'bg-emerald-100 border-emerald-300 text-emerald-800', desc: '工作流的起點，定義輸入變數與使用者傳入的資料格式。' },
@@ -109,14 +115,14 @@ export default function AiEP03Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-purple-500/20 text-purple-200 border-purple-400/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-200 border-purple-400/30 font-bold uppercase text-[10px]">
                 AI 離線部署
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-fuchsia-500/20 text-purple-200 border-fuchsia-400/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-fuchsia-500/20 text-purple-200 border-fuchsia-400/30 font-bold uppercase text-[10px]">
                 EP.03
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Dify 工作流程設計<br />
@@ -126,7 +132,7 @@ export default function AiEP03Page() {
               No-code AI Pipeline、Knowledge Base、Agent 串接<br />
               打造可控的企業級 AI 應用
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -154,8 +160,8 @@ export default function AiEP03Page() {
 
         {/* Opening Quote */}
         <section>
-          <Card className="border-l-4 border-l-purple-500 bg-purple-50 shadow-none rounded-2xl">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-l-purple-500 bg-purple-50 shadow-none rounded-2xl">
+            <div className="p-6">
               <div className="flex items-start gap-4">
                 <Quote size={28} className="text-purple-400 shrink-0 mt-0.5" />
                 <p className="text-gray-700 leading-relaxed text-lg italic font-medium">
@@ -163,11 +169,11 @@ export default function AiEP03Page() {
                   Dify 就是在這中間加了一層：讓 AI 的行為變得可以設計、可以監控、可以迭代。
                 </p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 1: Dify 是什麼 */}
         <section className="space-y-6">
@@ -208,7 +214,7 @@ export default function AiEP03Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: 核心架構概念 */}
         <section className="space-y-6">
@@ -246,7 +252,7 @@ export default function AiEP03Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: Knowledge Base / RAG */}
         <section className="space-y-6">
@@ -302,7 +308,7 @@ export default function AiEP03Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: 三種常用應用類型 */}
         <section className="space-y-6">
@@ -346,8 +352,8 @@ export default function AiEP03Page() {
                 ],
               },
             ].map((item) => (
-              <Card key={item.title} className={`border ${item.color} shadow-none`}>
-                <CardBody className="p-6 space-y-3">
+              <div key={item.title} className={`border ${item.color} shadow-none`}>
+                <div className="p-6 space-y-3">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{item.icon}</span>
                     <h3 className="font-black text-gray-900 text-lg">{item.title}</h3>
@@ -361,13 +367,13 @@ export default function AiEP03Page() {
                       </li>
                     ))}
                   </ul>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: 離線環境部署 Dify */}
         <section className="space-y-6">
@@ -397,7 +403,7 @@ export default function AiEP03Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 6: Prompt Engineering */}
         <section className="space-y-6">
@@ -429,15 +435,15 @@ export default function AiEP03Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 7: 面試常考題 */}
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">面試常考題</h2>
           <div className="space-y-4">
             {qaList.map((item, i) => (
-              <Card key={i} className="border border-gray-100 shadow-sm rounded-2xl">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm rounded-2xl">
+                <div className="p-6 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="bg-purple-600 text-white text-xs font-black w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5">Q</span>
                     <p className="font-black text-gray-900">{item.q}</p>
@@ -445,8 +451,8 @@ export default function AiEP03Page() {
                   <div className="flex items-start gap-3 pl-9">
                     <p className="text-gray-600 leading-relaxed text-sm">{item.a}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
@@ -474,7 +480,7 @@ export default function AiEP03Page() {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -494,7 +500,7 @@ export default function AiEP03Page() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Dify', 'RAG', 'LLM', 'Ollama', 'AI', 'Orchestration', 'EP.03'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

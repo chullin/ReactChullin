@@ -1,12 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Divider,
-  Button,
-  Link as HeroLink,
-  Chip,
-  } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -21,8 +13,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'LeetCode Python 踩坑紀錄 | Joseph Chen',
+  description: '那些刷題時讓我卡關的 Python 細節，整理給自己也給你',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/python-pitfalls',
+  },
+};
+
+
 
 const Callout = ({
   type,
@@ -66,18 +69,14 @@ export default function LeetcodePythonPitfallsPage() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-6">
-              <Chip size="sm" variant="flat" className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]">
                 Algorithm
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-yellow-500/20 text-yellow-300 border-yellow-500/30 font-bold uppercase text-[10px]">
                 Python
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               LeetCode Python 踩坑紀錄
@@ -95,7 +94,7 @@ export default function LeetcodePythonPitfallsPage() {
                 <span>April 30, 2026</span>
               </div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -104,16 +103,16 @@ export default function LeetcodePythonPitfallsPage() {
         <div className="max-w-3xl mx-auto space-y-12">
           {/* Action Bar */}
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button
-              as={Link}
-              href="/blog"
-              variant="light"
-              color="primary"
-              className="font-bold"
-              startContent={<ArrowLeft size={18} />}
-            >
+            <Link href="/blog"
+              
+              
+              
+              
+              className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold"
+              
+            ><ArrowLeft size={18} /> 
               Back to Blog
-            </Button>
+            </Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -128,9 +127,9 @@ export default function LeetcodePythonPitfallsPage() {
 
             <p>
               這份筆記來自我的 GitHub repo{' '}
-              <HeroLink href="https://github.com/chullin/leetcode" isExternal className="font-bold text-blue-600">
+              <Link href="https://github.com/chullin/leetcode"  className="font-bold text-blue-600" target="_blank" rel="noopener noreferrer">
                 chullin/leetcode
-              </HeroLink>
+              </Link>
               ，持續更新中。目前已完成 11 題，每題都嘗試用不同解法（Way1、Way2、Way3）來加深理解。
             </p>
 
@@ -332,16 +331,16 @@ heapq.nlargest(k, count.keys(), key=lambda x: count[x])`} />
             </div>
 
             {/* Quote */}
-            <Card className="bg-blue-50/50 border-none shadow-none my-12">
-              <CardBody className="p-10 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-blue-50/50 border-none shadow-none my-12">
+              <div className="p-10 relative overflow-hidden">
                 <Quote size={48} className="text-blue-200 absolute -top-2 -left-2 rotate-12" />
                 <div className="relative z-10">
                   <p className="text-2xl font-black text-blue-900 leading-snug">
                     "刷題的目的不是背解法，而是把各種思維模式內化成直覺。"
                   </p>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Progress */}
             <div className="space-y-4">
@@ -385,13 +384,13 @@ heapq.nlargest(k, count.keys(), key=lambda x: count[x])`} />
             </div>
           </div>
 
-          <Divider className="my-16 opacity-50" />
+          <hr className="border-gray-100 my-16 opacity-50"  />
 
           <div className="flex items-center gap-4 flex-wrap">
             {['Python', 'LeetCode', 'Algorithm', 'Two Pointer', 'Array'].map((tag) => (
-              <Chip key={tag} variant="flat" color="primary" className="font-bold">
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
 
@@ -402,27 +401,27 @@ heapq.nlargest(k, count.keys(), key=lambda x: count[x])`} />
               歡迎去 GitHub 看完整的題解紀錄，或繼續閱讀其他文章。
             </p>
             <div className="flex gap-3 flex-wrap justify-center">
-              <Button
-                as={HeroLink}
-                href="https://github.com/chullin/leetcode"
-                isExternal
-                color="primary"
-                radius="full"
-                size="lg"
-                className="font-black px-8"
+              <Link href="https://github.com/chullin/leetcode"
+                
+                
+                
+                
+                
+                
+                className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-black px-8"
               >
                 View on GitHub
-              </Button>
-              <Button
-                as={Link}
-                href="/blog"
-                variant="flat"
-                size="lg"
-                radius="full"
-                className="font-bold"
+              </Link>
+              <Link href="/blog"
+                
+                
+                
+                
+                
+                className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold"
               >
                 More Posts
-              </Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     type: 'article',
     publishedTime: '2025-05-10T00:00:00.000Z',
     authors: ['陳憲億 Joseph Chen'],
-    images: ['/assets/profile3.png'],
+    images: ['/assets/profile3.webp'],
   },
 };
 

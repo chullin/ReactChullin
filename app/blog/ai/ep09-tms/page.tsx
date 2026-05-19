@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -21,8 +16,19 @@ import { Calendar,
 
 import Link from 'next/link';
 import Script from 'next/script';
-import { motion } from 'framer-motion';
 import BlogRelatedPosts from '@/components/blog/BlogRelatedPosts';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Test Management System (TMS) | Legacy System 重構實戰 | Joseph Chen',
+  description: '分享如何在不中斷實驗室運作的前提下，重構一套每天被大量使用的測試管理系統。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep09-tms',
+  },
+};
+
+
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -52,14 +58,14 @@ export default function AiEP09Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]">
                 自動化管理
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]">
                 EP.09
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Test Management System (TMS)<br />
@@ -69,7 +75,7 @@ export default function AiEP09Page() {
               從維護上萬行 legacy code，到逐步推動 Python3 與 React 現代化遷移。<br />
               這篇文章分享我如何在不中斷實驗室運作的前提下，重構一套每天被大量使用的測試管理系統。
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -105,7 +111,7 @@ export default function AiEP09Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 系統核心功能 */}
         <section className="space-y-6">
@@ -130,7 +136,7 @@ export default function AiEP09Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 技術債與重構 */}
         <section className="space-y-6">
@@ -166,7 +172,7 @@ export default function AiEP09Page() {
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 實際開發工作 */}
         <section className="space-y-6">
@@ -189,7 +195,7 @@ export default function AiEP09Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 技術棧展示 */}
         <section className="space-y-6">
@@ -209,7 +215,7 @@ export default function AiEP09Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 總結成果 */}
         <section>
@@ -264,7 +270,7 @@ export default function AiEP09Page() {
             "name": "陳憲億 Joseph Chen"
           },
           "datePublished": "2025-05-10",
-          "image": "https://chullin.tw/assets/profile3.png",
+          "image": "https://chullin.tw/assets/profile3.webp",
           "publisher": {
             "@type": "Organization",
             "name": "Joseph Chen Portfolio",

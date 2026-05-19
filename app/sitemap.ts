@@ -23,10 +23,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1 : 0.8,
   }));
 
-  // Blog 文章：從 series.flatMap 取得 href，排除 isExternal === true
+  // Blog 文章：從 series.flatMap 取得 href，排除 isExternal === true，並使用 Set 去重
+  const uniqueBlogHrefs = new Set<string>();
   const blogPosts = series
     .flatMap((s) => s.posts)
     .filter((post) => !post.isExternal)
+    .filter((post) => {
+      if (uniqueBlogHrefs.has(post.href)) {
+        return false;
+      }
+      uniqueBlogHrefs.add(post.href);
+      return true;
+    })
     .map((post) => ({
       url: `${baseUrl}${post.href}`,
       lastModified,

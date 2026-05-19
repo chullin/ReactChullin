@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +15,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '你輸入 google.com 接下來 0.1 秒發生了什麼？ | Joseph Chen',
+  description: 'DNS 解析、IP 路由、TCP 握手——最經典面試題的完整解答。 很多人能說個大概，但說不完整。這篇從頭到尾把每一步說清楚。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/network/ep02-dns-ip',
+  },
+};
+
+
 
 export default function NetworkEP02() {
   return (
@@ -30,7 +36,7 @@ export default function NetworkEP02() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.02</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">網路系列</span>
@@ -49,7 +55,7 @@ export default function NetworkEP02() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 15 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> DNS · IP · TCP · CDN · 面試必考</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -57,9 +63,9 @@ export default function NetworkEP02() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* 開場 Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-sky-400 shrink-0 mt-1" />
                 <div>
@@ -73,19 +79,19 @@ export default function NetworkEP02() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 1: 整體流程 */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Globe className="text-sky-600" size={28} />
@@ -154,14 +160,7 @@ export default function NetworkEP02() {
                 highlight: false,
               },
             ].map((item, i) => (
-              <motion.div
-                key={i}
-                className={`flex items-start gap-4 p-4 rounded-2xl border transition-all ${item.highlight ? 'bg-white border-sky-200 shadow-md' : 'bg-white/60 border-gray-100'}`}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-              >
+              <FadeIn>
                 <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${item.color} text-white flex items-center justify-center font-black text-sm shrink-0`}>
                   {item.num}
                 </div>
@@ -172,28 +171,28 @@ export default function NetworkEP02() {
                   </div>
                   <p className="text-gray-500 text-sm">{item.desc}</p>
                 </div>
-              </motion.div>
+              </FadeIn>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 2: DNS */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Network className="text-sky-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">DNS——網路的「電話本」</h2>
           </div>
 
-          <Card className="border-0 shadow-md bg-sky-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-sky-50">
+            <div className="p-6">
               <p className="text-sky-800 leading-relaxed">
                 <strong>生活化比喻：</strong>你知道一間餐廳叫「麥當勞」，但你不知道它的地址。
                 你查了 Google Maps，得到地址「台北市信義路 X 號」。
@@ -201,8 +200,8 @@ export default function NetworkEP02() {
                 轉換成地址（IP 142.250.185.14）。沒有 DNS，你就必須記住每個網站的 IP，
                 沒有人做得到。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-bold text-gray-800">DNS 解析的完整過程</h3>
 
@@ -238,26 +237,26 @@ Authoritative DNS（Google 的 DNS）：
           />
 
           <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <p className="font-bold text-gray-800 mb-3">為什麼要分這麼多層？</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   全球有幾億個域名。如果只有一台 DNS 伺服器，每次查詢都打去同一台，
                   早就被流量打掛了。分層設計讓查詢分散，
                   快取讓大部分查詢在 ISP 層就結束，不需要每次都問到 Root。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <p className="font-bold text-gray-800 mb-3">TTL（Time to Live）</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   每條 DNS 記錄都有 TTL，單位是秒。TTL 300 = 快取 5 分鐘後過期。
                   過期後下次查詢才會重新問。遷移網站時記得先把 TTL 調低（例如 60 秒），
                   這樣換 IP 後才能快速生效。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <h3 className="text-xl font-bold text-gray-800">常見 DNS Record 類型</h3>
@@ -285,8 +284,8 @@ TXT   example.com       →  "v=spf1 include:_spf.google.com ~all"
 TTL   300               →  5 分鐘後過期，重新查詢`}
           />
 
-          <Card className="border-l-4 border-l-amber-400 bg-amber-50 border-0 shadow-none">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-l-amber-400 bg-amber-50 border-0 shadow-none">
+            <div className="p-6">
               <p className="font-bold text-amber-800 mb-2">CNAME vs A Record 怎麼選？</p>
               <p className="text-amber-700 text-sm leading-relaxed">
                 如果你的服務 IP 會變動（例如 Vercel、Cloudflare 托管），用 CNAME 指向他們給你的 hostname。
@@ -294,27 +293,27 @@ TTL   300               →  5 分鐘後過期，重新查詢`}
                 如果你的伺服器 IP 固定（例如自架 VPS），用 A Record 直接指 IP 比較乾淨。
                 注意：根域名（<code className="bg-amber-100 px-1 rounded font-mono">example.com</code>，不帶 www）通常不能設 CNAME，要用 A Record 或特殊的 ALIAS 記錄。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 3: IP */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Server className="text-blue-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">IP 地址——你在哪裡</h2>
           </div>
 
-          <Card className="border-0 shadow-md bg-blue-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-blue-50">
+            <div className="p-6">
               <p className="text-blue-800 leading-relaxed">
                 <strong>比喻：</strong>IP 地址就像快遞地址。
                 IPv4 是舊式地址（四段數字，如 <code className="bg-blue-100 px-1 rounded font-mono">192.168.1.1</code>），
@@ -322,12 +321,12 @@ TTL   300               →  5 分鐘後過期，重新查詢`}
                 Port 就像「幾樓幾號」——同一台電腦可以同時運行網頁伺服器、資料庫、SSH 等多個服務，
                 用 Port 區分哪個服務要接哪個連線。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <p className="font-bold text-gray-800 mb-3">IPv4 vs IPv6</p>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between py-1 border-b border-gray-100">
@@ -358,11 +357,11 @@ TTL   300               →  5 分鐘後過期，重新查詢`}
                     <span className="font-mono text-gray-700">3.4 × 10³⁸</span>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6">
                 <p className="font-bold text-gray-800 mb-3">常見 Port 速查</p>
                 <div className="space-y-1.5 font-mono text-sm">
                   {[
@@ -382,8 +381,8 @@ TTL   300               →  5 分鐘後過期，重新查詢`}
                     </div>
                   ))}
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <p className="text-gray-600 leading-relaxed">
@@ -392,32 +391,32 @@ TTL   300               →  5 分鐘後過期，重新查詢`}
             瀏覽器連 <code className="bg-gray-100 text-blue-700 px-1.5 py-0.5 rounded font-mono">https://google.com</code> 不帶 port，
             是因為 HTTPS 預設就是 443，瀏覽器自動補上。
           </p>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 4: TCP 三次握手 */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Wifi className="text-indigo-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">TCP 三次握手——打電話確認連線</h2>
           </div>
 
-          <Card className="border-0 shadow-md bg-indigo-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-indigo-50">
+            <div className="p-6">
               <p className="text-indigo-800 leading-relaxed">
                 <strong>比喻：</strong>打電話確認連線。你打電話（SYN），
                 對方說「有聽到嗎？」（SYN-ACK），你說「有聽到，開始說吧」（ACK）——
                 然後才開始真正的對話。這三個步驟確保雙方都能收發，才開始傳真正的資料。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <CodeBlock
             title="TCP 三次握手流程"
@@ -444,8 +443,8 @@ Client → Server : ACK
           </p>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md bg-red-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50">
+              <div className="p-6">
                 <p className="font-bold text-red-800 mb-3">兩次握手的問題</p>
                 <ol className="space-y-2 text-sm text-red-700">
                   <li className="flex items-start gap-2"><span className="font-bold shrink-0">1.</span> Client 發 SYN（舊的，因為網路延遲才到）</li>
@@ -453,10 +452,10 @@ Client → Server : ACK
                   <li className="flex items-start gap-2"><span className="font-bold shrink-0">3.</span> 但 Client 早就放棄這個連線了（太舊了）</li>
                   <li className="flex items-start gap-2"><span className="font-bold shrink-0">4.</span> Server 白白開著一個半連接等 Client，浪費資源</li>
                 </ol>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-green-50">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-green-50">
+              <div className="p-6">
                 <p className="font-bold text-green-800 mb-3">三次握手的保障</p>
                 <ol className="space-y-2 text-sm text-green-700">
                   <li className="flex items-start gap-2"><span className="font-bold shrink-0">1.</span> Client 確認 Server 收到了 SYN（靠 SYN-ACK）</li>
@@ -464,12 +463,12 @@ Client → Server : ACK
                   <li className="flex items-start gap-2"><span className="font-bold shrink-0">3.</span> 雙方都確認對方能收發，才建立連線</li>
                   <li className="flex items-start gap-2"><span className="font-bold shrink-0">4.</span> Server 不會為舊的 SYN 白開連線</li>
                 </ol>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-l-4 border-l-indigo-500 border-0 shadow-none bg-indigo-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-l-indigo-500 border-0 shadow-none bg-indigo-50">
+            <div className="p-6">
               <p className="font-bold text-indigo-800 mb-2">TCP vs UDP——什麼時候不需要握手？</p>
               <p className="text-indigo-700 text-sm leading-relaxed">
                 TCP 可靠但較慢（三次握手的額外往返）。UDP 直接送不管有沒有收到，
@@ -478,35 +477,35 @@ Client → Server : ACK
                 確保資料完整很重要。HTTP/3（QUIC 協議）則是在 UDP 上自己實現可靠傳輸，
                 兼顧速度和可靠性。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* Section 5: CDN */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Zap className="text-sky-600" size={28} />
             <h2 className="text-3xl font-black text-gray-900">CDN——讓台灣連美國網站也快</h2>
           </div>
 
-          <Card className="border-0 shadow-md bg-sky-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-sky-50">
+            <div className="p-6">
               <p className="text-sky-800 leading-relaxed">
                 <strong>比喻：</strong>McDonald's 在全球各地都有分店，你不用飛去美國總部買漢堡。
                 CDN（Content Delivery Network）就是網路的麥當勞——
                 把內容分發到全球各地的伺服器，你連最近的那台就好。
                 台灣的用戶連台灣的 CDN 節點，不需要跨太平洋連美國，延遲從 200ms 降到 20ms。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-bold text-gray-800">CDN 怎麼知道要回應哪台伺服器？</h3>
 
@@ -556,30 +555,30 @@ Step 3. 快取命中或回源
                 color: 'bg-indigo-50 border-indigo-200',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border ${item.color} shadow-none`}>
-                <CardBody className="p-5">
+              <div key={i} className={`border ${item.color} shadow-none`}>
+                <div className="p-5">
                   <p className="font-bold text-gray-800 mb-2 text-sm">{item.title}</p>
                   <p className="text-gray-600 text-xs leading-relaxed">{item.desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 總結：完整流程串起來 */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <h2 className="text-3xl font-black text-gray-900">完整流程總覽——把這些全串起來</h2>
 
-          <Card className="border-0 shadow-xl bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-700 text-white">
-            <CardBody className="p-8">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-xl bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-700 text-white">
+            <div className="p-8">
               <div className="space-y-4">
                 {[
                   {
@@ -627,11 +626,11 @@ Step 3. 快取命中或回源
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="border-0 shadow-md">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+            <div className="p-6">
               <p className="font-bold text-gray-800 mb-3">面試回答建議</p>
               <p className="text-gray-600 text-sm leading-relaxed mb-3">
                 面試時不用把每一步說得一樣詳細。重點是：
@@ -643,36 +642,36 @@ Step 3. 快取命中或回源
                 能說出「DNS 分層查詢」、「TCP 三次握手的必要性」、「CDN 透過 DNS anycast 實現就近存取」的候選人，
                 已經比大部分人說得更完整了。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* Tags */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <section
+          
+          
+          
+          
         >
-          <Divider className="mb-8" />
+          <hr className="border-gray-100 mb-8"  />
           <div className="flex flex-wrap gap-2">
             {['網路', 'DNS', 'IP', 'TCP', '三次握手', 'CDN', 'Port', '面試必考', '網路系列', 'EP.02'].map(tag => (
-              <Chip key={tag} variant="flat" color="primary" size="sm" className="font-medium">{tag}</Chip>
+              <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-medium">{tag}</span>
             ))}
           </div>
-        </motion.section>
+        </section>
 
         {/* Nav */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <section
+          
+          
+          
+          
         >
           <div className="grid md:grid-cols-2 gap-4">
             <Link href="/blog/network/ep01-http">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5">
                   <div className="flex items-center gap-3">
                     <ArrowLeft size={18} className="text-gray-400 group-hover:text-sky-600 transition-colors" />
                     <div>
@@ -680,12 +679,12 @@ Step 3. 快取命中或回源
                       <p className="font-bold text-gray-700 group-hover:text-sky-700 transition-colors text-sm">EP.01 HTTP 深挖</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
             <Link href="/blog/network/ep03-https-tls">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5">
                   <div className="flex items-center justify-end gap-3">
                     <div className="text-right">
                       <p className="text-xs text-gray-400 mb-1">下一篇</p>
@@ -693,11 +692,11 @@ Step 3. 快取命中或回源
                     </div>
                     <ArrowRight size={18} className="text-gray-400 group-hover:text-sky-600 transition-colors" />
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

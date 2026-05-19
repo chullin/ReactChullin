@@ -1,12 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider,
-  Tab,
-  Tabs,
-  Button } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { 
   ShieldAlert,
   Globe,
@@ -27,19 +19,24 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
 
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Security Headers： 網頁安全的隱形防線 | Joseph Chen',
+  description: '為什麼加了幾個 Header 就能防禦 90% 的攻擊？從 CORS、CSP 到 HSTS，深度解析現代瀏覽器的安全機制與正確配置方法。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/network/ep08-security-headers',
+  },
+};
+
+
+
 const SectionWrapper = ({ children }: { children: React.ReactNode }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className="space-y-8"
-  >
+  <FadeIn>
     {children}
-  </motion.div>
+  </FadeIn>
 );
 
 export default function SecurityHeadersPage() {
@@ -53,19 +50,14 @@ export default function SecurityHeadersPage() {
         </div>
 
         <div className="max-w-5xl mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
+          <FadeIn>
             <div className="flex justify-center gap-3 mb-8">
-              <Chip variant="flat" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold uppercase tracking-wider">
+              <span  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-emerald-500/20 text-emerald-300 border-emerald-500/30 font-bold uppercase tracking-wider">
                 網路協定 EP.08
-              </Chip>
-              <Chip variant="flat" className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase tracking-wider">
+              </span>
+              <span  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase tracking-wider">
                 資安實戰
-              </Chip>
+              </span>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tight">
@@ -85,7 +77,7 @@ export default function SecurityHeadersPage() {
               <div className="flex items-center gap-2"><Lock size={18} /> 隱私保護</div>
               <div className="flex items-center gap-2">✍️ Joseph Chen</div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -127,7 +119,7 @@ export default function SecurityHeadersPage() {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-16" />
+        <hr className="border-gray-100 my-16"  />
 
         {/* Section 1: CORS - The Most Misunderstood Header */}
         <SectionWrapper>
@@ -187,7 +179,7 @@ export default function SecurityHeadersPage() {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-16" />
+        <hr className="border-gray-100 my-16"  />
 
         {/* Section 2: CSP - Content Security Policy */}
         <SectionWrapper>
@@ -242,7 +234,7 @@ export default function SecurityHeadersPage() {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-16" />
+        <hr className="border-gray-100 my-16"  />
 
         {/* Section 3: HSTS - Forced HTTPS */}
         <SectionWrapper>
@@ -267,7 +259,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`}
           />
         </SectionWrapper>
 
-        <Divider className="my-16" />
+        <hr className="border-gray-100 my-16"  />
 
         {/* Section 4: Cookie Security */}
         <SectionWrapper>
@@ -308,7 +300,7 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`}
                     <div className="w-2 h-2 rounded-full bg-rose-500" />
                     {item.name}
                   </h5>
-                  <Chip size="sm" color="danger" variant="flat" className="font-bold">{item.tag}</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{item.tag}</span>
                 </div>
                 <p className="text-slate-600 font-medium mb-2">{item.desc}</p>
                 <p className="text-sm text-slate-400 italic">{item.effect}</p>
@@ -329,7 +321,7 @@ res.cookie('sessionId', 'abc123xyz', {
           />
         </SectionWrapper>
 
-        <Divider className="my-16" />
+        <hr className="border-gray-100 my-16"  />
 
         {/* Section 5: The "No-Brainer" Headers */}
         <SectionWrapper>
@@ -365,7 +357,7 @@ res.cookie('sessionId', 'abc123xyz', {
           </div>
         </SectionWrapper>
 
-        <Divider className="my-16" />
+        <hr className="border-gray-100 my-16"  />
 
         {/* Summary: Implementation Strategy */}
         <SectionWrapper>
@@ -415,11 +407,11 @@ module.exports = {
         <div className="mt-24 space-y-12">
           <div className="flex flex-wrap gap-2">
             {['網路協議', '資安', 'HTTP', 'HTTPS', 'CORS', 'CSP', 'Cookie', 'Next.js'].map(tag => (
-              <Chip key={tag} variant="flat" className="bg-slate-100 text-slate-500 font-black px-4 py-1">#{tag}</Chip>
+              <span key={tag}  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-slate-100 text-slate-500 font-black px-4 py-1">#{tag}</span>
             ))}
           </div>
 
-          <Divider className="opacity-50" />
+          <hr className="border-gray-100 opacity-50"  />
 
           <div className="flex justify-between items-center gap-6">
             <Link 
@@ -453,12 +445,12 @@ module.exports = {
               在這個 Bootcamp 系列中，我們持續分享軟體開發的核心技術。如果有任何問題，歡迎在 LinkedIn 上與我交流！
             </p>
             <div className="flex justify-center gap-4">
-              <Button color="primary" variant="shadow" className="font-black px-10 h-12 rounded-2xl">
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-black px-10 h-12 rounded-2xl">
                 關注我的 LinkedIn
-              </Button>
-              <Button color="primary" variant="flat" className="font-black px-10 h-12 rounded-2xl">
+              </button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-black px-10 h-12 rounded-2xl">
                 分享給朋友
-              </Button>
+              </button>
             </div>
           </div>
         </div>

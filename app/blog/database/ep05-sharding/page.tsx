@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -22,8 +17,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '資料庫 Sharding 與讀寫分離 水平擴展的關鍵決策 | Joseph Chen',
+  description: 'Hash Sharding、Range Sharding、主從複製、Replication Lag — 千萬級資料的分散式資料庫架構，從讀寫分離到 Sharding，一步步解開水平擴展的謎題。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep05-sharding',
+  },
+};
+
+
 
 export default function DBEP05() {
   return (
@@ -32,11 +38,7 @@ export default function DBEP05() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-rose-800 via-red-700 to-orange-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.05
@@ -68,18 +70,18 @@ export default function DBEP05() {
                 <Database size={14} /> Sharding · Replication · Consistent Hashing · Vitess
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 單台資料庫的瓶頸 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-rose-600" size={28} />
@@ -116,8 +118,8 @@ export default function DBEP05() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <Scale className="text-blue-500" size={22} />
                   <h3 className="text-xl font-black text-gray-800">垂直擴展（Scale Up）</h3>
@@ -142,11 +144,11 @@ export default function DBEP05() {
                     <XCircle size={14} /> 費用呈指數增長
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <Layers className="text-rose-500" size={22} />
                   <h3 className="text-xl font-black text-gray-800">水平擴展（Scale Out）</h3>
@@ -171,29 +173,29 @@ export default function DBEP05() {
                     <XCircle size={14} /> 資料一致性問題需要處理
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-l-4 border-rose-400 bg-rose-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-rose-400 bg-rose-50 border-0">
+            <div className="p-5">
               <p className="font-black text-rose-800 mb-2">實務建議：不要過早 Scale Out</p>
               <p className="text-rose-700 text-sm leading-relaxed">
                 水平擴展帶來的架構複雜度是真實的成本。在你的 DB 還沒真正到達瓶頸前，
                 優先考慮索引優化、Query 調整、加 Cache。Scale Out 是最後的手段，不是第一選擇。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: 讀寫分離 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <GitBranch className="text-orange-600" size={28} />
@@ -376,16 +378,16 @@ export function shouldUsePrimary(lastWriteAt: Date | null): boolean {
 }`}
             />
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: Sharding ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Layers className="text-rose-600" size={28} />
@@ -467,16 +469,16 @@ export async function createUser(data: CreateUserInput) {
   return await shard.user.create({ data: { ...data, id: userId } });
 }`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: 兩種 Sharding 策略 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Zap className="text-orange-600" size={28} />
@@ -584,26 +586,26 @@ Consistent Hashing 解法：
             </div>
           </div>
 
-          <Card className="border-l-4 border-orange-400 bg-orange-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-orange-400 bg-orange-50 border-0">
+            <div className="p-5">
               <p className="font-black text-orange-800 mb-2">Hash vs Range：如何選？</p>
               <p className="text-orange-700 text-sm leading-relaxed">
                 如果你的主要查詢是「根據 ID 查單筆資料」，選 Hash Sharding（均勻、防 Hot Spot）。
                 如果你的主要查詢是「查某個時間範圍或 ID 範圍的資料」，選 Range Sharding（範圍查詢快）。
                 實務上，許多大型系統（如 Google Bigtable、HBase）同時支援兩種策略，依表格特性選擇。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: Sharding 的痛點 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <XCircle className="text-red-600" size={28} />
@@ -644,8 +646,8 @@ WHERE u.id = 12345;
           </p>
 
           <div className="space-y-4">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="bg-rose-100 text-rose-700 font-black text-sm px-2.5 py-1 rounded-full">方案 1</span>
                   <h4 className="text-lg font-black text-gray-800">應用層 Join（Application-Side Join）</h4>
@@ -672,11 +674,11 @@ async function getUserWithOrders(userId: number) {
 }
 // 優點：簡單直接  缺點：多次網路往返，效能較差`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="bg-orange-100 text-orange-700 font-black text-sm px-2.5 py-1 rounded-full">方案 2</span>
                   <h4 className="text-lg font-black text-gray-800">Denormalization（反正規化）</h4>
@@ -700,11 +702,11 @@ CREATE TABLE orders (
 SELECT order_id, user_name, total_amount FROM orders WHERE user_id = 12345;
 -- 缺點：user 改名字時，orders 裡的 user_name 需要同步更新（Write Amplification）`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="bg-blue-100 text-blue-700 font-black text-sm px-2.5 py-1 rounded-full">方案 3</span>
                   <h4 className="text-lg font-black text-gray-800">Global Tables（全域表）</h4>
@@ -729,11 +731,11 @@ SELECT order_id, user_name, total_amount FROM orders WHERE user_id = 12345;
   ✗ 用戶資料（量大、常更新）
   ✗ 訂單資料（量大）`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <span className="bg-green-100 text-green-700 font-black text-sm px-2.5 py-1 rounded-full">方案 4</span>
                   <h4 className="text-lg font-black text-gray-800">Co-location（相同 Shard Key）</h4>
@@ -757,19 +759,19 @@ SELECT order_id, user_name, total_amount FROM orders WHERE user_id = 12345;
   → 「查所有用戶的今日訂單」效率很差（跨 Shard 聚合）
   → 需要根據最常見的查詢模式來決定 Sharding Key，這是設計難題`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: 選擇正確的時機 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <CheckCircle className="text-rose-600" size={28} />
@@ -784,33 +786,33 @@ SELECT order_id, user_name, total_amount FROM orders WHERE user_id = 12345;
           <div className="space-y-4">
             <h3 className="text-xl font-black text-gray-800">什麼時候需要 Sharding</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="border-0 shadow-md bg-red-50">
-                <CardBody className="p-5 space-y-2">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50">
+                <div className="p-5 space-y-2">
                   <AlertTriangle className="text-red-500" size={22} />
                   <p className="font-black text-gray-800 text-sm">Write 達到瓶頸</p>
                   <p className="text-gray-600 text-xs leading-relaxed">
                     單台 Primary 的寫入量持續超過 10K TPS，且讀寫分離和 Cache 已無法緩解。
                   </p>
-                </CardBody>
-              </Card>
-              <Card className="border-0 shadow-md bg-red-50">
-                <CardBody className="p-5 space-y-2">
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50">
+                <div className="p-5 space-y-2">
                   <Database className="text-red-500" size={22} />
                   <p className="font-black text-gray-800 text-sm">資料量超過單台磁碟</p>
                   <p className="text-gray-600 text-xs leading-relaxed">
                     單台資料量超過 10TB，備份時間過長，或磁碟費用超過合理預算。
                   </p>
-                </CardBody>
-              </Card>
-              <Card className="border-0 shadow-md bg-red-50">
-                <CardBody className="p-5 space-y-2">
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50">
+                <div className="p-5 space-y-2">
                   <GitBranch className="text-red-500" size={22} />
                   <p className="font-black text-gray-800 text-sm">有明確分片維度</p>
                   <p className="text-gray-600 text-xs leading-relaxed">
                     業務上有天然的隔離維度（按地區、按租戶、按用戶 ID），且 JOIN 需求不多。
                   </p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -840,79 +842,79 @@ SELECT order_id, user_name, total_amount FROM orders WHERE user_id = 12345;
           <div className="space-y-4">
             <h3 className="text-xl font-black text-gray-800">管理工具推薦</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card className="border-0 shadow-md">
-                <CardBody className="p-5 space-y-2">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5 space-y-2">
                   <p className="font-black text-gray-800">Vitess</p>
-                  <Chip size="sm" variant="flat" color="warning">MySQL Sharding</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">MySQL Sharding</span>
                   <p className="text-gray-500 text-xs leading-relaxed">
                     YouTube 使用的 MySQL Sharding 解決方案，提供透明的 Sharding 路由，
                     應用層幾乎不需要改動。支援 Online Schema Changes。
                   </p>
-                </CardBody>
-              </Card>
-              <Card className="border-0 shadow-md">
-                <CardBody className="p-5 space-y-2">
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5 space-y-2">
                   <p className="font-black text-gray-800">Citus</p>
-                  <Chip size="sm" variant="flat" color="primary">PostgreSQL Sharding</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">PostgreSQL Sharding</span>
                   <p className="text-gray-500 text-xs leading-relaxed">
                     PostgreSQL 的 Sharding 擴充套件，支援分散式查詢、並行執行，
                     已被 Microsoft Azure 收購並整合到 Azure Database for PostgreSQL。
                   </p>
-                </CardBody>
-              </Card>
-              <Card className="border-0 shadow-md">
-                <CardBody className="p-5 space-y-2">
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5 space-y-2">
                   <p className="font-black text-gray-800">PlanetScale</p>
-                  <Chip size="sm" variant="flat" color="secondary">Serverless MySQL</Chip>
+                  <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Serverless MySQL</span>
                   <p className="text-gray-500 text-xs leading-relaxed">
                     基於 Vitess 的雲端 MySQL Sharding 服務，適合 Serverless 架構。
                     提供 Non-blocking Schema Changes 和 Database Branching（類似 Git）。
                   </p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
 
-          <Card className="border-l-4 border-rose-400 bg-rose-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-rose-400 bg-rose-50 border-0">
+            <div className="p-5">
               <p className="font-black text-rose-800 mb-2">架構師的視角</p>
               <p className="text-rose-700 text-sm leading-relaxed">
                 大多數公司永遠不需要 Sharding。如果你的業務能讓一台 PostgreSQL 撐住，那就一台撐到底。
                 Sharding 是 Netflix、Uber、Twitter 這種規模的解法，不是所有系統都需要的。
                 過早引入 Sharding 的架構複雜度，會嚴重拖慢開發速度，得不償失。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Tags ─── */}
-        <motion.section
+        <section
           className="space-y-4"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <h3 className="text-lg font-black text-gray-700">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {['Database Sharding', 'Read/Write Split', 'Consistent Hashing', 'Vitess', 'Scalability', 'PostgreSQL'].map(
               (tag) => (
-                <Chip key={tag} variant="flat" color="danger" size="sm">
+                <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                   {tag}
-                </Chip>
+                </span>
               ),
             )}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Link
@@ -943,7 +945,7 @@ SELECT order_id, user_name, total_amount FROM orders WHERE user_id = 12345;
               />
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

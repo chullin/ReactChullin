@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Linked List Pointer 操作的思維方式 | Joseph Chen',
+  description: '#206 Reverse · #21 Merge · #141 Cycle — Linked List 三大核心題',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep08-linked-list',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -44,10 +49,10 @@ export default function LeetcodeEP08Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `repeating-linear-gradient(90deg, #2dd4bf 0, #2dd4bf 1px, transparent 0, transparent 80px)` }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">EP.08</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-500/20 text-teal-300 border-teal-500/30 font-bold uppercase text-[10px]">EP.08</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Linked List<br />
@@ -58,14 +63,14 @@ export default function LeetcodeEP08Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-teal-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-teal-400" /><span>2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -183,14 +188,14 @@ return dummy.next   # 跳過 dummy，回傳真正的 head`} />
                 #21 Merge Two Sorted Lists
               </h2>
               <p>把兩個排序好的 Linked List 合併成一個排序好的 Linked List。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`list1: 1 → 2 → 4 → None
 list2: 1 → 3 → 4 → None
 
 output: 1 → 1 → 2 → 3 → 4 → 4 → None`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
               <p>用 Dummy Node + 兩個 pointer 同時遍歷，每次選較小的接上去：</p>
               <CodeBlock title="#21 Merge Two Sorted Lists" code={`class Solution:
     def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
@@ -301,7 +306,7 @@ output: 1 → 1 → 2 → 3 → 4 → 4 → None`} />
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <p className="font-black text-gray-900 text-sm">{item.title}</p>
-                        <Chip size="sm" variant="flat" className="text-teal-700 bg-teal-100 font-bold text-[10px]">{item.usage}</Chip>
+                        <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-teal-700 bg-teal-100 font-bold text-[10px]">{item.usage}</span>
                       </div>
                       <p className="text-gray-500 text-xs mt-1">{item.desc}</p>
                     </div>
@@ -310,14 +315,14 @@ output: 1 → 1 → 2 → 3 → 4 → 4 → None`} />
               </div>
             </div>
 
-            <Card className="bg-teal-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-teal-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-teal-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-teal-900 leading-snug relative z-10">
                   Linked List 題目的訣竅：在紙上把節點畫出來，一步一步追蹤 pointer 的位置。寫程式前先確認每一步的狀態，操作前先存好 <code>next</code>，否則一斷鏈就找不回來了。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             <div className="bg-gradient-to-r from-teal-50 to-emerald-50 rounded-[2rem] p-8 space-y-4">
               <p className="font-black text-gray-900 text-lg">本篇重點整理</p>
@@ -337,7 +342,7 @@ output: 1 → 1 → 2 → 3 → 4 → 4 → None`} />
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep07-binary-search" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -355,7 +360,7 @@ output: 1 → 1 → 2 → 3 → 4 → 4 → None`} />
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Linked List', 'Two Pointers', 'Python', 'EP.08'].map((tag) => (
-              <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

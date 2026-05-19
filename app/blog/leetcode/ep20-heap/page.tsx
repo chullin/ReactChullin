@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.20 — Heap： 永遠能找到最大或最小 | Joseph Chen',
+  description: '#215 Kth Largest Element · #347 Top K Frequent · #295 Find Median from Data Stream — heapq 實戰，從 K 大值到雙 Heap 中位數',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep20-heap',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -63,14 +69,14 @@ export default function LeetcodeEP20Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">
                 LeetCode 刷題日記
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-orange-500/20 text-orange-300 border-orange-500/30 font-bold uppercase text-[10px]">
                 EP.20
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.20 — Heap：<br />
@@ -80,7 +86,7 @@ export default function LeetcodeEP20Page() {
               #215 Kth Largest Element · #347 Top K Frequent · #295 Find Median from Data Stream<br />
               — heapq 實戰，從 K 大值到雙 Heap 中位數
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -122,7 +128,7 @@ export default function LeetcodeEP20Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Heap 基礎速查 */}
         <section className="space-y-6">
@@ -192,7 +198,7 @@ heapq.heappush(heap, (freq, word))  # 先按 freq 排序`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: Kth Largest ===== */}
         <section className="space-y-6">
@@ -204,8 +210,8 @@ heapq.heappush(heap, (freq, word))  # 先按 freq 排序`}
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個整數陣列和整數 k，找出陣列中第 k 大的元素（不是第 k 個不重複的）。
@@ -214,8 +220,8 @@ heapq.heappush(heap, (freq, word))  # 先按 freq 排序`}
                 <p>nums = [3,2,1,5,6,4], k = 2  → 5</p>
                 <p>nums = [3,2,3,1,2,4,5,5,6], k = 4  → 4</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">思路：維護一個大小為 k 的 min-heap</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -275,7 +281,7 @@ def findKthLargest_v2(nums: list[int], k: int) -> int:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: Top K Frequent ===== */}
         <section className="space-y-6">
@@ -287,8 +293,8 @@ def findKthLargest_v2(nums: list[int], k: int) -> int:
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個整數陣列，回傳出現頻率最高的前 k 個元素，答案可以任意順序。
@@ -297,8 +303,8 @@ def findKthLargest_v2(nums: list[int], k: int) -> int:
                 <p>nums = [1,1,1,2,2,3], k = 2  → [1, 2]</p>
                 <p>nums = [1], k = 1              → [1]</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">解法一：HashMap + Min-Heap（O(n log k)）</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -384,7 +390,7 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 3: Find Median from Data Stream ===== */}
         <section className="space-y-6">
@@ -396,8 +402,8 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 設計一個支援持續插入數字的資料結構，每次插入後都能在 O(log n) 內回傳當前所有數字的中位數。
@@ -406,8 +412,8 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
                 <p>addNum(1) → addNum(2) → findMedian() → 1.5</p>
                 <p>addNum(3) → findMedian() → 2.0</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">核心想法：兩個 Heap 夾住中位數</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -563,7 +569,7 @@ class MedianFinder:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 三題對比 */}
         <section className="space-y-6">
@@ -620,7 +626,7 @@ class MedianFinder:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -646,7 +652,7 @@ class MedianFinder:
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -666,7 +672,7 @@ class MedianFinder:
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Heap', 'Priority Queue', 'Kth Largest', 'Top K', 'Median', 'Python', 'EP.20'].map((tag) => (
-            <Chip key={tag} variant="flat" color="danger" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

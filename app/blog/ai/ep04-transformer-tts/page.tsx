@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -13,8 +8,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Transformer & TTS 語音合成架構原理 | Joseph Chen',
+  description: 'Encoder-Decoder、Self-Attention、從論文到嵌入式推論 碩士論文主題精華整理',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep04-transformer-tts',
+  },
+};
+
+
 
 const qaList = [
   {
@@ -62,14 +68,14 @@ export default function AiEP04Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-indigo-500/20 text-indigo-200 border-indigo-400/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-500/20 text-indigo-200 border-indigo-400/30 font-bold uppercase text-[10px]">
                 AI 離線部署
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-cyan-500/20 text-indigo-200 border-cyan-400/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-cyan-500/20 text-indigo-200 border-cyan-400/30 font-bold uppercase text-[10px]">
                 EP.04
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Transformer & TTS<br />
@@ -79,7 +85,7 @@ export default function AiEP04Page() {
               Encoder-Decoder、Self-Attention、從論文到嵌入式推論<br />
               碩士論文主題精華整理
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -107,8 +113,8 @@ export default function AiEP04Page() {
 
         {/* Opening Quote */}
         <section>
-          <Card className="border-l-4 border-l-indigo-500 bg-indigo-50 shadow-none rounded-2xl">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-l-indigo-500 bg-indigo-50 shadow-none rounded-2xl">
+            <div className="p-6">
               <div className="flex items-start gap-4">
                 <Quote size={28} className="text-indigo-400 shrink-0 mt-0.5" />
                 <p className="text-gray-700 leading-relaxed text-lg italic font-medium">
@@ -117,11 +123,11 @@ export default function AiEP04Page() {
                   現在回頭看，這段研究讓我對深度學習架構有了截然不同的理解。
                 </p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 1: TTS Pipeline */}
         <section className="space-y-6">
@@ -184,7 +190,7 @@ export default function AiEP04Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: Transformer */}
         <section className="space-y-6">
@@ -262,7 +268,7 @@ export default function AiEP04Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: FastSpeech2 */}
         <section className="space-y-6">
@@ -336,7 +342,7 @@ export default function AiEP04Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: Vocoder */}
         <section className="space-y-6">
@@ -391,7 +397,7 @@ export default function AiEP04Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: Embedded deployment */}
         <section className="space-y-6">
@@ -428,20 +434,20 @@ export default function AiEP04Page() {
                 color: 'border-purple-100 bg-purple-50',
               },
             ].map((item) => (
-              <Card key={item.title} className={`border ${item.color} shadow-none`}>
-                <CardBody className="p-6 space-y-2">
+              <div key={item.title} className={`border ${item.color} shadow-none`}>
+                <div className="p-6 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{item.icon}</span>
                     <h3 className="font-black text-gray-900">{item.title}</h3>
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed pl-8">{item.content}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 6: Code */}
         <section className="space-y-4">
@@ -456,15 +462,15 @@ export default function AiEP04Page() {
           <CodeBlock lang="python" code={inferenceCode} title="inference.py" />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 7: Interview QA */}
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">面試常考題</h2>
           <div className="space-y-4">
             {qaList.map((item, i) => (
-              <Card key={i} className="border border-gray-100 shadow-sm rounded-2xl">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm rounded-2xl">
+                <div className="p-6 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="bg-indigo-600 text-white text-xs font-black w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5">Q</span>
                     <p className="font-black text-gray-900">{item.q}</p>
@@ -472,8 +478,8 @@ export default function AiEP04Page() {
                   <div className="pl-9">
                     <p className="text-gray-600 leading-relaxed text-sm">{item.a}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
@@ -501,7 +507,7 @@ export default function AiEP04Page() {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -520,7 +526,7 @@ export default function AiEP04Page() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Transformer', 'TTS', 'FastSpeech2', 'Attention', 'PyTorch', 'AI', 'EP.04'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

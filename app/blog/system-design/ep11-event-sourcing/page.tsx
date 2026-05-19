@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -24,8 +19,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Event Sourcing 與 CQRS： 用事件重建一切 | Joseph Chen',
+  description: 'Event Store、Command/Query 分離、Projection 重建 — 金融、電商最愛的資料架構模式',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep11-event-sourcing',
+  },
+};
+
+
 
 export default function SystemDesignEP11() {
   return (
@@ -34,7 +40,7 @@ export default function SystemDesignEP11() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-violet-800 via-purple-700 to-indigo-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.11</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計系列</span>
@@ -52,17 +58,17 @@ export default function SystemDesignEP11() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 18 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Event Sourcing · CQRS · Projection · Aggregate</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ── Section 1：傳統資料庫的問題 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -79,8 +85,8 @@ export default function SystemDesignEP11() {
             傳統 CRUD 架構的核心問題就是：它只儲存「此刻的狀態」，歷史資訊永遠消失。
           </p>
 
-          <Card className="border border-red-200 bg-red-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50">
+            <div className="p-5">
               <h3 className="font-bold text-red-800 mb-3 flex items-center gap-2">
                 <AlertTriangle size={18} className="text-red-600" />
                 傳統 CRUD 的痛點（以電商訂單為例）
@@ -99,8 +105,8 @@ orders 表：
   - 審計日誌需要額外設計
   - 多個微服務的資料同步複雜   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed">
             這些問題在一般的 CRUD 應用裡可能還撐得住。但在金融系統、電商平台、醫療記錄等
@@ -108,8 +114,8 @@ orders 表：
             不是被法規罰款，就是面對一個你完全無法解釋的「資料為什麼變成這樣」的謎題。
           </p>
 
-          <Card className="border border-green-200 bg-green-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-green-200 bg-green-50">
+            <div className="p-5">
               <h3 className="font-bold text-green-800 mb-3 flex items-center gap-2">
                 <CheckCircle size={18} className="text-green-600" />
                 Event Sourcing 的核心思想
@@ -125,8 +131,8 @@ events 表（只能新增，不能修改/刪除）：
 當前狀態 = 重播所有事件的結果
 歷史記錄 = 免費贈送！   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed">
             Event Sourcing 的核心哲學是：<strong>不存「狀態」，只存「發生過的事情」</strong>。
@@ -135,37 +141,37 @@ events 表（只能新增，不能修改/刪除）：
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="border border-violet-200 bg-violet-50">
-              <CardBody className="p-4 text-center">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+              <div className="p-4 text-center">
                 <BookOpen size={28} className="text-violet-600 mx-auto mb-2" />
                 <p className="font-black text-violet-800 mb-1">完整審計日誌</p>
                 <p className="text-violet-600 text-sm">每一個操作都有記錄，不可篡改，天然符合法規要求</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-purple-200 bg-purple-50">
-              <CardBody className="p-4 text-center">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-purple-200 bg-purple-50">
+              <div className="p-4 text-center">
                 <RefreshCw size={28} className="text-purple-600 mx-auto mb-2" />
                 <p className="font-black text-purple-800 mb-1">任意重播歷史</p>
                 <p className="text-purple-600 text-sm">可以重播到任意時間點的狀態，時光機般的除錯能力</p>
-              </CardBody>
-            </Card>
-            <Card className="border border-indigo-200 bg-indigo-50">
-              <CardBody className="p-4 text-center">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50">
+              <div className="p-4 text-center">
                 <Layers size={28} className="text-indigo-600 mx-auto mb-2" />
                 <p className="font-black text-indigo-800 mb-1">多種讀取視圖</p>
                 <p className="text-indigo-600 text-sm">同一份事件，可以建立多個不同用途的查詢視圖</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：Event Sourcing 基礎實作 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -246,8 +252,8 @@ class EventStore {
 }   `}
 </CodeBlock>
 
-          <Card className="border border-violet-200 bg-violet-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+            <div className="p-5">
               <p className="text-violet-800 text-sm leading-relaxed">
                 <strong>樂觀鎖（Optimistic Concurrency Control）是什麼？</strong><br />
                 當兩個使用者同時對同一個訂單發送操作時，可能導致「後一個操作覆蓋前一個」的競態條件。
@@ -255,17 +261,17 @@ class EventStore {
                 如果 Event Store 裡的版本和預期不符，就代表有人在你之前修改了，操作拒絕，讓前端重試。
                 這比悲觀鎖（直接鎖定記錄）更適合高並發場景。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：Aggregate 與狀態重建 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -383,8 +389,8 @@ class Order {
 }   `}
 </CodeBlock>
 
-          <Card className="border border-indigo-200 bg-indigo-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50">
+            <div className="p-5">
               <p className="text-indigo-800 text-sm leading-relaxed">
                 <strong>為什麼要分開 raise 和 apply？</strong><br />
                 <code className="bg-indigo-100 px-1 rounded">raise()</code> 負責把事件加入「待提交清單」，然後呼叫 <code className="bg-indigo-100 px-1 rounded">apply()</code>。
@@ -392,17 +398,17 @@ class Order {
                 這個設計讓 <code className="bg-indigo-100 px-1 rounded">fromEvents()</code> 可以直接呼叫 <code className="bg-indigo-100 px-1 rounded">apply()</code> 重建狀態，
                 不會產生多餘的「未提交事件」，避免重複儲存。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：CQRS ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -419,8 +425,8 @@ class Order {
             因為這兩件事的需求完全不同。
           </p>
 
-          <Card className="border border-gray-200 bg-gray-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 bg-gray-50">
+            <div className="p-5">
               <CodeBlock language="text">
 {`   傳統方式（CRUD）：
   同一個資料模型同時負責讀取和寫入
@@ -438,8 +444,8 @@ CQRS（Command Query Responsibility Segregation）：
     - 回應查詢請求
     - 可以有多種不同的 Projection   `}
 </CodeBlock>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed">
             實際上，CQRS 讓你可以針對讀取和寫入分別優化。寫入端（Event Store）只需要
@@ -563,25 +569,25 @@ class OrderProjection {
 }   `}
 </CodeBlock>
 
-          <Card className="border border-violet-200 bg-violet-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+            <div className="p-5">
               <p className="text-violet-800 text-sm leading-relaxed">
                 <strong>Projection 的本質是「預先計算」：</strong>
                 當 Event 發生時，立刻更新對應的 Read Model，讓查詢時可以直接讀取已經整理好的資料，
                 不需要在查詢時才去計算。這和 SQL 的 Materialized View 概念相似，
                 但 Projection 可以更靈活，跨越多個 Aggregate，也可以針對特定的查詢場景量身定做。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：Projection 重建 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -680,25 +686,25 @@ class MonthlyRevenueProjection {
 // 3. Done！歷史資料全部有了   `}
 </CodeBlock>
 
-          <Card className="border border-purple-200 bg-purple-50">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-purple-200 bg-purple-50">
+            <div className="p-5">
               <p className="text-purple-800 text-sm leading-relaxed">
                 <strong>Projection 重建的實際應用場景：</strong><br />
                 (1) 你發現 Projection 有 bug，計算邏輯錯誤 → 修正邏輯後重建，歷史資料自動修正。<br />
                 (2) 業務需要新的報表維度 → 建立新 Projection 重播即可，不需要 Data Migration。<br />
                 (3) 要換查詢資料庫（PostgreSQL → Elasticsearch）→ 把 Projection 的儲存層換掉，重播一遍。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：實際挑戰 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -817,8 +823,8 @@ function applyOrderCreated(event: OrderCreatedV1 | OrderCreatedV2) {
           <h3 className="text-lg font-bold text-gray-800 mb-4 mt-6">何時適合 Event Sourcing？</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border border-green-200 bg-green-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-green-200 bg-green-50">
+              <div className="p-5">
                 <h4 className="font-bold text-green-800 mb-3 flex items-center gap-2">
                   <CheckCircle size={18} className="text-green-600" />
                   適合採用的場景
@@ -849,11 +855,11 @@ function applyOrderCreated(event: OrderCreatedV1 | OrderCreatedV2) {
                     多個下游系統需要消費同一份資料
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border border-red-200 bg-red-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-200 bg-red-50">
+              <div className="p-5">
                 <h4 className="font-bold text-red-800 mb-3 flex items-center gap-2">
                   <XCircle size={18} className="text-red-600" />
                   不建議採用的場景
@@ -884,18 +890,18 @@ function applyOrderCreated(event: OrderCreatedV1 | OrderCreatedV2) {
                     強一致性要求（無法接受最終一致性）
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 7：實際工具與框架 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="space-y-6"
         >
           <div className="flex items-center gap-3 mb-6">
@@ -1096,8 +1102,8 @@ async function rebuildOrderWithSnapshot(
 </CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <Card className="border border-violet-200 bg-violet-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-violet-200 bg-violet-50">
+              <div className="p-5">
                 <h4 className="font-bold text-violet-800 mb-3">EventStoreDB</h4>
                 <ul className="text-violet-700 text-sm space-y-1">
                   <li>• 專為 Event Sourcing 設計</li>
@@ -1105,10 +1111,10 @@ async function rebuildOrderWithSnapshot(
                   <li>• Catch-up Subscription</li>
                   <li>• 適合：需要成熟 ES 方案</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border border-indigo-200 bg-indigo-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-200 bg-indigo-50">
+              <div className="p-5">
                 <h4 className="font-bold text-indigo-800 mb-3">PostgreSQL（自建）</h4>
                 <ul className="text-indigo-700 text-sm space-y-1">
                   <li>• 用 events 表 + 樂觀鎖</li>
@@ -1116,18 +1122,18 @@ async function rebuildOrderWithSnapshot(
                   <li>• 或用 Debezium CDC 監聽變更</li>
                   <li>• 適合：已有 PostgreSQL 的團隊</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
           className="flex flex-wrap gap-2"
         >
           {[
@@ -1140,19 +1146,14 @@ async function rebuildOrderWithSnapshot(
             'EventStoreDB',
             'Eventual Consistency',
           ].map(tag => (
-            <Chip key={tag} variant="flat" className="bg-violet-100 text-violet-800">
+            <span key={tag}  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-100 text-violet-800">
               {tag}
-            </Chip>
+            </span>
           ))}
-        </motion.section>
+        </section>
 
         {/* ── Navigation ── */}
-        <motion.div
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
-          className="flex justify-between items-center pt-4"
-        >
+        <FadeIn>
           <Link
             href="/blog/system-design/ep10-cdn-edge"
             className="flex items-center gap-2 text-violet-700 hover:text-violet-900 font-semibold transition-colors group"
@@ -1164,7 +1165,7 @@ async function rebuildOrderWithSnapshot(
             <span>EP.12 →（Coming Soon）</span>
             <ArrowRight size={18} />
           </div>
-        </motion.div>
+        </FadeIn>
 
       </article>
     </div>

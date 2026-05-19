@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Stack 後進先出，解決「配對」問題 | Joseph Chen',
+  description: '#20 Valid Parentheses — Stack 最經典的應用，也是單調棧的入口',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep06-stack',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -45,10 +50,10 @@ export default function LeetcodeEP06Page() {
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: `repeating-linear-gradient(0deg, #fb7185 0, #fb7185 1px, transparent 0, transparent 24px), repeating-linear-gradient(90deg, #fb7185 0, #fb7185 1px, transparent 0, transparent 24px)` }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">EP.06</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-rose-500/20 text-rose-300 border-rose-500/30 font-bold uppercase text-[10px]">EP.06</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Stack<br />
@@ -59,14 +64,14 @@ export default function LeetcodeEP06Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-rose-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-rose-400" /><span>October 2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -85,14 +90,14 @@ export default function LeetcodeEP06Page() {
                 題目
               </h2>
               <p>給一個只包含 <code className="bg-gray-100 px-2 py-0.5 rounded text-sm font-mono">( ) [ ] {'{ }'}</code> 的字串，判斷括號是否合法配對。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`"[]"       → True
 "([{}])"   → True
 "[({)"     → False  (順序不對)
 "["        → False  (沒有閉合)`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* Stack Concept */}
@@ -245,8 +250,8 @@ len(stack) == 0     # 判斷 stack 是否為空`} />
               <p>
                 Valid Parentheses 是 Stack 的入門題。進階版是「單調棧」——維護一個<strong>單調遞增或遞減</strong>的 stack，用來解決「找下一個更大/更小的元素」這類問題。
               </p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6 space-y-4">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6 space-y-4">
                   <p className="font-black text-gray-900">Daily Temperatures（日均溫）</p>
                   <p className="text-sm text-gray-600">
                     給一個溫度陣列，對每天求「幾天後會遇到更高的溫度」。用單調遞減棧：把下標存進去，遇到更高溫度時，stack 裡排在前面的天都找到了答案。
@@ -263,18 +268,18 @@ len(stack) == 0     # 判斷 stack 是否為空`} />
         stack.append(i)
 
     return result`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
 
-            <Card className="bg-rose-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-rose-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-rose-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-rose-900 leading-snug relative z-10">
                   Stack 適合的場景有個共同特徵：「現在遇到的東西，需要等未來某個條件成立才能處理」。Valid Parentheses 是等閉括號，單調棧是等更大/更小的元素。認出這個模式，就認出了 Stack。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Summary */}
             <div className="bg-gradient-to-r from-rose-50 to-pink-50 rounded-[2rem] p-8 space-y-4">
@@ -295,7 +300,7 @@ len(stack) == 0     # 判斷 stack 是否為空`} />
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep05-sliding-window" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -313,7 +318,7 @@ len(stack) == 0     # 判斷 stack 是否為空`} />
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Stack', 'String', 'Python', 'EP.06'].map((tag) => (
-              <Chip key={tag} variant="flat" color="danger" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

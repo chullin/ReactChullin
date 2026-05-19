@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -22,8 +17,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Terraform：Infrastructure as Code 入門 用程式碼管理雲端基礎設施 | Joseph Chen',
+  description: 'Provider、Resource、State、Module — 告別手動點選 AWS Console， 把整個雲端基礎設施變成可版本控制、可重現、可自動化的程式碼。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep07-terraform',
+  },
+};
+
+
 
 export default function DevOpsEP07() {
   return (
@@ -32,11 +38,7 @@ export default function DevOpsEP07() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.07
@@ -68,18 +70,18 @@ export default function DevOpsEP07() {
                 <Terminal size={14} /> Terraform · AWS · IaC · GitHub Actions
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 為什麼需要 IaC ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-indigo-600" size={28} />
@@ -127,40 +129,40 @@ export default function DevOpsEP07() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <Card className="border-0 shadow-md bg-indigo-50">
-              <CardBody className="p-5 space-y-2">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-indigo-50">
+              <div className="p-5 space-y-2">
                 <GitBranch className="text-indigo-600" size={22} />
                 <p className="font-black text-gray-800">版本控制</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   所有基礎設施的變更都在 Git history 裡。誰在什麼時候做了什麼，
                   一覽無遺。想回滾？git revert 就行。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-indigo-50">
-              <CardBody className="p-5 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-indigo-50">
+              <div className="p-5 space-y-2">
                 <CheckCircle className="text-indigo-600" size={22} />
                 <p className="font-black text-gray-800">可重現性</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   一個指令，在任何環境（Production、Staging、Dev）建立
                   一模一樣的設定。環境一致性問題從根本解決。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-indigo-50">
-              <CardBody className="p-5 space-y-2">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-indigo-50">
+              <div className="p-5 space-y-2">
                 <Zap className="text-indigo-600" size={22} />
                 <p className="font-black text-gray-800">自動化</p>
                 <p className="text-gray-600 text-sm leading-relaxed">
                   CI/CD Pipeline 自動觸發 Terraform，部署基礎設施不需要
                   人工操作，減少人為失誤。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-l-4 border-indigo-400 bg-indigo-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-indigo-400 bg-indigo-50 border-0">
+            <div className="p-5">
               <p className="font-black text-indigo-800 mb-2">Terraform vs 其他 IaC 工具</p>
               <p className="text-indigo-700 text-sm leading-relaxed">
                 IaC 工具不只 Terraform。AWS CloudFormation（只支援 AWS）、
@@ -168,18 +170,18 @@ export default function DevOpsEP07() {
                 都是選項。Terraform 的優勢是：多雲支援（AWS、GCP、Azure、Vercel 通吃）、
                 語法簡潔（HCL）、社群龐大、Provider 生態系豐富。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: 核心概念 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Box className="text-indigo-600" size={28} />
@@ -255,16 +257,16 @@ terraform apply 執行後：
   → 更新 terraform.tfstate 記錄新狀態`}
             />
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: 第一個 Terraform 配置 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Terminal className="text-purple-600" size={28} />
@@ -467,16 +469,16 @@ output "public_subnet_ids" {
   description = "Public Subnet IDs（供 ALB 使用）"
 }`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: 工作流程 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Settings className="text-blue-600" size={28} />
@@ -551,8 +553,8 @@ terraform import aws_instance.web i-0a1b2c3d4e5f67890
 terraform destroy`}
           />
 
-          <Card className="border-l-4 border-red-400 bg-red-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-red-400 bg-red-50 border-0">
+            <div className="p-5">
               <p className="font-black text-red-800 mb-2">terraform destroy 的安全防線</p>
               <p className="text-red-700 text-sm leading-relaxed">
                 永遠不要在 Production 環境直接執行 <code className="bg-red-100 px-1 rounded">terraform destroy</code>。
@@ -560,8 +562,8 @@ terraform destroy`}
                 <code className="bg-red-100 px-1 rounded">prevent_destroy = true</code>（lifecycle block），
                 讓 Terraform 在嘗試銷毀這些資源時報錯，強制你手動解除保護才能刪除。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <CodeBlock
             title="lifecycle block — 防止誤刪重要資源"
@@ -582,16 +584,16 @@ terraform destroy`}
   }
 }`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: Module ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Layers className="text-purple-600" size={28} />
@@ -763,8 +765,8 @@ output "staging_service_name" {
 }`}
           />
 
-          <Card className="border-l-4 border-purple-400 bg-purple-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-purple-400 bg-purple-50 border-0">
+            <div className="p-5">
               <p className="font-black text-purple-800 mb-2">善用 Terraform Registry 的官方模組</p>
               <p className="text-purple-700 text-sm leading-relaxed">
                 不需要所有 Module 都自己寫。Terraform Registry（<code className="bg-purple-100 px-1 rounded">registry.terraform.io</code>）
@@ -772,18 +774,18 @@ output "staging_service_name" {
                 例如 <code className="bg-purple-100 px-1 rounded">terraform-aws-modules/vpc/aws</code> 是
                 AWS VPC 最廣泛使用的模組，已解決了所有常見的 Subnet、Route Table、NAT Gateway 設定。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: 最佳實踐 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Shield className="text-indigo-600" size={28} />
@@ -958,8 +960,8 @@ jobs:
           <div className="space-y-4">
             <h3 className="text-xl font-black text-gray-800">工作流程建議：PR Review 前先看 Plan</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="border-0 shadow-md">
-                <CardBody className="p-5 space-y-2">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5 space-y-2">
                   <CheckCircle className="text-green-500" size={20} />
                   <p className="font-bold text-gray-800 text-sm">推薦流程</p>
                   <ol className="text-gray-600 text-xs space-y-1 list-decimal list-inside">
@@ -969,10 +971,10 @@ jobs:
                     <li>確認 Plan 沒問題後才 Merge</li>
                     <li>Merge 到 main → 自動 Apply</li>
                   </ol>
-                </CardBody>
-              </Card>
-              <Card className="border-0 shadow-md">
-                <CardBody className="p-5 space-y-2">
+                </div>
+              </div>
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+                <div className="p-5 space-y-2">
                   <AlertTriangle className="text-amber-500" size={20} />
                   <p className="font-bold text-gray-800 text-sm">常見錯誤</p>
                   <ul className="text-gray-600 text-xs space-y-1 list-disc list-inside">
@@ -982,13 +984,13 @@ jobs:
                     <li>在 CI 中使用有過多權限的 IAM Key</li>
                     <li>忘記設定 deletion_protection 就執行 destroy</li>
                   </ul>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
 
-          <Card className="border-l-4 border-indigo-400 bg-indigo-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-indigo-400 bg-indigo-50 border-0">
+            <div className="p-5">
               <p className="font-black text-indigo-800 mb-2">進階：Terragrunt 解決多環境管理問題</p>
               <p className="text-indigo-700 text-sm leading-relaxed">
                 當你需要管理 10 個以上的環境（多個 AWS 帳號、多個 Region），
@@ -996,36 +998,36 @@ jobs:
                 Terragrunt 是 Terraform 的 Wrapper，讓你能 DRY（Don't Repeat Yourself）地管理多環境配置。
                 它在 Monorepo 架構的 IaC 管理中非常流行。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Tags ─── */}
-        <motion.section
+        <section
           className="space-y-4"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <h3 className="text-lg font-black text-gray-700">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {['Terraform', 'IaC', 'AWS', 'Infrastructure as Code', 'DevOps', 'Cloud'].map((tag) => (
-              <Chip key={tag} variant="flat" color="secondary" size="sm">
+              <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Link
@@ -1056,7 +1058,7 @@ jobs:
               />
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

@@ -135,7 +135,7 @@ export default function Navbar() {
         <NavbarItem>
           <Link href="/contact" className="p-0">
             <Button color="primary" variant="flat" className="font-bold">
-              Let’s Talk
+              Let's Talk
             </Button>
           </Link>
         </NavbarItem>

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowRight,
@@ -17,8 +12,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'SQL 入門：SELECT 不只是查資料 從關聯式資料庫到 JOIN 的完整思維 | Joseph Chen',
+  description: '資料庫是每個軟體系統的心臟。學 SQL 不只是背指令， 更要理解「為什麼要這樣設計」。本篇從零開始，帶你建立正確的資料庫思維。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep01-sql-basics',
+  },
+};
+
+
 
 function SectionTitle({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -35,7 +41,7 @@ export default function DBEP01() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-emerald-700 via-green-600 to-teal-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.01</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">資料庫與 SQL</span>
@@ -54,16 +60,16 @@ export default function DBEP01() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 14 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> SQL · CRUD · JOIN · PostgreSQL</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* 開場 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-emerald-300 shrink-0 mt-1" />
                 <div>
@@ -78,9 +84,9 @@ export default function DBEP01() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 什麼是關聯式資料庫 */}
         <section className="space-y-6">
@@ -160,13 +166,13 @@ export default function DBEP01() {
               { term: 'Foreign Key (FK)', desc: '指向另一張表 PK 的欄位，建立表之間的「關聯」。例如 orders.user_id 指向 users.id。', icon: '🔗' },
               { term: 'Constraint（約束）', desc: 'NOT NULL / UNIQUE / CHECK 等規則，在資料庫層確保資料合法，比在應用層驗證更可靠。', icon: '🛡️' },
             ].map((item, i) => (
-              <Card key={i} className="border-0 bg-white shadow-sm">
-                <CardBody className="p-5">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-white shadow-sm">
+                <div className="p-5">
                   <p className="text-xl mb-2">{item.icon}</p>
                   <p className="font-black text-gray-800 text-sm mb-2">{item.term}</p>
                   <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -184,7 +190,7 @@ export default function DBEP01() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 建立資料表 */}
         <section className="space-y-6">
@@ -252,7 +258,7 @@ DROP TABLE orders;                                -- 刪除整張表（謹慎！
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* CRUD */}
         <section className="space-y-6">
@@ -307,7 +313,7 @@ SELECT * FROM users WHERE deleted_at IS NULL;`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* WHERE 進階 */}
         <section className="space-y-6">
@@ -358,7 +364,7 @@ HAVING SUM(amount) > 10000;   -- HAVING 是對分組後的結果篩選（不是 
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* JOIN */}
         <section className="space-y-6">
@@ -451,7 +457,7 @@ LEFT JOIN employees m ON e.manager_id = m.id;`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* SQL 執行順序 */}
         <section className="space-y-6">
@@ -504,7 +510,7 @@ LEFT JOIN employees m ON e.manager_id = m.id;`}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="flex justify-end">
@@ -518,7 +524,7 @@ LEFT JOIN employees m ON e.manager_id = m.id;`}
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['SQL', 'Database', 'PostgreSQL', 'SELECT', 'JOIN', 'CRUD', 'Relational Database', 'EP.01'].map(tag => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

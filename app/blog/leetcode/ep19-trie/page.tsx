@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -14,8 +9,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'EP.19 — Trie： 為字串搜尋而生的樹 | Joseph Chen',
+  description: '#208 Implement Trie · #211 Add and Search Words · #648 Replace Words — 從零實作 Trie，到 DFS 萬用字元搜尋',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep19-trie',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4 flex-wrap">
@@ -68,14 +74,14 @@ export default function LeetcodeEP19Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
                 LeetCode 刷題日記
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold uppercase text-[10px]">
                 EP.19
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               EP.19 — Trie：<br />
@@ -85,7 +91,7 @@ export default function LeetcodeEP19Page() {
               #208 Implement Trie · #211 Add and Search Words · #648 Replace Words<br />
               — 從零實作 Trie，到 DFS 萬用字元搜尋
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -127,7 +133,7 @@ export default function LeetcodeEP19Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Trie 結構說明 */}
         <section className="space-y-6">
@@ -194,7 +200,7 @@ export default function LeetcodeEP19Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 1: Implement Trie ===== */}
         <section className="space-y-6">
@@ -206,8 +212,8 @@ export default function LeetcodeEP19Page() {
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 實作一個 Trie 類別，支援三個操作：
@@ -217,8 +223,8 @@ export default function LeetcodeEP19Page() {
                 <li><code className="bg-gray-100 px-2 py-0.5 rounded font-mono">search(word)</code>：搜尋整個單字是否存在，回傳 True/False</li>
                 <li><code className="bg-gray-100 px-2 py-0.5 rounded font-mono">startsWith(prefix)</code>：搜尋是否存在以 prefix 開頭的單字</li>
               </ul>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">TrieNode 設計</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -305,7 +311,7 @@ trie.search("app")      # True（insert 後 is_end=True）`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 2: Add and Search Words ===== */}
         <section className="space-y-6">
@@ -317,8 +323,8 @@ trie.search("app")      # True（insert 後 is_end=True）`}
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 設計一個支援 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">addWord(word)</code> 和
@@ -331,8 +337,8 @@ trie.search("app")      # True（insert 後 is_end=True）`}
                 <p>search(".ad") → True（匹配 bad / dad / mad）</p>
                 <p>search("b..") → True（匹配 bad）</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">關鍵：遇到 '.' 要分支 DFS</h3>
           <p className="text-gray-700 leading-relaxed">
@@ -405,7 +411,7 @@ trie.search("app")      # True（insert 後 is_end=True）`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* ===== PART 3: Replace Words ===== */}
         <section className="space-y-6">
@@ -417,8 +423,8 @@ trie.search("app")      # True（insert 後 is_end=True）`}
             </div>
           </div>
 
-          <Card className="border border-gray-100 shadow-sm">
-            <CardBody className="p-6 space-y-3">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-sm">
+            <div className="p-6 space-y-3">
               <p className="font-black text-gray-900 text-lg">題目</p>
               <p className="text-gray-700 leading-relaxed">
                 給一個字根（root）清單和一個句子。
@@ -429,8 +435,8 @@ trie.search("app")      # True（insert 後 is_end=True）`}
                 <p>sentence   = "the cattle was rattled by the battery"</p>
                 <p>Output: "the cat was rat by the bat"</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-xl font-black text-gray-900">為什麼用 Trie 而不是 Set？</h3>
 
@@ -515,7 +521,7 @@ def replaceWords(dictionary: list[str], sentence: str) -> str:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 三題對比 */}
         <section className="space-y-6">
@@ -572,7 +578,7 @@ def replaceWords(dictionary: list[str], sentence: str) -> str:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -598,7 +604,7 @@ def replaceWords(dictionary: list[str], sentence: str) -> str:
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -619,7 +625,7 @@ def replaceWords(dictionary: list[str], sentence: str) -> str:
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['LeetCode', 'Trie', '前綴樹', 'DFS', '字串搜尋', 'Python', 'EP.19'].map((tag) => (
-            <Chip key={tag} variant="flat" color="warning" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

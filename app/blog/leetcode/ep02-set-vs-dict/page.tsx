@@ -1,11 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Link as HeroLink,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -18,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Set vs Dict 選對資料結構，解題事半功倍 | Joseph Chen',
+  description: '#217 Contains Duplicate · #242 Valid Anagram — 選對適合的哈希表與集合結構，將時間複雜度降到 O(n) 的基礎實戰。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep02-set-vs-dict',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -35,10 +39,10 @@ export default function LeetcodeEP02Page() {
       <div className="relative h-[52vh] min-h-[360px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-violet-900 via-purple-900 to-slate-900">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `radial-gradient(circle, #a78bfa 1px, transparent 1px)`, backgroundSize: '32px 32px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.02</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.02</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Set vs Dict<br />
@@ -49,14 +53,14 @@ export default function LeetcodeEP02Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-violet-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-violet-400" /><span>March 2026</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -132,15 +136,15 @@ s.discard(99)           # 刪除（不存在不報錯）
               </h2>
               <p>題目：給一個整數陣列，判斷是否有重複元素。</p>
 
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock language="text" title="Input / Output" code={`Input:  nums = [1, 2, 3, 1]
 Output: True   ← 1 出現兩次
 
 Input:  nums = [1, 2, 3, 4]
 Output: False  ← 全都不重複`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p><strong>暴力解</strong>：兩層迴圈，每個元素跟所有其他元素比較，O(n²)。但用 set 可以一行解決：</p>
 
@@ -160,14 +164,14 @@ Output: False  ← 全都不重複`} />
             seen.add(num)
         return False`} />
 
-              <Card className="bg-violet-50/50 border-none shadow-none">
-                <CardBody className="p-8 relative overflow-hidden">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-violet-50/50 border-none shadow-none">
+                <div className="p-8 relative overflow-hidden">
                   <Quote size={40} className="text-violet-200 absolute -top-2 -left-2 rotate-12" />
                   <p className="text-xl font-black text-violet-900 leading-snug relative z-10">
                     set 的查詢是 O(1)，因為底層是 hash table。list 的查詢是 O(n)，因為要一個一個比。同樣是「有沒有」的問題，選 set 差了整整一個數量級。
                   </p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </div>
 
             {/* Set vs Dict 的邊界 */}
@@ -205,15 +209,15 @@ Output: False  ← 全都不重複`} />
               </h2>
               <p>題目：給兩個字串，判斷是不是 anagram（字母異位詞）。Anagram 就是兩個字用一樣的字母，只是排列不同，例如 <code className="bg-gray-100 px-2 py-0.5 rounded text-sm font-mono">"anagram"</code> 和 <code className="bg-gray-100 px-2 py-0.5 rounded text-sm font-mono">"nagaram"</code>。</p>
 
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock language="text" title="Input / Output" code={`Input:  s = "anagram", t = "nagaram"
 Output: True
 
 Input:  s = "rat", t = "car"
 Output: False`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>為什麼不用 set？因為光知道「有沒有這個字母」不夠，還需要知道「各字母出現幾次」。這就是 dict 的用武之地。</p>
 
@@ -265,7 +269,7 @@ class Solution:
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           {/* Series Nav */}
           <div className="grid grid-cols-2 gap-4">
@@ -284,7 +288,7 @@ class Solution:
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Array', 'Set', 'Dict', 'Counter', 'EP.02'].map((tag) => (
-              <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

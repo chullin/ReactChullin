@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -26,8 +21,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Message Queue： 用 Kafka 解耦你的系統 | Joseph Chen',
+  description: 'Producer / Consumer / Topic / Partition — 高流量系統的非同步事件驅動架構完整指南',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep06-message-queue',
+  },
+};
+
+
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -43,7 +49,7 @@ export default function SystemDesignEP06() {
       {/* ── Hero ──────────────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-yellow-800 via-orange-800 to-red-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.06</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">System Design Bootcamp</span>
@@ -61,14 +67,14 @@ export default function SystemDesignEP06() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 17 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Kafka · Event-Driven · Microservices</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ── Section 1：痛點 — 同步呼叫的三個問題 ────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
               <AlertTriangle size={20} className="text-orange-600" />
@@ -96,8 +102,8 @@ export default function SystemDesignEP06() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Card className="border-0 shadow-md border-t-4 border-red-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-t-4 border-red-500">
+              <div className="p-5">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mb-3">
                   <Clock size={16} className="text-red-600" />
                 </div>
@@ -106,10 +112,10 @@ export default function SystemDesignEP06() {
                   全部做完才回應，用戶要等待 3–5 秒才能看到「訂單成功」。
                   現代用戶對超過 1 秒的等待就會感到不耐，轉換率直接下降。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md border-t-4 border-orange-500">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-t-4 border-orange-500">
+              <div className="p-5">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mb-3">
                   <GitBranch size={16} className="text-orange-600" />
                 </div>
@@ -118,10 +124,10 @@ export default function SystemDesignEP06() {
                   Email 服務掛了，整個下訂單流程就失敗。推薦系統變慢，
                   用戶就要等更久。一個不相關的服務，影響了核心業務流程。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md border-t-4 border-yellow-500">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-t-4 border-yellow-500">
+              <div className="p-5">
                 <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mb-3">
                   <Shuffle size={16} className="text-yellow-600" />
                 </div>
@@ -130,12 +136,12 @@ export default function SystemDesignEP06() {
                   推薦系統壓力大，你想水平擴展它，但它跟訂單服務是同一個呼叫鏈，
                   無法獨立部署和擴展。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 shadow-md bg-gradient-to-r from-orange-50 to-yellow-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gradient-to-r from-orange-50 to-yellow-50">
+            <div className="p-6">
               <div className="flex items-start gap-4">
                 <BookOpen size={24} className="text-orange-600 shrink-0 mt-1" />
                 <div>
@@ -149,14 +155,14 @@ export default function SystemDesignEP06() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：Message Queue 是什麼 ─────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
               <Inbox size={20} className="text-yellow-600" />
@@ -179,8 +185,8 @@ export default function SystemDesignEP06() {
 </CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <Card className="border-0 shadow-md bg-yellow-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-yellow-50">
+              <div className="p-5">
                 <div className="w-10 h-10 bg-yellow-200 rounded-xl flex items-center justify-center mb-3">
                   <Send size={18} className="text-yellow-700" />
                 </div>
@@ -189,10 +195,10 @@ export default function SystemDesignEP06() {
                   發送訊息到 Queue 的一方。在電商系統中是「訂單服務」。
                   發完就走，不等待任何 Consumer 的回應。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-orange-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-orange-50">
+              <div className="p-5">
                 <div className="w-10 h-10 bg-orange-200 rounded-xl flex items-center justify-center mb-3">
                   <Server size={18} className="text-orange-700" />
                 </div>
@@ -201,10 +207,10 @@ export default function SystemDesignEP06() {
                   儲存和轉發訊息的中間服務。常見的有 Kafka、RabbitMQ、AWS SQS。
                   負責保證訊息的持久化和可靠傳遞。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-red-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50">
+              <div className="p-5">
                 <div className="w-10 h-10 bg-red-200 rounded-xl flex items-center justify-center mb-3">
                   <Inbox size={18} className="text-red-700" />
                 </div>
@@ -213,12 +219,12 @@ export default function SystemDesignEP06() {
                   從 Queue 取出訊息並處理的一方。可以有多個 Consumer 訂閱同一個 Topic，
                   各自獨立處理自己關心的部分。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-0 shadow-md mt-8 bg-gradient-to-r from-orange-600 to-red-700 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mt-8 bg-gradient-to-r from-orange-600 to-red-700 text-white">
+            <div className="p-6">
               <div className="flex items-start gap-4">
                 <Zap size={24} className="text-orange-200 shrink-0 mt-1" />
                 <div>
@@ -236,14 +242,14 @@ export default function SystemDesignEP06() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：Kafka 核心概念 ─────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
               <Layers size={20} className="text-orange-600" />
@@ -270,33 +276,33 @@ export default function SystemDesignEP06() {
 </CodeBlock>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 mb-8">
-            <Card className="border-0 shadow-md bg-orange-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-orange-50">
+              <div className="p-5">
                 <h4 className="font-bold text-orange-800 mb-2 text-sm">並行處理</h4>
                 <p className="text-orange-700 text-xs leading-relaxed">
                   多個 Consumer 同時處理不同 Partition，吞吐量隨 Partition 數量線性擴展。
                   Partition 越多，理論最大並行度越高。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-yellow-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-yellow-50">
+              <div className="p-5">
                 <h4 className="font-bold text-yellow-800 mb-2 text-sm">分區內有序</h4>
                 <p className="text-yellow-700 text-xs leading-relaxed">
                   同一個 Partition 內的訊息保持嚴格的順序（FIFO）。
                   跨 Partition 則不保證順序，這是設計上的取捨。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-red-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50">
+              <div className="p-5">
                 <h4 className="font-bold text-red-800 mb-2 text-sm">Key 決定分區</h4>
                 <p className="text-red-700 text-xs leading-relaxed">
                   Producer 可以指定 message key，相同 key 的訊息會落在同一個 Partition，
                   確保同一訂單的所有事件按順序處理。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <h3 className="text-xl font-bold text-gray-800 mb-4">Offset 和 Consumer Group</h3>
@@ -317,8 +323,8 @@ export default function SystemDesignEP06() {
             不同 Group 則各自獨立消費，互不影響。
           </p>
 
-          <Card className="border-0 shadow-md bg-gradient-to-r from-orange-50 to-red-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gradient-to-r from-orange-50 to-red-50">
+            <div className="p-6">
               <h4 className="font-bold text-gray-800 mb-4">Consumer Group 的實際運作</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
@@ -343,14 +349,14 @@ export default function SystemDesignEP06() {
               <p className="text-gray-500 text-xs mt-4 pt-3 border-t border-gray-200">
                 同一份訊息，兩個 Group 各自收到一份，各自處理。這就是「發布 / 訂閱（Pub/Sub）」模型。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：Node.js 實作（kafkajs）───────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
               <Code2 size={20} className="text-red-600" />
@@ -484,12 +490,12 @@ await emailConsumer.run({
   },
 });   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：Kafka vs RabbitMQ ─────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
               <RefreshCw size={20} className="text-yellow-600" />
@@ -502,8 +508,8 @@ await emailConsumer.run({
             適合的場景也截然不同。選錯工具比不用更麻煩。
           </p>
 
-          <Card className="border-0 shadow-md mb-8">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mb-8">
+            <div className="p-6">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -547,12 +553,12 @@ await emailConsumer.run({
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md bg-orange-50 border-l-4 border-orange-500">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-orange-50 border-l-4 border-orange-500">
+              <div className="p-5">
                 <h4 className="font-bold text-orange-800 mb-3">選 Kafka 的時機</h4>
                 <ul className="space-y-2 text-orange-700 text-sm">
                   <li className="flex items-start gap-2"><CheckCircle size={14} className="shrink-0 mt-0.5" /><span>每秒訊息量超過 10 萬</span></li>
@@ -561,10 +567,10 @@ await emailConsumer.run({
                   <li className="flex items-start gap-2"><CheckCircle size={14} className="shrink-0 mt-0.5" /><span>多個下游服務訂閱同一事件流</span></li>
                   <li className="flex items-start gap-2"><CheckCircle size={14} className="shrink-0 mt-0.5" /><span>需要長期保留訊息供稽核</span></li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md bg-red-50 border-l-4 border-red-500">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-red-50 border-l-4 border-red-500">
+              <div className="p-5">
                 <h4 className="font-bold text-red-800 mb-3">選 RabbitMQ（或 SQS）的時機</h4>
                 <ul className="space-y-2 text-red-700 text-sm">
                   <li className="flex items-start gap-2"><CheckCircle size={14} className="shrink-0 mt-0.5" /><span>簡單的任務分發（影像壓縮、Email 批次）</span></li>
@@ -573,15 +579,15 @@ await emailConsumer.run({
                   <li className="flex items-start gap-2"><CheckCircle size={14} className="shrink-0 mt-0.5" /><span>團隊對 Kafka 不熟悉</span></li>
                   <li className="flex items-start gap-2"><CheckCircle size={14} className="shrink-0 mt-0.5" /><span>想快速在 AWS 上啟動用 SQS</span></li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：常見的事件驅動模式 ─────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
               <GitBranch size={20} className="text-red-600" />
@@ -719,8 +725,8 @@ async function executeSaga(steps) {
 }   `}
 </CodeBlock>
 
-          <Card className="border-0 shadow-lg mt-10 border-l-4 border-yellow-500 bg-yellow-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg mt-10 border-l-4 border-yellow-500 bg-yellow-50">
+            <div className="p-6">
               <div className="flex items-start gap-4">
                 <AlertTriangle size={24} className="text-yellow-600 shrink-0 mt-1" />
                 <div>
@@ -745,39 +751,36 @@ async function executeSaga(steps) {
                   </ul>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ──────────────────────────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <h3 className="text-lg font-bold text-gray-700 mb-4">本篇涵蓋技術</h3>
           <div className="flex flex-wrap gap-2">
             {['Kafka', 'Message Queue', 'Event-Driven', 'RabbitMQ', 'System Design', 'Microservices'].map((tag) => (
-              <Chip
+              <span
                 key={tag}
-                variant="flat"
-                classNames={{
-                  base: 'bg-orange-100 text-orange-700',
-                  content: 'font-medium text-xs',
-                }}
-              >
+                
+                
+               className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Navigation ────────────────────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/blog/system-design/ep05-api-design">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5">
                   <div className="flex items-center gap-2 text-gray-400 text-xs mb-2">
                     <ArrowLeft size={14} />
                     <span>上一篇</span>
@@ -786,13 +789,13 @@ async function executeSaga(steps) {
                     EP.05 API 設計
                   </p>
                   <p className="text-gray-400 text-xs mt-1">RESTful API 設計原則與最佳實踐</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
 
             <Link href="/blog/system-design/ep01-intro">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5 text-right">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5 text-right">
                   <div className="flex items-center justify-end gap-2 text-gray-400 text-xs mb-2">
                     <span>下一篇</span>
                     <ArrowRight size={14} />
@@ -801,11 +804,11 @@ async function executeSaga(steps) {
                     EP.01 分散式系統入門
                   </p>
                   <p className="text-gray-400 text-xs mt-1">CAP 定理、一致性模型完整解析</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

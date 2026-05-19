@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -24,8 +19,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'HTTP/3 與 QUIC：下一代網路協定完全解析 為什麼 HTTP/3 比 HTTP/2 快？ | Joseph Chen',
+  description: 'QUIC 協定原理、0-RTT 連線、多路複用解決 Head-of-Line Blocking — 從 TCP 的致命缺陷說起，解析 HTTP/3 如何從根本上重新設計網路傳輸層， 並帶來連線遷移、0-RTT 等革命性特性。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/network/ep07-http3-quic',
+  },
+};
+
+
 
 export default function NetworkEP07() {
   return (
@@ -34,11 +40,7 @@ export default function NetworkEP07() {
       {/* ─── Hero ─── */}
       <div className="bg-gradient-to-br from-sky-700 via-blue-700 to-indigo-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">
                 EP.07
@@ -71,18 +73,18 @@ export default function NetworkEP07() {
                 <Wifi size={14} /> HTTP/3 · QUIC · UDP · 0-RTT
               </span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ─── Section 1: 演進史 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <TrendingUp className="text-sky-600" size={28} />
@@ -145,8 +147,8 @@ export default function NetworkEP07() {
                 verdictColor: 'text-green-600',
               },
             ].map(({ version, year, color, headerColor, badgeColor, points, verdict, verdictColor }) => (
-              <Card key={version} className={`border-2 ${color} shadow-sm`}>
-                <CardBody className="p-6 space-y-4">
+              <div key={version} className={`border-2 ${color} shadow-sm`}>
+                <div className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className={`text-2xl font-black ${headerColor}`}>{version}</h3>
                     <span className={`text-xs font-black px-3 py-1 rounded-full ${badgeColor}`}>{year}</span>
@@ -162,20 +164,20 @@ export default function NetworkEP07() {
                   <p className={`text-sm font-black ${verdictColor} border-t border-gray-200 pt-3`}>
                     {verdict}
                   </p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 2: HOL Blocking ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-red-600" size={28} />
@@ -229,8 +231,8 @@ HTTP/3（QUIC）的解決方案：每個 Stream 獨立追蹤丟包
             TCP 則是在 OS 核心層實作，無法針對個別應用層的 Stream 做差異化處理。
           </p>
 
-          <Card className="border-l-4 border-red-400 bg-red-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-red-400 bg-red-50 border-0">
+            <div className="p-5">
               <p className="font-black text-red-800 mb-2 flex items-center gap-2">
                 <Info size={16} /> HOL Blocking 在什麼網路環境最明顯？
               </p>
@@ -240,18 +242,18 @@ HTTP/3（QUIC）的解決方案：每個 Stream 獨立追蹤丟包
                 在這些場景下，HTTP/3 對 HTTP/2 的效能優勢最為顯著（可達 30~50%）。
                 在低延遲、低丟包的同機房環境，差距相對不明顯。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 3: QUIC 協定 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Zap className="text-blue-600" size={28} />
@@ -361,8 +363,8 @@ QUIC 0-RTT（再次連線，0 RTT）
   總計：0 RTT → 第一個請求的延遲接近於 0！`}
           />
 
-          <Card className="border-l-4 border-blue-400 bg-blue-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-blue-400 bg-blue-50 border-0">
+            <div className="p-5">
               <p className="font-black text-blue-800 mb-2 flex items-center gap-2">
                 <AlertTriangle size={16} /> 0-RTT 的安全注意事項
               </p>
@@ -372,18 +374,18 @@ QUIC 0-RTT（再次連線，0 RTT）
                 GET 請求（讀取資料）是安全的，但 POST 付款、POST 下單這類有副作用的請求不應使用 0-RTT。
                 瀏覽器和 QUIC 實作通常會自動處理這個限制。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 4: 連線遷移 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Wifi className="text-sky-600" size={28} />
@@ -441,8 +443,8 @@ QUIC 連線的識別：Connection ID（64-bit 隨機值）
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border-2 border-red-200 bg-red-50">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-2 border-red-200 bg-red-50">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <XCircle className="text-red-500" size={22} />
                   <h3 className="font-black text-red-800">HTTP/2 + WiFi → 4G</h3>
@@ -469,11 +471,11 @@ QUIC 連線的識別：Connection ID（64-bit 隨機值）
                     遊戲中斷線，需要重新登入
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-2 border-green-200 bg-green-50">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-2 border-green-200 bg-green-50">
+              <div className="p-6 space-y-3">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="text-green-500" size={22} />
                   <h3 className="font-black text-green-800">HTTP/3 + WiFi → 4G</h3>
@@ -500,8 +502,8 @@ QUIC 連線的識別：Connection ID（64-bit 隨機值）
                     遊戲角色可能有短暫延遲，但不斷線
                   </li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <p className="text-gray-600 leading-relaxed">
@@ -509,16 +511,16 @@ QUIC 連線的識別：Connection ID（64-bit 隨機值）
             在捷運、公車等移動場景中，用戶頻繁切換基地台和 WiFi 熱點，
             HTTP/3 的連線遷移讓這些切換過程對應用層完全透明，使用者幾乎感覺不到網路的切換。
           </p>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 5: 實際專案配置 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Server className="text-indigo-600" size={28} />
@@ -677,16 +679,16 @@ if (entries.length > 0) {
   // 'h3' = HTTP/3, 'h2' = HTTP/2, 'http/1.1' = HTTP/1.1
 }`}
           />
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Section 6: 效能數據與局限性 ─── */}
-        <motion.section
+        <section
           className="space-y-6"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Activity className="text-green-600" size={28} />
@@ -739,8 +741,8 @@ if (entries.length > 0) {
                 noteColor: 'text-green-700',
               },
             ].map(({ scenario, bgColor, borderColor, data, note, noteColor }) => (
-              <Card key={scenario} className={`border-2 ${borderColor} ${bgColor} shadow-sm`}>
-                <CardBody className="p-5 space-y-4">
+              <div key={scenario} className={`border-2 ${borderColor} ${bgColor} shadow-sm`}>
+                <div className="p-5 space-y-4">
                   <p className="font-black text-gray-800 text-sm">{scenario}</p>
                   <div className="space-y-3">
                     {data.map(({ label, value, color, width }) => (
@@ -756,8 +758,8 @@ if (entries.length > 0) {
                     ))}
                   </div>
                   <p className={`text-xs font-black ${noteColor}`}>{note}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -819,8 +821,8 @@ if (entries.length > 0) {
           <h3 className="text-xl font-black text-gray-800">何時值得啟用 HTTP/3？</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <Card className="border-2 border-green-200 bg-green-50">
-              <CardBody className="p-5 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-2 border-green-200 bg-green-50">
+              <div className="p-5 space-y-3">
                 <h4 className="font-black text-green-800 flex items-center gap-2">
                   <CheckCircle size={18} /> 值得啟用的場景
                 </h4>
@@ -838,11 +840,11 @@ if (entries.length > 0) {
                     </li>
                   ))}
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-2 border-red-200 bg-red-50">
-              <CardBody className="p-5 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-2 border-red-200 bg-red-50">
+              <div className="p-5 space-y-3">
                 <h4 className="font-black text-red-800 flex items-center gap-2">
                   <XCircle size={18} /> 效益有限的場景
                 </h4>
@@ -860,12 +862,12 @@ if (entries.length > 0) {
                     </li>
                   ))}
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
-          <Card className="border-l-4 border-sky-400 bg-sky-50 border-0">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-l-4 border-sky-400 bg-sky-50 border-0">
+            <div className="p-5">
               <p className="font-black text-sky-800 mb-2 flex items-center gap-2">
                 <Globe size={16} /> HTTP/3 的普及現況（2026）
               </p>
@@ -876,38 +878,38 @@ if (entries.length > 0) {
                 對於新專案，如果你用 Vercel 或 Cloudflare，HTTP/3 是免費自動啟用的，
                 沒有理由不用。對於自建伺服器，優先考慮 Nginx 1.25+ 或使用 CDN 終止 QUIC。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Tags ─── */}
-        <motion.section
+        <section
           className="space-y-4"
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+          
+          
+          
         >
           <h3 className="text-lg font-black text-gray-700">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {['HTTP/3', 'QUIC', 'UDP', '0-RTT', 'Head-of-Line Blocking', 'Connection Migration', 'TLS 1.3', 'Nginx'].map(
               (tag) => (
-                <Chip key={tag} variant="flat" color="primary" size="sm">
+                <span key={tag}    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                   {tag}
-                </Chip>
+                </span>
               ),
             )}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ─── Navigation ─── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex flex-col sm:flex-row justify-between gap-4">
             <Link
@@ -932,7 +934,7 @@ if (entries.length > 0) {
               <ArrowRight className="text-gray-400" size={20} />
             </div>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

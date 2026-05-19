@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -26,8 +21,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Docker Compose： 一個指令啟動整個開發環境 | Joseph Chen',
+  description: 'services、volumes、networks、depends_on — 讓前後端 + 資料庫一鍵啟動，告別「在我電腦可以跑」',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/devops/ep03-docker-compose',
+  },
+};
+
+
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -43,7 +49,7 @@ export default function DevOpsEP03() {
       {/* ── Hero ──────────────────────────────────────────────── */}
       <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.03</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">工程品質與 DevOps</span>
@@ -61,14 +67,14 @@ export default function DevOpsEP03() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 16 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Docker Compose · DevOps · Containerization</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ── Section 1：痛點 ────────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
               <AlertTriangle size={20} className="text-red-600" />
@@ -80,8 +86,8 @@ export default function DevOpsEP03() {
             你剛加入一個新專案，同事丟給你一份 README，上面寫著：
           </p>
 
-          <Card className="border-0 shadow-md bg-gray-900 mb-6">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md bg-gray-900 mb-6">
+            <div className="p-6">
               <p className="text-green-400 font-mono text-sm mb-2"># Getting Started</p>
               <div className="text-gray-300 font-mono text-sm space-y-1">
                 <p className="text-yellow-400"># Prerequisites</p>
@@ -98,8 +104,8 @@ export default function DevOpsEP03() {
                 <p>4. 設定 RabbitMQ virtual host…</p>
                 <p className="text-red-400 mt-2"># （以下省略 30 步）</p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-600 leading-relaxed mb-6 text-lg">
             你跟著做，花了一整天。終於，你執行 <code className="bg-gray-100 px-2 py-0.5 rounded">npm run dev</code>，
@@ -111,8 +117,8 @@ export default function DevOpsEP03() {
             這不是人的問題，是「把環境配置寫在腦袋裡」這種做法的問題。
           </p>
 
-          <Card className="border-0 shadow-lg border-l-4 border-blue-600">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg border-l-4 border-blue-600">
+            <div className="p-6">
               <div className="flex items-start gap-4">
                 <Package size={28} className="text-blue-600 shrink-0 mt-1" />
                 <div>
@@ -124,12 +130,12 @@ export default function DevOpsEP03() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-            <Card className="border-0 shadow-md border-l-4 border-red-400">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-red-400">
+              <div className="p-5">
                 <h4 className="font-bold text-red-600 mb-3 flex items-center gap-2">
                   <AlertTriangle size={16} />
                   沒有 Docker Compose
@@ -141,10 +147,10 @@ export default function DevOpsEP03() {
                   <li>• README 永遠過時</li>
                   <li>• 「在我電腦上可以跑」</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 shadow-md border-l-4 border-green-400">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md border-l-4 border-green-400">
+              <div className="p-5">
                 <h4 className="font-bold text-green-600 mb-3 flex items-center gap-2">
                   <CheckCircle size={16} />
                   有了 Docker Compose
@@ -156,15 +162,15 @@ export default function DevOpsEP03() {
                   <li>• YAML 就是最新的文件</li>
                   <li>• 永遠可以跑</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：基礎架構 ──────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
               <Layers size={20} className="text-blue-600" />
@@ -202,8 +208,8 @@ services:       # 你的應用程式組件，每個 service = 一個 Container
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4">三個核心概念</h3>
 
           <div className="space-y-4">
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-5">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                     <Server size={16} className="text-blue-600" />
@@ -218,11 +224,11 @@ services:       # 你的應用程式組件，每個 service = 一個 Container
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-5">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                     <Package size={16} className="text-cyan-600" />
@@ -236,11 +242,11 @@ services:       # 你的應用程式組件，每個 service = 一個 Container
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border-0 shadow-md">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md">
+              <div className="p-5">
                 <div className="flex items-start gap-4">
                   <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                     <Network size={16} className="text-indigo-600" />
@@ -254,15 +260,15 @@ services:       # 你的應用程式組件，每個 service = 一個 Container
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：完整全端應用 ───────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
               <Zap size={20} className="text-cyan-600" />
@@ -352,8 +358,8 @@ volumes:
   # redis_data:   # 如果 Redis 也要持久化就加這行   `}
 </CodeBlock>
 
-          <Card className="border-0 shadow-md mt-6 bg-blue-50">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mt-6 bg-blue-50">
+            <div className="p-6">
               <h4 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
                 <BookOpen size={16} />
                 為什麼 backend 用服務名稱 "db" 連資料庫，而不是 "localhost"？
@@ -365,14 +371,14 @@ volumes:
                 所以 backend 裡的 <code className="bg-white/70 px-1 rounded">localhost</code> 指的是 backend 容器本身，不是 db 容器。
                 要連到 db 容器，必須用 <code className="bg-white/70 px-1 rounded">db</code>（服務名稱）作為 hostname。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：Volumes ───────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
               <HardDrive size={20} className="text-indigo-600" />
@@ -404,14 +410,14 @@ volumes:
       # 本機改動 src/page.tsx → 容器內 /app/src/page.tsx 即時更新
       # Next.js / Vite 的 hot reload 就靠這個   `}
 </CodeBlock>
-          <Card className="border-0 shadow-md mt-4 bg-blue-50">
-            <CardBody className="p-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mt-4 bg-blue-50">
+            <div className="p-4">
               <p className="text-blue-700 text-sm">
                 <strong>注意：</strong>Bind Mount 的路徑是相對於 <code className="bg-white/70 px-1 rounded">docker-compose.yml</code> 的位置。
                 <code className="bg-white/70 px-1 rounded ml-1">./frontend</code> 表示「跟 docker-compose.yml 同層的 frontend 資料夾」。
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* Named Volume */}
           <h3 className="text-xl font-bold text-gray-800 mt-8 mb-4 flex items-center gap-2">
@@ -473,8 +479,8 @@ volumes:
 # 容器在 RUN npm install 時安裝的 Linux binary 得以保留   `}
 </CodeBlock>
 
-          <Card className="border-0 shadow-md mt-6">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md mt-6">
+            <div className="p-6">
               <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <Layers size={16} className="text-blue-600" />
                 三種 Volume 對比
@@ -511,14 +517,14 @@ volumes:
                   </tbody>
                 </table>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：常用指令 ───────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
               <Terminal size={20} className="text-blue-600" />
@@ -588,8 +594,8 @@ docker compose restart backend
 docker stats   `}
 </CodeBlock>
 
-          <Card className="border-0 shadow-lg mt-8">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg mt-8">
+            <div className="p-6">
               <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <Zap size={16} className="text-blue-600" />
                 Compose 指令 vs 單獨 Docker 指令
@@ -627,14 +633,14 @@ docker stats   `}
                   </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：最佳實踐 ──────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-cyan-100 rounded-xl flex items-center justify-center">
               <Settings size={20} className="text-cyan-600" />
@@ -813,8 +819,8 @@ CMD ["node", "server.js"]   `}
 </CodeBlock>
 
           {/* 後續主題 */}
-          <Card className="border-0 shadow-lg mt-10 bg-gradient-to-r from-blue-900 to-cyan-800 text-white">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg mt-10 bg-gradient-to-r from-blue-900 to-cyan-800 text-white">
+            <div className="p-6">
               <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <BookOpen size={18} className="text-cyan-300" />
                 掌握 Compose 之後，下一步可以探索
@@ -839,39 +845,36 @@ CMD ["node", "server.js"]   `}
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ──────────────────────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <h3 className="text-lg font-bold text-gray-700 mb-4">本篇涵蓋技術</h3>
           <div className="flex flex-wrap gap-2">
             {['Docker Compose', 'Docker', 'PostgreSQL', 'Redis', 'DevOps', 'Containerization'].map((tag) => (
-              <Chip
+              <span
                 key={tag}
-                variant="flat"
-                classNames={{
-                  base: 'bg-blue-100 text-blue-700',
-                  content: 'font-medium text-xs',
-                }}
-              >
+                
+                
+               className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">
                 {tag}
-              </Chip>
+              </span>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Navigation ───────────────────────────────────────────── */}
-        <motion.section {...fadeInUp}>
+        <section {...fadeInUp}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Link href="/blog/devops/ep02-github-actions">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5">
                   <div className="flex items-center gap-2 text-gray-400 text-xs mb-2">
                     <ArrowLeft size={14} />
                     <span>上一篇</span>
@@ -880,13 +883,13 @@ CMD ["node", "server.js"]   `}
                     EP.02 GitHub Actions CI/CD
                   </p>
                   <p className="text-gray-400 text-xs mt-1">自動化你的測試與部署流程</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
 
             <Link href="/blog/devops/ep01-test-pyramid">
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
-                <CardBody className="p-5 text-right">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group">
+                <div className="p-5 text-right">
                   <div className="flex items-center justify-end gap-2 text-gray-400 text-xs mb-2">
                     <span>補完系列</span>
                     <ArrowRight size={14} />
@@ -895,11 +898,11 @@ CMD ["node", "server.js"]   `}
                     EP.01 測試金字塔
                   </p>
                   <p className="text-gray-400 text-xs mt-1">單元測試 / 整合測試 / E2E 測試</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             </Link>
           </div>
-        </motion.section>
+        </section>
 
       </article>
     </div>

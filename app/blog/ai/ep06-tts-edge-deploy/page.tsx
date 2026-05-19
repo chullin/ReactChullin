@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +15,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '嵌入式落地實戰 模型壓縮、量化與邊緣部署 | Joseph Chen',
+  description: 'VITS 音質再好，也必須壓縮才能跑在智慧穿戴裝置上。 Pruning、Quantization、Knowledge Distillation——三大壓縮技術的原理與取捨，以及 NPU/DSP 部署的實戰眉角。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep06-tts-edge-deploy',
+  },
+};
+
+
 
 export default function AIEP06() {
   return (
@@ -29,7 +35,7 @@ export default function AIEP06() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.06</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">AI 離線部署系列</span>
@@ -48,7 +54,7 @@ export default function AIEP06() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 15 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Model Compression · NPU · Edge AI</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -56,9 +62,9 @@ export default function AIEP06() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* 開場 */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-emerald-300 shrink-0 mt-1" />
                 <div>
@@ -74,9 +80,9 @@ export default function AIEP06() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 為什麼需要壓縮 */}
         <section className="space-y-6">
@@ -126,7 +132,7 @@ export default function AIEP06() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Pruning */}
         <section className="space-y-6">
@@ -140,8 +146,8 @@ export default function AIEP06() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-blue-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-blue-50">
+              <div className="p-6">
                 <p className="font-black text-blue-800 mb-3">非結構化剪枝（Unstructured）</p>
                 <div className="bg-white rounded-xl p-4 mb-3 font-mono text-xs text-center space-y-1">
                   <div className="flex gap-1 justify-center">
@@ -158,10 +164,10 @@ export default function AIEP06() {
                   <li>❌ 產生稀疏矩陣，需要特殊硬體支援才能加速</li>
                   <li>❌ 一般 CPU/GPU 無法直接加速稀疏運算</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-teal-50">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-teal-50">
+              <div className="p-6">
                 <p className="font-black text-teal-800 mb-3">結構化剪枝（Structured）</p>
                 <div className="bg-white rounded-xl p-4 mb-3 font-mono text-xs text-center space-y-1">
                   <div className="grid grid-cols-4 gap-1">
@@ -178,8 +184,8 @@ export default function AIEP06() {
                   <li>✅ 直接縮小模型維度，真正降低 FLOPs</li>
                   <li>❌ 壓縮率較低，精度損失也較大</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <div className="bg-amber-50 rounded-2xl p-5 border border-amber-100">
@@ -191,7 +197,7 @@ export default function AIEP06() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Quantization */}
         <section className="space-y-6">
@@ -232,8 +238,8 @@ export default function AIEP06() {
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-slate-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-slate-50">
+              <div className="p-6">
                 <p className="font-black text-slate-800 mb-2">訓練後量化（PTQ）</p>
                 <p className="text-sm text-slate-600 mb-3 leading-relaxed">
                   模型訓練完畢後再量化。只需要少量校準數據（~100 筆），不用重新訓練。
@@ -242,10 +248,10 @@ export default function AIEP06() {
                 <div className="bg-slate-100 rounded-xl p-3 text-xs font-mono text-slate-700">
                   model → calibrate → INT8 model
                 </div>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-emerald-50">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-emerald-50">
+              <div className="p-6">
                 <p className="font-black text-emerald-800 mb-2">量化感知訓練（QAT）</p>
                 <p className="text-sm text-emerald-600 mb-3 leading-relaxed">
                   訓練過程中模擬量化誤差（Fake Quantization），讓模型學會在量化環境下準確推理。
@@ -254,8 +260,8 @@ export default function AIEP06() {
                 <div className="bg-emerald-100 rounded-xl p-3 text-xs font-mono text-emerald-700">
                   model → fake quant training → INT8 model
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <CodeBlock
@@ -304,7 +310,7 @@ print(f"INT8 大小: {get_size_mb(model_int8):.1f} MB")`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Knowledge Distillation */}
         <section className="space-y-6">
@@ -392,7 +398,7 @@ def distillation_loss(student_logits, teacher_logits, labels, T=4.0, alpha=0.5):
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* NPU/DSP */}
         <section className="space-y-6">
@@ -435,8 +441,8 @@ def distillation_loss(student_logits, teacher_logits, labels, T=4.0, alpha=0.5):
                 header: 'bg-emerald-100',
               },
             ].map((item, i) => (
-              <Card key={i} className={`border ${item.color}`}>
-                <CardBody className="p-0">
+              <div key={i} className={`border ${item.color}`}>
+                <div className="p-0">
                   <div className={`${item.header} p-4 rounded-t-xl`}>
                     <p className="text-2xl mb-1">{item.icon}</p>
                     <p className="font-black text-gray-800">{item.name}</p>
@@ -452,8 +458,8 @@ def distillation_loss(student_logits, teacher_logits, labels, T=4.0, alpha=0.5):
                       <p className="text-xs text-gray-600">{item.bad}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -512,7 +518,7 @@ with open('tts_model_int8.tflite', 'wb') as f:
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 常見坑 */}
         <section className="space-y-6">
@@ -585,7 +591,7 @@ with open('tts_model_int8.tflite', 'wb') as f:
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 效能取捨 */}
         <section className="space-y-6">
@@ -688,7 +694,7 @@ with open('tts_model_int8.tflite', 'wb') as f:
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -708,7 +714,7 @@ with open('tts_model_int8.tflite', 'wb') as f:
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Model Compression', 'Pruning', 'Quantization', 'Knowledge Distillation', 'NPU', 'Edge AI', 'TFLite', 'EP.06'].map((tag) => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

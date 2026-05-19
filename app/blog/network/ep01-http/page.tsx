@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowRight,
@@ -17,15 +12,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'HTTP 深挖：從輸入網址到畫面出現 DNS、TCP、TLS、HTTP/1.1、HTTP/2、HTTP/3 | Joseph Chen',
+  description: '每次瀏覽器請求都走過一條你看不見的旅程。理解這條路上發生了什麼， 才能真正排查效能問題、理解 HTTPS 的意義，以及為什麼 HTTP/2 比 HTTP/1.1 快。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/network/ep01-http',
+  },
+};
+
+
 
 export default function NetworkEP01() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-blue-50">
       <div className="bg-gradient-to-br from-sky-700 via-blue-600 to-indigo-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.01</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">網路與協定</span>
@@ -44,15 +50,15 @@ export default function NetworkEP01() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 16 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> HTTP · DNS · TCP · TLS · HTTP/2</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-sky-300 shrink-0 mt-1" />
                 <div>
@@ -66,9 +72,9 @@ export default function NetworkEP01() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 整體旅程 */}
         <section className="space-y-6">
@@ -100,7 +106,7 @@ export default function NetworkEP01() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* DNS */}
         <section className="space-y-6">
@@ -141,7 +147,7 @@ export default function NetworkEP01() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* TCP */}
         <section className="space-y-6">
@@ -170,7 +176,7 @@ export default function NetworkEP01() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* TLS */}
         <section className="space-y-6">
@@ -184,8 +190,8 @@ export default function NetworkEP01() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-slate-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-slate-50">
+              <div className="p-5">
                 <p className="font-black text-slate-800 mb-3">TLS 握手做了什麼？</p>
                 <ol className="text-sm text-slate-600 space-y-2 list-decimal list-inside">
                   <li>Client 發送支援的加密套件清單</li>
@@ -195,10 +201,10 @@ export default function NetworkEP01() {
                   <li>雙方各自計算出相同的「對話金鑰（Session Key）」</li>
                   <li>後續所有資料用對話金鑰做對稱加密（AES）傳輸</li>
                 </ol>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-indigo-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-indigo-50">
+              <div className="p-5">
                 <p className="font-black text-indigo-800 mb-3">為什麼非對稱 + 對稱混用？</p>
                 <p className="text-sm text-indigo-700 leading-relaxed mb-3">
                   <strong>非對稱加密</strong>（RSA/ECDH）：安全但慢，只用於握手階段交換金鑰。
@@ -207,8 +213,8 @@ export default function NetworkEP01() {
                   <strong>對稱加密</strong>（AES）：快但需要雙方都有同一把金鑰，透過非對稱加密安全交換。
                 </p>
                 <p className="text-sm text-indigo-600 mt-3 font-medium">結果：安全性 + 效能兼顧。</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -235,7 +241,7 @@ export default function NetworkEP01() {
           </p>
         </div>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* HTTP 版本演進 */}
         <section className="space-y-6">
@@ -285,7 +291,7 @@ export default function NetworkEP01() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* HTTP 訊息結構 */}
         <section className="space-y-6">
@@ -400,7 +406,7 @@ Set-Cookie: session_id=xyz789; HttpOnly; Secure; SameSite=Strict
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         <div className="flex justify-end">
           <Link href="/blog/network/ep04-jwt-oauth2" className="group block bg-gray-50 hover:bg-sky-50 transition-colors rounded-2xl p-6 w-full sm:w-1/2 text-right">
@@ -413,7 +419,7 @@ Set-Cookie: session_id=xyz789; HttpOnly; Secure; SameSite=Strict
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['HTTP', 'DNS', 'TCP', 'TLS', 'HTTPS', 'HTTP/2', 'HTTP/3', 'Network', 'EP.01'].map(tag => (
-            <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

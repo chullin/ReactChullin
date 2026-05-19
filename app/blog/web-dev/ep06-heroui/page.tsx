@@ -1,11 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider,
-  Avatar } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -19,8 +12,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'HeroUI 元件庫 現成 UI 積木，快速建出美觀介面 | Joseph Chen',
+  description: 'Card、Button、Chip、Divider — 我的網頁所有 UI 元件都來自這裡， 安裝一次，直接拿來用',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep06-heroui',
+  },
+};
+
+
 
 const Callout = ({ type, children }: { type: 'info' | 'warn' | 'tip'; children: React.ReactNode }) => {
   const styles = { info: 'bg-blue-50 border-blue-100 text-blue-800', warn: 'bg-amber-50 border-amber-100 text-amber-800', tip: 'bg-green-50 border-green-100 text-green-800' };
@@ -48,10 +52,10 @@ export default function WebDevEP06Page() {
       <div className="relative h-[52vh] min-h-[360px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-violet-900 via-purple-900 to-slate-900">
         <div className="absolute inset-0 opacity-15" style={{ backgroundImage: `radial-gradient(ellipse at 20% 50%, rgba(139,92,246,0.5) 0%, transparent 60%), radial-gradient(ellipse at 80% 50%, rgba(168,85,247,0.4) 0%, transparent 60%)` }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">個人網頁開發</Chip>
-              <Chip size="sm" variant="flat" className="bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.06</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">個人網頁開發</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-violet-500/20 text-violet-300 border-violet-500/30 font-bold uppercase text-[10px]">EP.06</span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               HeroUI 元件庫<br />
@@ -61,7 +65,7 @@ export default function WebDevEP06Page() {
               Card、Button、Chip、Divider — 我的網頁所有 UI 元件都來自這裡，<br />
               安裝一次，直接拿來用
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -97,7 +101,7 @@ export default function WebDevEP06Page() {
           <CodeBlock title="" code={`import { Card, CardBody, Button, Chip, Divider } from '@heroui/react';`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 安裝設定 */}
         <section className="space-y-6">
@@ -146,9 +150,7 @@ export default config;`} />
             <div>
               <p className="font-bold text-gray-900 mb-2">Step 3：加入 Providers</p>
               <p className="text-gray-500 text-sm mb-3">HeroUI 需要一個 Provider 包住整個 App，才能讓主題、動畫等功能正常運作：</p>
-              <CodeBlock title="app/providers.tsx（新建這個檔案）" code={`'use client';
-
-import { HeroUIProvider } from '@heroui/react';
+              <CodeBlock title="app/providers.tsx（新建這個檔案）" code={`import { HeroUIProvider } from '@heroui/react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -176,7 +178,7 @@ export default function RootLayout({ children }) {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Card */}
         <section className="space-y-6">
@@ -196,11 +198,11 @@ export default function RootLayout({ children }) {
   </CardBody>
 </Card>`} />
               <div className="mt-2">
-                <Card>
-                  <CardBody>
+                <div className="rounded-2xl border border-gray-100 bg-white shadow-sm">
+                  <div>
                     <p className="text-gray-700">這是卡片裡的內容</p>
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -225,7 +227,7 @@ export default function RootLayout({ children }) {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Button */}
         <section className="space-y-6">
@@ -237,12 +239,12 @@ export default function RootLayout({ children }) {
           <div className="bg-gray-50 rounded-2xl p-6 space-y-4">
             <p className="font-bold text-gray-700 text-sm uppercase tracking-wider">variant 變體</p>
             <div className="flex flex-wrap gap-3">
-              <Button color="primary" variant="solid">solid（實心）</Button>
-              <Button color="primary" variant="flat">flat（淡色填充）</Button>
-              <Button color="primary" variant="bordered">bordered（外框）</Button>
-              <Button color="primary" variant="light">light（超淡）</Button>
-              <Button color="primary" variant="shadow">shadow（有陰影）</Button>
-              <Button color="primary" variant="ghost">ghost（hover 才顯示）</Button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">solid（實心）</button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">flat（淡色填充）</button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">bordered（外框）</button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">light（超淡）</button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">shadow（有陰影）</button>
+              <button   className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors">ghost（hover 才顯示）</button>
             </div>
             <CodeBlock title="" code={`<Button color="primary" variant="solid">送出</Button>
 <Button color="primary" variant="flat">取消</Button>
@@ -293,7 +295,7 @@ export default function RootLayout({ children }) {
 </Button>`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Chip */}
         <section className="space-y-6">
@@ -303,12 +305,12 @@ export default function RootLayout({ children }) {
           </p>
           <div className="bg-gray-50 rounded-2xl p-6 space-y-4">
             <div className="flex flex-wrap gap-3">
-              <Chip color="primary" variant="flat">LeetCode 系列</Chip>
-              <Chip color="secondary" variant="flat">Web Dev</Chip>
-              <Chip color="success" variant="flat">Graph</Chip>
-              <Chip color="warning" variant="dot">External</Chip>
-              <Chip color="danger" variant="bordered">🔥 Hot</Chip>
-              <Chip size="sm" variant="flat" className="text-[10px] font-black uppercase">EP.06</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">LeetCode 系列</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Web Dev</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Graph</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">External</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">🔥 Hot</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-[10px] font-black uppercase">EP.06</span>
             </div>
             <CodeBlock title="" code={`<Chip color="primary" variant="flat">LeetCode 系列</Chip>
 <Chip color="success" variant="dot">進行中</Chip>     {/* dot 在左邊顯示圓點 */}
@@ -318,7 +320,7 @@ export default function RootLayout({ children }) {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Divider */}
         <section className="space-y-6">
@@ -331,20 +333,20 @@ export default function RootLayout({ children }) {
 <Divider className="my-12 opacity-50" /> {/* 加垂直間距 */}`} />
           <div className="space-y-4">
             <p className="text-sm text-gray-500">以下是 opacity-30 的效果：</p>
-            <Divider className="opacity-30" />
+            <hr className="border-gray-100 opacity-30"  />
             <p className="text-sm text-gray-500">以下是 opacity-80 的效果：</p>
-            <Divider className="opacity-80" />
+            <hr className="border-gray-100 opacity-80"  />
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 其他元件快速介紹 */}
         <section className="space-y-6">
           <h2 className="text-3xl font-black text-gray-900">其他常用元件快速一覽</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {[
-              { name: 'Link', desc: '語意化連結，可以 href 外部 URL 或內部路由，支援 target="_blank"', code: `<Link href="/blog" color="primary">Blog</Link>` },
+              { name: 'Link', desc: '語意化連結，可以 href 外部 URL 或內部路由，支援 target="_blank"', code: `<Link href="/blog" >Blog</Link>` },
               { name: 'Avatar', desc: '用戶頭像，可顯示圖片或文字縮寫，有 size / radius / bordered 等 props', code: `<Avatar src="/profile.png" size="lg" />` },
               { name: 'Skeleton', desc: '載入佔位效果（骨架屏），讓頁面在資料還沒載入時有預覽框架', code: `<Skeleton className="w-32 h-4 rounded" />` },
               { name: 'Spinner', desc: '載入中的旋轉動畫', code: `<Spinner color="primary" size="sm" />` },
@@ -363,7 +365,7 @@ export default function RootLayout({ children }) {
           </Callout>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 和 Tailwind 一起用 */}
         <section className="space-y-6">
@@ -389,7 +391,7 @@ export default function RootLayout({ children }) {
 </Card>`} />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Key Takeaway */}
         <section>
@@ -416,7 +418,7 @@ export default function RootLayout({ children }) {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -436,7 +438,7 @@ export default function RootLayout({ children }) {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Web Dev', 'HeroUI', 'Component Library', 'Card', 'Button', 'EP.06'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

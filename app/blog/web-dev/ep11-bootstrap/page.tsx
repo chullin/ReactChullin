@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -15,8 +10,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Bootstrap 入門 Grid 系統與元件庫 | Joseph Chen',
+  description: '12 欄 Grid、RWD Breakpoints、Utility classes — 與 Tailwind 設計哲學的核心差異',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep11-bootstrap',
+  },
+};
+
+
 
 /* ─── Inline Components ─────────────────────────────────────── */
 
@@ -52,7 +58,7 @@ export default function WebDevEP11Page() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-purple-600 via-violet-600 to-indigo-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.11</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs font-medium">網頁開發實戰</span>
@@ -71,7 +77,7 @@ export default function WebDevEP11Page() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 9 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Bootstrap · Grid · RWD · Tailwind</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -79,9 +85,9 @@ export default function WebDevEP11Page() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* Opening Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-purple-300 shrink-0 mt-1" />
                 <div>
@@ -95,11 +101,11 @@ export default function WebDevEP11Page() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 1. Bootstrap 是什麼 */}
         <section className="space-y-6">
@@ -110,26 +116,26 @@ export default function WebDevEP11Page() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-purple-50">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-purple-50">
+              <div className="p-6">
                 <p className="font-black text-purple-800 mb-2">Bootstrap 設計哲學</p>
                 <p className="text-sm text-purple-700 leading-relaxed">
                   <strong>元件驅動（Component-driven）</strong>：框架提供完整的預設樣式元件。
                   你記住元件的 class 名稱，就能快速套用一致的視覺設計。
                   重視「快速可用」而非「完全自由」。
                 </p>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-indigo-50">
-              <CardBody className="p-6">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-indigo-50">
+              <div className="p-6">
                 <p className="font-black text-indigo-800 mb-2">Tailwind 設計哲學</p>
                 <p className="text-sm text-indigo-700 leading-relaxed">
                   <strong>Utility-first（原子類）</strong>：框架只提供單一功能的 utility class，
                   你自由組合這些原子 class 來構建設計。
                   重視「完全自由」而非「開箱即用」。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           <InfoBox color="purple" title="Bootstrap 5 的重要變化">
@@ -140,7 +146,7 @@ export default function WebDevEP11Page() {
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 2. 12 欄 Grid 系統 */}
         <section className="space-y-6">
@@ -236,7 +242,7 @@ export default function WebDevEP11Page() {
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 3. 常用 Utility Classes */}
         <section className="space-y-6">
@@ -282,7 +288,7 @@ export default function WebDevEP11Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 4. 常用元件 */}
         <section className="space-y-6">
@@ -293,8 +299,8 @@ export default function WebDevEP11Page() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             {/* Navbar */}
-            <Card className="border-0 shadow-sm">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+              <div className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Navbar</p>
                 <CodeBlock lang="html"
                   title="navbar"
@@ -315,12 +321,12 @@ export default function WebDevEP11Page() {
                 <p className="text-xs text-gray-500">
                   <code className="bg-gray-100 px-1 rounded">navbar-expand-lg</code>：lg 以上展開，以下收合成漢堡選單。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Button */}
-            <Card className="border-0 shadow-sm">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+              <div className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Button</p>
                 <CodeBlock lang="html"
                   title="btn"
@@ -337,12 +343,12 @@ export default function WebDevEP11Page() {
 <button class="btn btn-primary btn-sm">小按鈕</button>
 <button class="btn btn-primary btn-lg">大按鈕</button>`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Card */}
-            <Card className="border-0 shadow-sm">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+              <div className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Card</p>
                 <CodeBlock lang="html"
                   title="card"
@@ -355,12 +361,12 @@ export default function WebDevEP11Page() {
   </div>
 </div>`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* Badge + Alert */}
-            <Card className="border-0 shadow-sm">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm">
+              <div className="p-6 space-y-3">
                 <p className="font-black text-gray-900">Badge &amp; Alert</p>
                 <CodeBlock lang="html"
                   title="badge / alert"
@@ -379,12 +385,12 @@ export default function WebDevEP11Page() {
   <button type="button" class="btn-close" data-bs-dismiss="alert">
 </div>`}
                 />
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 5. Bootstrap vs Tailwind 比較表 */}
         <section className="space-y-6">
@@ -428,7 +434,7 @@ export default function WebDevEP11Page() {
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 6. 面試常考題 */}
         <section className="space-y-6">
@@ -458,8 +464,8 @@ export default function WebDevEP11Page() {
                 a: '取決於專案類型。如果是需要快速交付的後台管理介面，我會選 Bootstrap：元件現成、學習成本低、不需要設計師就能做出一致的 UI。如果是品牌形象網站或使用 React 的 SPA，我會選 Tailwind：完全掌控設計、JIT 打包體積小、與 component 架構整合更自然。目前個人專案我主要用 Tailwind，因為設計自由度更高，但我也有在後台系統中用 Bootstrap 的實際經驗。',
               },
             ].map(({ q, a }, i) => (
-              <Card key={i} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-sm hover:shadow-md transition-shadow">
+                <div className="p-6 space-y-3">
                   <div className="flex items-start gap-3">
                     <span className="bg-purple-100 text-purple-700 font-black text-sm px-2.5 py-1 rounded-full shrink-0">Q{i + 1}</span>
                     <p className="font-black text-gray-900">{q}</p>
@@ -467,13 +473,13 @@ export default function WebDevEP11Page() {
                   <div className="pl-10">
                     <p className="text-gray-600 leading-relaxed text-sm">{a}</p>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -493,7 +499,7 @@ export default function WebDevEP11Page() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Bootstrap', 'CSS', 'Grid', 'RWD', '元件庫', 'Tailwind', 'EP.11'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   Clock,
@@ -15,8 +10,19 @@ import { Calendar,
 
 import Link from 'next/link';
 import Script from 'next/script';
-import { motion } from 'framer-motion';
 import BlogRelatedPosts from '@/components/blog/BlogRelatedPosts';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '什麼是 Air-gapped AI？ 從工廠內網 LLM 說起 | Joseph Chen',
+  description: '為什麼有些企業的 AI 不能連網？什麼是隔離網路？ 從我在鴻海深圳廠的實際部署經驗說起',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/ai/ep01-airgapped-intro',
+  },
+};
+
+
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -46,14 +52,14 @@ export default function AiEP01Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
                 AI 離線部署
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
                 EP.01
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               什麼是 Air-gapped AI？<br />
@@ -63,7 +69,7 @@ export default function AiEP01Page() {
               為什麼有些企業的 AI 不能連網？什麼是隔離網路？<br />
               從我在鴻海深圳廠的實際部署經驗說起
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -100,7 +106,7 @@ export default function AiEP01Page() {
           </p>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 什麼是 Air-gapped */}
         <section className="space-y-6">
@@ -146,7 +152,7 @@ export default function AiEP01Page() {
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 為什麼工廠需要 AI */}
         <section className="space-y-6">
@@ -195,7 +201,7 @@ export default function AiEP01Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 離線部署的挑戰 */}
         <section className="space-y-6">
@@ -251,7 +257,7 @@ export default function AiEP01Page() {
           </InfoBox>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 我的解決方案預覽 */}
         <section className="space-y-6">
@@ -296,7 +302,7 @@ export default function AiEP01Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 總結 */}
         <section>
@@ -321,7 +327,7 @@ export default function AiEP01Page() {
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Related Posts */}
         <BlogRelatedPosts currentPostHref="/blog/ai/ep01-airgapped-intro" category="ai" />
@@ -341,7 +347,7 @@ export default function AiEP01Page() {
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['AI 離線部署', 'Air-gapped', 'LLM', 'Ollama', 'Dify', '企業 AI', 'EP.01'].map((tag) => (
-            <Chip key={tag} variant="flat" color="secondary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>
@@ -358,7 +364,7 @@ export default function AiEP01Page() {
             "name": "陳憲億 Joseph Chen"
           },
           "datePublished": "2024-03-20",
-          "image": "https://chullin.tw/assets/profile3.png",
+          "image": "https://chullin.tw/assets/profile3.webp",
           "publisher": {
             "@type": "Organization",
             "name": "Joseph Chen Portfolio",

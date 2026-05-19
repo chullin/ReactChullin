@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -18,15 +13,26 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '索引（Index）：為什麼你的查詢這麼慢？ B-Tree 原理、複合索引與 EXPLAIN 實戰 | Joseph Chen',
+  description: '同樣的 SQL，在 100 筆資料時跑 1ms，在 1000 萬筆時跑 30 秒。 索引是讓資料庫「秒查」的關鍵，但錯誤的索引策略反而會讓系統更慢。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/database/ep02-index',
+  },
+};
+
+
 
 export default function DBEP02() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50 to-green-50">
       <div className="bg-gradient-to-br from-green-700 via-emerald-600 to-teal-600 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.02</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">資料庫與 SQL</span>
@@ -45,15 +51,15 @@ export default function DBEP02() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 12 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> Index · B-Tree · EXPLAIN · PostgreSQL</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-green-300 shrink-0 mt-1" />
                 <div>
@@ -67,9 +73,9 @@ export default function DBEP02() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* 什麼是索引 */}
         <section className="space-y-6">
@@ -104,7 +110,7 @@ export default function DBEP02() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* B-Tree 原理 */}
         <section className="space-y-6">
@@ -150,8 +156,8 @@ export default function DBEP02() {
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="border-0 bg-blue-50">
-              <CardBody className="p-5">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-blue-50">
+              <div className="p-5">
                 <p className="font-black text-blue-800 mb-2">B-Tree 擅長的查詢</p>
                 <ul className="text-sm text-blue-700 space-y-1">
                   <li>✅ 等值查詢：WHERE email = 'x@x.com'</li>
@@ -159,10 +165,10 @@ export default function DBEP02() {
                   <li>✅ 前綴查詢：WHERE name LIKE 'Jo%'</li>
                   <li>✅ 排序：ORDER BY email（可避免額外排序步驟）</li>
                 </ul>
-              </CardBody>
-            </Card>
-            <Card className="border-0 bg-red-50">
-              <CardBody className="p-5">
+              </div>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 bg-red-50">
+              <div className="p-5">
                 <p className="font-black text-red-800 mb-2">B-Tree 無法優化的查詢</p>
                 <ul className="text-sm text-red-700 space-y-1">
                   <li>❌ 後綴查詢：WHERE name LIKE '%Chen'</li>
@@ -170,12 +176,12 @@ export default function DBEP02() {
                   <li>❌ 否定：WHERE status != 'active'（回傳大量資料時）</li>
                   <li>❌ OR 跨欄位（需要多個索引）</li>
                 </ul>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 建立索引 */}
         <section className="space-y-6">
@@ -235,7 +241,7 @@ REINDEX INDEX idx_users_email;`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 複合索引 */}
         <section className="space-y-6">
@@ -290,7 +296,7 @@ CREATE INDEX idx_orders_user_status ON orders(user_id, status);
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* EXPLAIN */}
         <section className="space-y-6">
@@ -355,7 +361,7 @@ EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 1 AND status = 'pending';
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 索引的代價 */}
         <section className="space-y-6">
@@ -410,7 +416,7 @@ EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 1 AND status = 'pending';
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         <div className="grid grid-cols-2 gap-4">
           <Link href="/blog/database/ep01-sql-basics" className="group block bg-gray-50 hover:bg-emerald-50 transition-colors rounded-2xl p-6">
@@ -429,7 +435,7 @@ EXPLAIN ANALYZE SELECT * FROM orders WHERE user_id = 1 AND status = 'pending';
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Index', 'B-Tree', 'PostgreSQL', 'EXPLAIN', 'Performance', 'Composite Index', 'Database', 'EP.02'].map(tag => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

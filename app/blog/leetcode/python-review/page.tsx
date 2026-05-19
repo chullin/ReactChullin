@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Divider,
-  Button,
-  Chip } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +14,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Python 算法學習復盤 投票、鏈表與 Top-K 的深度解析 | Joseph Chen',
+  description: '從投票法、鏈表操作到 Top-K 問題，整理 Python 演算法練習中的關鍵觀念與常見陷阱。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/python-review',
+  },
+};
+
+
 
 const Callout = ({
   type,
@@ -137,36 +142,32 @@ export default function LeetcodePythonReviewPage() {
     <div className="bg-white min-h-screen">
       {/* Hero */}
       <div className="relative h-[52vh] min-h-[380px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950">
-        <motion.div
+        <div
           className="absolute inset-0 opacity-10"
-          animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-          transition={{ duration: 22, repeat: Infinity, repeatType: 'reverse' }}
+          
+          
           style={{
             backgroundImage:
               'radial-gradient(circle at 30% 40%, rgba(99,102,241,0.8) 0%, transparent 50%), radial-gradient(circle at 70% 65%, rgba(59,130,246,0.5) 0%, transparent 50%)',
           }}
-        />
+         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip
-                size="sm"
-                variant="flat"
-                className="bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]"
+              <span
+                
+                
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-blue-500/20 text-blue-300 border-blue-500/30 font-bold uppercase text-[10px]"
               >
                 LeetCode
-              </Chip>
-              <Chip
-                size="sm"
-                variant="flat"
-                className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]"
+              </span>
+              <span
+                
+                
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-indigo-500/20 text-indigo-300 border-indigo-500/30 font-bold uppercase text-[10px]"
               >
                 Python 復盤
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Python 算法學習復盤<br />
@@ -176,18 +177,13 @@ export default function LeetcodePythonReviewPage() {
               從真實的學習對話整理而來——Boyer-Moore 投票演算法、<br />
               鏈表虛擬頭節點、Heap vs 桶排序，以及那些讓我踩坑的思維誤區
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-3xl mx-auto px-6 py-16 space-y-20">
         {/* Author */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center justify-between flex-wrap gap-4"
-        >
+        <FadeIn>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-sm">
               J
@@ -208,13 +204,13 @@ export default function LeetcodePythonReviewPage() {
             </div>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Chip size="sm" variant="flat" color="primary">Boyer-Moore</Chip>
-            <Chip size="sm" variant="flat" color="primary">Linked List</Chip>
-            <Chip size="sm" variant="flat" color="primary">Heap / Bucket</Chip>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Boyer-Moore</span>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Linked List</span>
+            <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Heap / Bucket</span>
           </div>
-        </motion.div>
+        </FadeIn>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 一、學習背景與痛點 */}
         <section className="space-y-6">
@@ -254,15 +250,9 @@ export default function LeetcodePythonReviewPage() {
                 ],
               },
             ].map((item) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4 }}
-              >
-                <Card className="shadow-sm border border-gray-100 h-full">
-                  <CardBody className="p-5 space-y-3">
+              <FadeIn>
+                <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100 h-full">
+                  <div className="p-5 space-y-3">
                     <span className="text-2xl">{item.icon}</span>
                     <p className="font-black text-gray-800 text-sm">{item.title}</p>
                     <ul className="space-y-1.5">
@@ -273,14 +263,14 @@ export default function LeetcodePythonReviewPage() {
                         </li>
                       ))}
                     </ul>
-                  </CardBody>
-                </Card>
-              </motion.div>
+                  </div>
+                </div>
+              </FadeIn>
             ))}
           </div>
 
-          <Card className="shadow-sm border border-blue-50 bg-blue-50/30">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-blue-50 bg-blue-50/30">
+            <div className="p-5">
               <p className="text-sm font-black text-blue-600 uppercase tracking-widest mb-3">本次復盤涵蓋的題目</p>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -295,15 +285,15 @@ export default function LeetcodePythonReviewPage() {
                   <div key={p.no} className="flex items-center gap-2 bg-white rounded-xl px-3 py-2 border border-blue-100">
                     <span className="text-xs font-black text-blue-600">{p.no}</span>
                     <span className="text-xs font-bold text-gray-700">{p.title}</span>
-                    <Chip size="sm" variant="flat" color="primary" className="text-[10px]">{p.tag}</Chip>
+                    <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-[10px]">{p.tag}</span>
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 二、核心知識點拆解 */}
         <section className="space-y-12">
@@ -319,8 +309,8 @@ export default function LeetcodePythonReviewPage() {
               它的核心思想可以用一個比喻來理解：
             </p>
 
-            <Card className="shadow-sm border border-blue-50 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <CardBody className="p-6 space-y-3">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-blue-50 bg-gradient-to-br from-blue-50 to-indigo-50">
+              <div className="p-6 space-y-3">
                 <p className="font-black text-blue-800 text-base">⚔️ 戰爭消消樂比喻</p>
                 <p className="text-sm text-blue-700 leading-relaxed">
                   把陣列看成戰場，每個數字是一個士兵。<strong>同一方的士兵互相支援（count +1）</strong>，
@@ -328,8 +318,8 @@ export default function LeetcodePythonReviewPage() {
                   當一個陣營的士兵全數陣亡（count = 0），換一個新的候選人繼續。
                   由於多數元素的數量<em>嚴格超過一半</em>，不管怎麼抵消，最後存活的候選人一定是它。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             <CodeBlock
               title="#169 Majority Element — Boyer-Moore"
@@ -404,8 +394,8 @@ export default function LeetcodePythonReviewPage() {
               直接用 <code className="bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded font-mono text-sm">head</code> 不行嗎？
             </p>
 
-            <Card className="shadow-sm border border-gray-100">
-              <CardBody className="p-6 space-y-4">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+              <div className="p-6 space-y-4">
                 <p className="font-black text-gray-700 text-sm uppercase tracking-widest">為什麼要用 dummy_head？</p>
                 <div className="space-y-3">
                   {[
@@ -430,8 +420,8 @@ export default function LeetcodePythonReviewPage() {
                     </div>
                   ))}
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             <CodeBlock
               title="#2 Add Two Numbers — dummy_head 模式"
@@ -516,7 +506,7 @@ count = Counter(s)
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 三、經典例題與程式碼復盤 */}
         <section className="space-y-12">
@@ -528,7 +518,7 @@ count = Counter(s)
           <div className="space-y-5">
             <div className="flex items-center gap-3 flex-wrap">
               <h3 className="text-xl font-black text-gray-900">#169 Majority Element</h3>
-              <Chip size="sm" variant="flat" color="success">Easy</Chip>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Easy</span>
             </div>
 
             <p className="text-gray-700 leading-relaxed">
@@ -597,13 +587,13 @@ count = Counter(s)
             />
           </div>
 
-          <Divider className="opacity-30" />
+          <hr className="border-gray-100 opacity-30"  />
 
           {/* 例題 2：#347 */}
           <div className="space-y-5">
             <div className="flex items-center gap-3 flex-wrap">
               <h3 className="text-xl font-black text-gray-900">#347 Top K Frequent Elements</h3>
-              <Chip size="sm" variant="flat" color="warning">Medium</Chip>
+              <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Medium</span>
             </div>
 
             <p className="text-gray-700 leading-relaxed">
@@ -689,7 +679,7 @@ def topKFrequent(nums, k):
           </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 四、易錯點與避坑指南 */}
         <section className="space-y-8">
@@ -698,10 +688,10 @@ def topKFrequent(nums, k):
           </SectionTitle>
 
           {/* 坑 1 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">Bug #1</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Bug #1</span>
                 <h4 className="font-black text-gray-800">Counter 迭代 ≠ 按頻率排序</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -728,14 +718,14 @@ def topKFrequent(nums, k):
     return [num for num, _ in count.most_common(k)]`}
                 note="Counter 繼承自 dict，Python 3.7+ dict 的迭代順序是插入順序。如果需要按頻率排序，必須用 .most_common(k) 或搭配 heapq.nlargest。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 坑 2 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">Bug #2</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Bug #2</span>
                 <h4 className="font-black text-gray-800">range(nums) 忘記 len()</h4>
               </div>
               <CompareBlock
@@ -755,14 +745,14 @@ def removeDuplicates(nums):
     return slow + 1`}
                 note="range() 需要整數，不能傳入 list 本身。這個錯誤在 Python 新手中非常常見，好在 Python 會立刻拋出 TypeError 而不是悄悄給錯誤答案。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 坑 3 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">Bug #3</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Bug #3</span>
                 <h4 className="font-black text-gray-800">defaultdict 用了錯誤的 key</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -790,14 +780,14 @@ def groupAnagrams(strs):
     return list(group.values())`}
                 note="計算 key 之後忘記用 key 分組——這種「算了但沒用到」的 bug 在 review 時很難發現，因為程式碼邏輯看起來是完整的。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 坑 4 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">Bug #4</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Bug #4</span>
                 <h4 className="font-black text-gray-800">Two Pointer 的指針更新順序</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -817,14 +807,14 @@ def groupAnagrams(strs):
         nums[slow] = nums[fast]  # 再填入新的不重複值`}
                 note="Two Pointer 的 slow 指針語義是「下一個有效值要放的位置」。賦值之前要先讓 slow 前進一格，讓出空間。"
               />
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 坑 5 */}
-          <Card className="shadow-sm border border-gray-100">
-            <CardBody className="p-6 space-y-4">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-gray-100">
+            <div className="p-6 space-y-4">
               <div className="flex items-center gap-3">
-                <Chip size="sm" variant="flat" color="danger">Bug #5</Chip>
+                <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Bug #5</span>
                 <h4 className="font-black text-gray-800">Boyer-Moore 用在「相對多數」問題上</h4>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">
@@ -849,11 +839,11 @@ def groupAnagrams(strs):
                 面試時如果題目沒有明確說「保證存在超過 n/2 的元素」，用 Boyer-Moore 之前要先說明前提，
                 否則可能在 edge case 上出錯。
               </Callout>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider />
+        <hr  className="border-gray-100" />
 
         {/* 五、總結與延伸 */}
         <section className="space-y-6">
@@ -861,8 +851,8 @@ def groupAnagrams(strs):
             總結與延伸
           </SectionTitle>
 
-          <Card className="shadow-sm border border-blue-100 bg-gradient-to-br from-blue-50/30 to-indigo-50/30">
-            <CardBody className="p-7 space-y-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm shadow-sm border border-blue-100 bg-gradient-to-br from-blue-50/30 to-indigo-50/30">
+            <div className="p-7 space-y-5">
               <p className="font-black text-gray-800 text-base">這次學習的三個核心收穫</p>
               <div className="space-y-4">
                 {[
@@ -891,8 +881,8 @@ def groupAnagrams(strs):
                   </div>
                 ))}
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -930,16 +920,16 @@ def groupAnagrams(strs):
                   color: 'border-amber-100 bg-amber-50/30',
                 },
               ].map((p) => (
-                <Card key={p.no} className={`border ${p.color} shadow-sm`}>
-                  <CardBody className="p-4 space-y-2">
+                <div key={p.no} className={`border ${p.color} shadow-sm`}>
+                  <div className="p-4 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-black text-gray-400 text-xs">{p.no}</span>
-                      <Chip size="sm" variant="flat" color="primary" className="text-[10px]">{p.tag}</Chip>
+                      <span    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 text-[10px]">{p.tag}</span>
                     </div>
                     <p className="font-black text-gray-800 text-sm">{p.title}</p>
                     <p className="text-xs text-gray-500 leading-relaxed">{p.desc}</p>
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -948,18 +938,18 @@ def groupAnagrams(strs):
         {/* Navigation */}
         <div className="flex items-center justify-between gap-4 flex-wrap pt-4">
           <Link href="/blog/leetcode/python-pitfalls">
-            <Button
-              variant="flat"
-              startContent={<ArrowLeft size={16} />}
-              className="font-bold text-gray-600 hover:text-gray-900"
-            >
+            <button
+              
+              
+              className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold text-gray-600 hover:text-gray-900"
+            ><ArrowLeft size={16} /> 
               Python 踩坑紀錄
-            </Button>
+            </button>
           </Link>
           <Link href="/blog">
-            <Button variant="flat" className="font-bold text-gray-600 hover:text-gray-900">
+            <button  className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold text-gray-600 hover:text-gray-900">
               所有文章
-            </Button>
+            </button>
           </Link>
         </div>
       </article>

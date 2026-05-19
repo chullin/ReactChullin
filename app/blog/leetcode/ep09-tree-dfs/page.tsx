@@ -1,10 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Button,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -17,8 +11,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tree & DFS 遞迴的本質，就是信任自己 | Joseph Chen',
+  description: '#104 Max Depth · #100 Same Tree · #226 Invert — 三題打通 DFS 思維',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/leetcode/ep09-tree-dfs',
+  },
+};
+
+
 
 const ComplexityBadge = ({ time, space }: { time: string; space: string }) => (
   <div className="flex gap-3 my-4">
@@ -67,10 +72,10 @@ export default function LeetcodeEP09Page() {
         <div className="absolute inset-0 opacity-[0.07]"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='20' r='8' fill='%2334d399'/%3E%3Cline x1='40' y1='28' x2='20' y2='50' stroke='%2334d399' stroke-width='2'/%3E%3Cline x1='40' y1='28' x2='60' y2='50' stroke='%2334d399' stroke-width='2'/%3E%3Ccircle cx='20' cy='58' r='8' fill='%2334d399'/%3E%3Ccircle cx='60' cy='58' r='8' fill='%2334d399'/%3E%3C/svg%3E")`, backgroundSize: '80px 80px' }} />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</Chip>
-              <Chip size="sm" variant="flat" className="bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">EP.09</Chip>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">LeetCode 刷題日記</span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-green-500/20 text-green-300 border-green-500/30 font-bold uppercase text-[10px]">EP.09</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">
               Tree & DFS<br />
@@ -81,14 +86,14 @@ export default function LeetcodeEP09Page() {
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><User size={14} className="text-green-400" /><span>Joseph Chen</span></div>
               <div className="flex items-center gap-2 text-white/60 font-bold text-sm"><Calendar size={14} className="text-green-400" /><span>2024</span></div>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="py-20 px-6">
         <div className="max-w-3xl mx-auto space-y-12">
           <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-            <Button as={Link} href="/blog" variant="light" color="primary" className="font-bold" startContent={<ArrowLeft size={18} />}>Back to Blog</Button>
+            <Link href="/blog"     className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-slate-900 text-white font-bold hover:bg-slate-800 transition-colors font-bold" ><ArrowLeft size={18} /> Back to Blog</Link>
             <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
               <div className="flex items-center gap-1.5"><Clock size={16} /> <span>5 min read</span></div>
               <div className="flex items-center gap-1.5"><Eye size={16} /> <span>1.2k views</span></div>
@@ -168,8 +173,8 @@ export default function LeetcodeEP09Page() {
                 #104 Maximum Depth of Binary Tree
               </h2>
               <p>一棵 Binary Tree 的「最大深度」= 從 root 到最遠葉節點的層數。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`     3
     / \\
    9  20
@@ -177,8 +182,8 @@ export default function LeetcodeEP09Page() {
      15   7
 
 Output: 3   ← root(3) → 20 → 15 or 7，共 3 層`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>套入思維框架：</p>
               <div className="space-y-2 pl-4">
@@ -227,8 +232,8 @@ Output: 3   ← root(3) → 20 → 15 or 7，共 3 層`} />
                 #100 Same Tree
               </h2>
               <p>判斷兩棵樹是否完全相同（結構和值都一樣）。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`p:    1        q:    1
      / \\            / \\
     2   3          2   3
@@ -238,8 +243,8 @@ p:    1        q:    1
      /              \\
     2                2
 → False （結構不同）`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>套入思維框架：</p>
               <div className="space-y-2 pl-4">
@@ -277,15 +282,15 @@ p:    1        q:    1
                 #226 Invert Binary Tree
               </h2>
               <p>把每個節點的左右子樹互換，遞迴翻轉整棵樹。</p>
-              <Card className="bg-gray-50 border-none shadow-none">
-                <CardBody className="p-6">
+              <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-gray-50 border-none shadow-none">
+                <div className="p-6">
                   <CodeBlock title="Input / Output" code={`     4                4
     / \\              / \\
    2   7    →      7   2
   / \\ / \\        / \\ / \\
  1  3 6  9      9  6 3  1`} />
-                </CardBody>
-              </Card>
+                </div>
+              </div>
 
               <p>套入思維框架：</p>
               <div className="space-y-2 pl-4">
@@ -371,14 +376,14 @@ p:    1        q:    1
               </div>
             </div>
 
-            <Card className="bg-green-50/50 border-none shadow-none">
-              <CardBody className="p-8 relative overflow-hidden">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm bg-green-50/50 border-none shadow-none">
+              <div className="p-8 relative overflow-hidden">
                 <Quote size={40} className="text-green-200 absolute -top-2 -left-2 rotate-12" />
                 <p className="text-xl font-black text-green-900 leading-snug relative z-10">
                   遞迴寫 Tree 題的關鍵心態：不要試圖在腦中追蹤所有層的狀態。你只需要問：「如果左右子樹都已經給出了正確答案，我怎麼把它們組合起來？」這一步想清楚，剩下的交給 Python 的呼叫棧。
                 </p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-[2rem] p-8 space-y-4">
               <p className="font-black text-gray-900 text-lg">本篇重點整理</p>
@@ -399,7 +404,7 @@ p:    1        q:    1
             </div>
           </div>
 
-          <Divider className="my-12 opacity-50" />
+          <hr className="border-gray-100 my-12 opacity-50"  />
 
           <div className="grid grid-cols-2 gap-4">
             <Link href="/blog/leetcode/ep08-linked-list" className="group block bg-gray-50 hover:bg-blue-50 transition-colors rounded-2xl p-6">
@@ -417,7 +422,7 @@ p:    1        q:    1
 
           <div className="flex items-center gap-3 flex-wrap pt-4">
             {['LeetCode', 'Tree', 'DFS', 'Recursion', 'Python', 'EP.09'].map((tag) => (
-              <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+              <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
             ))}
           </div>
         </div>

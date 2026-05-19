@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -20,8 +15,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '不用 React，做個動態待辦清單 ——然後你就懂了 | Joseph Chen',
+  description: '從「手動操作 DOM 的痛苦」理解 React 為什麼存在。 先用原生 JavaScript 體驗那個痛點，再看 React 如何優雅地解決它。',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/web-dev/ep15-why-react',
+  },
+};
+
+
 
 export default function WebDevEP15() {
   return (
@@ -30,7 +36,7 @@ export default function WebDevEP15() {
       {/* Hero */}
       <div className="bg-gradient-to-br from-cyan-700 via-blue-700 to-indigo-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.15</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">Web 開發系列</span>
@@ -49,7 +55,7 @@ export default function WebDevEP15() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 12 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> React · DOM · Virtual DOM · 為什麼學 React</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -57,9 +63,9 @@ export default function WebDevEP15() {
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* 開場 Quote */}
-        <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg">
-            <CardBody className="p-8">
+        <section   >
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border-0 shadow-lg">
+            <div className="p-8">
               <div className="flex gap-4">
                 <Quote size={32} className="text-cyan-400 shrink-0 mt-1" />
                 <div>
@@ -72,17 +78,17 @@ export default function WebDevEP15() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
         {/* Section 1: 原生 JS 待辦清單 */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Cpu className="text-cyan-600" size={28} />
@@ -158,17 +164,17 @@ export default function WebDevEP15() {
             但等等——你有沒有注意到 <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono">render()</code> 出現了三次？
             而且每次改資料之後，你都要記得手動呼叫它。
           </p>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: 這裡有什麼問題？ */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-red-500" size={28} />
@@ -182,8 +188,8 @@ export default function WebDevEP15() {
 
           <div className="grid sm:grid-cols-1 gap-5">
             {/* 問題 1 */}
-            <Card className="border border-red-100 shadow-sm">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-red-100 shadow-sm">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
                     <span className="text-red-600 font-black text-lg">1</span>
@@ -197,12 +203,12 @@ export default function WebDevEP15() {
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* 問題 2 */}
-            <Card className="border border-orange-100 shadow-sm">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-orange-100 shadow-sm">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
                     <span className="text-orange-600 font-black text-lg">2</span>
@@ -216,12 +222,12 @@ export default function WebDevEP15() {
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
             {/* 問題 3 */}
-            <Card className="border border-yellow-100 shadow-sm">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-yellow-100 shadow-sm">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center shrink-0">
                     <span className="text-yellow-600 font-black text-lg">3</span>
@@ -235,13 +241,13 @@ export default function WebDevEP15() {
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
 
           {/* 比喻 Card */}
-          <Card className="border border-amber-200 bg-amber-50 shadow-sm">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-amber-200 bg-amber-50 shadow-sm">
+            <div className="p-6">
               <div className="flex gap-3">
                 <Lightbulb className="text-amber-500 shrink-0 mt-0.5" size={20} />
                 <div>
@@ -254,19 +260,19 @@ export default function WebDevEP15() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: React 怎麼解決 */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <RefreshCw className="text-blue-600" size={28} />
@@ -346,8 +352,8 @@ function TodoApp() {
             </div>
           </div>
 
-          <Card className="border border-blue-200 bg-blue-50 shadow-sm">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-200 bg-blue-50 shadow-sm">
+            <div className="p-6">
               <p className="font-black text-blue-800 mb-3">React 的核心思想</p>
               <p className="text-blue-700 leading-relaxed">
                 你只需要說明資料是什麼（<code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-sm">todos</code>），
@@ -360,19 +366,19 @@ function TodoApp() {
               <p className="text-blue-600 text-sm text-center mt-2">
                 UI 是資料的函式。資料變了，UI 自動跟著變。
               </p>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: Virtual DOM */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Layers className="text-indigo-600" size={28} />
@@ -384,8 +390,8 @@ function TodoApp() {
             答案是——React 用了 Virtual DOM，讓更新變得聰明很多。
           </p>
 
-          <Card className="border border-indigo-100 bg-indigo-50 shadow-sm">
-            <CardBody className="p-6">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-100 bg-indigo-50 shadow-sm">
+            <div className="p-6">
               <div className="flex gap-3">
                 <Lightbulb className="text-indigo-500 shrink-0 mt-0.5" size={20} />
                 <div>
@@ -398,8 +404,8 @@ function TodoApp() {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           {/* 流程圖 */}
           <div className="space-y-4">
@@ -436,17 +442,17 @@ function TodoApp() {
             最後只把真正有變化的部分同步到瀏覽器的實際 DOM。
             這個過程叫做 <strong>Diffing</strong>。
           </p>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: React 核心心法 */}
-        <motion.section
+        <section
           className="space-y-6"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          
+          
+          
+          
         >
           <div className="flex items-center gap-3">
             <Box className="text-cyan-600" size={28} />
@@ -459,8 +465,8 @@ function TodoApp() {
           </p>
 
           <div className="grid sm:grid-cols-1 gap-4">
-            <Card className="border border-cyan-100 shadow-sm">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-cyan-100 shadow-sm">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-cyan-100 flex items-center justify-center shrink-0">
                     <span className="text-cyan-700 font-black text-lg">1</span>
@@ -474,11 +480,11 @@ function TodoApp() {
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border border-blue-100 shadow-sm">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-blue-100 shadow-sm">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center shrink-0">
                     <span className="text-blue-700 font-black text-lg">2</span>
@@ -492,11 +498,11 @@ function TodoApp() {
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
 
-            <Card className="border border-indigo-100 shadow-sm">
-              <CardBody className="p-6">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-indigo-100 shadow-sm">
+              <div className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center shrink-0">
                     <span className="text-indigo-700 font-black text-lg">3</span>
@@ -512,19 +518,19 @@ function TodoApp() {
                     </p>
                   </div>
                 </div>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* 總結 */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <section
+          
+          
+          
+          
         >
           <div className="bg-gradient-to-br from-cyan-700 via-blue-700 to-indigo-800 rounded-3xl p-8 text-white">
             <h2 className="text-2xl font-black mb-6">本篇重點回顧</h2>
@@ -547,9 +553,9 @@ function TodoApp() {
               </p>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -570,7 +576,7 @@ function TodoApp() {
         {/* Tags */}
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['React', 'JavaScript', 'DOM', 'Virtual DOM', '為什麼學 React', 'EP.15'].map(tag => (
-            <Chip key={tag} variant="flat" color="primary" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
 

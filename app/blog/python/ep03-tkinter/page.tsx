@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import { Calendar,
   User,
   ArrowLeft,
@@ -13,8 +8,19 @@ import { Calendar,
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Tkinter GUI 開發 Python 桌面應用 | Joseph Chen',
+  description: '事件驅動設計、Grid 佈局、與 Raspberry Pi 自動化測試的實際整合',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/python/ep03-tkinter',
+  },
+};
+
+
 
 export default function PythonEP03Page() {
   return (
@@ -29,14 +35,14 @@ export default function PythonEP03Page() {
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <Chip size="sm" variant="flat" className="bg-teal-500/20 text-teal-200 border-teal-500/30 font-bold uppercase text-[10px]">
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-500/20 text-teal-200 border-teal-500/30 font-bold uppercase text-[10px]">
                 Python 系列
-              </Chip>
-              <Chip size="sm" variant="flat" className="bg-teal-500/20 text-teal-200 border-teal-500/30 font-bold uppercase text-[10px]">
+              </span>
+              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-teal-500/20 text-teal-200 border-teal-500/30 font-bold uppercase text-[10px]">
                 EP.03
-              </Chip>
+              </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
               Tkinter GUI 開發<br />
@@ -45,7 +51,7 @@ export default function PythonEP03Page() {
             <p className="text-teal-200 text-lg font-medium max-w-2xl mx-auto">
               事件驅動設計、Grid 佈局、與 Raspberry Pi 自動化測試的實際整合
             </p>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
@@ -73,19 +79,19 @@ export default function PythonEP03Page() {
 
         {/* Opening Quote */}
         <section>
-          <Card className="border border-teal-100 bg-gradient-to-br from-teal-50 to-sky-50 shadow-none">
-            <CardBody className="p-7">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-teal-100 bg-gradient-to-br from-teal-50 to-sky-50 shadow-none">
+            <div className="p-7">
               <div className="flex items-start gap-4">
                 <Quote size={28} className="text-teal-300 shrink-0 mt-1" />
                 <p className="text-gray-700 text-lg leading-relaxed italic font-medium">
                   在 SCT 做測試工程師時，第一個任務是把原本靠人工操作的測試流程包成一個 GUI。用 Tkinter 做出第一個視窗，讓測試員點一個按鈕就能跑完整個流程——那種成就感到現在都記得。
                 </p>
               </div>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 1: Tkinter 是什麼 */}
         <section className="space-y-5">
@@ -108,7 +114,7 @@ export default function PythonEP03Page() {
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 2: 基本視窗架構 */}
         <section className="space-y-6">
@@ -142,7 +148,7 @@ print("視窗已關閉，程式結束")  # mainloop() 結束後才執行到這�
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 3: 佈局管理器 */}
         <section className="space-y-6">
@@ -203,7 +209,7 @@ root.mainloop()`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 4: 常用 Widget */}
         <section className="space-y-6">
@@ -273,7 +279,7 @@ root.mainloop()`}
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 5: 事件驅動設計 */}
         <section className="space-y-6">
@@ -314,7 +320,7 @@ root.mainloop()`}
           </div>
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 6: 完整範例 */}
         <section className="space-y-6">
@@ -414,7 +420,7 @@ if __name__ == "__main__":
           />
         </section>
 
-        <Divider className="opacity-30" />
+        <hr className="border-gray-100 opacity-30"  />
 
         {/* Section 7: 面試常考題 */}
         <section className="space-y-6">
@@ -438,17 +444,17 @@ if __name__ == "__main__":
                 a: 'sticky 決定 Widget 在格子內如何對齊或延伸，使用 "n"（上）/"s"（下）/"e"（右）/"w"（左）或組合。sticky="ew" 讓 Widget 水平填滿格子；sticky="nsew" 讓 Widget 四個方向都填滿，通常配合 columnconfigure(weight=1) 使用。',
               },
             ].map((item, i) => (
-              <Card key={i} className="border border-gray-100 shadow-none">
-                <CardBody className="p-6 space-y-3">
+              <div key={i} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-100 shadow-none">
+                <div className="p-6 space-y-3">
                   <p className="font-black text-gray-900">Q{i + 1}. {item.q}</p>
                   <p className="text-gray-600 leading-relaxed text-sm">{item.a}</p>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <Divider className="my-12 opacity-50" />
+        <hr className="border-gray-100 my-12 opacity-50"  />
 
         {/* Navigation */}
         <div className="grid grid-cols-2 gap-4">
@@ -469,7 +475,7 @@ if __name__ == "__main__":
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['Tkinter', 'Python', 'GUI', '自動化測試', 'Raspberry Pi', 'EP.03'].map((tag) => (
-            <Chip key={tag} variant="flat" color="success" className="font-bold">{tag}</Chip>
+            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
           ))}
         </div>
       </article>

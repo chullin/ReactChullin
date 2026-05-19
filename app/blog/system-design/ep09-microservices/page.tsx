@@ -1,9 +1,4 @@
-'use client';
-import {
-  Card,
-  CardBody,
-  Chip,
-  Divider } from '@heroui/react';
+import { FadeIn } from '@/components/blog/ScrollAnimation';
 import {
   Calendar,
   User,
@@ -22,8 +17,19 @@ import {
 } from 'lucide-react';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import CodeBlock from '@/components/blog/CodeBlock';
+
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: '微服務拆分原則 與 Service Mesh | Joseph Chen',
+  description: 'Domain-Driven Design、Strangler Fig Pattern、Istio Sidecar — 何時拆、怎麼拆、拆完怎麼管',
+  alternates: {
+    canonical: 'https://chullin.tw/blog/system-design/ep09-microservices',
+  },
+};
+
+
 
 export default function SystemDesignEP09() {
   return (
@@ -32,7 +38,7 @@ export default function SystemDesignEP09() {
       {/* ── Hero ── */}
       <div className="bg-gradient-to-br from-slate-800 via-zinc-700 to-gray-700 text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <FadeIn>
             <div className="flex items-center gap-3 mb-6">
               <span className="bg-white/20 backdrop-blur text-white font-black px-4 py-1.5 rounded-full text-sm">EP.09</span>
               <span className="bg-white/10 text-white/80 px-3 py-1 rounded-full text-xs">系統設計系列</span>
@@ -51,17 +57,17 @@ export default function SystemDesignEP09() {
               <span className="flex items-center gap-1.5"><Clock size={14} /> 18 min read</span>
               <span className="flex items-center gap-1.5"><Eye size={14} /> DDD · Strangler Fig · Istio · Observability</span>
             </div>
-          </motion.div>
+          </FadeIn>
         </div>
       </div>
 
       <article className="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
         {/* ── Section 1：微服務不是萬靈丹 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
@@ -91,15 +97,15 @@ export default function SystemDesignEP09() {
     - 本地開發困難（需要跑多個服務）   `}
 </CodeBlock>
 
-          <Card className="border border-amber-200 bg-amber-50 my-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-amber-200 bg-amber-50 my-6">
+            <div className="p-5">
               <p className="text-amber-800 font-medium leading-relaxed">
                 「不要過早拆分微服務。Netflix 和 Amazon 都是先有巨大的 Monolith，再逐漸拆分。
                 如果你的團隊人數少於 10 人，Monolith 幾乎必然是更好的選擇。
                 微服務的複雜度需要有足夠的工程能力和組織規模才能消化。」
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <h3 className="text-lg font-bold text-gray-800 mb-4">何時值得考慮拆分？</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -121,8 +127,8 @@ export default function SystemDesignEP09() {
                 desc: 'ML 推薦服務用 Python、主 API 用 Node.js、批次處理用 Java',
               },
             ].map((item) => (
-              <Card key={item.title} className="border border-gray-200">
-                <CardBody className="p-4">
+              <div key={item.title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200">
+                <div className="p-4">
                   <div className="flex items-start gap-2">
                     <CheckCircle size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
                     <div>
@@ -130,19 +136,19 @@ export default function SystemDesignEP09() {
                       <p className="text-gray-500 text-xs mt-0.5">{item.desc}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 2：DDD Bounded Context ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center">
@@ -151,14 +157,14 @@ export default function SystemDesignEP09() {
             <h2 className="text-2xl font-black text-gray-900">Section 2：拆分邊界 — Domain-Driven Design（DDD）</h2>
           </div>
 
-          <Card className="border border-zinc-200 bg-zinc-50 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-zinc-200 bg-zinc-50 mb-6">
+            <div className="p-5">
               <p className="text-zinc-800 font-semibold">
                 「好的微服務邊界來自業務領域，而不是技術層面。
                 按照資料庫 table 拆或按照技術層（Controller / Service / Repository）拆，都是錯誤的做法。」
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed mb-6">
             DDD 的核心概念是 <strong>Bounded Context（限界上下文）</strong>——
@@ -211,8 +217,8 @@ export default function SystemDesignEP09() {
                 desc: '服務之間絕對不能共用資料庫。共用 DB 是最常見的微服務反模式（Anti-pattern），會導致隱性耦合。',
               },
             ].map((item) => (
-              <Card key={item.num} className="border border-gray-200">
-                <CardBody className="p-4">
+              <div key={item.num} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200">
+                <div className="p-4">
                   <div className="flex items-start gap-4">
                     <span className="text-2xl font-black text-gray-200">{item.num}</span>
                     <div>
@@ -220,19 +226,19 @@ export default function SystemDesignEP09() {
                       <p className="text-gray-600 text-sm">{item.desc}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 3：Strangler Fig Pattern ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -241,14 +247,14 @@ export default function SystemDesignEP09() {
             <h2 className="text-2xl font-black text-gray-900">Section 3：Strangler Fig Pattern — 安全遷移到微服務</h2>
           </div>
 
-          <Card className="border border-gray-200 bg-gray-50 mb-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 bg-gray-50 mb-6">
+            <div className="p-5">
               <p className="text-gray-700 font-medium leading-relaxed">
                 「不要嘗試重寫整個系統（Big Bang Rewrite）——根據歷史統計，這類專案的失敗率極高。
                 應該用 Strangler Fig Pattern：像榕樹氣根一樣，慢慢包覆舊系統，逐漸取而代之。」
               </p>
-            </CardBody>
-          </Card>
+            </div>
+          </div>
 
           <p className="text-gray-700 leading-relaxed mb-6">
             Strangler Fig 取名自一種熱帶植物：它的氣根會慢慢包覆宿主樹，最終完全取代宿主。
@@ -329,15 +335,15 @@ async function getOrder(orderId: string) {
   return await legacyDb.query('SELECT * FROM orders WHERE id = $1', [orderId]);
 }   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 4：服務間通訊模式 ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
@@ -458,15 +464,15 @@ await consumer.run({
   },
 });   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 5：Service Mesh ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-zinc-100 rounded-xl flex items-center justify-center">
@@ -595,15 +601,15 @@ spec:
             paths: ["/api/payment/charge"]
   # 其他服務的請求會被自動拒絕（403 Forbidden）   `}
 </CodeBlock>
-        </motion.section>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Section 6：Observability ── */}
-        <motion.section
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
+        <section
+          
+          
+          
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
@@ -624,17 +630,17 @@ spec:
               { icon: '📊', title: 'Metrics', subtitle: '指標', desc: '系統健康狀況的數字', tool: 'Prometheus + Grafana' },
               { icon: '🔍', title: 'Traces', subtitle: '追蹤', desc: '請求如何在服務間流動', tool: 'Jaeger / Zipkin' },
             ].map((item) => (
-              <Card key={item.title} className="border border-gray-200 text-center">
-                <CardBody className="p-4">
+              <div key={item.title} className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 text-center">
+                <div className="p-4">
                   <div className="text-3xl mb-2">{item.icon}</div>
                   <p className="font-black text-gray-800 text-lg">{item.title}</p>
                   <p className="text-gray-500 text-sm mb-1">{item.subtitle}</p>
                   <p className="text-gray-600 text-xs mb-2">{item.desc}</p>
-                  <Chip size="sm" variant="flat" className="bg-gray-100 text-gray-600 text-xs">
+                  <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-gray-100 text-gray-600 text-xs">
                     {item.tool}
-                  </Chip>
-                </CardBody>
-              </Card>
+                  </span>
+                </div>
+              </div>
             ))}
           </div>
 
@@ -816,8 +822,8 @@ async function processOrder(orderData: OrderInput) {
 //         └── kafka.produce       8ms   `}
 </CodeBlock>
 
-          <Card className="border border-slate-200 bg-gradient-to-r from-slate-50 to-zinc-50 mt-6">
-            <CardBody className="p-5">
+          <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-slate-200 bg-gradient-to-r from-slate-50 to-zinc-50 mt-6">
+            <div className="p-5">
               <div className="flex items-start gap-3">
                 <BarChart3 size={20} className="text-slate-600 mt-0.5 flex-shrink-0" />
                 <div>
@@ -829,64 +835,54 @@ async function processOrder(orderData: OrderInput) {
                   </p>
                 </div>
               </div>
-            </CardBody>
-          </Card>
-        </motion.section>
+            </div>
+          </div>
+        </section>
 
-        <Divider className="my-8" />
+        <hr className="border-gray-100 my-8"  />
 
         {/* ── Tags ── */}
-        <motion.div
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap gap-2"
-        >
+        <FadeIn>
           {['Microservices', 'DDD', 'Service Mesh', 'Istio', 'Strangler Fig', 'Distributed Systems'].map((tag) => (
-            <Chip
+            <span
               key={tag}
-              size="sm"
-              variant="flat"
-              className="bg-slate-100 text-slate-700"
+              
+              
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-slate-100 text-slate-700"
             >
               {tag}
-            </Chip>
+            </span>
           ))}
-        </motion.div>
+        </FadeIn>
 
         {/* ── Navigation ── */}
-        <motion.div
-          whileInView={{ opacity: 1, y: 0 }}
-          initial={{ opacity: 0, y: 20 }}
-          viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4"
-        >
+        <FadeIn>
           <Link href="/blog/system-design/ep08-elasticsearch">
-            <Card className="border border-gray-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
-              <CardBody className="p-4">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
+              <div className="p-4">
                 <div className="flex items-center gap-2 text-gray-500 mb-1">
                   <ArrowLeft size={16} />
                   <span className="text-xs">前一篇</span>
                 </div>
                 <p className="font-bold text-gray-800 text-sm">EP.08 Elasticsearch</p>
                 <p className="text-gray-500 text-xs">全文搜尋、Inverted Index、Query DSL</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </Link>
 
           <Link href="/blog/system-design/ep01-intro">
-            <Card className="border border-gray-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
-              <CardBody className="p-4 text-right">
+            <div className="rounded-2xl border border-gray-100 bg-white shadow-sm border border-gray-200 hover:border-slate-400 hover:shadow-md transition-all cursor-pointer">
+              <div className="p-4 text-right">
                 <div className="flex items-center justify-end gap-2 text-gray-500 mb-1">
                   <span className="text-xs">下一篇</span>
                   <ArrowRight size={16} />
                 </div>
                 <p className="font-bold text-gray-800 text-sm">EP.01 分散式系統入門</p>
                 <p className="text-gray-500 text-xs">CAP Theorem、一致性模型、分散式基礎</p>
-              </CardBody>
-            </Card>
+              </div>
+            </div>
           </Link>
-        </motion.div>
+        </FadeIn>
 
       </article>
     </div>

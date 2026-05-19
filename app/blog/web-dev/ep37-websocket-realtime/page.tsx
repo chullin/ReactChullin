@@ -246,7 +246,7 @@ function Chat() {
                   className="w-5 h-5 border-4 border-white"
                 >
                   <Avatar 
-                    src="/assets/profile3.png" 
+                    src="/assets/profile3.webp" 
                     className="w-24 h-24 text-large shadow-xl"
                   />
                 </Badge>
