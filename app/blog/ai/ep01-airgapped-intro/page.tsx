@@ -5,7 +5,15 @@ import { Calendar,
   Eye,
   Quote,
   ArrowRight,
-  Info
+  Info,
+  ShieldCheck,
+  Server,
+  Network,
+  Cpu,
+  FileCode2,
+  AlertOctagon,
+  CheckCircle2,
+  CornerDownRight
 } from 'lucide-react';
 
 import Link from 'next/link';
@@ -21,8 +29,6 @@ export const metadata: Metadata = {
     canonical: 'https://chullin.tw/blog/ai/ep01-airgapped-intro',
   },
 };
-
-
 
 const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; children: React.ReactNode }) => {
   const styles = {
@@ -42,8 +48,8 @@ const InfoBox = ({ type, children }: { type: 'tip' | 'warning' | 'info'; childre
 export default function AiEP01Page() {
   return (
     <div className="bg-white min-h-screen">
-      {/* Hero */}
-      <div className="relative h-[52vh] min-h-[360px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
+      {/* 1. Hero / 標題區 */}
+      <div className="relative h-[52vh] min-h-[380px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
         <div
           className="absolute inset-0 opacity-20"
           style={{
@@ -54,10 +60,10 @@ export default function AiEP01Page() {
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center space-y-5">
           <FadeIn>
             <div className="flex justify-center gap-2 mb-5">
-              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase text-[10px]">
                 AI 離線部署
               </span>
-              <span   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 bg-purple-500/20 text-purple-300 border-purple-500/30 font-bold uppercase text-[10px]">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase text-[10px]">
                 EP.01
               </span>
             </div>
@@ -74,7 +80,6 @@ export default function AiEP01Page() {
       </div>
 
       <article className="max-w-3xl mx-auto px-6 py-16 space-y-16">
-
         {/* Author */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
@@ -90,244 +95,422 @@ export default function AiEP01Page() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
-            <div className="flex items-center gap-1.5"><Clock size={16} /> <span>8 min read</span></div>
+            <div className="flex items-center gap-1.5"><Clock size={16} /> <span>12 min read</span></div>
             <div className="flex items-center gap-1.5"><Eye size={16} /> <span>實戰筆記</span></div>
           </div>
         </div>
 
-        {/* Intro */}
-        <section className="space-y-5">
-          <p className="text-lg text-gray-700 leading-relaxed font-medium">
-            2024 年，我加入鴻海深圳廠，接下了一個特殊任務：在完全沒有網路連線的生產環境裡，
-            部署一套可以跑 LLM（大型語言模型）的 AI 平台。
+        {/* 2. 這篇文章要解決什麼問題 */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">這篇文章要解決什麼問題</h2>
+          <p className="text-gray-700 leading-relaxed font-medium">
+            在生成式 AI (Generative AI) 爆發的時代，大多數開發者早已習慣直接呼叫 OpenAI、Claude 或 Gemini 等雲端 SaaS API。只要綁定信用卡、取得 API Key，幾行代碼就能建立一個強大的智能客服或知識助手。
           </p>
-          <p className="text-lg text-gray-700 leading-relaxed font-medium">
-            這篇文章不談程式碼，先把最根本的問題說清楚：<strong>為什麼要離線？什麼是 Air-gapped？這件事難在哪裡？</strong>
+          <p className="text-gray-700 leading-relaxed font-medium">
+            但在製造業、金融業、智慧醫療或國防領域，事情完全不是這樣。想像一下，你手中有涉及新一代手機量產的機密良率報告、關鍵晶片的底層測試日誌，或是客戶極其私密的安全驗證憑證。如果將這些資料直接上傳到公有雲端 AI，哪怕服務商聲稱「不會用於模型訓練」，在合規與資安稽核面前也絕對是無法妥協的紅線。
+          </p>
+          <p className="text-gray-700 leading-relaxed font-medium">
+            因此，這些大型企業會要求核心開發環境與生產線網段必須與外界 Internet 徹底切斷，實行物理隔離。這在資安領域被稱為 <strong>Air-gap (氣隙隔離)</strong>。
+          </p>
+          <p className="text-gray-700 leading-relaxed font-medium">
+            這篇文章要探討的核心問題是：<strong>當我們失去了 `pip install`、`docker pull` 與外網 API 呼叫的便利後，要如何在一台物理隔離、沒有任何外網訊號的內網伺服器上，成功架設並運行起一個商用級的本地化 LLM 推論與 Orchestration 平台？</strong>
           </p>
         </section>
 
-        <hr className="border-gray-100 opacity-30"  />
+        <hr className="border-gray-100 opacity-50" />
 
-        {/* 什麼是 Air-gapped */}
+        {/* 3. 真實案例或 Joseph 的經驗 */}
         <section className="space-y-6">
-          <h2 className="text-3xl font-black text-gray-900">Air-gapped 是什麼意思？</h2>
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">真實案例與 Joseph 的現場經驗</h2>
           <p className="text-gray-700 leading-relaxed">
-            "Air gap"（氣隙）是一個資安術語，指的是一台機器或整個網路與外部網際網路之間存在「物理隔離」——
-            就像兩台電腦之間隔著一段空氣，無法直接連線傳輸資料。
+            2024 年，我加入鴻海深圳廠，接下了一個核心任務：在無聯網的自動化測試機房中部署一套能夠自主判讀異常 Log、提供 SOP 操作指引的本地 LLM 助手。
           </p>
-
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                icon: '🏭',
-                title: '製造工廠',
-                desc: '生產線機台不能連外網，避免被駭客入侵或資料外洩。iPhone 組裝廠、晶片廠都是這種環境。',
-                color: 'bg-blue-50 border-blue-100',
-              },
-              {
-                icon: '🏦',
-                title: '金融機構',
-                desc: '交易系統、核心銀行系統與外網完全隔離，防止資安攻擊與法規違規。',
-                color: 'bg-green-50 border-green-100',
-              },
-              {
-                icon: '🛡️',
-                title: '國防/政府',
-                desc: '機密資料系統嚴格隔離，連 USB 都可能被禁，確保國家機密不外洩。',
-                color: 'bg-red-50 border-red-100',
-              },
-            ].map((item) => (
-              <div key={item.title} className={`border rounded-2xl p-5 ${item.color}`}>
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <p className="font-black text-gray-900 mb-2">{item.title}</p>
-                <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+          <p className="text-gray-700 leading-relaxed">
+            我還記得第一天踏入該網段機房時的震撼：所有的伺服器主機皆沒有插上實體網線，無線網卡在 BIOS 階段就被直接禁用，甚至所有 USB 連接埠都被貼上了帶有警示字樣的物理封條。在這樣的環境下，任何一次的軟體部署都像是戴著鐐銬跳舞。
+          </p>
+          <div className="bg-purple-50 rounded-2xl p-6 border border-purple-100 text-purple-950 space-y-3">
+            <p className="font-bold">💡 現場血淚經驗：部署痛點不在 AI 模型，而在運維依賴</p>
+            <p className="text-sm leading-relaxed">
+              我一開始也以為部署 AI 不過就是把 llama3 跑起來，直到我被擋在第一關：沒有外網。我沒辦法直接跑 `pip install requests`。在有網路的辦公室寫好的程式，帶進生產線時，只因為少了一個極小的 C-binding 函式庫，整套系統就直接崩潰。
+            </p>
+            <p className="text-sm leading-relaxed">
+              在這種極端的 Air-gapped 環境下，任何軟體與模型的移入都必須經過層層審批：首先在有限度聯網的「開發機」下載所有的套件 Wheels 與 Docker 映像檔，經過公司的多重毒性掃描與人工代碼稽核後，打包成大壓縮檔，再透過特許的內部網路安全通道（跳板伺服器）單向傳輸進生產內網。
+            </p>
+            <p className="text-sm leading-relaxed font-semibold">
+              這段經歷讓我深刻體會到：在工廠端部署 AI，核心阻礙往往不是演算法的精準度，而是如何確保系統在零外網依賴下，依然具備 100% 的健壯度與可運維性。
+            </p>
           </div>
-
-          <InfoBox type="info">
-            <strong>我的情況</strong>：深圳廠的生產網路（Production Network）與辦公網路完全隔離，
-            外部 IP 被封鎖。要讓 AI 跑起來，所有模型、套件、工具都必須先在有網路的地方準備好，
-            再透過受控管道（審批的隨身碟或內網文件伺服器）搬進去。
-          </InfoBox>
         </section>
 
-        <hr className="border-gray-100 opacity-30"  />
+        <hr className="border-gray-100 opacity-50" />
 
-        {/* 為什麼工廠需要 AI */}
+        {/* 4. 核心概念解釋 */}
         <section className="space-y-6">
-          <h2 className="text-3xl font-black text-gray-900">工廠為什麼要跑 LLM？</h2>
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">核心概念解釋：氣隙網絡 (Air-gap) 的架構</h2>
           <p className="text-gray-700 leading-relaxed">
-            這是我剛接到任務時自己也問的問題。在一個強調精準、標準化的製造環境，AI 能做什麼？
+            要做到物理隔離，企業內部通常會將網段切分為不同的信任等級。典型的製造業工廠網段拓撲如下：
           </p>
 
-          <div className="space-y-3">
-            {[
-              {
-                num: '01',
-                title: '知識庫問答',
-                desc: '操作 SOP、機台手冊動輒幾百頁，工程師花在找資料的時間佔工作時間 30% 以上。LLM 可以直接回答「這個錯誤代碼怎麼處理」。',
-                color: 'bg-purple-500',
-              },
-              {
-                num: '02',
-                title: '異常報告生成',
-                desc: '每次機台異常都要填一份報告，格式固定但內容重複。LLM 可以從測試 log 自動生成初稿，工程師只需要確認。',
-                color: 'bg-blue-500',
-              },
-              {
-                num: '03',
-                title: '測試腳本輔助',
-                desc: '自動化測試腳本需要持續維護，AI Agent 可以協助生成或偵錯腳本，加速開發週期。',
-                color: 'bg-indigo-500',
-              },
-              {
-                num: '04',
-                title: '多語言溝通',
-                desc: '深圳廠工程師說中文，客戶說英文，印度廠說英文，LLM 可以做即時文件翻譯和溝通輔助。',
-                color: 'bg-violet-500',
-              },
-            ].map((item) => (
-              <div key={item.num} className="flex items-start gap-5 bg-gray-50 rounded-2xl p-5">
-                <div className={`w-10 h-10 rounded-xl ${item.color} text-white flex items-center justify-center font-black text-sm shrink-0`}>
-                  {item.num}
-                </div>
+          {/* Flowchart 區塊 - 使用 Tailwind 繪製 */}
+          <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 my-6">
+            <p className="text-sm font-black text-slate-400 uppercase tracking-wider mb-6 text-center">Air-Gapped AI 部署流程與拓撲架構</p>
+            
+            <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 relative">
+              {/* Step 1 */}
+              <div className="flex-1 bg-white p-5 rounded-2xl border border-slate-200 flex flex-col justify-between shadow-sm">
                 <div>
-                  <p className="font-black text-gray-900">{item.title}</p>
-                  <p className="text-gray-500 text-sm mt-1 leading-relaxed">{item.desc}</p>
+                  <span className="text-xs font-black text-purple-600 uppercase">Step 01 / 辦公網段</span>
+                  <h4 className="font-black text-slate-800 text-sm mt-1 mb-2">Office Network</h4>
+                  <p className="text-xs text-slate-500 leading-relaxed">可正常存取外網。在此下載所需的 Python Wheel 依賴套件、Docker 映像檔，以及開源模型權重 (.gguf)。</p>
+                </div>
+                <div className="mt-4 text-xs font-bold text-slate-400 border-t pt-2 bg-slate-50/50 -mx-5 -mb-5 p-3 rounded-b-2xl">
+                  💾 輸出轉存離線壓縮包
                 </div>
               </div>
-            ))}
+
+              {/* Arrow */}
+              <div className="flex items-center justify-center md:rotate-0 rotate-90 text-purple-300">
+                <ArrowRight size={24} />
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex-1 bg-purple-50 p-5 rounded-2xl border border-purple-200 flex flex-col justify-between shadow-sm">
+                <div>
+                  <span className="text-xs font-black text-purple-700 uppercase">Step 02 / 資安審查</span>
+                  <h4 className="font-black text-purple-900 text-sm mt-1 mb-2">Security Gate</h4>
+                  <p className="text-xs text-purple-700 leading-relaxed">將打包的壓縮包與模型檔案送交資安團隊。執行 MD5 校驗、木馬毒性掃描與防洩密檢查，通過後傳送至特許跳板機。</p>
+                </div>
+                <div className="mt-4 text-xs font-bold text-purple-700 border-t pt-2 bg-purple-100/50 -mx-5 -mb-5 p-3 rounded-b-2xl">
+                  🛡️ 雙重簽章與 MD5 驗證
+                </div>
+              </div>
+
+              {/* Arrow */}
+              <div className="flex items-center justify-center md:rotate-0 rotate-90 text-purple-300">
+                <ArrowRight size={24} />
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex-1 bg-slate-900 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between shadow-lg text-white">
+                <div>
+                  <span className="text-xs font-black text-purple-400 uppercase">Step 03 / 生產網段</span>
+                  <h4 className="font-black text-white text-sm mt-1 mb-2">Production (Air-gapped)</h4>
+                  <p className="text-xs text-slate-400 leading-relaxed">完全斷網。使用特許傳入的離線資源包，安裝 Python Wheels，載入本地 Docker 鏡像，拉起本地 Ollama 推論引擎。</p>
+                </div>
+                <div className="mt-4 text-xs font-bold text-purple-300 border-t border-slate-800 pt-2 bg-slate-950 -mx-5 -mb-5 p-3 rounded-b-2xl">
+                  🔒 物理隔離，100% 本地推論
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-gray-700 leading-relaxed">
+            在有網路的 Office Net 裡，我們能輕易進行軟體組裝；一旦要把程式搬移到完全斷網的 Production Net，就必須提前將以下三大核心資源進行「靜態化」與「離線打包」：
+          </p>
+          <ul className="space-y-3 pl-6 text-gray-700 list-disc">
+            <li><strong>運行庫依賴 (Runtime Dependencies)</strong>：所有的 Python `.whl` 封裝，需包含底層的 C 延伸模組。</li>
+            <li><strong>運行環境 (Runtime Environment)</strong>：包含基礎的 Docker base images、Ollama 二進位檔、及相關後台資料庫。</li>
+            <li><strong>AI 模型權重 (Model Weights)</strong>：一般為預先量化好的 GGUF 格式。量化不僅能壓縮體積，更大幅降低了對生產線伺服器顯示卡記憶體 (VRAM) 的硬體要求。</li>
+          </ul>
+        </section>
+
+        <hr className="border-gray-100 opacity-50" />
+
+        {/* 5. 程式碼範例 */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">程式碼實戰：從線上安裝到離線打包自動化</h2>
+          <p className="text-gray-700 leading-relaxed">
+            以下我們用程式碼來展示兩者的差距。第一段是開發階段常見的「直覺寫法」，這在離線環境會直接觸發網路連線錯誤；第二段則是我們實際採用的「離線分階段自動化打包腳本」。
+          </p>
+
+          <div className="space-y-4">
+            <p className="font-bold text-red-600 flex items-center gap-1.5">
+              <AlertOctagon size={18} /> 錯誤的寫法：依賴外部即時下載與 API 呼叫（離線環境直接崩潰）
+            </p>
+            <pre className="bg-slate-950 text-slate-100 p-5 rounded-2xl overflow-x-auto text-xs leading-relaxed font-mono">
+{`# ❌ 在生產線執行此腳本會直接 Crash，因為無法與 PyPI 或 Docker Hub 建立連線
+import os
+import requests
+
+# 1. 現場嘗試線上安裝缺失套件
+# os.system("pip install requests langchain langchain-community") 
+# ConnectionTimeoutError: Failed to establish a new connection...
+
+# 2. 嘗試呼叫外部公有雲 API
+def call_online_llm(prompt):
+    api_key = "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "model": "gpt-4o",
+        "messages": [{"role": "user", "content": prompt}]
+    }
+    
+    # 這裡在 Air-gapped 環境下會直接丟出 ConnectionError
+    response = requests.post(url, headers=headers, json=data, timeout=5)
+    return response.json()
+
+if __name__ == "__main__":
+    try:
+        res = call_online_llm("分析當前工廠測試機台異常日誌")
+        print(res)
+    except Exception as e:
+        print(f"❌ 部署失敗：找不到外部網絡連接。錯誤詳情: {e}")`}
+            </pre>
+          </div>
+
+          <div className="space-y-4">
+            <p className="font-bold text-green-600 flex items-center gap-1.5">
+              <CheckCircle2 size={18} /> 改良後寫法：分階段下載、本地加載模型與離線部署自動化
+            </p>
+            <p className="text-xs text-gray-500 leading-relaxed">
+              我們將整個部署拆分為「有網開發機」的下載腳本，與「無網生產機」的本地安裝載入腳本：
+            </p>
+            <pre className="bg-slate-950 text-slate-100 p-5 rounded-2xl overflow-x-auto text-xs leading-relaxed font-mono">
+{`# 🚀 步驟一：【在有網路的 Office 開發機執行】下載腳本
+# download_assets.sh
+# ----------------------------------------------------
+# 1. 下載所有 Python wheels（包含所有子依賴，強制使用 binary 避免現場編譯）
+# pip download -d ./offline_wheels -r requirements.txt --only-binary=:all:
+#
+# 2. 拉取並保存 Docker 映像檔
+# docker pull ollama/ollama:latest
+# docker save -o ollama_image.tar ollama/ollama:latest
+
+# 🚀 步驟二：【在無網路的 Air-gapped 生產機執行】本地加載與推論 Python 腳本
+# run_local_llm.py
+# ----------------------------------------------------
+import subprocess
+import os
+from openai import OpenAI
+
+def init_offline_environment():
+    print("📦 正在執行本地依賴包離線安裝...")
+    # 在生產主機本地安裝準備好的 wheels，不連網且忽略 index
+    # subprocess.run(["pip", "install", "--no-index", "--find-links=./offline_wheels", "-r", "requirements.txt"])
+    
+    print("🐳 正在導入離線 Docker 映像檔...")
+    # subprocess.run(["docker", "load", "-i", "ollama_image.tar"])
+    
+    print("✅ 本地運維環境就緒。")
+
+# 使用 Ollama Modelfile 載入特許搬入的本地 GGUF 模型檔
+# 本地 Modelfile 內容：
+# FROM /app/models/qwen2.5-7b-instruct.gguf
+# PARAMETER temperature 0.3
+# SYSTEM "你是一位精通半導體測試機台日誌分析的資深助理。"
+
+def run_local_inference(prompt):
+    # 呼叫已經在生產網伺服器背景運行起的本地 Ollama 服務 (127.0.0.1:11434)
+    client = OpenAI(
+        base_url="http://127.0.0.1:11434/v1",
+        api_key="ollama" # 本地推論無須外網金鑰
+    )
+    
+    response = client.chat.completions.create(
+        model="qwen2.5-7b-custom",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3
+    )
+    return response.choices[0].message.content
+
+if __name__ == "__main__":
+    # 模擬本地初始化與離線推論
+    # init_offline_environment()
+    
+    log_sample = "ERR 2026-05-19 22:15:50 [SYS] Serial port write timeout on controller board XY-04."
+    print("🤖 送出分析日誌請求...")
+    analysis = run_local_inference(f"請分析以下機台錯誤並給出除錯建議：\\n{log_sample}")
+    print("\\n=== 本地 AI 分析結果 ===")
+    print(analysis)`}
+            </pre>
           </div>
         </section>
 
-        <hr className="border-gray-100 opacity-30"  />
+        <hr className="border-gray-100 opacity-50" />
 
-        {/* 離線部署的挑戰 */}
+        {/* 6. 技術比較表 */}
         <section className="space-y-6">
-          <h2 className="text-3xl font-black text-gray-900">離線部署難在哪裡？</h2>
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">技術方案比較</h2>
           <p className="text-gray-700 leading-relaxed">
-            如果你習慣了 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">pip install</code>、
-            <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">docker pull</code>、
-            <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">ollama pull</code>
-            這些一行搞定的指令，你就能理解在離線環境裡這些都不能用的痛苦。
+            不同 AI 部署方案在開發效率、安全合規與維護成本上各有優劣，以下為實戰經驗整理：
           </p>
 
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-gray-500 border-collapse">
+              <thead className="text-xs text-gray-700 uppercase bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-4 font-black">部署方案</th>
+                  <th className="px-6 py-4 font-black">優點</th>
+                  <th className="px-6 py-4 font-black">缺點</th>
+                  <th className="px-6 py-4 font-black">適合場景</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="hover:bg-slate-50/80">
+                  <td className="px-6 py-4 font-bold text-gray-900">雲端 SaaS API (OpenAI)</td>
+                  <td className="px-6 py-4 text-green-700">免硬體成本、開發極快、模型能力最強</td>
+                  <td className="px-6 py-4 text-red-700">資料外洩風險高、依賴外網穩定性、費用高</td>
+                  <td className="px-6 py-4 text-slate-700">新創產品驗證、無隱私限制的公開業務</td>
+                </tr>
+                <tr className="hover:bg-slate-50/80">
+                  <td className="px-6 py-4 font-bold text-gray-900">企業內網/私有雲部署</td>
+                  <td className="px-6 py-4 text-green-700">資料不出企業網、能與內部帳號 SSO 整合</td>
+                  <td className="px-6 py-4 text-red-700">需自備高階 GPU 伺服器、內部網路需打通通道</td>
+                  <td className="px-6 py-4 text-slate-700">一般企業內部的 ERP、HR 助手、內部文件庫</td>
+                </tr>
+                <tr className="hover:bg-slate-50/80">
+                  <td className="px-6 py-4 font-bold text-gray-900">物理隔離 (Air-gapped) 本地部署</td>
+                  <td className="px-6 py-4 text-green-700">100% 防止資料外洩、極高資安合規、免授權費</td>
+                  <td className="px-6 py-4 text-red-700">初次部署門檻極高、無法自動更新、資源受限</td>
+                  <td className="px-6 py-4 text-slate-700">智慧工廠生產線、核心金融系統、國家防務</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <hr className="border-gray-100 opacity-50" />
+
+        {/* 7. 常見錯誤與踩坑 */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">常見錯誤與踩坑實錄</h2>
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <span className="text-2xl mt-1">🔴</span>
+              <div>
+                <h4 className="font-bold text-gray-900 text-lg">只用 `pip download` 下載源碼卻缺少編譯工具</h4>
+                <p className="text-gray-600 text-sm mt-1 leading-relaxed">
+                  我第一次打包 Python 套件時，直接執行了下載。到現場才發現，某些套件在安裝時需要呼叫本機的 `gcc` 或 `make` 來編譯 C 語言擴充模組。但生產線伺服器是最小化安裝版（Minimal OS），根本沒有編譯環境。
+                  <br />
+                  <strong>正解：</strong> 必須在下載時加上 `--only-binary=:all:` 參數，強迫下載預先編譯好的二進位 Wheel 檔。
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-2xl mt-1">🔴</span>
+              <div>
+                <h4 className="font-bold text-gray-900 text-lg">容器內外時區不同步導致憑證過期</h4>
+                <p className="text-gray-600 text-sm mt-1 leading-relaxed">
+                  在隔離環境下，我們部署了 Dify 容器。結果有些 API 呼叫本地資料庫時一直報錯。最後排查才發現，宿主機時區是 UTC+8，但 Docker 容器預設採用 UTC 時區。由於時間相差 8 小時，觸發了內部安全憑證的逾期保護機制。
+                  <br />
+                  <strong>正解：</strong> 在 Docker Compose 的 `volumes` 中，將本機的 `/etc/localtime` 單向掛載進容器中，強制時區一致。
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <span className="text-2xl mt-1">🔴</span>
+              <div>
+                <h4 className="font-bold text-gray-900 text-lg">未作大模型檔案的雜湊值校驗 (Checksum)</h4>
+                <p className="text-gray-600 text-sm mt-1 leading-relaxed">
+                  有一次搬運一個 14B 的 GGUF 大模型（約 9GB）。傳入工廠內網後，Ollama 載入時一直拋出 `segmentation fault` 核心崩潰。查了半天程式，最後才發現是隨身碟因多次插拔損壞，導致寫入的檔案少了幾個 bytes。
+                  <br />
+                  <strong>正解：</strong> 在 Office 網段打包時，先計算檔案的 MD5 雜湊值（`md5sum model.gguf`）。搬運進生產伺服器後，必須重新計算比對，一致才允許運行。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-gray-100 opacity-50" />
+
+        {/* 8. 實務建議 */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">實務操作建議</h2>
+          <p className="text-gray-700 leading-relaxed">
+            要在 Air-gapped 環境長期維持 AI 系統穩定，建議將以下工作寫入維運標準 SOP：
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-purple-100 text-purple-600 p-1.5 rounded-lg mt-0.5"><ShieldCheck size={16} /></div>
+              <div>
+                <p className="font-bold text-gray-900">建立私有離線倉庫鏡像 (Private Mirror)</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">當工廠端規模擴大時，頻繁用隨身碟搬運 wheel 檔極易出錯。建議在工廠的特許中繼網段架設內部 Nexus Repository 或 PyPI 私有鏡像，統一集中管理依賴版本。</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="bg-purple-100 text-purple-600 p-1.5 rounded-lg mt-0.5"><Server size={16} /></div>
+              <div>
+                <p className="font-bold text-gray-900">一鍵 Compose 化部署與備份</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">生產線伺服器不容許繁雜的手動設定。務必使用 Docker Compose 將 Ollama、Dify、PostgreSQL、Redis 整套架構服務容器化，並實作一鍵啟動與狀態定期備份腳本。</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <div className="bg-purple-100 text-purple-600 p-1.5 rounded-lg mt-0.5"><Network size={16} /></div>
+              <div>
+                <p className="font-bold text-gray-900">模型與業務代碼分離 (Model Decoupling)</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">不要將 GGUF 權重檔包進業務 Docker image。應透過磁碟路徑掛載將模型目錄映射進推論容器，未來模型升級（如從 Qwen-7B 升級到 Qwen-14B）時，只需替換檔案並重啟 Ollama，不需重新構建映像檔。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <hr className="border-gray-100 opacity-50" />
+
+        {/* 9. 與本系列其他文章的關聯 */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-black text-gray-900 border-l-4 border-purple-600 pl-4">與本系列其他文章的關聯</h2>
+          <p className="text-gray-700 leading-relaxed">
+            這篇文章是整個「AI 離線實戰系列」的開篇。當你理解了隔離網路的運維限制後，接下來我們將進入更具體的實作章節：
+          </p>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="bg-red-50 border border-red-100 rounded-2xl p-6 space-y-3">
-              <p className="font-black text-red-800 text-lg">😤 你平常理所當然的事</p>
-              <ul className="space-y-2 text-red-700 text-sm">
-                {[
-                  'pip install requests → 自動從 PyPI 下載',
-                  'docker pull ollama/ollama → 從 Docker Hub 拉取',
-                  'ollama pull llama3 → 自動下載 4GB 模型',
-                  'npm install → 從 npm registry 安裝',
-                  'apt-get update → 從網路更新套件',
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2">
-                    <span className="mt-0.5">❌</span>
-                    <code className="text-xs bg-red-100 px-2 py-0.5 rounded">{t}</code>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-green-50 border border-green-100 rounded-2xl p-6 space-y-3">
-              <p className="font-black text-green-800 text-lg">✅ 離線環境的解法</p>
-              <ul className="space-y-2 text-green-700 text-sm">
-                {[
-                  '預先下載所有 wheel 檔，搬進來再安裝',
-                  '在有網路的機器 docker save，打包成 tar 檔',
-                  '手動下載 .gguf 模型檔，複製到指定路徑',
-                  '建立內部 npm/pip mirror，供離線安裝',
-                  '將所有依賴打包成離線安裝包',
-                ].map((t) => (
-                  <li key={t} className="flex items-start gap-2">
-                    <span className="mt-0.5">✓</span>
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <InfoBox type="warning">
-            <strong>最大的坑</strong>：依賴鏈。你以為只需要下載 A，但 A 依賴 B，B 依賴 C，C 依賴 D……
-            一不小心就在現場才發現缺了某個套件，而那個套件在網路上只要 3 秒，在離線環境裡可能要等隔天審批才能搬進來。
-            所以前置準備必須非常完整，要把依賴樹全部列清楚。
-          </InfoBox>
-        </section>
-
-        <hr className="border-gray-100 opacity-30"  />
-
-        {/* 我的解決方案預覽 */}
-        <section className="space-y-6">
-          <h2 className="text-3xl font-black text-gray-900">我用了什麼技術棧？</h2>
-          <p className="text-gray-700 leading-relaxed">
-            整個離線 AI 平台的核心由三個部分組成，這個系列的後續文章會逐一深入介紹：
-          </p>
-
-          <div className="space-y-3">
-            {[
-              {
-                name: 'Ollama',
-                role: 'LLM 推論引擎',
-                desc: '負責在本地跑語言模型。支援 llama3、qwen2、gemma2 等主流開源模型，API 格式與 OpenAI 相容，整合方便。',
-                ep: '→ EP.02 詳細介紹',
-                color: 'bg-purple-600 text-white',
-              },
-              {
-                name: 'Dify',
-                role: 'AI Orchestration 平台',
-                desc: '提供視覺化的 Workflow 設計、RAG（知識庫問答）、API 管理。讓不懂程式的工程師也能建立自己的 AI 應用。',
-                ep: '→ EP.03 詳細介紹',
-                color: 'bg-blue-600 text-white',
-              },
-              {
-                name: 'Docker / Colima',
-                role: '容器化部署',
-                desc: '整個平台用 Docker Compose 打包，確保環境一致性。在沒有 Docker Desktop 的 Linux 伺服器上用 Colima 替代。',
-                ep: '→ EP.02、EP.03',
-                color: 'bg-slate-700 text-white',
-              },
-            ].map((item) => (
-              <div key={item.name} className="flex items-start gap-4 bg-gray-50 rounded-2xl p-5">
-                <div className={`px-3 py-1.5 rounded-xl text-xs font-black shrink-0 ${item.color}`}>{item.name}</div>
-                <div className="flex-1">
-                  <p className="font-bold text-gray-900 text-sm">{item.role}</p>
-                  <p className="text-gray-500 text-xs mt-0.5 leading-relaxed">{item.desc}</p>
-                </div>
-                <div className="text-[10px] font-bold text-gray-300 shrink-0 pt-1">{item.ep}</div>
+            <Link href="/blog/ai/ep02-ollama-local-llm" className="group p-5 bg-slate-50 hover:bg-purple-50 rounded-2xl border border-slate-100 transition-all flex flex-col justify-between">
+              <div>
+                <p className="text-xs font-black text-purple-600 mb-1">系列下一篇 EP.02</p>
+                <h4 className="font-black text-gray-900 text-sm group-hover:text-purple-600 transition-colors">Ollama 本地模型部署</h4>
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">深入探討如何離線管理 GGUF、撰寫 Modelfile，以及針對不同硬體進行 GPU 參數調優。</p>
               </div>
-            ))}
+              <span className="text-[10px] font-black text-purple-500 mt-4 flex items-center gap-1">
+                開始閱讀 <ArrowRight size={10} />
+              </span>
+            </Link>
+
+            <Link href="/blog/ai/ep09-tms" className="group p-5 bg-slate-50 hover:bg-purple-50 rounded-2xl border border-slate-100 transition-all flex flex-col justify-between">
+              <div>
+                <p className="text-xs font-black text-purple-600 mb-1">應用結合實戰 EP.09</p>
+                <h4 className="font-black text-gray-900 text-sm group-hover:text-purple-600 transition-colors">TMS 測試管理系統重構</h4>
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">分享我們如何將這套離線 AI 能力，以安全合規的方式嵌入到工廠底層的核心測試排程管理系統中。</p>
+              </div>
+              <span className="text-[10px] font-black text-purple-500 mt-4 flex items-center gap-1">
+                開始閱讀 <ArrowRight size={10} />
+              </span>
+            </Link>
+          </div>
+          <div className="mt-4">
+            <Link href="/blog/ai/ep03-dify" className="text-purple-600 hover:text-purple-700 text-sm font-bold flex items-center gap-1">
+              <CornerDownRight size={14} /> 延伸閱讀：EP.03 — Dify 知識庫建立與 RAG 工作流整合
+            </Link>
           </div>
         </section>
 
-        <hr className="border-gray-100 opacity-30"  />
+        <hr className="border-gray-100 opacity-50" />
 
-        {/* 總結 */}
+        {/* 10. 總結 */}
         <section>
           <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-3xl p-8 space-y-6">
             <div className="flex items-center gap-3">
               <Quote size={24} className="text-purple-400" />
-              <h2 className="text-2xl font-black text-gray-900">這篇學到什麼</h2>
+              <h2 className="text-2xl font-black text-gray-900">總結</h2>
             </div>
-            <div className="space-y-4">
-              {[
-                { emoji: '🔒', text: 'Air-gapped 環境指的是與外網物理隔離的網路，廣泛用於製造、金融、國防等高安全需求場景' },
-                { emoji: '🏭', text: '工廠 LLM 的主要應用：知識庫問答、異常報告自動化、腳本輔助、多語言溝通' },
-                { emoji: '😤', text: '離線部署最大的挑戰是依賴管理：所有套件、模型、映像檔都要預先準備好再搬入' },
-                { emoji: '🛠️', text: '我的技術棧：Ollama（推論）+ Dify（應用平台）+ Docker（容器化），後續文章逐一拆解' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="text-xl">{item.emoji}</span>
-                  <span className="text-gray-700 font-medium">{item.text}</span>
-                </div>
-              ))}
+            <div className="space-y-4 text-gray-700 leading-relaxed font-medium">
+              <p>
+                物理隔離 (Air-gapped) 並不代表與現代技術絕緣。相反地，它迫使我們回到軟體工程的底層邏輯，以更清晰、低耦合的方式進行架構設計。
+              </p>
+              <p>
+                透過離線包預編譯、Docker 鏡像映射以及本地 Ollama 引擎，我們不僅在無網的工廠深處順利跑起了大模型，更建立了一套符合企業資安紅線的 AI 運維架構。這套經驗除了適用於製造業，對隱私要求極高的金融與醫療產業同樣有高度參考價值。
+              </p>
             </div>
           </div>
         </section>
 
-        <hr className="border-gray-100 my-12 opacity-50"  />
+        <hr className="border-gray-100 my-12 opacity-50" />
 
         {/* Related Posts */}
         <BlogRelatedPosts currentPostHref="/blog/ai/ep01-airgapped-intro" category="ai" />
@@ -338,16 +521,16 @@ export default function AiEP01Page() {
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">上一篇</p>
             <p className="font-black text-gray-400 italic">這是系列的第一篇</p>
           </div>
-          <Link href="/blog/ai/ep05-tts-models" className="group block bg-gray-50 hover:bg-purple-50 transition-colors rounded-2xl p-6 text-right">
+          <Link href="/blog/ai/ep02-ollama-local-llm" className="group block bg-gray-50 hover:bg-purple-50 transition-colors rounded-2xl p-6 text-right">
             <p className="text-xs font-bold text-gray-400 uppercase mb-1">下一篇</p>
-            <p className="font-black text-gray-900 group-hover:text-purple-600 transition-colors">EP.05 — TTS 模型語音合成技術</p>
+            <p className="font-black text-gray-900 group-hover:text-purple-600 transition-colors">EP.02 — Ollama 本地模型部署</p>
             <ArrowRight size={18} className="ml-auto mt-3 text-gray-400 group-hover:text-purple-500 transition-colors" />
           </Link>
         </div>
 
         <div className="flex items-center gap-3 flex-wrap pt-4">
           {['AI 離線部署', 'Air-gapped', 'LLM', 'Ollama', 'Dify', '企業 AI', 'EP.01'].map((tag) => (
-            <span key={tag}   className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800 font-bold">{tag}</span>
+            <span key={tag} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">{tag}</span>
           ))}
         </div>
       </article>
