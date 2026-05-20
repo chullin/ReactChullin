@@ -1,7 +1,5 @@
-'use client';
-
-import { Link, Divider, Button } from '@heroui/react';
-import { Mail, UserCircle, Eye, Users } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, UserCircle } from 'lucide-react';
 
 const Github = ({ size = 20 }: { size?: number }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -38,50 +36,33 @@ export default function Footer({ className }: { className?: string }) {
 
                     <div className="flex flex-wrap justify-center gap-4">
                         {socialLinks.map((social) => (
-                            <Button
+                            <a
                                 key={social.label}
-                                isIconOnly
-                                as={Link}
                                 href={social.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                variant="flat"
-                                color="primary"
-                                radius="full"
-                                className="bg-primary/5 hover:bg-primary/10"
+                                className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors"
+                                aria-label={social.label}
                             >
                                 {social.icon}
-                            </Button>
+                            </a>
                         ))}
-                        <Button
-                            isIconOnly
-                            as={Link}
+                        <a
                             href="mailto:fg6ts15@gmail.com"
-                            variant="flat"
-                            color="primary"
-                            radius="full"
-                            className="bg-primary/5 hover:bg-primary/10"
+                            className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors"
+                            aria-label="Email"
                         >
                             <Mail size={20} />
-                        </Button>
+                        </a>
                     </div>
                 </div>
 
-                <Divider className="my-8 opacity-50" />
+                <hr className="border-t border-gray-100 my-8 opacity-50" />
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-gray-400">
                         Copyright &copy; 陳憲億 Joseph Chen 2026
                     </p>
-
-                    <div className="flex gap-6 text-sm text-gray-400">
-                        <span id="busuanzi_container_site_pv" className="flex items-center gap-2">
-                            <Eye size={16} /> 總訪問量：<span id="busuanzi_value_site_pv"></span> 次
-                        </span>
-                        <span id="busuanzi_container_site_uv" className="flex items-center gap-2">
-                            <Users size={16} /> 總訪客數：<span id="busuanzi_value_site_uv"></span> 人
-                        </span>
-                    </div>
                 </div>
             </div>
         </footer>

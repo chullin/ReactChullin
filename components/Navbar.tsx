@@ -8,13 +8,15 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
-  Link,
-  Button,
+} from '@heroui/navbar';
+import { Link } from '@heroui/link';
+import { Button } from '@heroui/button';
+import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from '@heroui/react';
+} from '@heroui/dropdown';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';

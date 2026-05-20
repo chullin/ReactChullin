@@ -1,38 +1,11 @@
-'use client';
-
-import { Button, Card, CardBody, Link } from '@heroui/react';
+import Link from 'next/link';
 import { Terminal, Briefcase, GraduationCap, Phone } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.15,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { 
-        opacity: 1, 
-        x: 0,
-        transition: { duration: 0.6, ease: "easeOut" } as any
-    },
-};
 
 export default function HomeAbout() {
     return (
         <section className="bg-white py-24 overflow-hidden">
             <div className="max-w-4xl mx-auto px-6 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-100px" }}
-                    transition={{ duration: 0.8, ease: "circOut" } as any}
-                >
+                <div>
                     <h2 className="text-4xl font-black mb-8 tracking-tight text-slate-900">
                         關於 <span className="text-gradient">陳憲億 Joseph Chen</span>
                     </h2>
@@ -41,16 +14,10 @@ export default function HomeAbout() {
                         AI Application & Automation Engineer specializing in intelligent systems and smart manufacturing solutions.
                     </p>
 
-                    <Card className="bg-[#fafafa] border border-slate-100 shadow-sm mb-12 overflow-visible">
-                        <CardBody className="p-8 md:p-12 text-left leading-relaxed text-slate-600">
-                            <motion.div 
-                                variants={containerVariants}
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true }}
-                                className="space-y-10"
-                            >
-                                <motion.div variants={itemVariants} className="flex items-start gap-6 group">
+                    <div className="bg-[#fafafa] border border-slate-100 shadow-sm mb-12 overflow-visible rounded-2xl">
+                        <div className="p-8 md:p-12 text-left leading-relaxed text-slate-600">
+                            <div className="space-y-10">
+                                <div className="flex items-start gap-6 group">
                                     <div className="bg-slate-900 p-3 rounded-2xl text-white shadow-lg mt-1 group-hover:scale-110 transition-transform duration-300">
                                         <GraduationCap size={22} />
                                     </div>
@@ -60,9 +27,9 @@ export default function HomeAbout() {
                                             <strong className="text-slate-700">國立中正大學資訊工程研究所碩士</strong>。研究方向涵蓋 Transformer-based TTS 與嵌入式系統實作，致力於將先進 AI 技術導入實際硬體環境。
                                         </p>
                                     </div>
-                                </motion.div>
+                                </div>
 
-                                <motion.div variants={itemVariants} className="flex items-start gap-6 group">
+                                <div className="flex items-start gap-6 group">
                                     <div className="bg-slate-900 p-3 rounded-2xl text-white shadow-lg mt-1 group-hover:scale-110 transition-transform duration-300">
                                         <Briefcase size={22} />
                                     </div>
@@ -72,9 +39,9 @@ export default function HomeAbout() {
                                             現任職於 <strong className="text-slate-700">Foxconn (鴻海精密)</strong>，負責開發測試管理系統 (TMS)、視覺導引機械手臂系統，以及 <strong className="text-slate-700">離線式 AI 平台 (Offline AI)</strong> 的部署。
                                         </p>
                                     </div>
-                                </motion.div>
+                                </div>
 
-                                <motion.div variants={itemVariants} className="flex items-start gap-6 group">
+                                <div className="flex items-start gap-6 group">
                                     <div className="bg-slate-900 p-3 rounded-2xl text-white shadow-lg mt-1 group-hover:scale-110 transition-transform duration-300">
                                         <Terminal size={22} />
                                     </div>
@@ -84,34 +51,27 @@ export default function HomeAbout() {
                                             熟悉 <strong className="text-slate-700">Python 自動化開發</strong> 與 <strong className="text-slate-700">OpenCV 機械視覺</strong>。擅長使用 Docker、Linux、Ollama 與 Dify 建構邊緣運算與智慧代理方案。
                                         </p>
                                     </div>
-                                </motion.div>
-                            </motion.div>
-                        </CardBody>
-                    </Card>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="flex justify-center gap-4">
-                        <Button
-                            as={Link}
+                        <Link
                             href="/about"
-                            color="primary"
-                            variant="solid"
-                            radius="lg"
-                            className="font-bold px-8"
+                            className="inline-flex items-center justify-center font-bold px-8 py-3 bg-[#006FEE] text-white rounded-xl hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20"
                         >
                             了解更多
-                        </Button>
-                        <Button
-                            as={Link}
+                        </Link>
+                        <Link
                             href="/contact"
-                            variant="bordered"
-                            radius="lg"
-                            startContent={<Phone size={18} />}
-                            className="font-bold border-slate-200 text-slate-600 px-8"
+                            className="inline-flex items-center gap-2 justify-center font-bold border border-slate-200 text-slate-600 px-8 py-3 rounded-xl hover:bg-slate-50 transition-colors"
                         >
-                            與我聯繫
-                        </Button>
+                            <Phone size={18} />
+                            <span>與我聯繫</span>
+                        </Link>
                     </div>
-                </motion.div>
+                </div>
             </div>
         </section>
     );

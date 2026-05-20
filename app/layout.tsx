@@ -3,6 +3,21 @@ import Script from 'next/script';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Providers } from './providers';
+import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google';
+
+const plusJakarta = Plus_Jakarta_Sans({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700', '800'],
+    display: 'swap',
+    variable: '--font-plus-jakarta',
+});
+
+const playfair = Playfair_Display({
+    subsets: ['latin'],
+    weight: ['400', '700', '900'],
+    display: 'swap',
+    variable: '--font-playfair',
+});
 
 export const metadata = {
     metadataBase: new URL('https://chullin.tw'),
@@ -14,7 +29,6 @@ export const metadata = {
     keywords: ['Joseph Chen', '陳憲億', 'AI Application Engineer', 'Automation Engineer', 'Foxconn', '鴻海', 'Python Automation', 'OpenCV', 'React', '離線 AI', '系統重構'],
     authors: [{ name: '陳憲億 Joseph Chen' }],
     creator: '陳憲億 Joseph Chen',
-    // 加入 Google Search Console 驗證碼
     verification: {
         google: 'Tmye4gYSZJvx8O85kCLZrOhKl52Adtlg5Ntr-qAVMAM',
     },
@@ -75,30 +89,20 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang='zh-Hant' suppressHydrationWarning>
+        <html lang='zh-Hant' className={`${plusJakarta.variable} ${playfair.variable}`} suppressHydrationWarning>
             <head>
                 <script
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
                 />
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Dancing+Script:wght@400;700&family=Great+Vibes&display=swap"
-                    rel="stylesheet"
-                />
             </head>
             <body className="min-h-screen bg-white" suppressHydrationWarning>
                 <Providers>
                     <Script
-                        src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"
-                        strategy="afterInteractive"
-                    />
-                    <Script
                         src="https://www.googletagmanager.com/gtag/js?id=G-V99XQTJ30E"
-                        strategy="afterInteractive"
+                        strategy="lazyOnload"
                     />
-                    <Script id="google-analytics" strategy="afterInteractive">
+                    <Script id="google-analytics" strategy="lazyOnload">
                         {`
                             window.dataLayer = window.dataLayer || [];
                             function gtag(){dataLayer.push(arguments);}

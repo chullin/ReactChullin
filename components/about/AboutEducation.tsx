@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Link } from '@heroui/react';
+import { Link } from '@heroui/link';
 import { ArrowUpRight } from 'lucide-react';
 
 const education = [
@@ -80,10 +80,10 @@ export default function AboutEducation() {
                 </div>
                 
                 <div className="relative z-10 space-y-6">
-                    <h3 className="text-3xl md:text-5xl font-bold text-slate-900 leading-[1.1] tracking-normal" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                    <h3 className="text-3xl md:text-5xl font-normal text-slate-900 leading-[1.1] tracking-normal font-playfair italic">
                         "Bridging the gap between <br />
-                        <span className="text-blue-600" style={{ fontFamily: "'Dancing Script', cursive" }}>AI Innovation</span> <br className="hidden md:block" />
-                        & <span className="text-cyan-600" style={{ fontFamily: "'Dancing Script', cursive" }}>Industrial Implementation</span>"
+                        <span className="text-blue-600 font-playfair italic">AI Innovation</span> <br className="hidden md:block" />
+                        & <span className="text-cyan-600 font-playfair italic">Industrial Implementation</span>"
                     </h3>
                     <div className="space-y-4">
                         <p className="text-slate-500 leading-relaxed font-medium">

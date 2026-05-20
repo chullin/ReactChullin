@@ -11,7 +11,11 @@
 
 body {
   @apply bg-white text-gray-900 antialiased;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-plus-jakarta), system-ui, sans-serif;
+}
+
+.font-playfair {
+  font-family: var(--font-playfair), serif;
 }
 
 /* Custom Utilities */
