@@ -1,32 +1,6 @@
-'use client';
-
-import { Button } from '@heroui/button';
-import { Card, CardBody } from '@heroui/card';
-import { Chip } from '@heroui/chip';
-import { Link } from '@heroui/link';
+import Link from 'next/link';
 import NextImage from 'next/image';
 import { Code2, Cpu, ArrowRight, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2,
-      delayChildren: 0.3,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.8, ease: "circOut" } as any
-  },
-};
 
 export default function HomeHero() {
   return (
@@ -42,82 +16,50 @@ export default function HomeHero() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <motion.div 
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="text-center lg:text-left"
-        >
-          <motion.div variants={itemVariants}>
-            <Chip 
-              variant="flat" 
-              color="primary" 
-              className="mb-6 font-bold uppercase tracking-widest text-[10px]"
-              size="sm"
-            >
+        <div className="text-center lg:text-left">
+          <div>
+            <div className="mb-6 inline-flex h-6 items-center rounded-full bg-blue-50 px-3 text-[10px] font-bold uppercase tracking-widest text-blue-600">
               Software Engineer @ Foxconn
-            </Chip>
-          </motion.div>
+            </div>
+          </div>
           
-          <motion.h1 
-            variants={itemVariants}
-            className="text-5xl lg:text-7xl font-black mb-4 leading-[1.1] tracking-tight"
-          >
+          <h1 className="text-5xl lg:text-7xl font-black mb-4 leading-[1.1] tracking-tight">
             陳憲億 <span className="text-gradient">Joseph Chen</span>
-          </motion.h1>
+          </h1>
           
-          <motion.p 
-            variants={itemVariants}
-            className="text-lg lg:text-xl text-gray-600 mb-10 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0"
-          >
-            專注於將 AI、自動化與軟體系統落地 to 製造現場，包含離線 LLM 部署、測試管理平台與 OpenCV 視覺自動化。<br className="hidden md:block" />
+          <p className="text-lg lg:text-xl text-gray-600 mb-10 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
+            專注於將 AI、自動化與軟體系統落地到製造現場，包含離線 LLM 部署、測試管理平台與 OpenCV 視覺自動化。<br className="hidden md:block" />
             <span className="text-slate-400 text-base lg:text-lg block mt-3 font-normal">
               I build secure AI and automation systems for manufacturing environments, from air-gapped LLM deployment to vision-based testing workflows.
             </span>
-          </motion.p>
+          </p>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
-            <Link href="/about">
-              <Button
-                color="primary"
-                size="lg"
-                className="font-bold px-8 h-14 shadow-xl shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all w-full sm:w-auto"
-                endContent={<ArrowRight size={20} />}
-              >
-                View About / CV
-              </Button>
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-4">
+            <Link
+              href="/about"
+              className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-[#006FEE] px-8 text-base font-bold text-white shadow-xl shadow-blue-500/25 transition-all hover:-translate-y-0.5 hover:bg-blue-600 hover:shadow-blue-500/40 sm:w-auto"
+            >
+              View About / CV
+              <ArrowRight size={20} />
             </Link>
-            <Link href="/blog">
-              <Button
-                variant="flat"
-                color="primary"
-                size="lg"
-                className="font-bold px-8 h-14 w-full sm:w-auto hover:bg-blue-100 transition-colors"
-                startContent={<BookOpen size={18} />}
-              >
-                Read Blog
-              </Button>
+            <Link
+              href="/blog"
+              className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-blue-50 px-8 text-base font-bold text-blue-600 transition-colors hover:bg-blue-100 sm:w-auto"
+            >
+              <BookOpen size={18} />
+              Read Blog
             </Link>
-            <Link href="/projects">
-              <Button
-                variant="bordered"
-                color="default"
-                size="lg"
-                className="font-bold px-8 h-14 w-full sm:w-auto hover:bg-slate-50 transition-colors border-slate-200"
-              >
-                Projects
-              </Button>
+            <Link
+              href="/projects"
+              className="inline-flex h-14 w-full items-center justify-center rounded-xl border border-slate-200 px-8 text-base font-bold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto"
+            >
+              Projects
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Profile Visual with Refined Animations */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }} 
-          animate={{ opacity: 1, scale: 1 }} 
-          transition={{ duration: 1.2, ease: "circOut", delay: 0.4 } as any}
-          className="flex justify-center relative pt-10 lg:pt-0"
-        >
+        <div className="flex justify-center relative pt-10 lg:pt-0">
           <div className="relative w-[260px] h-[260px] md:w-[340px] md:h-[340px] group flex items-center justify-center">
             {/* Outer Ring (Static Glow) */}
             <div
@@ -144,14 +86,9 @@ export default function HomeHero() {
             </div>
 
             {/* Floating Cards with Entry */}
-            <motion.div 
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="absolute -top-6 -right-8 z-20 hidden sm:block"
-            >
-              <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-md hover:scale-105 transition-transform duration-300">
-                <CardBody className="flex flex-row items-center gap-3 p-4">
+            <div className="absolute -top-6 -right-8 z-20 hidden sm:block">
+              <div className="rounded-2xl bg-white/95 shadow-2xl backdrop-blur-md transition-transform duration-300 hover:scale-105">
+                <div className="flex flex-row items-center gap-3 p-4">
                   <div className="bg-blue-500 text-white p-2.5 rounded-2xl shadow-lg shadow-blue-500/30">
                     <Code2 size={24} />
                   </div>
@@ -159,18 +96,13 @@ export default function HomeHero() {
                     <p className="font-black text-sm text-slate-900 leading-none">AI Integration</p>
                     <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1.5">Specialist</p>
                   </div>
-                </CardBody>
-              </Card>
-            </motion.div>
+                </div>
+              </div>
+            </div>
 
-            <motion.div 
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 1, duration: 0.8 }}
-              className="absolute -bottom-6 -left-8 z-20 hidden sm:block"
-            >
-              <Card className="border-none shadow-2xl bg-white/95 backdrop-blur-md hover:scale-105 transition-transform duration-300">
-                <CardBody className="flex flex-row items-center gap-3 p-4">
+            <div className="absolute -bottom-6 -left-8 z-20 hidden sm:block">
+              <div className="rounded-2xl bg-white/95 shadow-2xl backdrop-blur-md transition-transform duration-300 hover:scale-105">
+                <div className="flex flex-row items-center gap-3 p-4">
                   <div className="bg-slate-900 text-white p-2.5 rounded-2xl shadow-lg">
                     <Cpu size={24} />
                   </div>
@@ -178,11 +110,11 @@ export default function HomeHero() {
                     <p className="font-black text-sm text-slate-900 leading-none">Automation</p>
                     <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1.5">Smart Systems</p>
                   </div>
-                </CardBody>
-              </Card>
-            </motion.div>
+                </div>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

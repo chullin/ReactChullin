@@ -1,8 +1,6 @@
 import './globals.css';
-import Script from 'next/script';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Providers } from './providers';
 import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google';
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -97,26 +95,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
             </head>
             <body className="min-h-screen bg-white" suppressHydrationWarning>
-                <Providers>
-                    <Script
-                        src="https://www.googletagmanager.com/gtag/js?id=G-V99XQTJ30E"
-                        strategy="lazyOnload"
-                    />
-                    <Script id="google-analytics" strategy="lazyOnload">
-                        {`
-                            window.dataLayer = window.dataLayer || [];
-                            function gtag(){dataLayer.push(arguments);}
-                            gtag('js', new Date());
-
-                            gtag('config', 'G-V99XQTJ30E');
-                        `}
-                    </Script>
-                    <Navbar />
-                    <main>
-                        {children}
-                    </main>
-                    <Footer className="relative z-20" />
-                </Providers>
+                <Navbar />
+                <main>
+                    {children}
+                </main>
+                <Footer className="relative z-20" />
             </body>
         </html>
     );

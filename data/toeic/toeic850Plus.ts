@@ -1207,7 +1207,106 @@ export const toeic850Plus: DifficultyCategory = {
             homophonic: "趴歐兒 stei宣",
             sentence: "The old power station was closed last year.",
             translate: "那座舊發電站去年關閉了。"
+        },
+        {
+            word: "give me an overview of sth.",
+            pos: "phr.",
+            phonetic: "/ɡɪv miː ən ˈoʊvərˌvjuː əv sth/",
+            definition: "給我一個...的概觀；對...做個簡要介紹",
+            memory_tip: "overview (總覽；概觀) 指的是對事物做一個全面的概括，而不是細節。",
+            homophonic: "給米嗯 歐佛優夫 詩分",
+            sentence: "Could you give me an overview of the project?",
+            translate: "你能給我這個專案一個概覽嗎？"
+        },
+        {
+            word: "seminar",
+            pos: "n.",
+            phonetic: "/ˈsemɪnɑːr/",
+            definition: "研討會；專題研討班",
+            memory_tip: "seminar (研討會；專題研討班) 通常是指由專家或學者主講的小型會議。",
+            homophonic: "塞米那",
+            sentence: "The seminar will be held at 10 AM in the conference room.",
+            translate: "研討會將於上午10點在會議室舉行。"
+        },
+        {
+            word: "conference",
+            pos: "n.",
+            phonetic: "/ˈkɒnfərəns/",
+            definition: "專業研討會、學術會議（同一專業領域的會議）",
+            memory_tip: "conference (會議) 通常指規模較大、時間較長、有許多與會者的正式會議，內容通常包含學術、技術、專業或商業等主題，會有多個議程、演講者、研討會和社交活動。",
+            homophonic: "康弗潤斯",
+            sentence: "The conference will be held at the convention center from March 15th to 17th.",
+            translate: "研討會將於3月15日至17日在會議中心舉行。"
+        },
+        {
+            word: "annual conference",
+            pos: "n.",
+            phonetic: "/ˈænjuəl ˈkɒnfərəns/",
+            definition: "年度會議；年度研討會",
+            memory_tip: "annual conference (年度會議) 是指每年固定時間舉行的會議，通常會吸引大量與會者。",
+            homophonic: " anual 康弗潤斯",
+            sentence: "The annual conference will be held at the convention center from March 15th to 17th.",
+            translate: "年度會議將於3月15日至17日在會議中心舉行。"
+        },
+        {
+            word: "workshop",
+            pos: "n.",
+            phonetic: "/ˈwɜːrkʃɑːp/",
+            definition: "實作型研討會、講習會",
+            memory_tip: "workshop (研討會；講習會) 通常是指由專家或學者主講的小型會議。",
+            homophonic: "優克쇼鋪",
+            sentence: "The workshop will be held at 10 AM in the conference room.",
+            translate: "研討會將於上午10點在會議室舉行。"
+        },
+        {
+            word: "session",
+            pos: "n.",
+            phonetic: "/ˈseʃn/",
+            definition: "一個場次、一堂課、一段會議",
+            memory_tip: "session (場次；課程) 通常是活動中的其中一個時段。",
+            homophonic: "賽宣",
+            sentence: "The morning session starts at 9 o'clock.",
+            translate: "上午場次於九點開始。"
+        },
+        {
+            word: "convention",
+            pos: "n.",
+            phonetic: "/kənˈvenʃən/",
+            definition: "年會、展覽、大型產業活動",
+            memory_tip: "convention (大會；年會) 通常會有許多人參加，例如產業展覽或協會年會。",
+            homophonic: "肯vent宣",
+            sentence: "Thousands of people attended the annual convention.",
+            translate: "數千人參加了年度大會。"
+        },
+        {
+            word: "parking permit",
+            pos: "n.",
+            phonetic: "/ˈpɑːrkɪŋ pərˌmɪt/",
+            definition: "停車許可證",
+            memory_tip: "parking permit (停車許可證) 允許你在特定區域停車。",
+            homophonic: "派inkin pər mitt",
+            sentence: "Please display your parking permit on the dashboard.",
+            translate: "請將您的停車許可證展示在前擋風玻璃上。"
+        },
+        {
+            word: "reception",
+            pos: "n.",
+            phonetic: "/rɪˈsepʃən/",
+            definition: "接待；接待處；收訊品質",
+            memory_tip: "reception (接待；接待處；收訊品質) 通常是指迎接客人的地方或活動。",
+            homophonic: "rǐ sep xun",
+            sentence: "The reception desk is on the left.",
+            translate: "接待處在左邊。"
+        },
+        {
+            word: "receptionist",
+            pos: "n.",
+            phonetic: "/rɪˈsepʃənɪst/",
+            definition: "接待員；櫃檯人員",
+            memory_tip: "receptionist (接待員) 通常在接待處負責接待訪客與接聽電話。",
+            homophonic: "rǐ sep xun 尼斯特",
+            sentence: "The receptionist greeted the visitors warmly.",
+            translate: "接待員熱情地迎接訪客。"
         }
-
     ]
 };
