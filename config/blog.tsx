@@ -51,8 +51,8 @@ export const series: Series[] = [
             ep: "EP.21"
       },
       {
-            title: "EP.20 — Heap： 永遠能找到最大或最小",
-            subtitle: "#215 Kth Largest Element · #347 Top K Frequent · #295 Find Median from Data Stream — heapq 實戰，從 K 大值到雙 Heap 中位數",
+            title: "EP.20 — Heap：從 Top K Frequent 到 heapq 底層",
+            subtitle: "#347 Top K Frequent Elements — 從 Counter.most_common、串列生成式、heapq.nlargest，一路理解 heappush、heappop 與 binary heap 結構",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/leetcode/ep20-heap",
