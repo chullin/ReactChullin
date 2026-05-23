@@ -7,7 +7,6 @@ import AboutSkills from '@/components/about/AboutSkills';
 import AboutTimeline from '@/components/about/AboutTimeline';
 import AboutEducation from '@/components/about/AboutEducation';
 import AboutCTA from '@/components/about/AboutCTA';
-import { Divider } from '@heroui/react';
 
 export default function AboutContent() {
   return (
@@ -20,10 +19,6 @@ export default function AboutContent() {
         <AboutHero />
         
         <AboutStats />
-
-        <div className="max-w-4xl mx-auto px-6">
-            <Divider className="my-8 opacity-40 border-slate-200" />
-        </div>
 
         <AboutCapabilities />
 

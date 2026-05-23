@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { Code2, Cpu, ArrowRight, BookOpen } from 'lucide-react';
+import personalPortrait from '@/src/images/personalQ.png';
 
 export default function HomeHero() {
   return (
@@ -76,7 +77,7 @@ export default function HomeHero() {
             {/* Profile Image Wrapper */}
             <div className="relative w-[calc(100%-24px)] h-[calc(100%-24px)] bg-white rounded-full p-2 shadow-2xl ring-4 ring-blue-100/50 overflow-hidden z-10">
               <NextImage
-                src="/assets/profile3.webp"
+                src={personalPortrait}
                 alt="Joseph Chen Profile"
                 fill
                 sizes="(max-width: 768px) 260px, 340px"

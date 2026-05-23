@@ -1,156 +1,145 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Bot, Boxes, Code2, Cpu, LockKeyhole, MonitorCog, Network, Workflow } from 'lucide-react';
 
-const skillCategories = [
+const skillGroups = [
   {
-    title: "AI & Infrastructure Stack",
-    skills: [
-      { name: "Ollama / LLM Deployment", level: 82, status: "Primary Stack" },
-      { name: "Dify / RAG Workflow", level: 78, status: "Production Ready" },
-      { name: "PyTorch / ML Foundation", level: 65, status: "Practical Experience" },
-    ],
-    color: "bg-emerald-600"
+    icon: <Bot size={18} />,
+    title: "AI Infrastructure",
+    desc: "Local LLM services, RAG workflows, and offline deployment patterns.",
+    skills: ["Ollama", "Dify", "RAG Workflow", "Model Serving"],
+    color: "text-emerald-600",
+    bg: "bg-emerald-50"
   },
   {
-    title: "Core Engineering & Vision",
-    skills: [
-      { name: "Python Systems", level: 88, status: "Primary Stack" },
-      { name: "OpenCV / Vision", level: 75, status: "Practical Application" },
-      { name: "Docker / Linux Ops", level: 80, status: "Production Ready" },
-    ],
-    color: "bg-blue-600"
+    icon: <Workflow size={18} />,
+    title: "Automation Systems",
+    desc: "Python tooling for test flows, manufacturing operations, and repeatable process control.",
+    skills: ["Python", "Tkinter", "OpenCV", "Test Tools"],
+    color: "text-blue-600",
+    bg: "bg-blue-50"
+  },
+  {
+    icon: <MonitorCog size={18} />,
+    title: "Industrial Software",
+    desc: "Production-facing systems where reliability, traceability, and team handoff are essential.",
+    skills: ["TMS", "API Design", "System Migration", "Operations"],
+    color: "text-violet-600",
+    bg: "bg-violet-50"
+  },
+  {
+    icon: <Code2 size={18} />,
+    title: "Web & Platform",
+    desc: "Modern web interfaces and deployment foundations for internal and external products.",
+    skills: ["Next.js", "React", "Docker", "Linux"],
+    color: "text-cyan-600",
+    bg: "bg-cyan-50"
+  }
+];
+
+const focusItems = [
+  {
+    icon: <LockKeyhole size={16} />,
+    title: "Secure by default",
+    desc: "Designing AI deployment flows for isolated and auditable environments."
+  },
+  {
+    icon: <Cpu size={16} />,
+    title: "Production first",
+    desc: "Prioritizing maintainability, operator experience, and controlled rollout."
+  },
+  {
+    icon: <Network size={16} />,
+    title: "Transferable systems",
+    desc: "Turning one-site solutions into repeatable processes for global teams."
+  },
+  {
+    icon: <Boxes size={16} />,
+    title: "Practical integration",
+    desc: "Connecting models, tools, and existing factory systems without overcomplication."
   }
 ];
 
 export default function AboutSkills() {
   return (
-    <section className="py-12 px-10 relative z-10">
-      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-        {/* Capability Indication */}
+    <section className="py-14 px-6 relative z-10">
+      <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-8 items-start">
         <div>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-sm">
-              JS
-            </div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
-              Technical Exposure
+          <div className="mb-8">
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-600">Technical Stack</span>
+            <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">
+              Tools I use to ship reliable systems
             </h2>
+            <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">
+              Instead of rating skills by abstract percentages, this stack is organized by the kind of production problems I usually solve.
+            </p>
           </div>
-          
-          <div className="space-y-12">
-            {skillCategories.map((cat, i) => (
-              <div key={i}>
-                <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-8 flex items-center gap-3">
-                  <span className={`w-1.5 h-1.5 rounded-full ${cat.color}`} />
-                  {cat.title}
-                </h4>
-                <div className="space-y-8">
-                  {cat.skills.map((skill, si) => (
-                    <motion.div 
-                      key={si} 
-                      className="group/skill space-y-3 cursor-default"
-                      whileHover={{ x: 10 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    >
-                      <div className="flex justify-between items-end">
-                        <span className="text-slate-900 font-bold tracking-tight group-hover/skill:text-blue-600 transition-colors duration-300">
-                          {skill.name}
-                        </span>
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.1em] group-hover/skill:text-slate-600 transition-colors">
-                          {skill.status}
-                        </span>
-                      </div>
-                      <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden relative">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${skill.level}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.2 + (si * 0.1) }}
-                          className={`h-full ${cat.color} opacity-80 relative group-hover/skill:opacity-100 transition-opacity`}
-                        >
-                          {/* Inner Glow on hover */}
-                          <div className="absolute inset-0 bg-white/20 opacity-0 group-hover/skill:opacity-100 transition-opacity" />
-                        </motion.div>
-                        
-                        {/* Outer Glow Effect */}
-                        <div className={`absolute inset-0 ${cat.color} opacity-0 blur-md group-hover/skill:opacity-20 transition-opacity -z-10`} style={{ width: `${skill.level}%` }} />
-                      </div>
-                    </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {skillGroups.map((group, i) => (
+              <motion.div
+                key={group.title}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="rounded-2xl border border-white/70 bg-white/65 p-5 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-slate-200 hover:bg-white hover:shadow-lg"
+              >
+                <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${group.bg} ${group.color}`}>
+                  {group.icon}
+                </div>
+                <h3 className="text-lg font-black text-slate-900">{group.title}</h3>
+                <p className="mt-2 min-h-[60px] text-sm font-medium leading-relaxed text-slate-500">
+                  {group.desc}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {group.skills.map((skill) => (
+                    <span key={skill} className="rounded-full border border-slate-100 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      {skill}
+                    </span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
 
-        {/* Terminal Block - Refined dark theme with line-level interaction */}
-        <div className="lg:sticky lg:top-32">
-          <div className="w-full rounded-[2.5rem] overflow-hidden border border-slate-200/50 shadow-[0_20px_50px_rgba(0,0,0,0.1)] group/terminal bg-[#08080e]">
-            {/* Terminal Header */}
-            <div className="bg-slate-900/95 backdrop-blur-md px-6 py-4 flex items-center gap-2 border-b border-white/5">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f56] shadow-inner" />
-                <div className="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-inner" />
-                <div className="w-3 h-3 rounded-full bg-[#27c93f] shadow-inner" />
-              </div>
-              <div className="mx-auto text-[9px] font-mono text-slate-500 font-black tracking-widest uppercase pl-4">
-                session — joseph@foxconn
-              </div>
-            </div>
-            {/* Terminal Content */}
-            <div className="p-8 md:p-12 font-mono text-sm leading-relaxed overflow-x-auto text-slate-100 relative">
-                {/* Subtle emerald glow */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] pointer-events-none" />
-              
-              <motion.div 
-                whileHover={{ scale: 1.05, x: 5, color: "#10b981" }}
-                className="flex gap-3 mb-6 cursor-default transition-all duration-300 origin-left"
-              >
-                <span className="text-emerald-500 font-bold">$</span>
-                <span className="text-white italic">finger joseph</span>
-              </motion.div>
-
-              <div className="space-y-1">
-                {[
-                  { label: "Login", val: "joseph" },
-                  { label: "Name", val: "Joseph Chen" },
-                  { label: "Role", val: "Software Engineer / AI Infra" },
-                  { label: "Location", val: "Kaohsiung, Taiwan" },
-                  { label: "Status", val: "Engineering intelligent automation" }
-                ].map((line, i) => (
-                  <motion.p 
-                    key={i}
-                    whileHover={{ scale: 1.05, x: 5, color: "#10b981", fontWeight: 800 }}
-                    className="cursor-default transition-all duration-300 origin-left"
-                  >
-                    <span className="text-slate-400 font-bold">{line.label}:</span> {line.val}
-                  </motion.p>
-                ))}
-              </div>
-              
-              <motion.div 
-                whileHover={{ scale: 1.05, x: 5, color: "#10b981" }}
-                className="mt-10 flex gap-3 cursor-default transition-all duration-300 origin-left"
-              >
-                <span className="text-emerald-500 font-bold">$</span>
-                <span className="text-white">cat philosophy.txt</span>
-              </motion.div>
-
-              <motion.p 
-                whileHover={{ scale: 1.02, color: "#60a5fa" }}
-                className="mt-3 text-slate-300 italic leading-relaxed cursor-default transition-all duration-300"
-              >
-                "Bridging AI research and industrial implementation through robust, secure infrastructure."
-              </motion.p>
-
-              <div className="mt-6 flex gap-3">
-                <span className="text-emerald-500 font-bold">$</span>
-                <span className="animate-pulse">_</span>
-              </div>
-            </div>
+        <motion.aside
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="lg:sticky lg:top-28 rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.22)]"
+        >
+          <div className="mb-6">
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400">Current Focus</span>
+            <h3 className="mt-2 text-2xl font-black tracking-tight text-white">
+              Engineering AI for controlled production environments.
+            </h3>
+            <p className="mt-3 text-sm font-medium leading-relaxed text-slate-400">
+              My strongest work sits between software engineering, AI deployment, and the practical constraints of manufacturing sites.
+            </p>
           </div>
-        </div>
+
+          <div className="space-y-3">
+            {focusItems.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, x: 10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.15 + i * 0.08 }}
+                className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
+              >
+                <div className="mt-0.5 text-emerald-400">{item.icon}</div>
+                <div>
+                  <h4 className="text-sm font-black text-white">{item.title}</h4>
+                  <p className="mt-1 text-xs font-medium leading-relaxed text-slate-400">{item.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.aside>
       </div>
     </section>
   );

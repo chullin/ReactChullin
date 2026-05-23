@@ -1,97 +1,118 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ShieldCheck, Cpu, Globe, Settings, Database, Terminal, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Cpu, Globe, Settings, Database, Terminal } from 'lucide-react';
 
 const capabilities = [
   {
     icon: <ShieldCheck size={24} />,
-    title: "AI Infrastructure & Secure Deployment",
-    desc: "Deploying production LLM systems (Ollama/Dify) in strictly air-gapped, high-security industrial zones.",
-    tag: "Security Focus",
+    title: "Secure AI Infrastructure",
+    desc: "Deploying LLM workflows in air-gapped industrial environments where security, repeatability, and operational control matter.",
+    tags: ["Ollama", "Dify", "Air-gapped"],
+    note: "Built for restricted production zones.",
     color: "text-emerald-600",
-    bg: "bg-emerald-50"
+    bg: "bg-emerald-50",
+    border: "hover:border-emerald-200"
   },
   {
     icon: <Globe size={24} />,
-    title: "Global Tech Transfer & Migration",
-    desc: "Leading large-scale software system migration and technical team establishment in Bangalore, India.",
-    tag: "Scalability",
+    title: "Global System Transfer",
+    desc: "Leading technical transfer and system migration work across sites, turning local know-how into repeatable team capability.",
+    tags: ["Migration", "Training", "Scale"],
+    note: "Designed for cross-site adoption.",
     color: "text-violet-600",
-    bg: "bg-violet-50"
+    bg: "bg-violet-50",
+    border: "hover:border-violet-200"
   },
   {
     icon: <Cpu size={24} />,
-    title: "Robotic Vision & Industrial Alignment",
-    desc: "Developing OpenCV-based high-precision vision systems for automated manufacturing robotic lines.",
-    tag: "Precision",
+    title: "Industrial Automation & Vision",
+    desc: "Building Python and OpenCV-based automation tools for manufacturing workflows, robotic alignment, and test system reliability.",
+    tags: ["Python", "OpenCV", "Robotics"],
+    note: "Focused on practical shop-floor execution.",
     color: "text-blue-600",
-    bg: "bg-blue-50"
+    bg: "bg-blue-50",
+    border: "hover:border-blue-200"
   }
 ];
 
 export default function AboutCapabilities() {
   return (
-    <section className="py-8 px-6 relative z-10">
-      <div className="max-w-4xl mx-auto">
+    <section className="pt-16 pb-10 px-6 relative z-10">
+      <div className="max-w-5xl mx-auto">
         <div className="flex flex-col items-center mb-6 text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="w-10 h-1 bg-slate-900 rounded-full mb-3" 
-            />
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Core Competencies</h2>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="w-10 h-1 bg-slate-900 rounded-full mb-3"
+          />
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Core Competencies</h2>
+          <p className="mt-3 max-w-2xl text-sm text-slate-500 font-medium leading-relaxed">
+            I focus on turning AI, automation, and manufacturing software into systems that can survive real production constraints.
+          </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {capabilities.map((cap, i) => (
             <motion.div
-              key={i}
+              key={cap.title}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="group relative flex flex-col md:flex-row items-start md:items-center gap-6 p-6 rounded-3xl hover:bg-white transition-all duration-500 border border-transparent hover:border-slate-100 hover:shadow-lg"
+              className={`group relative flex min-h-[290px] flex-col justify-between gap-8 rounded-2xl border border-white/70 bg-white/65 p-6 shadow-sm backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:bg-white hover:shadow-xl ${cap.border}`}
             >
-              <div className={`w-14 h-14 shrink-0 rounded-2xl ${cap.bg} ${cap.color} flex items-center justify-center transition-transform group-hover:scale-110 duration-500`}>
-                {cap.icon}
-              </div>
-              
-              <div className="flex-1 space-y-1">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-xl font-bold text-slate-900">{cap.title}</h3>
-                  <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest border border-slate-100">
-                    {cap.tag}
-                  </span>
+              <div className="space-y-5">
+                <div className={`w-12 h-12 shrink-0 rounded-xl ${cap.bg} ${cap.color} flex items-center justify-center transition-transform duration-500 group-hover:scale-105`}>
+                  {cap.icon}
                 </div>
-                <p className="text-sm text-slate-500 leading-relaxed max-w-2xl font-medium">
-                  {cap.desc}
-                </p>
+
+                <div className="space-y-3">
+                  <h3 className="text-xl font-black leading-tight text-slate-900">{cap.title}</h3>
+                  <p className="text-sm font-medium leading-relaxed text-slate-500">
+                    {cap.desc}
+                  </p>
+                </div>
               </div>
 
-              <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 duration-500">
-                <ArrowRight size={18} className="text-slate-300" />
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {cap.tags.map((tag) => (
+                    <span key={tag} className="rounded-full border border-slate-100 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <p className="border-t border-slate-100 pt-4 text-xs font-bold leading-relaxed text-slate-400">
+                  {cap.note}
+                </p>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Secondary Tech Strips */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 pt-2 border-t border-slate-100">
-            {[
-              { icon: <Settings size={16} />, title: "Automation", desc: "Python-driven" },
-              { icon: <Database size={16} />, title: "TMS Systems", desc: "Architecture" },
-              { icon: <Terminal size={16} />, title: "Linux Systems", desc: "Secure Edge" }
-            ].map((tech, i) => (
-              <div key={i} className="flex items-center gap-3 px-2">
-                <div className="text-slate-300">{tech.icon}</div>
-                <div>
-                  <h4 className="text-[10px] font-black text-slate-900 tracking-tight uppercase leading-none mb-1">{tech.title}</h4>
-                  <p className="text-[10px] text-slate-400 font-bold leading-none">{tech.desc}</p>
-                </div>
+        <div className="mt-5 grid grid-cols-1 gap-3 border-t border-slate-100 pt-5 md:grid-cols-3">
+          {[
+            { icon: <Settings size={16} />, title: "Automation", desc: "Python-driven workflows" },
+            { icon: <Database size={16} />, title: "TMS Systems", desc: "Industrial system architecture" },
+            { icon: <Terminal size={16} />, title: "Linux Systems", desc: "Secure edge operations" }
+          ].map((tech, i) => (
+            <motion.div
+              key={tech.title}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.25 + i * 0.08 }}
+              className="flex items-center gap-3 rounded-xl bg-white/40 px-4 py-3"
+            >
+              <div className="text-slate-300">{tech.icon}</div>
+              <div>
+                <h4 className="mb-1 text-[10px] font-black uppercase leading-none tracking-widest text-slate-900">{tech.title}</h4>
+                <p className="text-[11px] font-bold leading-none text-slate-400">{tech.desc}</p>
               </div>
-            ))}
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

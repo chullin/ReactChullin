@@ -23,7 +23,7 @@ import {
   Tags,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { series, type Post, type Series } from '@/config/blog';
 
 type BlogSearchResult = {
@@ -233,6 +233,9 @@ export default function BlogPage() {
   const [contentResults, setContentResults] = useState<BlogSearchResult[]>([]);
   const [isContentSearching, setIsContentSearching] = useState(false);
   const [isSearchDocked, setIsSearchDocked] = useState(false);
+  const [sidebarExitProgress, setSidebarExitProgress] = useState(0);
+  const [showCategoryFade, setShowCategoryFade] = useState(false);
+  const categoryScrollerRef = useRef<HTMLDivElement | null>(null);
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery.trim());
   const isSearching = normalizedSearchQuery.length > 0;
@@ -251,14 +254,63 @@ export default function BlogPage() {
   }, []);
 
   useEffect(() => {
+    let frameId: number | null = null;
+
     const updateSearchDock = () => {
-      setIsSearchDocked(window.scrollY > 120);
+      setIsSearchDocked(window.scrollY > 96);
+
+      const footer = document.querySelector('footer');
+      const footerTop = footer?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
+      const fadeDistance = 260;
+      const progress = Math.min(Math.max((window.innerHeight + 80 - footerTop) / fadeDistance, 0), 1);
+      setSidebarExitProgress(progress);
+    };
+
+    const requestUpdate = () => {
+      if (frameId !== null) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null;
+        updateSearchDock();
+      });
     };
 
     updateSearchDock();
-    window.addEventListener('scroll', updateSearchDock, { passive: true });
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
 
-    return () => window.removeEventListener('scroll', updateSearchDock);
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const scroller = categoryScrollerRef.current;
+
+    if (!scroller) {
+      return;
+    }
+
+    const updateCategoryFade = () => {
+      const hasMoreContent = scroller.scrollTop + scroller.clientHeight < scroller.scrollHeight - 8;
+      setShowCategoryFade(hasMoreContent);
+    };
+
+    updateCategoryFade();
+    scroller.addEventListener('scroll', updateCategoryFade, { passive: true });
+    window.addEventListener('resize', updateCategoryFade);
+
+    return () => {
+      scroller.removeEventListener('scroll', updateCategoryFade);
+      window.removeEventListener('resize', updateCategoryFade);
+    };
   }, []);
 
   useEffect(() => {
@@ -321,7 +373,7 @@ export default function BlogPage() {
   const filteredBookmarks = bookmarkedPosts.filter(isPostMatch);
 
   return (
-    <div className="bg-gray-50/30 min-h-screen pt-20 pb-32">
+    <div className="bg-gray-50/30 min-h-screen pt-20 pb-16">
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -343,10 +395,10 @@ export default function BlogPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className={[
-            'sticky top-20 z-20 -mx-5 mt-8 rounded-b-3xl px-5 pb-4 pt-3 transition-all duration-300 sm:-mx-6 sm:px-6 lg:-mx-8 lg:top-24 lg:px-8',
+            'sticky top-16 z-30 mx-[calc(50%-50vw)] mt-8 px-5 pb-4 pt-3 transition-all duration-300 sm:px-6 lg:px-8',
             isSearchDocked
-              ? 'border-b border-white/70 bg-gray-50/70 shadow-sm backdrop-blur-2xl supports-[backdrop-filter]:bg-gray-50/55'
-              : 'border-b border-transparent bg-gray-50/90 backdrop-blur',
+              ? 'border-b border-white/40 bg-white/[0.72] backdrop-blur-sm'
+              : 'border-b border-transparent bg-transparent backdrop-blur-0',
           ].join(' ')}
         >
           <div className="mx-auto max-w-3xl space-y-3">
@@ -359,7 +411,16 @@ export default function BlogPage() {
               variant="flat"
               className="group"
               classNames={{
-                inputWrapper: "bg-white/90 shadow-sm border-gray-100 backdrop-blur group-hover:bg-white group-hover:shadow-md transition-all duration-300",
+                inputWrapper: [
+                  'relative overflow-hidden rounded-[24px] border border-white/[0.34] bg-white/[0.18] shadow-none backdrop-blur-[3px]',
+                  'outline outline-1 -outline-offset-1 outline-white/[0.16] transition-[background,border-color,border-radius,transform] duration-300 ease-out',
+                  'before:pointer-events-none before:absolute before:inset-px before:rounded-[23px] before:border before:border-white/[0.26] before:content-[""]',
+                  'after:pointer-events-none after:absolute after:inset-0 after:rounded-[24px] after:bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.52),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.22),transparent_38%,rgba(255,255,255,0.12)_68%,transparent)] after:opacity-70 after:content-[""]',
+                  'hover:[transform:scale(1.006)] hover:rounded-[28px] hover:border-white/[0.48] hover:!bg-white/[0.26]',
+                  'data-[hover=true]:[transform:scale(1.006)] data-[hover=true]:rounded-[28px] data-[hover=true]:border-white/[0.48] data-[hover=true]:!bg-white/[0.26]',
+                  'group-hover:before:rounded-[27px] group-hover:after:rounded-[28px] group-active:[transform:scale(0.998)]',
+                ].join(' '),
+                innerWrapper: "relative z-10",
                 input: "font-medium text-gray-700",
               }}
               startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
@@ -375,14 +436,31 @@ export default function BlogPage() {
         </motion.div>
 
         <div className="mt-12 grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-          <aside className="hidden space-y-4 lg:sticky lg:top-24 lg:block">
-            <div className="rounded-2xl bg-white/85 p-4 shadow-sm ring-1 ring-gray-100">
+          <aside className="hidden lg:sticky lg:top-40 lg:flex lg:h-[calc(100vh-11rem)] lg:min-h-0 lg:flex-col lg:space-y-4">
+            <div
+              className="flex min-h-0 flex-1 flex-col space-y-4 transition-[opacity,transform] duration-300 ease-out"
+              style={{
+                opacity: 1 - sidebarExitProgress * 0.86,
+                transform: `translateY(${sidebarExitProgress * 18}px)`,
+                pointerEvents: sidebarExitProgress > 0.85 ? 'none' : 'auto',
+              }}
+            >
+            <div className="shrink-0 rounded-2xl bg-white/85 p-4 shadow-sm ring-1 ring-gray-100">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Total</p>
               <p className="mt-1 text-2xl font-black text-gray-900">{totalPosts}</p>
               <p className="mt-1 text-xs font-bold text-gray-400">篇文章，依主題快速切換。</p>
             </div>
-            <div className="max-h-[calc(100vh-13rem)] overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <CategoryNav />
+            <div className="relative min-h-0 flex-1 overflow-hidden">
+              <div
+                ref={categoryScrollerRef}
+                className="blog-scrollbar-hidden h-full overflow-y-auto overscroll-contain pb-5 pr-1 [scroll-padding-bottom:1.25rem]"
+              >
+                <CategoryNav />
+              </div>
+              {showCategoryFade && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-gray-50/95 via-gray-50/70 to-transparent" />
+              )}
+            </div>
             </div>
           </aside>
 
