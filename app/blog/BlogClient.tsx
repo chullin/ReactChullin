@@ -232,6 +232,7 @@ export default function BlogPage() {
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
   const [contentResults, setContentResults] = useState<BlogSearchResult[]>([]);
   const [isContentSearching, setIsContentSearching] = useState(false);
+  const [isSearchDocked, setIsSearchDocked] = useState(false);
 
   const normalizedSearchQuery = normalizeSearchText(searchQuery.trim());
   const isSearching = normalizedSearchQuery.length > 0;
@@ -247,6 +248,17 @@ export default function BlogPage() {
       const matched = savedBookmarks.map((href: string) => allPosts.find(p => p.href === href)).filter(Boolean) as Post[];
       setBookmarkedPosts(matched);
     }
+  }, []);
+
+  useEffect(() => {
+    const updateSearchDock = () => {
+      setIsSearchDocked(window.scrollY > 120);
+    };
+
+    updateSearchDock();
+    window.addEventListener('scroll', updateSearchDock, { passive: true });
+
+    return () => window.removeEventListener('scroll', updateSearchDock);
   }, []);
 
   useEffect(() => {
@@ -330,28 +342,35 @@ export default function BlogPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="sticky top-20 z-20 mx-auto mt-8 max-w-3xl space-y-3 rounded-b-3xl bg-gray-50/90 pb-4 pt-1 backdrop-blur lg:top-24"
+          className={[
+            'sticky top-20 z-20 -mx-5 mt-8 rounded-b-3xl px-5 pb-4 pt-3 transition-all duration-300 sm:-mx-6 sm:px-6 lg:-mx-8 lg:top-24 lg:px-8',
+            isSearchDocked
+              ? 'border-b border-white/70 bg-gray-50/70 shadow-sm backdrop-blur-2xl supports-[backdrop-filter]:bg-gray-50/55'
+              : 'border-b border-transparent bg-gray-50/90 backdrop-blur',
+          ].join(' ')}
         >
-          <Input
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            placeholder="搜尋標題、類別或文章內容 (如: python Counter, Tailwind, Ollama)..."
-            radius="lg"
-            size="lg"
-            variant="flat"
-            className="group"
-            classNames={{
-              inputWrapper: "bg-white shadow-sm border-gray-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300",
-              input: "font-medium text-gray-700",
-            }}
-            startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
-            isClearable
-          />
-          {isContentSearching && (
-            <p className="px-1 text-xs font-bold text-gray-400">正在搜尋文章內容...</p>
-          )}
-          <div className="lg:hidden">
-            <CategoryNav compact />
+          <div className="mx-auto max-w-3xl space-y-3">
+            <Input
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              placeholder="搜尋標題、類別或文章內容 (如: python Counter, Tailwind, Ollama)..."
+              radius="lg"
+              size="lg"
+              variant="flat"
+              className="group"
+              classNames={{
+                inputWrapper: "bg-white/90 shadow-sm border-gray-100 backdrop-blur group-hover:bg-white group-hover:shadow-md transition-all duration-300",
+                input: "font-medium text-gray-700",
+              }}
+              startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
+              isClearable
+            />
+            {isContentSearching && (
+              <p className="px-1 text-xs font-bold text-gray-400">正在搜尋文章內容...</p>
+            )}
+            <div className="lg:hidden">
+              <CategoryNav compact />
+            </div>
           </div>
         </motion.div>
 
