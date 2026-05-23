@@ -23,8 +23,19 @@ import {
   Tags,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { series, type Post, type Series } from '@/config/blog';
+
+type BlogSearchResult = {
+  href: string;
+  score: number;
+};
+
+const normalizeSearchText = (value: string) =>
+  value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
 
 // Compact row for EP posts
 function EpRow({ post, color }: { post: Post; color: string }) {
@@ -219,6 +230,15 @@ export default function BlogPage() {
   const totalPosts = series.reduce((acc, s) => acc + s.posts.length, 0);
   const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
+  const [contentResults, setContentResults] = useState<BlogSearchResult[]>([]);
+  const [isContentSearching, setIsContentSearching] = useState(false);
+
+  const normalizedSearchQuery = normalizeSearchText(searchQuery.trim());
+  const isSearching = normalizedSearchQuery.length > 0;
+  const contentMatchHrefs = useMemo(
+    () => new Set(contentResults.map(result => result.href)),
+    [contentResults]
+  );
 
   useEffect(() => {
     const savedBookmarks = JSON.parse(localStorage.getItem('blogBookmarks') || '[]');
@@ -229,25 +249,64 @@ export default function BlogPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isSearching) {
+      setContentResults([]);
+      setIsContentSearching(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      setIsContentSearching(true);
+
+      try {
+        const response = await fetch(`/api/blog-search?q=${encodeURIComponent(searchQuery.trim())}`, {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setContentResults([]);
+          return;
+        }
+
+        const data = await response.json() as { results?: BlogSearchResult[] };
+        setContentResults(data.results ?? []);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setContentResults([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsContentSearching(false);
+        }
+      }
+    }, 180);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeoutId);
+    };
+  }, [isSearching, searchQuery]);
+
+  const isPostMatch = (post: Post) =>
+    normalizeSearchText(post.title).includes(normalizedSearchQuery) ||
+    normalizeSearchText(post.subtitle).includes(normalizedSearchQuery) ||
+    contentMatchHrefs.has(post.href);
+
   const filteredSeries = series.map(s => {
-    const isSeriesMatch = s.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         s.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const isSeriesMatch = normalizeSearchText(s.label).includes(normalizedSearchQuery) ||
+                         normalizeSearchText(s.description).includes(normalizedSearchQuery);
     
     // If series matches, show all its posts. Otherwise, filter posts by title/subtitle.
     const filteredPosts = isSeriesMatch 
       ? s.posts 
-      : s.posts.filter(p => 
-          p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-          p.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+      : s.posts.filter(isPostMatch);
 
     return { ...s, posts: filteredPosts };
   }).filter(s => s.posts.length > 0);
 
-  const filteredBookmarks = bookmarkedPosts.filter(p => 
-    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    p.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredBookmarks = bookmarkedPosts.filter(isPostMatch);
 
   return (
     <div className="bg-gray-50/30 min-h-screen pt-20 pb-32">
@@ -258,7 +317,7 @@ export default function BlogPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-4"
+          className="mx-auto max-w-3xl text-center space-y-4"
         >
           <h1 className="text-5xl font-black tracking-tight text-gradient">Blog</h1>
           <p className="text-gray-400 text-lg font-medium max-w-xl mx-auto leading-relaxed">
@@ -266,50 +325,55 @@ export default function BlogPage() {
           </p>
         </motion.div>
 
+        {/* Search Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="sticky top-20 z-20 mx-auto mt-8 max-w-3xl space-y-3 rounded-b-3xl bg-gray-50/90 pb-4 pt-1 backdrop-blur lg:top-24"
+        >
+          <Input
+            value={searchQuery}
+            onValueChange={setSearchQuery}
+            placeholder="搜尋標題、類別或文章內容 (如: python Counter, Tailwind, Ollama)..."
+            radius="lg"
+            size="lg"
+            variant="flat"
+            className="group"
+            classNames={{
+              inputWrapper: "bg-white shadow-sm border-gray-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300",
+              input: "font-medium text-gray-700",
+            }}
+            startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
+            isClearable
+          />
+          {isContentSearching && (
+            <p className="px-1 text-xs font-bold text-gray-400">正在搜尋文章內容...</p>
+          )}
+          <div className="lg:hidden">
+            <CategoryNav compact />
+          </div>
+        </motion.div>
+
         <div className="mt-12 grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
-          <aside className="hidden lg:block lg:sticky lg:top-24">
-            <CategoryNav />
-            <div className="mt-6 rounded-2xl bg-white/75 p-4 shadow-sm ring-1 ring-gray-100">
+          <aside className="hidden space-y-4 lg:sticky lg:top-24 lg:block">
+            <div className="rounded-2xl bg-white/85 p-4 shadow-sm ring-1 ring-gray-100">
               <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Total</p>
               <p className="mt-1 text-2xl font-black text-gray-900">{totalPosts}</p>
               <p className="mt-1 text-xs font-bold text-gray-400">篇文章，依主題快速切換。</p>
             </div>
+            <div className="max-h-[calc(100vh-13rem)] overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <CategoryNav />
+            </div>
           </aside>
 
           <div className="min-w-0 space-y-12">
-            {/* Search Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="sticky top-20 z-20 space-y-3 rounded-b-3xl bg-gray-50/90 pb-4 pt-1 backdrop-blur lg:static lg:bg-transparent lg:pb-0 lg:pt-0 lg:backdrop-blur-none"
-            >
-              <Input
-                value={searchQuery}
-                onValueChange={setSearchQuery}
-                placeholder="搜尋文章、類別或技術關鍵字 (如: Tailwind, Ollama)..."
-                radius="lg"
-                size="lg"
-                variant="flat"
-                className="group"
-                classNames={{
-                  inputWrapper: "bg-white shadow-sm border-gray-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300",
-                  input: "font-medium text-gray-700",
-                }}
-                startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
-                isClearable
-              />
-              <div className="lg:hidden">
-                <CategoryNav compact />
-              </div>
-            </motion.div>
-
             {/* Bookmarks Section */}
             {filteredBookmarks.length > 0 && (
               <div className="space-y-16">
                 <SeriesSection 
                   index={0}
-                  isSearching={searchQuery !== ''}
+                  isSearching={isSearching}
                   s={{
                     id: 'bookmarks',
                     label: '我的收藏',
@@ -329,7 +393,7 @@ export default function BlogPage() {
               {filteredSeries.length > 0 ? (
                 filteredSeries.map((s, i) => (
                   <div key={s.id} id={s.id} className="scroll-mt-40 lg:scroll-mt-28">
-                    <SeriesSection s={s} index={i} isSearching={searchQuery !== ''} />
+                    <SeriesSection s={s} index={i} isSearching={isSearching} />
                   </div>
                 ))
               ) : (

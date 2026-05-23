@@ -16,7 +16,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'EP.20 — Heap：從 Top K Frequent 到 heapq 底層 | Joseph Chen',
-  description: '#347 Top K Frequent Elements — 從 Counter.most_common、串列生成式、heapq.nlargest，一路理解 heappush、heappop 與 binary heap 結構',
+  description: '#347 Top K Frequent Elements — 從 Counter.most_common、串列生成式、heapq.nlargest / nsmallest，一路理解 heapq 常用函式與 binary heap 結構',
   alternates: {
     canonical: 'https://chullin.tw/blog/leetcode/ep20-heap',
   },
@@ -65,6 +65,16 @@ const heapSteps = [
   { step: 'push (1, 3)', heap: ['(1,3)', '(3,1)', '(2,2)'], action: '3 出現 1 次，先 push 進來檢查。' },
   { step: 'pop', heap: ['(2,2)', '(3,1)'], action: 'heap 超過 k，pop 掉頻率最小的 (1,3)。' },
   { step: 'result', heap: ['(2,2)', '(3,1)'], action: 'heap 裡剩下的就是頻率最高的 2 個元素：2 和 1。' },
+] as const;
+
+const heapqFunctions = [
+  ['heapq.heappush(heap, item)', '把 item 放進 heap，並自動維持 heap 規則。', 'O(log n)'],
+  ['heapq.heappop(heap)', '取出並移除 heap 裡最小的元素，也就是 heap[0]。', 'O(log n)'],
+  ['heapq.heapify(nums)', '把既有 list 原地轉成 heap，不會回傳新 list。', 'O(n)'],
+  ['heapq.heappushpop(heap, item)', '先 push 再 pop，但比分兩行更有效率。', 'O(log n)'],
+  ['heapq.heapreplace(heap, item)', '先 pop 再 push，適合 heap 已經不為空的情境。', 'O(log n)'],
+  ['heapq.nlargest(k, iterable, key=...)', '取出依 key 比較後最大的 k 個元素。', 'O(n log k)'],
+  ['heapq.nsmallest(k, iterable, key=...)', '取出依 key 比較後最小的 k 個元素。', 'O(n log k)'],
 ] as const;
 
 export default function LeetcodeEP20Page() {
@@ -119,8 +129,8 @@ export default function LeetcodeEP20Page() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-gray-500 text-sm font-medium">
-            <div className="flex items-center gap-1.5"><Clock size={16} /><span>12 min read</span></div>
-            <div className="flex items-center gap-1.5"><Eye size={16} /><span>1 題深挖</span></div>
+            <div className="flex items-center gap-1.5"><Clock size={16} /><span>15 min read</span></div>
+            <div className="flex items-center gap-1.5"><Eye size={16} /><span>1 題深挖 + 延伸</span></div>
           </div>
         </div>
 
@@ -179,6 +189,11 @@ export default function LeetcodeEP20Page() {
             code={`from collections import Counter
 
 nums = [1, 1, 1, 2, 2, 3]
+
+# Counter 是 collections 模組提供的計數工具
+# 它會回傳一個類似 dict 的物件：
+# key   = 元素本身
+# value = 這個元素出現幾次
 count = Counter(nums)
 
 print(count)
@@ -229,9 +244,18 @@ print(count)
             code={`from collections import Counter
 
 def topKFrequent(nums: list[int], k: int) -> list[int]:
+    # Step 1：先統計每個數字出現幾次
+    # nums = [1,1,1,2,2,3]
+    # count = Counter({1: 3, 2: 2, 3: 1})
     count = Counter(nums)
+
+    # Step 2：most_common(k) 會依照「出現次數」由高到低排序
+    # 並回傳前 k 組 (num, freq)
+    # k = 2 時，top_k = [(1, 3), (2, 2)]
     top_k = count.most_common(k)
 
+    # Step 3：LeetCode 只要回傳 num，不需要 freq
+    # 所以用串列生成式把 [(1,3), (2,2)] 轉成 [1,2]
     return [num for num, freq in top_k]
 
 # nums = [1,1,1,2,2,3], k = 2
@@ -282,9 +306,13 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
 # 寫法一：一般 for loop
 result = []
 for num, freq in top_k:
+    # num  是數字本身，例如 1
+    # freq 是出現次數，例如 3
+    # 題目只要數字，所以只 append num
     result.append(num)
 
 # 寫法二：串列生成式
+# 格式：[要放進新 list 的值 for 每一筆資料 in 原本的資料]
 result = [num for num, freq in top_k]
 
 # result = [1, 2]`}
@@ -309,23 +337,67 @@ result = [num for num, freq in top_k]
             <p className="text-gray-500 font-medium mt-2">這一步開始進入 Heap 思維</p>
           </div>
 
+          <p className="text-gray-700 leading-relaxed">
+            先把 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">heapq.nlargest()</code> 當成一句白話來看：
+            「請你從一堆候選資料裡，依照我指定的比較規則，找出最大的 k 個」。
+            在 #347 裡，候選資料是「不重複的數字」，比較規則是「出現頻率」。
+          </p>
+
           <CodeBlock
-            title="top_k_nlargest.py"
+            title="top_k_nlargest_expanded.py"
+            code={`from collections import Counter
+import heapq
+
+def topKFrequent(nums: list[int], k: int) -> list[int]:
+    # Step 1：統計頻率
+    # count = Counter({1: 3, 2: 2, 3: 1})
+    count = Counter(nums)
+
+    # Step 2：取得所有不重複的數字
+    # candidates = dict_keys([1, 2, 3])
+    candidates = count.keys()
+
+    # Step 3：定義比較規則
+    # nlargest 要找「最大」，但這題不是比數字大小
+    # 而是比每個數字出現的頻率
+    def get_frequency(num: int) -> int:
+        return count[num]
+
+    # Step 4：從 candidates 裡找出 get_frequency 最大的 k 個
+    result = heapq.nlargest(
+        k,                 # 要取前 k 大
+        candidates,        # 候選資料：1, 2, 3
+        key=get_frequency, # 比較規則：看 count[num]
+    )
+
+    return result
+
+# get_frequency(1) -> 3
+# get_frequency(2) -> 2
+# get_frequency(3) -> 1
+# heapq.nlargest(2, candidates, key=get_frequency) -> [1, 2]`}
+          />
+
+          <CodeBlock
+            title="top_k_nlargest_short.py"
             code={`from collections import Counter
 import heapq
 
 def topKFrequent(nums: list[int], k: int) -> list[int]:
     count = Counter(nums)
 
+    # lambda num: count[num]
+    # 等同於：
+    #
+    # def get_frequency(num):
+    #     return count[num]
+    #
+    # 這裡用 lambda，是因為比較規則只有一行
     return heapq.nlargest(
         k,
         count.keys(),
         key=lambda num: count[num],
-    )
-
-# count.keys()              -> dict_keys([1, 2, 3])
-# key=lambda num: count[num] -> 用出現次數當作比較標準
-# heapq.nlargest(...)       -> 回傳出現次數最大的 k 個 key`}
+    )`}
           />
           <ComplexityBadge time="O(n log k)" space="O(n)" />
 
@@ -334,6 +406,31 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
             <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">heapq.nlargest(k, iterable, key=...)</code> 不是直接比較元素本身，
             而是先把元素丟進 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">key</code> 函式，拿回來的值才是排序和比較依據。
           </p>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+              <p className="font-black text-gray-900 mb-3">展開版函式</p>
+              <CodeBlock
+                title="normal_function.py"
+                code={`def get_frequency(num):
+    return count[num]`}
+              />
+              <p className="text-sm text-gray-600 leading-relaxed">
+                適合初學時閱讀，因為函式有名字，也可以在裡面放多行邏輯。
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+              <p className="font-black text-gray-900 mb-3">lambda 縮寫版</p>
+              <CodeBlock
+                title="lambda_function.py"
+                code={`lambda num: count[num]`}
+              />
+              <p className="text-sm text-gray-600 leading-relaxed">
+                <code className="bg-gray-100 px-1 rounded font-mono">lambda</code> 是匿名函式。
+                冒號左邊是參數，右邊是回傳值；適合邏輯很短時使用。
+              </p>
+            </div>
+          </div>
 
           <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
             <table className="w-full text-sm">
@@ -351,6 +448,10 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
                 <tr>
                   <td className="p-4 font-mono text-xs text-orange-600">count.keys()</td>
                   <td className="p-4 text-gray-600">候選元素，也就是所有不重複的數字</td>
+                </tr>
+                <tr>
+                  <td className="p-4 font-mono text-xs text-orange-600">lambda</td>
+                  <td className="p-4 text-gray-600">匿名函式，用來寫很短的比較規則或轉換規則</td>
                 </tr>
                 <tr>
                   <td className="p-4 font-mono text-xs text-orange-600">key=lambda num: count[num]</td>
@@ -375,18 +476,30 @@ def topKFrequent(nums: list[int], k: int) -> list[int]:
 
           <CodeBlock
             title="manual_nlargest.py"
-            code={`import heapq
+            code={`from collections import Counter
+import heapq
 
+# key=lambda x: x 代表：
+# 如果呼叫者沒有指定比較規則，就直接用 item 本身來比較
 def my_nlargest(k, iterable, key=lambda x: x):
-    heap = []
+    heap = []  # 這會是一個 min-heap
 
     for item in iterable:
+        # score 是這個 item 的比較分數
+        # 在 #347 裡，item 是 num，score 是 count[num]
         score = key(item)
+
+        # heap 裡放 (score, item)
+        # Python 會先比較 tuple 的第一個值 score
         heapq.heappush(heap, (score, item))
 
+        # heap 只保留 k 個元素
+        # 如果超過 k，就把目前 score 最小的踢掉
         if len(heap) > k:
             heapq.heappop(heap)
 
+    # heap 裡剩下的就是 score 最大的 k 個 item
+    # 但 heap 裡存的是 (score, item)，所以要把 item 抽出來
     return [item for score, item in heap]
 
 def topKFrequent(nums: list[int], k: int) -> list[int]:
@@ -487,6 +600,13 @@ smallest = heapq.heappop(heap)
             <p className="text-gray-500 font-medium mt-2">Top K 類型可以分成 Top K Largest 和 Top K Smallest</p>
           </div>
 
+          <p className="text-gray-700 leading-relaxed">
+            #347 原題是「找出現頻率最高的前 k 個元素」。如果題目反過來問：
+            「找出現頻率最低的前 k 個元素」，思路其實一樣，只是把
+            <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nlargest</code> 換成
+            <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">nsmallest</code>。
+          </p>
+
           <CodeBlock
             title="largest_vs_smallest.py"
             code={`import heapq
@@ -500,6 +620,58 @@ largest = heapq.nlargest(2, nums)
 # 查前 k 小
 smallest = heapq.nsmallest(2, nums)
 # [1, 3]`}
+          />
+
+          <CodeBlock
+            title="bottom_k_frequent_complete.py"
+            code={`from collections import Counter
+import heapq
+
+def bottomKFrequent(nums: list[int], k: int) -> list[int]:
+    # Step 1：統計每個數字出現幾次
+    # nums = [1,1,1,2,2,3,4]
+    # count = Counter({1: 3, 2: 2, 3: 1, 4: 1})
+    count = Counter(nums)
+
+    # Step 2：候選資料是所有不重複的數字
+    # candidates = dict_keys([1, 2, 3, 4])
+    candidates = count.keys()
+
+    # Step 3：比較規則是「出現頻率」
+    # num=1 -> count[1] = 3
+    # num=3 -> count[3] = 1
+    def get_frequency(num: int) -> int:
+        return count[num]
+
+    # Step 4：找出頻率最小的 k 個元素
+    # nsmallest 會依照 key(num) 的結果由小到大取前 k 個
+    return heapq.nsmallest(
+        k,
+        candidates,
+        key=get_frequency,
+    )
+
+# nums = [1,1,1,2,2,3,4], k = 2
+# 頻率：1->3, 2->2, 3->1, 4->1
+# bottomKFrequent(nums, 2) -> [3, 4]`}
+          />
+
+          <CodeBlock
+            title="bottom_k_frequent_short.py"
+            code={`from collections import Counter
+import heapq
+
+def bottomKFrequent(nums: list[int], k: int) -> list[int]:
+    count = Counter(nums)
+
+    # 縮寫版：
+    # key=lambda num: count[num]
+    # 代表每個 num 都用 count[num] 當作比較分數
+    return heapq.nsmallest(
+        k,
+        count.keys(),
+        key=lambda num: count[num],
+    )`}
           />
 
           <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
@@ -527,6 +699,83 @@ smallest = heapq.nsmallest(2, nums)
           </div>
         </section>
 
+        <section className="space-y-6">
+          <div>
+            <h2 className="text-3xl font-black text-gray-900">heapq 常用函式速查</h2>
+            <p className="text-gray-500 font-medium mt-2">第一次學 Heap 時，先掌握這幾個函式就夠用</p>
+          </div>
+
+          <p className="text-gray-700 leading-relaxed">
+            Python 的 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">heapq</code> 預設是 min-heap，
+            也就是 <code className="bg-gray-100 px-2 py-0.5 rounded font-mono text-sm">heap[0]</code> 永遠是目前最小的元素。
+            如果要模擬 max-heap，常見做法是把數字乘上 -1 存進去，取出時再乘回 -1。
+          </p>
+
+          <CodeBlock
+            title="heapq_common_functions.py"
+            code={`import heapq
+
+# 1. heappush：放入元素，並維持 min-heap
+heap = []
+heapq.heappush(heap, 3)
+heapq.heappush(heap, 1)
+heapq.heappush(heap, 2)
+# heap[0] 永遠是最小值 -> 1
+
+# 2. heappop：取出並移除最小值
+smallest = heapq.heappop(heap)
+# smallest = 1
+
+# 3. heapify：把普通 list 原地轉成 heap
+nums = [5, 1, 9, 3]
+heapq.heapify(nums)
+# nums 現在符合 heap 規則，nums[0] 是最小值
+
+# 4. heappushpop：先 push，再 pop 最小值
+# 適合「加入新元素後，仍然只想保留較大的那些」的情境
+removed = heapq.heappushpop(nums, 4)
+
+# 5. heapreplace：先 pop 最小值，再 push 新元素
+# 注意：即使新元素比較小，也一定會先移除原本的 heap[0]
+removed = heapq.heapreplace(nums, 6)
+
+# 6. nlargest / nsmallest：直接取前 k 大或前 k 小
+top_2 = heapq.nlargest(2, nums)
+bottom_2 = heapq.nsmallest(2, nums)`}
+          />
+
+          <div className="overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="text-left p-4 font-black text-gray-700">函式</th>
+                  <th className="text-left p-4 font-black text-gray-700">用途</th>
+                  <th className="text-left p-4 font-black text-gray-700">複雜度</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {heapqFunctions.map(([fn, usage, cost]) => (
+                  <tr key={fn}>
+                    <td className="p-4 font-mono text-xs text-orange-600">{fn}</td>
+                    <td className="p-4 text-gray-600">{usage}</td>
+                    <td className="p-4 text-gray-500">{cost}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="bg-orange-50 border border-orange-100 rounded-2xl p-5">
+            <p className="font-black text-orange-800 mb-2">heappushpop 和 heapreplace 差在哪？</p>
+            <p className="text-orange-700 text-sm leading-relaxed">
+              <code className="bg-white/70 px-1 rounded font-mono">heappushpop</code> 是「先放新值，再把最小的拿掉」，
+              所以如果新值本身很小，它可能立刻被拿掉。
+              <code className="bg-white/70 px-1 rounded font-mono">heapreplace</code> 則是「一定先拿掉原本的 heap[0]，再放新值」，
+              適合你確定一定要替換堆頂的情境。
+            </p>
+          </div>
+        </section>
+
         <section>
           <div className="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100 rounded-3xl p-8 space-y-6">
             <div className="flex items-center gap-3">
@@ -537,9 +786,10 @@ smallest = heapq.nsmallest(2, nums)
               {[
                 'Counter 負責統計頻率，most_common(k) 可以直接取前 k 高頻元素。',
                 '串列生成式可以把 [(num, freq), ...] 轉成 LeetCode 要的 [num, ...]。',
-                'heapq.nlargest(k, iterable, key=...) 可以用指定的 key 取前 k 大。',
+                'heapq.nlargest(k, iterable, key=...) 可以用指定的 key 取前 k 大；lambda 是短函式寫法。',
                 '手刻 nlargest 的核心是大小為 k 的 min-heap，超過 k 就 pop 掉目前最小的。',
-                'heapq 底層是 list，但邏輯上是一棵完全二元樹，因此 push/pop 是 O(log k)。',
+                '如果題目要找最低頻率前 k 個，改用 heapq.nsmallest(k, ..., key=...) 即可。',
+                'heapq 底層是 list，但邏輯上是一棵完全二元樹，因此 heappush / heappop 是 O(log k)。',
               ].map((text, i) => (
                 <div key={text} className="flex items-start gap-3">
                   <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange-100 text-xs font-black text-orange-700">{i + 1}</span>

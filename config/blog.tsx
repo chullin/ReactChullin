@@ -52,7 +52,7 @@ export const series: Series[] = [
       },
       {
             title: "EP.20 — Heap：從 Top K Frequent 到 heapq 底層",
-            subtitle: "#347 Top K Frequent Elements — 從 Counter.most_common、串列生成式、heapq.nlargest，一路理解 heappush、heappop 與 binary heap 結構",
+            subtitle: "#347 Top K Frequent Elements — 從 Counter.most_common、串列生成式、heapq.nlargest / nsmallest，一路理解 heapq 常用函式與 binary heap 結構",
             date: "2026",
             author: "Joseph Chen",
             href: "/blog/leetcode/ep20-heap",
