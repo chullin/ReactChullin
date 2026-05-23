@@ -2,11 +2,18 @@
 @config "../tailwind.config.ts";
 
 :root {
-  --primary: #006FEE;
-  --secondary: #7828C8;
+  --primary: #C2410C;
+  --secondary: #BE123C;
   --success: #17C964;
   --warning: #F5A524;
   --danger: #F31260;
+  --theme-primary: #C2410C;
+  --theme-primary-hover: #9A3412;
+  --theme-secondary: #BE123C;
+  --theme-accent: #D97706;
+  --theme-soft: #FFF7ED;
+  --theme-soft-strong: #FED7AA;
+  --theme-ring: rgba(194, 65, 12, 0.22);
 }
 
 body {
@@ -21,15 +28,17 @@ body {
 /* Custom Utilities */
 @layer components {
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 font-bold py-1;
+    background: linear-gradient(90deg, var(--theme-primary) 0%, var(--theme-secondary) 52%, var(--theme-accent) 100%);
+    @apply bg-clip-text text-transparent font-bold py-1;
   }
   
   .text-gradient-cyan {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-500 font-bold;
+    background: linear-gradient(90deg, #F97316 0%, var(--theme-secondary) 100%);
+    @apply bg-clip-text text-transparent font-bold;
   }
 
   .bg-gradient-primary-to-secondary {
-    background: linear-gradient(135deg, #006FEE 0%, #7828C8 100%);
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
   }
 
   .glass-card {
@@ -70,11 +79,11 @@ body {
   }
 
   .glow-cyan {
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.1);
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.12);
   }
 
   .glow-blue {
-    box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 25px rgba(194, 65, 12, 0.16);
   }
 
   .blog-scrollbar-hidden {

@@ -41,7 +41,7 @@ export default function Footer({ className }: { className?: string }) {
                                 href={social.href}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors"
+                                className="inline-flex items-center justify-center w-10 h-10 bg-orange-50 text-orange-700 rounded-full hover:bg-orange-100 transition-colors"
                                 aria-label={social.label}
                             >
                                 {social.icon}
@@ -49,7 +49,7 @@ export default function Footer({ className }: { className?: string }) {
                         ))}
                         <a
                             href="mailto:fg6ts15@gmail.com"
-                            className="inline-flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors"
+                            className="inline-flex items-center justify-center w-10 h-10 bg-orange-50 text-orange-700 rounded-full hover:bg-orange-100 transition-colors"
                             aria-label="Email"
                         >
                             <Mail size={20} />

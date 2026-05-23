@@ -1,16 +1,16 @@
 /* 主頁中文字的漸變色 */
 .text-gradient {
-  background: linear-gradient(90deg, #1e30f3, #da1f84);
+  background: linear-gradient(90deg, #c2410c, #be123c, #d97706);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .theme-color-blue {
-  color: #1e30f3;
+  color: #c2410c;
 }
 
 .bg-gradient-primary-to-secondary {
-  background: linear-gradient(to right, #1e30f3, #da1f84);
+  background: linear-gradient(to right, #c2410c, #be123c);
 }
 
 /* 主頁圖片圓形和裝飾點 */

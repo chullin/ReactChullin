@@ -59,7 +59,7 @@ export default function HomeAbout() {
                     <div className="flex justify-center gap-4">
                         <Link
                             href="/about"
-                            className="inline-flex items-center justify-center font-bold px-8 py-3 bg-[#006FEE] text-white rounded-xl hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20"
+                            className="inline-flex items-center justify-center font-bold px-8 py-3 bg-[var(--theme-primary)] text-white rounded-xl hover:bg-[var(--theme-primary-hover)] transition-colors shadow-lg shadow-orange-700/20"
                         >
                             了解更多
                         </Link>

@@ -35,8 +35,8 @@ export default function Navbar() {
   const navLinkClass = (active: boolean) =>
     `px-3 py-2 rounded-lg transition-colors text-sm font-semibold ${
       active
-        ? 'text-[#006FEE] font-bold bg-blue-50'
-        : 'text-gray-600 hover:text-[#006FEE] hover:bg-gray-50'
+        ? 'text-[var(--theme-primary)] font-bold bg-orange-50'
+        : 'text-gray-600 hover:text-[var(--theme-primary)] hover:bg-orange-50/70'
     }`;
 
   return (
@@ -98,7 +98,7 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={`block rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 ${
-                      isActive(link.href) ? 'text-[#006FEE]' : 'text-gray-600'
+                      isActive(link.href) ? 'text-[var(--theme-primary)]' : 'text-gray-600'
                     } ${link.color === 'danger' ? 'hover:text-rose-600' : ''}`}
                     onClick={closeMenus}
                   >
@@ -121,7 +121,7 @@ export default function Navbar() {
 
         <Link
           href="/contact"
-          className="inline-flex h-10 items-center justify-center rounded-xl bg-blue-50 px-4 text-sm font-bold text-[#006FEE] transition-colors hover:bg-blue-100"
+          className="inline-flex h-10 items-center justify-center rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100"
           onClick={closeMenus}
         >
           Let's Talk
@@ -138,7 +138,7 @@ export default function Navbar() {
           <div key={`${item.name}-${index}`}>
             <Link
               className={`block w-full rounded-lg py-2 text-lg ${
-                isActive(item.href) ? 'font-bold text-[#006FEE]' : 'text-gray-600'
+                isActive(item.href) ? 'font-bold text-[var(--theme-primary)]' : 'text-gray-600'
               }`}
               href={item.href}
               onClick={closeMenus}

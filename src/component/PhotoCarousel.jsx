@@ -66,7 +66,7 @@ export default function HeaderPhoto() {
             >
               {[...Array(4)].map((_, i) => (
                 <svg key={`col1-${i}`} width="10" height="10">
-                  <circle cx="5" cy="5" r="5" fill="#1e30f3" />
+                  <circle cx="5" cy="5" r="5" fill="#c2410c" />
                 </svg>
               ))}
             </div>
@@ -77,7 +77,7 @@ export default function HeaderPhoto() {
             >
               {[...Array(5)].map((_, i) => (
                 <svg key={`col2-${i}`} width="10" height="10">
-                  <circle cx="5" cy="5" r="5" fill="#1e30f3" />
+                  <circle cx="5" cy="5" r="5" fill="#c2410c" />
                 </svg>
               ))}
             </div>
