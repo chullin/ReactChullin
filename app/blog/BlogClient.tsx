@@ -20,6 +20,7 @@ import {
   ChevronUp,
   Bookmark,
   Search,
+  Tags,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -94,7 +95,7 @@ function SeriesSection({ s, index, isSearching }: { s: Series; index: number; is
 
   // When searching, we show all matching posts instead of collapsing
   const visiblePosts = (hasMany && !expanded && !isSearching) ? s.posts.slice(0, PREVIEW_COUNT) : s.posts;
-  const isEpSeries = ['leetcode', 'web', 'web-dev', 'ai', 'embedded', 'python', 'lang', 'devops', 'network', 'system-design', 'database'].includes(s.id);
+  const isEpSeries = ['leetcode', 'web', 'web-dev', 'js', 'ai', 'embedded', 'python', 'lang', 'devops', 'network', 'system-design', 'database'].includes(s.id);
 
   return (
     <motion.section
@@ -170,6 +171,50 @@ function SeriesSection({ s, index, isSearching }: { s: Series; index: number; is
   );
 }
 
+function CategoryNav({
+  compact = false,
+}: {
+  compact?: boolean;
+}) {
+  return (
+    <nav aria-label="Blog categories" className={compact ? 'w-full' : 'space-y-3'}>
+      {!compact && (
+        <div className="flex items-center gap-2 px-1 text-xs font-black uppercase tracking-[0.18em] text-gray-400">
+          <Tags size={14} />
+          分類
+        </div>
+      )}
+      <div className={compact ? 'flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : 'space-y-2'}>
+        {series.map(s => (
+          <a
+            key={s.id}
+            href={`#${s.id}`}
+            className={[
+              'group flex items-center gap-3 bg-white/80 shadow-sm ring-1 ring-gray-100 transition-all hover:bg-white hover:shadow-md',
+              compact ? 'min-w-max rounded-full px-3 py-2' : 'rounded-2xl px-3 py-3',
+            ].join(' ')}
+          >
+            <span className={`${s.bgColor} ${s.color} flex h-8 w-8 shrink-0 items-center justify-center rounded-xl`}>
+              {s.icon}
+            </span>
+            <span className={compact ? 'text-xs font-black text-gray-700' : 'min-w-0 flex-1'}>
+              <span className={compact ? '' : 'block truncate text-sm font-black text-gray-800 group-hover:text-gray-950'}>
+                {s.label}
+              </span>
+              {!compact && (
+                <span className="block text-[11px] font-bold text-gray-400">
+                  {s.posts.length} 篇文章
+                </span>
+              )}
+            </span>
+            {!compact && <ChevronRight size={15} className="shrink-0 text-gray-300 group-hover:text-gray-500" />}
+          </a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
 export default function BlogPage() {
   const totalPosts = series.reduce((acc, s) => acc + s.posts.length, 0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -206,7 +251,7 @@ export default function BlogPage() {
 
   return (
     <div className="bg-gray-50/30 min-h-screen pt-20 pb-32">
-      <div className="max-w-3xl mx-auto px-6 space-y-16">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
 
         {/* Header */}
         <motion.div
@@ -219,123 +264,111 @@ export default function BlogPage() {
           <p className="text-gray-400 text-lg font-medium max-w-xl mx-auto leading-relaxed">
             "How far a person can go, it's all about who you're traveling with."
           </p>
-          <div className="flex items-center justify-center gap-6 pt-2">
-            {series.map(s => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className={`text-xs font-black ${s.color} opacity-60 hover:opacity-100 transition-opacity`}
-              >
-                {s.label}
-              </a>
-            ))}
-          </div>
         </motion.div>
 
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="relative max-w-xl mx-auto"
-        >
-          <Input
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            placeholder="搜尋文章、類別或技術關鍵字 (如: Tailwind, Ollama)..."
-            radius="lg"
-            size="lg"
-            variant="flat"
-            className="group"
-            classNames={{
-              inputWrapper: "bg-white shadow-sm border-gray-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300",
-              input: "font-medium text-gray-700",
-            }}
-            startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
-            isClearable
-          />
-        </motion.div>
-
-        {/* Stats Bar */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-3"
-        >
-          {series.map(s => (
-            <a key={s.id} href={`#${s.id}`} className={`${s.bgColor} rounded-2xl p-4 flex flex-col gap-1 hover:shadow-md transition-shadow`}>
-              <div className={`${s.color}`}>{s.icon}</div>
-              <p className="text-lg font-black text-gray-800">{s.posts.length}</p>
-              <p className="text-[10px] font-bold text-gray-400 leading-tight truncate">{s.label}</p>
-            </a>
-          ))}
-        </motion.div>
-
-        {/* Bookmarks Section */}
-        {filteredBookmarks.length > 0 && (
-          <div className="space-y-16">
-            <SeriesSection 
-              index={0}
-              isSearching={searchQuery !== ''}
-              s={{
-                id: 'bookmarks',
-                label: '我的收藏',
-                icon: <Bookmark size={22} />,
-                color: 'text-red-500',
-                bgColor: 'bg-red-50',
-                chipColor: 'danger',
-                description: '你儲存在這個瀏覽器中的文章',
-                posts: filteredBookmarks
-              }} 
-            />
-          </div>
-        )}
-
-        {/* Series Sections */}
-        <div className="space-y-16">
-          {filteredSeries.length > 0 ? (
-            filteredSeries.map((s, i) => (
-              <div key={s.id} id={s.id}>
-                <SeriesSection s={s} index={i} isSearching={searchQuery !== ''} />
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-20 space-y-4">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
-                <Search size={32} className="text-gray-300" />
-              </div>
-              <p className="text-gray-400 font-bold text-lg italic">找不到與「{searchQuery}」相關的文章</p>
-              <Button 
-                variant="light" 
-                color="primary" 
-                className="font-bold"
-                onClick={() => setSearchQuery('')}
-              >
-                清除搜尋
-              </Button>
+        <div className="mt-12 grid gap-10 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start">
+          <aside className="hidden lg:block lg:sticky lg:top-24">
+            <CategoryNav />
+            <div className="mt-6 rounded-2xl bg-white/75 p-4 shadow-sm ring-1 ring-gray-100">
+              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">Total</p>
+              <p className="mt-1 text-2xl font-black text-gray-900">{totalPosts}</p>
+              <p className="mt-1 text-xs font-bold text-gray-400">篇文章，依主題快速切換。</p>
             </div>
-          )}
-        </div>
+          </aside>
 
-        {/* Footer CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="text-center"
-        >
-          <div className="bg-blue-50 p-12 rounded-[40px] space-y-4">
-            <BookOpen size={40} className="mx-auto text-blue-400" />
-            <h3 className="text-xl font-black text-gray-900">持續更新中</h3>
-            <p className="text-gray-400 font-medium text-sm">
-              目前共 {totalPosts} 篇文章，新主題持續增加。
-            </p>
-            <Button as={Link} href="/" color="primary" radius="full" className="font-bold px-8" variant="shadow">
-              返回首頁
-            </Button>
+          <div className="min-w-0 space-y-12">
+            {/* Search Bar */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="sticky top-20 z-20 space-y-3 rounded-b-3xl bg-gray-50/90 pb-4 pt-1 backdrop-blur lg:static lg:bg-transparent lg:pb-0 lg:pt-0 lg:backdrop-blur-none"
+            >
+              <Input
+                value={searchQuery}
+                onValueChange={setSearchQuery}
+                placeholder="搜尋文章、類別或技術關鍵字 (如: Tailwind, Ollama)..."
+                radius="lg"
+                size="lg"
+                variant="flat"
+                className="group"
+                classNames={{
+                  inputWrapper: "bg-white shadow-sm border-gray-100 group-hover:bg-white group-hover:shadow-md transition-all duration-300",
+                  input: "font-medium text-gray-700",
+                }}
+                startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
+                isClearable
+              />
+              <div className="lg:hidden">
+                <CategoryNav compact />
+              </div>
+            </motion.div>
+
+            {/* Bookmarks Section */}
+            {filteredBookmarks.length > 0 && (
+              <div className="space-y-16">
+                <SeriesSection 
+                  index={0}
+                  isSearching={searchQuery !== ''}
+                  s={{
+                    id: 'bookmarks',
+                    label: '我的收藏',
+                    icon: <Bookmark size={22} />,
+                    color: 'text-red-500',
+                    bgColor: 'bg-red-50',
+                    chipColor: 'danger',
+                    description: '你儲存在這個瀏覽器中的文章',
+                    posts: filteredBookmarks
+                  }} 
+                />
+              </div>
+            )}
+
+            {/* Series Sections */}
+            <div className="space-y-16">
+              {filteredSeries.length > 0 ? (
+                filteredSeries.map((s, i) => (
+                  <div key={s.id} id={s.id} className="scroll-mt-40 lg:scroll-mt-28">
+                    <SeriesSection s={s} index={i} isSearching={searchQuery !== ''} />
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-20 space-y-4">
+                  <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                    <Search size={32} className="text-gray-300" />
+                  </div>
+                  <p className="text-gray-400 font-bold text-lg italic">找不到與「{searchQuery}」相關的文章</p>
+                  <Button 
+                    variant="light" 
+                    color="primary" 
+                    className="font-bold"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    清除搜尋
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Footer CTA */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="text-center"
+            >
+              <div className="bg-blue-50 p-12 rounded-[40px] space-y-4">
+                <BookOpen size={40} className="mx-auto text-blue-400" />
+                <h3 className="text-xl font-black text-gray-900">持續更新中</h3>
+                <p className="text-gray-400 font-medium text-sm">
+                  目前共 {totalPosts} 篇文章，新主題持續增加。
+                </p>
+                <Button as={Link} href="/" color="primary" radius="full" className="font-bold px-8" variant="shadow">
+                  返回首頁
+                </Button>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
-
+        </div>
       </div>
     </div>
   );
