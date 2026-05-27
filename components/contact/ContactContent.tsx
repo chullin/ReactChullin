@@ -106,7 +106,7 @@ export default function ContactContent() {
                                 <Button
                                     color="primary"
                                     size="lg"
-                                    className="w-full font-black py-8 text-xl shadow-xl shadow-blue-500/20"
+                                    className="w-full font-black py-8 text-xl shadow-xl shadow-orange-700/20"
                                     radius="full"
                                     startContent={<Mail size={24} />}
                                 >
@@ -163,7 +163,7 @@ export default function ContactContent() {
 
                             <div className="grid grid-cols-2 gap-4 w-full pt-4">
                                 <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center gap-3">
-                                    <div className="bg-indigo-100 text-indigo-600 p-2 rounded-xl">
+                                    <div className="bg-orange-100 text-orange-700 p-2 rounded-xl">
                                         <Globe size={18} />
                                     </div>
                                     <div className="text-left">

@@ -71,10 +71,10 @@ export default function FlashcardApp() {
               <Card 
                 isPressable 
                 onPress={() => handleStartMode('cards')}
-                className="group border-none shadow-xl shadow-blue-500/5 hover:shadow-blue-500/10 transition-all hover:-translate-y-1 bg-white rounded-[2rem]"
+                className="group border-none shadow-xl shadow-orange-700/5 hover:shadow-orange-700/10 transition-all hover:-translate-y-1 bg-white rounded-[2rem]"
               >
                 <CardBody className="p-8 flex flex-col items-center text-center space-y-4">
-                  <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-16 h-16 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                     <BookOpen size={32} />
                   </div>
                   <div className="space-y-2">
@@ -83,7 +83,7 @@ export default function FlashcardApp() {
                       循序漸進查看所有單字，適合初次接觸或快速複習。
                     </p>
                   </div>
-                  <div className="font-bold w-full rounded-xl bg-blue-50 text-blue-600 py-2 px-4 text-center group-hover:bg-blue-100 transition-colors">
+                  <div className="font-bold w-full rounded-xl bg-orange-50 text-orange-700 py-2 px-4 text-center group-hover:bg-orange-100 transition-colors">
                     開始瀏覽
                   </div>
                 </CardBody>
@@ -92,11 +92,11 @@ export default function FlashcardApp() {
               <Card 
                 isPressable 
                 onPress={() => handleStartMode('quiz')}
-                className="group border-none shadow-xl shadow-purple-500/5 hover:shadow-purple-500/10 transition-all hover:-translate-y-1 bg-white rounded-[2rem]"
+                className="group border-none shadow-xl shadow-rose-700/5 hover:shadow-rose-700/10 transition-all hover:-translate-y-1 bg-white rounded-[2rem]"
               >
                 <CardBody className="p-8 flex flex-col items-center text-center space-y-4">
                   <div className="relative">
-                    <div className="w-16 h-16 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-16 h-16 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Brain size={32} />
                     </div>
                     <div className="absolute -top-2 -right-2">
@@ -109,7 +109,7 @@ export default function FlashcardApp() {
                       科學演算法追蹤記憶曲線，優先複習您快要忘記的單字。
                     </p>
                   </div>
-                  <div className="font-bold w-full rounded-xl bg-purple-50 text-purple-600 py-2 px-4 text-center group-hover:bg-purple-100 transition-colors">
+                  <div className="font-bold w-full rounded-xl bg-rose-50 text-rose-700 py-2 px-4 text-center group-hover:bg-rose-100 transition-colors">
                     啟動 AI 演算法
                   </div>
                 </CardBody>

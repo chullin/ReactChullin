@@ -5,7 +5,7 @@ export const toeic850Plus: DifficultyCategory = {
     title: '多益-850+',
     description: '高階商務談判與職場領袖必備單字，涵蓋各級精選實用詞彙。',
     icon: 'Crown',
-    color: 'tw-bg-[#0000ff]',
+    color: 'bg-rose-600',
     words: [
         {
             word: "appointment",

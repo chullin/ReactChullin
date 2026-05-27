@@ -27,8 +27,8 @@ export const series: Series[] = [
     id: 'leetcode',
     label: 'LeetCode 系列',
     icon: <Code2 size={22} />,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-50',
     chipColor: 'primary',
     description: '從 HashMap 到 Bit Manipulation，22 個主題帶你系統性建立演算法思維。',
     posts: [
@@ -252,9 +252,9 @@ export const series: Series[] = [
     id: 'web-dev',
     label: 'Web 開發系列',
     icon: <Globe size={22} />,
-    color: 'text-indigo-600',
-    bgColor: 'bg-indigo-50',
-    chipColor: 'secondary',
+    color: 'text-rose-700',
+    bgColor: 'bg-rose-50',
+    chipColor: 'danger',
     description: '從零建立 React + Next.js 作品集，到 Git、Docker、HTML/CSS 工程師必備工具。',
     posts: [
       {
@@ -720,8 +720,8 @@ export const series: Series[] = [
     id: 'network',
     label: '網路協定系列',
     icon: <Globe size={22} />,
-    color: 'text-sky-600',
-    bgColor: 'bg-sky-50',
+    color: 'text-orange-700',
+    bgColor: 'bg-orange-50',
     chipColor: 'primary',
     description: '從 TCP/IP 三向交握到 HTTP/3，深入理解現代網路傳輸的底層機制與安全防線。',
     posts: [
@@ -1079,9 +1079,9 @@ export const series: Series[] = [
     id: 'ai',
     label: 'AI 離線部署',
     icon: <Bot size={22} />,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    chipColor: 'secondary',
+    color: 'text-rose-700',
+    bgColor: 'bg-rose-50',
+    chipColor: 'danger',
     description: '在隔離網路環境部署本地 LLM — Ollama、Dify、Transformer TTS 完整實戰。',
     posts: [
       {
@@ -1180,8 +1180,8 @@ export const series: Series[] = [
     id: 'embedded',
     label: '嵌入式與系統',
     icon: <Cpu size={22} />,
-    color: 'text-cyan-600',
-    bgColor: 'bg-cyan-50',
+    color: 'text-amber-700',
+    bgColor: 'bg-amber-50',
     chipColor: 'default',
     description: 'Linux、Shell Script、嵌入式通訊協定 — 軟體工程師必備的系統底層知識。',
     posts: [

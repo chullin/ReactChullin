@@ -20,9 +20,9 @@ const capabilities = [
     desc: "Leading technical transfer and system migration work across sites, turning local know-how into repeatable team capability.",
     tags: ["Migration", "Training", "Scale"],
     note: "Designed for cross-site adoption.",
-    color: "text-violet-600",
-    bg: "bg-violet-50",
-    border: "hover:border-violet-200"
+    color: "text-rose-700",
+    bg: "bg-rose-50",
+    border: "hover:border-rose-200"
   },
   {
     icon: <Cpu size={24} />,
@@ -30,9 +30,9 @@ const capabilities = [
     desc: "Building Python and OpenCV-based automation tools for manufacturing workflows, robotic alignment, and test system reliability.",
     tags: ["Python", "OpenCV", "Robotics"],
     note: "Focused on practical shop-floor execution.",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    border: "hover:border-blue-200"
+    color: "text-orange-700",
+    bg: "bg-orange-50",
+    border: "hover:border-orange-200"
   }
 ];
 

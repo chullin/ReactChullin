@@ -10,7 +10,7 @@ import AboutCTA from '@/components/about/AboutCTA';
 
 export default function AboutContent() {
   return (
-    <div className="relative min-h-screen selection:bg-cyan-500/30 overflow-x-hidden">
+    <div className="relative min-h-screen selection:bg-orange-500/25 overflow-x-hidden">
       {/* Background Layer */}
       <AboutBackground />
 

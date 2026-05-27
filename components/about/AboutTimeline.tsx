@@ -36,7 +36,7 @@ export default function AboutTimeline() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-violet-600">Experience</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-rose-700">Experience</span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Professional Roadmap</h2>
           </div>
           <p className="max-w-md text-sm font-medium leading-relaxed text-slate-500">
@@ -55,11 +55,11 @@ export default function AboutTimeline() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
               className={`relative rounded-2xl border bg-white/70 p-6 shadow-sm backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-lg md:ml-14 ${
-                exp.featured ? 'border-cyan-100' : 'border-white/70'
+                exp.featured ? 'border-orange-100' : 'border-white/70'
               }`}
             >
               <div className={`absolute -left-[45px] top-7 hidden h-10 w-10 items-center justify-center rounded-xl border-4 border-[#F8FAFC] md:flex ${
-                exp.featured ? 'bg-cyan-500 text-white shadow-[0_0_18px_rgba(6,182,212,0.35)]' : 'bg-slate-200 text-slate-500'
+                exp.featured ? 'bg-orange-600 text-white shadow-[0_0_18px_rgba(194,65,12,0.28)]' : 'bg-slate-200 text-slate-500'
               }`}>
                 {exp.featured ? <MapPinned size={18} /> : <Building2 size={18} />}
               </div>
@@ -75,7 +75,7 @@ export default function AboutTimeline() {
                 <div className="grid grid-cols-1 gap-3">
                   {exp.achievements.map((item) => (
                     <div key={item} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-4">
-                      <ArrowRight size={14} className="mt-1 shrink-0 text-cyan-600" />
+                      <ArrowRight size={14} className="mt-1 shrink-0 text-orange-700" />
                       <span className="text-sm font-medium leading-relaxed text-slate-600">{item}</span>
                     </div>
                   ))}

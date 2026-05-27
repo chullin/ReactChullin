@@ -148,7 +148,7 @@ export default function SnakeGame() {
       // Draw Snake
       snakeRef.current.forEach((segment, index) => {
         const isHead = index === 0;
-        ctx.fillStyle = isHead ? '#3b82f6' : '#60a5fa'; // blue-500 / blue-400
+        ctx.fillStyle = isHead ? '#c2410c' : '#fb923c';
         
         // Rounded rectangle for snake segments
         const r = gridSize / 5;
@@ -410,7 +410,7 @@ export default function SnakeGame() {
 
             <Card className="border-none shadow-lg bg-white overflow-hidden">
               <CardHeader className="flex gap-3 bg-gray-50/50 py-4">
-                <Gamepad2 className="text-blue-500" size={20} />
+                <Gamepad2 className="text-orange-600" size={20} />
                 <p className="text-lg font-black tracking-tight">操作面板</p>
               </CardHeader>
               <Divider />
@@ -461,7 +461,7 @@ export default function SnakeGame() {
                 
                 <div className="mt-8 pt-6 border-t border-gray-100">
                   <div className="flex items-center gap-2 mb-2">
-                    <Info className="text-blue-400" size={16} />
+                    <Info className="text-orange-400" size={16} />
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">遊戲提示</span>
                   </div>
                   <p className="text-xs text-gray-400 font-medium leading-relaxed">
@@ -483,13 +483,13 @@ export default function SnakeGame() {
               <ModalHeader className="flex flex-col gap-1">遊戲說明</ModalHeader>
               <ModalBody>
                 <div className="space-y-4">
-                  <div className="p-4 bg-blue-50 rounded-2xl flex gap-4">
-                    <div className="bg-blue-500 text-white p-2 rounded-xl h-fit">
+                  <div className="p-4 bg-orange-50 rounded-2xl flex gap-4">
+                    <div className="bg-orange-600 text-white p-2 rounded-xl h-fit">
                       <Gamepad2 size={24} />
                     </div>
                     <div>
-                      <p className="font-bold text-blue-900">控制方式</p>
-                      <p className="text-sm text-blue-700">使用方向鍵或滑動螢幕來控制蛇的方向。蛇會不斷前進，碰到食物會變長。</p>
+                      <p className="font-bold text-orange-950">控制方式</p>
+                      <p className="text-sm text-orange-800">使用方向鍵或滑動螢幕來控制蛇的方向。蛇會不斷前進，碰到食物會變長。</p>
                     </div>
                   </div>
                   

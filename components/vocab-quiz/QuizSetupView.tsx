@@ -56,7 +56,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
       </Button>
 
       <Card className="border-none shadow-2xl bg-white overflow-visible">
-        <CardHeader className="flex gap-4 p-8 bg-blue-50/50">
+        <CardHeader className="flex gap-4 p-8 bg-orange-50/50">
           <div className={`p-3 rounded-2xl ${category.color} bg-opacity-10 text-primary`}>
             <Globe className={`w-8 h-8 ${category.color.replace('bg-', 'text-')}`} />
           </div>
@@ -75,7 +75,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
           {/* Quiz Mode Selection */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <Languages className="text-blue-500" size={24} />
+              <Languages className="text-orange-600" size={24} />
               <h3 className="text-xl font-bold">測驗模式</h3>
             </div>
             
@@ -91,7 +91,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
               <Radio 
                 value="eng-to-chi" 
                 classNames={{
-                  base: "inline-flex m-0 bg-gray-50/50 hover:bg-blue-50/50 items-center justify-between flex-row-reverse cursor-pointer rounded-2xl gap-4 p-4 border-2 border-transparent data-[selected=true]:border-primary transition-all",
+                  base: "inline-flex m-0 bg-gray-50/50 hover:bg-orange-50/60 items-center justify-between flex-row-reverse cursor-pointer rounded-2xl gap-4 p-4 border-2 border-transparent data-[selected=true]:border-primary transition-all",
                   label: "font-bold text-gray-700",
                 }}
               >
@@ -100,7 +100,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
               <Radio 
                 value="chi-to-eng"
                 classNames={{
-                  base: "inline-flex m-0 bg-gray-50/50 hover:bg-blue-50/50 items-center justify-between flex-row-reverse cursor-pointer rounded-2xl gap-4 p-4 border-2 border-transparent data-[selected=true]:border-primary transition-all",
+                  base: "inline-flex m-0 bg-gray-50/50 hover:bg-orange-50/60 items-center justify-between flex-row-reverse cursor-pointer rounded-2xl gap-4 p-4 border-2 border-transparent data-[selected=true]:border-primary transition-all",
                   label: "font-bold text-gray-700",
                 }}
               >
@@ -112,7 +112,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
           {/* Question Count Selection */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <Hash className="text-blue-500" size={24} />
+              <Hash className="text-orange-600" size={24} />
               <h3 className="text-xl font-bold">題目數量</h3>
             </div>
             
@@ -140,7 +140,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
           <Button
             color="primary"
             size="lg"
-            className="w-full text-xl font-black py-8 shadow-xl shadow-blue-500/20"
+            className="w-full text-xl font-black py-8 shadow-xl shadow-orange-700/20"
             onPress={() => onStart(mode, count)}
             startContent={<Play size={24} fill="white" />}
           >
@@ -149,9 +149,9 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
         </CardBody>
       </Card>
 
-      <Card className="bg-blue-50/30 border-none shadow-none">
-        <CardBody className="p-4 flex flex-row items-center gap-4 text-sm text-blue-800">
-          <Timer size={20} className="text-blue-500 shrink-0" />
+      <Card className="bg-orange-50/40 border-none shadow-none">
+        <CardBody className="p-4 flex flex-row items-center gap-4 text-sm text-orange-900">
+          <Timer size={20} className="text-orange-600 shrink-0" />
           <p className="font-medium">
             提示：測驗開始後將會計分。答題速度與正確率將會影響您的最終成績表現！
           </p>

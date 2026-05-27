@@ -17,24 +17,24 @@ const skillGroups = [
     title: "Automation Systems",
     desc: "Python tooling for test flows, manufacturing operations, and repeatable process control.",
     skills: ["Python", "Tkinter", "OpenCV", "Test Tools"],
-    color: "text-blue-600",
-    bg: "bg-blue-50"
+    color: "text-orange-700",
+    bg: "bg-orange-50"
   },
   {
     icon: <MonitorCog size={18} />,
     title: "Industrial Software",
     desc: "Production-facing systems where reliability, traceability, and team handoff are essential.",
     skills: ["TMS", "API Design", "System Migration", "Operations"],
-    color: "text-violet-600",
-    bg: "bg-violet-50"
+    color: "text-rose-700",
+    bg: "bg-rose-50"
   },
   {
     icon: <Code2 size={18} />,
     title: "Web & Platform",
     desc: "Modern web interfaces and deployment foundations for internal and external products.",
     skills: ["Next.js", "React", "Docker", "Linux"],
-    color: "text-cyan-600",
-    bg: "bg-cyan-50"
+    color: "text-amber-700",
+    bg: "bg-amber-50"
   }
 ];
 
@@ -67,7 +67,7 @@ export default function AboutSkills() {
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-8 items-start">
         <div>
           <div className="mb-8">
-            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-600">Technical Stack</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-700">Technical Stack</span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">
               Tools I use to ship reliable systems
             </h2>

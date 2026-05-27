@@ -46,7 +46,7 @@ export const wordData: DifficultyCategory[] = [
     title: '中等 (國中)',
     description: '核心常用單字，涵蓋日常對話。',
     icon: 'School',
-    color: 'tw-bg-green-500',
+    color: 'bg-emerald-500',
     words: [
       { word: "available", definition: "可用的" },
       { word: "believe", definition: "相信" },
@@ -60,7 +60,7 @@ export const wordData: DifficultyCategory[] = [
     title: '高等 (高中 4500)',
     description: '升學必備單字，進階閱讀基礎。',
     icon: 'BookOpen',
-    color: 'tw-bg-yellow-500',
+    color: 'bg-amber-500',
     words: [
       { word: "abandon", definition: "放棄" },
       { word: "benefit", definition: "利益" },
@@ -74,7 +74,7 @@ export const wordData: DifficultyCategory[] = [
     title: '特級 (高中 7000)',
     description: '高難度學術單字，挑戰滿分。',
     icon: 'Trophy',
-    color: 'tw-bg-red-500',
+    color: 'bg-red-500',
     words: [
       { word: "ambiguous", definition: "含糊的" },
       { word: "benevolent", definition: "仁慈的" },

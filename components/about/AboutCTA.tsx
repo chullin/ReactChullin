@@ -9,7 +9,7 @@ export default function AboutCTA() {
     <section className="py-20 px-6 relative z-10 overflow-hidden">
       <div className="max-w-4xl mx-auto text-center relative">
         {/* Decorative background element */}
-        <div className="absolute top-1/2 left-1/2 -z-10 h-[260px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-100/35 blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -z-10 h-[260px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange-100/45 blur-[120px]" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -17,7 +17,7 @@ export default function AboutCTA() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <span className="text-[10px] font-black uppercase tracking-[0.24em] text-cyan-600">Let's Connect</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-700">Let's Connect</span>
           <h2 className="mt-3 text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
             Building secure AI and automation systems for real-world production.
           </h2>

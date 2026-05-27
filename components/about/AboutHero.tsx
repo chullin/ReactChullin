@@ -34,20 +34,20 @@ export default function AboutHero() {
         className="identity-card group relative w-full max-w-5xl overflow-hidden rounded-[2rem] p-3 transition-[border-color,box-shadow,transform] duration-700 md:rounded-[2.35rem] md:p-4"
       >
         <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
-        <div className="pointer-events-none absolute -right-28 -top-32 h-72 w-72 rounded-full bg-sky-100/45 blur-3xl transition-opacity duration-700 group-hover:opacity-80" />
+        <div className="pointer-events-none absolute -right-28 -top-32 h-72 w-72 rounded-full bg-orange-100/55 blur-3xl transition-opacity duration-700 group-hover:opacity-80" />
         <div className="pointer-events-none absolute -bottom-36 left-1/2 h-72 w-[34rem] -translate-x-1/2 rounded-full bg-white/70 blur-3xl" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.76),transparent_42%)] opacity-80" />
 
         <div className="relative z-10 grid grid-cols-1 gap-3 md:grid-cols-[0.9fr_1.1fr]">
           <div className="relative flex min-h-[340px] items-center justify-center overflow-visible md:min-h-[360px] lg:min-h-[520px]">
-            <div className="pointer-events-none absolute left-[6%] top-[8%] h-5 w-5 rounded-full bg-sky-200/45 blur-[1px]" />
+            <div className="pointer-events-none absolute left-[6%] top-[8%] h-5 w-5 rounded-full bg-orange-200/55 blur-[1px]" />
             <div className="pointer-events-none absolute right-[9%] top-[18%] h-3 w-3 rounded-full bg-slate-300/35 blur-[0.5px]" />
-            <div className="pointer-events-none absolute bottom-[16%] left-[14%] h-4 w-4 rounded-full bg-blue-200/40 blur-[1px]" />
-            <div className="pointer-events-none absolute bottom-[10%] right-[16%] h-2.5 w-2.5 rounded-full bg-sky-300/45" />
+            <div className="pointer-events-none absolute bottom-[16%] left-[14%] h-4 w-4 rounded-full bg-rose-200/45 blur-[1px]" />
+            <div className="pointer-events-none absolute bottom-[10%] right-[16%] h-2.5 w-2.5 rounded-full bg-orange-300/55" />
             <div className="pointer-events-none absolute left-[3%] top-[44%] h-2 w-2 rounded-full bg-slate-300/35" />
             <div className="pointer-events-none absolute right-[5%] top-[53%] h-6 w-6 rounded-full bg-white/45 blur-md" />
 
-            <div className="watercolor-blob-mask absolute inset-[3%] bg-sky-200/25 blur-2xl" />
+            <div className="watercolor-blob-mask absolute inset-[3%] bg-orange-200/35 blur-2xl" />
             <div className="watercolor-blob-mask absolute inset-[7%] bg-slate-300/20 blur-xl" />
             <div className="watercolor-blob-mask relative h-[88%] min-h-[300px] w-[92%] overflow-hidden bg-white shadow-[0_28px_80px_rgba(15,23,42,0.12)] md:min-h-[330px] lg:min-h-[470px]">
               <NextImage
@@ -60,18 +60,18 @@ export default function AboutHero() {
               />
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-white/18" />
               <div className="watercolor-paper-texture pointer-events-none absolute inset-0 opacity-70" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_18%,rgba(255,255,255,0.32),transparent_34%),radial-gradient(circle_at_70%_80%,rgba(14,165,233,0.12),transparent_38%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_35%_18%,rgba(255,255,255,0.32),transparent_34%),radial-gradient(circle_at_70%_80%,rgba(249,115,22,0.16),transparent_38%)]" />
             </div>
 
             <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/60 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 shadow-[0_10px_28px_rgba(15,23,42,0.08)] backdrop-blur-md md:left-7 md:top-7">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.45)]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-600 shadow-[0_0_12px_rgba(194,65,12,0.35)]" />
               Digital Identity
             </div>
           </div>
 
           <div className="flex flex-col justify-center px-5 py-9 text-left md:px-7 md:py-9 lg:px-11 lg:py-12">
             <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/50 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] lg:mb-7">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.45)]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-orange-600 shadow-[0_0_12px_rgba(194,65,12,0.35)]" />
               Premium Profile
             </div>
 
@@ -79,7 +79,7 @@ export default function AboutHero() {
               <h1 className="max-w-xl text-[2.6rem] font-bold leading-[0.98] tracking-tight text-slate-950 md:text-[3rem] lg:text-6xl">
                 Joseph Chen <span className="font-light text-slate-400">/</span> 陳憲億
               </h1>
-              <p className="text-sm font-medium tracking-[0.02em] text-blue-600 md:text-base">
+              <p className="text-sm font-medium tracking-[0.02em] text-orange-700 md:text-base">
                 AI Application & Automation Engineer
               </p>
               <p className="max-w-lg text-sm font-normal leading-7 text-slate-500 lg:text-[15px]">

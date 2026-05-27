@@ -55,7 +55,7 @@ export default function QuizView({ category, onBack }: QuizViewProps) {
 
   if (!isReady || !currentWord) return (
     <div className="flex flex-col items-center justify-center h-64 space-y-4">
-      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-12 h-12 border-4 border-orange-600 border-t-transparent rounded-full animate-spin" />
       <p className="text-gray-400 font-bold">正在準備您的個人化練習...</p>
     </div>
   );
@@ -70,7 +70,7 @@ export default function QuizView({ category, onBack }: QuizViewProps) {
           <Button variant="light" size="sm" onPress={onBack} className="font-bold text-gray-400">退出</Button>
           <Divider orientation="vertical" className="h-4" />
           <div className="flex items-center gap-2">
-            <Brain size={16} className="text-purple-500" />
+            <Brain size={16} className="text-rose-600" />
             <span className="text-xs font-black text-gray-600">記憶池: {shortTermPool.length}</span>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function QuizView({ category, onBack }: QuizViewProps) {
             <CardBody className="flex flex-col items-center justify-center space-y-6">
               <span className="text-[10px] font-black tracking-[0.3em] text-gray-300 uppercase">Do you remember?</span>
               <h2 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter">{currentWord.word}</h2>
-              <p className="text-xl text-blue-400 font-bold italic">{currentWord.phonetic}</p>
+              <p className="text-xl text-orange-400 font-bold italic">{currentWord.phonetic}</p>
               
               <div className="absolute bottom-10 flex items-center gap-2 text-gray-200 text-[10px] font-black uppercase tracking-widest">
                 <RotateCcw size={12} className="animate-spin-slow" />
@@ -111,12 +111,12 @@ export default function QuizView({ category, onBack }: QuizViewProps) {
               <h2 className="text-4xl md:text-6xl font-black text-gray-900">{currentWord.definition}</h2>
               <p className="text-gray-400 font-bold">{getPinyin(currentWord.definition)}</p>
               
-              <div className="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 max-w-sm">
+              <div className="bg-orange-50/50 p-4 rounded-2xl border border-orange-100 max-w-sm">
                 <p className="text-xs md:text-sm text-gray-600 leading-relaxed italic">"{currentWord.sentence}"</p>
               </div>
 
               {currentWord.memory_tip && (
-                <div className="flex items-center gap-2 text-purple-400">
+                <div className="flex items-center gap-2 text-rose-400">
                   <Brain size={14} />
                   <p className="text-[10px] font-bold">{currentWord.memory_tip}</p>
                 </div>
@@ -160,7 +160,7 @@ export default function QuizView({ category, onBack }: QuizViewProps) {
             </Button>
             
             <Button 
-              className="h-16 flex flex-col items-center justify-center gap-1 bg-blue-50 text-blue-600 border-2 border-blue-100 hover:bg-blue-100 rounded-3xl"
+              className="h-16 flex flex-col items-center justify-center gap-1 bg-amber-50 text-amber-700 border-2 border-amber-100 hover:bg-amber-100 rounded-3xl"
               onPress={() => handleRating(4)}
             >
               <span className="font-black text-lg leading-none">Easy</span>

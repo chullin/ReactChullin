@@ -23,10 +23,10 @@ export default function AboutStats() {
             whileHover={{ y: -3, backgroundColor: "#FFFFFF", borderColor: "#CBD5E1" }}
             className="bg-white/60 backdrop-blur-md border border-white/70 shadow-sm p-4 md:p-5 rounded-2xl text-center group transition-all"
           >
-            <p className="text-[9px] md:text-[10px] font-black text-cyan-600 uppercase tracking-widest mb-1">
+            <p className="text-[9px] md:text-[10px] font-black text-orange-700 uppercase tracking-widest mb-1">
               {stat.label}
             </p>
-            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mb-1 group-hover:text-orange-700 transition-colors">
               {stat.value}
             </h3>
             <p className="text-[11px] md:text-xs text-slate-400 font-bold leading-snug">

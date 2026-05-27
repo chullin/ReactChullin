@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 export default function AboutBackground() {
   return (
     <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-[#F8FAFC]" />
+      <div className="absolute inset-0 bg-[#FFF7ED]" />
       
       {/* Grid Pattern with radial mask */}
       <div className="absolute inset-0 grid-bg opacity-100" />
@@ -22,7 +22,7 @@ export default function AboutBackground() {
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-100/20 rounded-full blur-[140px]"
+        className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-orange-100/35 rounded-full blur-[140px]"
       />
       
       <motion.div
@@ -37,7 +37,7 @@ export default function AboutBackground() {
           ease: "easeInOut",
           delay: 3,
         }}
-        className="absolute bottom-[5%] right-[-10%] w-[700px] h-[700px] bg-indigo-50/20 rounded-full blur-[150px]"
+        className="absolute bottom-[5%] right-[-10%] w-[700px] h-[700px] bg-rose-50/30 rounded-full blur-[150px]"
       />
     </div>
   );

@@ -43,10 +43,10 @@ export default function ResultView({ score, totalQuestions = 10, category, onRes
     Icon = Trophy;
   } else if (percentage >= 70) {
     title = "非常棒！";
-    colorClass = "text-blue-500";
-    bgClass = "bg-blue-50";
-    borderClass = "border-blue-100";
-    barClass = "bg-blue-400";
+    colorClass = "text-orange-600";
+    bgClass = "bg-orange-50";
+    borderClass = "border-orange-100";
+    barClass = "bg-orange-500";
     Icon = Star;
   } else if (percentage >= 50) {
     title = "不錯喔！";
@@ -137,7 +137,7 @@ export default function ResultView({ score, totalQuestions = 10, category, onRes
         <Button
           color="primary"
           size="lg"
-          className="w-full font-black shadow-lg shadow-blue-500/20"
+          className="w-full font-black shadow-lg shadow-orange-700/20"
           onPress={onReplay}
           startContent={<RotateCcw size={18} />}
         >

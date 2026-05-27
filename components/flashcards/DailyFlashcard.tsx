@@ -218,7 +218,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
           <Card className="absolute w-full h-full backface-hidden border-none shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] bg-white rounded-[40px] overflow-hidden">
             <CardBody className="p-6 md:p-10 flex flex-col items-center justify-between">
               <div className="w-full flex justify-between items-start">
-                <div className="bg-blue-50 text-blue-500 font-black px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-xs md:text-sm border border-blue-100/50">
+                <div className="bg-orange-50 text-orange-600 font-black px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-xs md:text-sm border border-orange-100/50">
                    #{currentIndex + 1}
                 </div>
                 
@@ -251,7 +251,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                     </motion.h2>
                   </div>
                   <div className="flex items-center justify-center gap-3">
-                    <p className="text-xl md:text-2xl text-blue-400 font-bold italic tracking-wide">
+                    <p className="text-xl md:text-2xl text-orange-400 font-bold italic tracking-wide">
                       {currentWord.phonetic || getPhonetic(currentWord.word)}
                     </p>
                     <Button
@@ -260,7 +260,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                       variant="light"
                       radius="full"
                       onPress={(e) => speak(e, currentWord.word)}
-                      className="text-blue-200 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                      className="text-orange-200 hover:text-orange-600 hover:bg-orange-50 transition-colors"
                     >
                       <Volume2 size={20} />
                     </Button>
@@ -284,7 +284,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
           >
             <CardBody className="p-6 md:p-10 flex flex-col items-center justify-between">
               <div className="w-full flex justify-between items-start">
-                <Chip variant="flat" color="secondary" className="font-black px-3 h-8 md:px-4 md:h-9 border border-purple-100/50" size="sm">解答 Answer</Chip>
+                <Chip variant="flat" color="secondary" className="font-black px-3 h-8 md:px-4 md:h-9 border border-rose-100/50" size="sm">解答 Answer</Chip>
                 
                 <Button
                   isIconOnly
@@ -316,7 +316,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                       variant="light"
                       radius="full"
                       onPress={(e) => speak(e, currentWord.definition, true)}
-                      className="text-purple-200 hover:text-purple-500 hover:bg-purple-50 transition-colors"
+                      className="text-rose-200 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                     >
                       <Volume2 size={20} />
                     </Button>
@@ -326,19 +326,19 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                 {/* Info Grid - Modern Stacked Layout */}
                 <div className="w-full max-w-lg space-y-3 md:space-y-4 px-2 md:px-4">
                   {currentWord.sentence && (
-                    <div className="bg-blue-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-blue-100/50 space-y-1 md:space-y-2 group/sentence hover:bg-blue-50/50 transition-colors">
+                    <div className="bg-orange-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-orange-100/50 space-y-1 md:space-y-2 group/sentence hover:bg-orange-50/50 transition-colors">
                       <div className="flex items-center gap-2">
-                        <div className="bg-blue-500 text-white p-1 rounded-lg">
+                        <div className="bg-orange-600 text-white p-1 rounded-lg">
                           <Quote size={10} fill="currentColor" />
                         </div>
-                        <p className="text-[9px] md:text-[10px] font-black text-blue-400 uppercase tracking-widest">Example Sentence</p>
+                        <p className="text-[9px] md:text-[10px] font-black text-orange-400 uppercase tracking-widest">Example Sentence</p>
                       </div>
                       <div className="space-y-1 md:space-y-2">
-                        <p className="text-xs md:text-base font-bold text-gray-800 leading-relaxed italic group-hover/sentence:text-blue-900 transition-colors">
+                        <p className="text-xs md:text-base font-bold text-gray-800 leading-relaxed italic group-hover/sentence:text-orange-950 transition-colors">
                           "{currentWord.sentence}"
                         </p>
                         {currentWord.translate && (
-                          <p className="text-[10px] md:text-sm font-bold text-gray-400 border-t border-blue-100/30 pt-1.5 md:pt-2">
+                          <p className="text-[10px] md:text-sm font-bold text-gray-400 border-t border-orange-100/30 pt-1.5 md:pt-2">
                             {currentWord.translate}
                           </p>
                         )}
@@ -348,14 +348,14 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                     {currentWord.memory_tip && (
-                      <div className="bg-purple-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-purple-100/50 space-y-1 md:space-y-2 hover:bg-purple-50/50 transition-colors">
+                      <div className="bg-rose-50/30 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-rose-100/50 space-y-1 md:space-y-2 hover:bg-rose-50/50 transition-colors">
                         <div className="flex items-center gap-2">
-                          <div className="bg-purple-500 text-white p-1 rounded-lg">
+                          <div className="bg-rose-600 text-white p-1 rounded-lg">
                             <Brain size={10} />
                           </div>
-                          <p className="text-[9px] md:text-[10px] font-black text-purple-400 uppercase tracking-widest">Memory Tip</p>
+                          <p className="text-[9px] md:text-[10px] font-black text-rose-400 uppercase tracking-widest">Memory Tip</p>
                         </div>
-                        <p className="text-[10px] md:text-xs font-bold text-purple-900 leading-relaxed">
+                        <p className="text-[10px] md:text-xs font-bold text-rose-950 leading-relaxed">
                           {currentWord.memory_tip}
                         </p>
                       </div>
@@ -412,7 +412,7 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
           size="lg"
           radius="full"
           onPress={handleNext}
-          className="px-8 md:px-12 h-12 md:h-16 text-lg md:text-2xl font-black shadow-xl shadow-blue-500/20 flex-1 md:flex-none"
+          className="px-8 md:px-12 h-12 md:h-16 text-lg md:text-2xl font-black shadow-xl shadow-orange-700/20 flex-1 md:flex-none"
           endContent={<ArrowRight size={24} />}
         >
           下一個
@@ -468,11 +468,11 @@ export default function DailyFlashcard({ category, onBack }: DailyFlashcardProps
                     />
                   </div>
                   
-                  <div className="bg-blue-50 p-6 rounded-[2rem] space-y-2">
-                    <p className="text-xs font-black text-blue-400 uppercase tracking-widest">Progress Data</p>
+                  <div className="bg-orange-50 p-6 rounded-[2rem] space-y-2">
+                    <p className="text-xs font-black text-orange-400 uppercase tracking-widest">Progress Data</p>
                     <div className="flex justify-between items-center">
-                       <span className="text-sm font-bold text-blue-900">今日已完成</span>
-                       <span className="text-xl font-black text-blue-600">{completedToday} 字</span>
+                       <span className="text-sm font-bold text-orange-950">今日已完成</span>
+                       <span className="text-xl font-black text-orange-700">{completedToday} 字</span>
                     </div>
                   </div>
                 </div>

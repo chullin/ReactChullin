@@ -106,7 +106,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <Trophy className="text-blue-500" size={16} />
+            <Trophy className="text-orange-600" size={16} />
             <span className="text-sm font-bold text-gray-500">
               得分 <span className="text-primary font-black">{score}</span>/{totalQuestions}
             </span>
@@ -141,7 +141,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
           color="primary"
           size="sm"
           classNames={{
-            indicator: "bg-gradient-to-r from-blue-400 to-blue-600",
+            indicator: "bg-gradient-to-r from-orange-400 to-orange-700",
           }}
         />
       </div>
@@ -165,7 +165,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
               <div className="flex items-center justify-center gap-2 flex-wrap">
                 <h2
                   className={`font-black tracking-tight leading-tight break-all text-center ${
-                    mode === 'eng-to-chi' ? 'text-primary' : 'text-indigo-600'
+                    mode === 'eng-to-chi' ? 'text-primary' : 'text-rose-700'
                   } ${
                     (mode === 'eng-to-chi' ? currentQuestion.word.word : currentQuestion.word.definition).length > 12
                       ? 'text-3xl sm:text-4xl'
@@ -177,7 +177,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
                 {mode === 'eng-to-chi' && (
                   <button
                     onClick={() => playSound(currentQuestion.word.word)}
-                    className="text-gray-300 hover:text-blue-400 transition-colors shrink-0"
+                    className="text-gray-300 hover:text-orange-400 transition-colors shrink-0"
                   >
                     <Volume2 size={20} />
                   </button>
@@ -192,7 +192,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
               const isCorrectAnswer = option === currentQuestion.correctAnswer;
               const isUserSelection = option === selectedAnswer;
 
-              let bgClass = 'bg-white border-2 border-gray-100 hover:border-primary hover:bg-blue-50';
+              let bgClass = 'bg-white border-2 border-gray-100 hover:border-primary hover:bg-orange-50';
               if (isAnswered) {
                 if (isCorrectAnswer) bgClass = 'bg-success/10 border-2 border-success text-success';
                 else if (isUserSelection) bgClass = 'bg-danger/10 border-2 border-danger text-danger';
@@ -258,7 +258,7 @@ export default function QuizGame({ category, mode, totalQuestions, onFinish, onB
 
           {/* Hint (before answering) */}
           {!isAnswered && (
-            <div className="flex items-center gap-2 text-xs text-blue-400 font-medium px-1">
+            <div className="flex items-center gap-2 text-xs text-orange-400 font-medium px-1">
               <HelpCircle size={14} className="shrink-0" />
               <span>仔細觀察單字的詞性與語境，這將幫助您做出正確選擇。</span>
             </div>

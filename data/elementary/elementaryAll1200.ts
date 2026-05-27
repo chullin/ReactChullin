@@ -5,7 +5,7 @@ export const elementaryAll1200: DifficultyCategory = {
   title: '簡單 (國小 1200)',
   description: '國中小基本英語字彙 1200 字。',
   icon: 'Baby',
-  color: 'tw-bg-blue-500',
+  color: 'bg-orange-500',
   words: [
     { word: "a (an)", definition: "一(個)" },
     { word: "a few", definition: "一些" },

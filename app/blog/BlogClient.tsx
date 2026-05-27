@@ -50,7 +50,7 @@ function EpRow({ post, color }: { post: Post; color: string }) {
         </span>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors truncate">
+        <p className="text-sm font-bold text-gray-800 group-hover:text-orange-700 transition-colors truncate">
           {post.title}
         </p>
         <p className="text-xs text-gray-400 font-medium truncate">{post.subtitle}</p>
@@ -58,8 +58,8 @@ function EpRow({ post, color }: { post: Post; color: string }) {
       <div className="flex items-center gap-2 shrink-0">
         <span className="text-[10px] text-gray-300 font-bold">{post.date}</span>
         {post.isExternal
-          ? <ExternalLink size={14} className="text-gray-300 group-hover:text-blue-400 transition-colors" />
-          : <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-400 transition-colors" />}
+          ? <ExternalLink size={14} className="text-gray-300 group-hover:text-orange-500 transition-colors" />
+          : <ChevronRight size={16} className="text-gray-300 group-hover:text-orange-500 transition-colors" />}
       </div>
     </Link>
   );
@@ -412,18 +412,18 @@ export default function BlogPage() {
               className="group"
               classNames={{
                 inputWrapper: [
-                  'relative overflow-hidden rounded-[24px] border border-white/[0.34] bg-white/[0.18] shadow-none backdrop-blur-[3px]',
-                  'outline outline-1 -outline-offset-1 outline-white/[0.16] transition-[background,border-color,border-radius,transform] duration-300 ease-out',
+                  'relative overflow-hidden rounded-[24px] border border-white/[0.34] bg-white/[0.18] shadow-[0_16px_42px_rgba(251,146,60,0.18),0_3px_12px_rgba(234,88,12,0.10)] backdrop-blur-[3px]',
+                  'outline outline-1 -outline-offset-1 outline-white/[0.16] transition-[background,border-color,border-radius,box-shadow,transform] duration-300 ease-out',
                   'before:pointer-events-none before:absolute before:inset-px before:rounded-[23px] before:border before:border-white/[0.26] before:content-[""]',
                   'after:pointer-events-none after:absolute after:inset-0 after:rounded-[24px] after:bg-[radial-gradient(circle_at_18%_12%,rgba(255,255,255,0.52),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.22),transparent_38%,rgba(255,255,255,0.12)_68%,transparent)] after:opacity-70 after:content-[""]',
-                  'hover:[transform:scale(1.006)] hover:rounded-[28px] hover:border-white/[0.48] hover:!bg-white/[0.26]',
-                  'data-[hover=true]:[transform:scale(1.006)] data-[hover=true]:rounded-[28px] data-[hover=true]:border-white/[0.48] data-[hover=true]:!bg-white/[0.26]',
+                  'hover:[transform:scale(1.006)] hover:rounded-[28px] hover:border-white/[0.48] hover:!bg-white/[0.26] hover:shadow-[0_20px_48px_rgba(251,146,60,0.22),0_5px_16px_rgba(234,88,12,0.13)]',
+                  'data-[hover=true]:[transform:scale(1.006)] data-[hover=true]:rounded-[28px] data-[hover=true]:border-white/[0.48] data-[hover=true]:!bg-white/[0.26] data-[hover=true]:shadow-[0_20px_48px_rgba(251,146,60,0.22),0_5px_16px_rgba(234,88,12,0.13)]',
                   'group-hover:before:rounded-[27px] group-hover:after:rounded-[28px] group-active:[transform:scale(0.998)]',
                 ].join(' '),
                 innerWrapper: "relative z-10",
                 input: "font-medium text-gray-700",
               }}
-              startContent={<Search size={20} className="text-gray-400 group-hover:text-blue-500 transition-colors" />}
+              startContent={<Search size={20} className="text-gray-400 group-hover:text-orange-600 transition-colors" />}
               isClearable
             />
             {isContentSearching && (
@@ -517,8 +517,8 @@ export default function BlogPage() {
               whileInView={{ opacity: 1 }}
               className="text-center"
             >
-              <div className="bg-blue-50 p-12 rounded-[40px] space-y-4">
-                <BookOpen size={40} className="mx-auto text-blue-400" />
+              <div className="bg-orange-50 p-12 rounded-[40px] space-y-4">
+                <BookOpen size={40} className="mx-auto text-orange-400" />
                 <h3 className="text-xl font-black text-gray-900">持續更新中</h3>
                 <p className="text-gray-400 font-medium text-sm">
                   目前共 {totalPosts} 篇文章，新主題持續增加。

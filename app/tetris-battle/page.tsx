@@ -349,8 +349,8 @@ export default function TetrisBattlePage() {
   const isOver = playerGameOver || botGameOver;
 
   return (
-    <div className="bg-gray-50/30 min-h-screen py-10 px-6 font-sans">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="bg-gray-50/30 min-h-screen py-10 px-4 font-sans sm:px-6">
+      <div className="max-w-[1400px] mx-auto space-y-8">
         
         {/* Header Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-6 rounded-[32px] shadow-sm">
@@ -396,7 +396,7 @@ export default function TetrisBattlePage() {
         </div>
 
         {/* Main Game Desktop Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px_1fr] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_180px_minmax(0,1fr)] xl:grid-cols-[minmax(0,1fr)_200px_minmax(0,1fr)] gap-6 lg:gap-4 xl:gap-8 items-start">
           
           {/* ────── PLAYER BOARD ────── */}
           <div className="space-y-4">
@@ -478,7 +478,7 @@ export default function TetrisBattlePage() {
                     queuedAt={playerDisplay.garbageQueuedAt}
                     isPlayer={true}
                   />
-                  <div className="hidden sm:block">
+                  <div className="hidden xl:block">
                     <NextPieceQueue nextPieces={playerDisplay.nextPieces} />
                   </div>
                 </div>
@@ -492,9 +492,9 @@ export default function TetrisBattlePage() {
               <span className="text-6xl font-black text-gray-100 italic tracking-tighter">VS</span>
             </div>
 
-            <Card className="border-none bg-blue-50/50 shadow-none">
+            <Card className="border-none bg-orange-50/50 shadow-none">
               <CardBody className="p-4 space-y-4">
-                <p className="text-[10px] font-black uppercase text-blue-400 tracking-widest text-center">Controls</p>
+                <p className="text-[10px] font-black uppercase text-orange-500 tracking-widest text-center">Controls</p>
                 <div className="space-y-2">
                   {[
                     { keys: ['←', '→'], label: 'Move' },
@@ -526,7 +526,7 @@ export default function TetrisBattlePage() {
                 description="Predictive Logic v2.1"
                 avatarProps={{
                   icon: <Bot />,
-                  className: "bg-indigo-100 text-indigo-500 ring-2 ring-indigo-500 ring-offset-2"
+                  className: "bg-orange-100 text-orange-700 ring-2 ring-orange-500 ring-offset-2"
                 }}
                 classNames={{ name: "font-black" }}
               />
@@ -555,7 +555,7 @@ export default function TetrisBattlePage() {
                     queuedAt={botDisplay.garbageQueuedAt}
                     isPlayer={false}
                   />
-                  <div className="hidden sm:block">
+                  <div className="hidden xl:block">
                     <NextPieceQueue nextPieces={botDisplay.nextPieces} />
                   </div>
                 </div>

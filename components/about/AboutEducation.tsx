@@ -35,7 +35,7 @@ export default function AboutEducation() {
                 viewport={{ once: true }}
             >
                 <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-4">Academic Foundation</h2>
-                <div className="w-12 h-1 bg-cyan-500 rounded-full" />
+                <div className="w-12 h-1 bg-orange-600 rounded-full" />
             </motion.div>
 
             <div className="space-y-8">
@@ -50,12 +50,12 @@ export default function AboutEducation() {
                 >
                   <div className="flex flex-col gap-2">
                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{edu.period}</span>
-                    <h3 className="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors">{edu.degree}</h3>
+                    <h3 className="text-2xl font-black text-slate-900 group-hover:text-orange-700 transition-colors">{edu.degree}</h3>
                     <p className="text-slate-500 font-bold text-sm mb-4">{edu.school}</p>
                     <Link
                       isExternal
                       href={edu.link}
-                      className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-cyan-600 transition-colors font-medium border-b border-slate-100 pb-1 w-fit group/link"
+                      className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-orange-700 transition-colors font-medium border-b border-slate-100 pb-1 w-fit group/link"
                     >
                       <span>{edu.thesis || edu.project}</span>
                       <ArrowUpRight size={14} className="group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5 transition-transform" />
@@ -82,8 +82,8 @@ export default function AboutEducation() {
                 <div className="relative z-10 space-y-6">
                     <h3 className="text-3xl md:text-5xl font-normal text-slate-900 leading-[1.1] tracking-normal font-playfair italic">
                         "Bridging the gap between <br />
-                        <span className="text-blue-600 font-playfair italic">AI Innovation</span> <br className="hidden md:block" />
-                        & <span className="text-cyan-600 font-playfair italic">Industrial Implementation</span>"
+                        <span className="text-orange-700 font-playfair italic">AI Innovation</span> <br className="hidden md:block" />
+                        & <span className="text-rose-700 font-playfair italic">Industrial Implementation</span>"
                     </h3>
                     <div className="space-y-4">
                         <p className="text-slate-500 leading-relaxed font-medium">

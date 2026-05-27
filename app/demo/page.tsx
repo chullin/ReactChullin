@@ -164,15 +164,15 @@ export default function DemoPage() {
 
         {/* Download Section */}
         <section className="pt-20">
-          <Card className="border-none bg-blue-600 shadow-2xl p-8 sm:p-16 overflow-hidden relative">
+          <Card className="border-none bg-[var(--theme-primary)] shadow-2xl p-8 sm:p-16 overflow-hidden relative">
             {/* Background Decorations */}
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-400 rounded-full blur-3xl opacity-50" />
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-800 rounded-full blur-3xl opacity-50" />
+            <div className="absolute -top-10 -left-10 w-40 h-40 bg-orange-300 rounded-full blur-3xl opacity-50" />
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-rose-800 rounded-full blur-3xl opacity-50" />
             
             <CardBody className="p-0 flex flex-col items-center text-center space-y-10 relative z-10">
               <div className="space-y-4">
                 <h2 className="text-4xl font-black text-white tracking-tight">Resources & Source Code</h2>
-                <p className="text-blue-100 text-lg font-medium">取得專案相關的檔案與原始碼資源袋。</p>
+                <p className="text-orange-100 text-lg font-medium">取得專案相關的檔案與原始碼資源袋。</p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-6 w-full max-w-2xl">
@@ -181,11 +181,11 @@ export default function DemoPage() {
                     key={i}
                     as={Link}
                     href={dl.href}
-                    className="flex-1 bg-white text-blue-600 font-bold py-8 text-lg rounded-2xl shadow-2xl hover:scale-105 transition-transform group"
+                    className="flex-1 bg-white text-[var(--theme-primary)] font-bold py-8 text-lg rounded-2xl shadow-2xl hover:scale-105 transition-transform group"
                     startContent={<Download className="group-hover:translate-y-0.5 transition-transform" size={24} />}
                   >
                     <div className="flex flex-col items-start leading-tight">
-                      <span className="text-[10px] uppercase font-black tracking-widest opacity-60 text-blue-400">{dl.size} Package</span>
+                      <span className="text-[10px] uppercase font-black tracking-widest opacity-60 text-orange-500">{dl.size} Package</span>
                       <span>{dl.label.replace('Download ', '')}</span>
                     </div>
                   </Button>
