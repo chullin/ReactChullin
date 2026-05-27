@@ -2,6 +2,7 @@ import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google';
+import { Providers } from './providers';
 
 const plusJakarta = Plus_Jakarta_Sans({
     subsets: ['latin'],
@@ -95,11 +96,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
             </head>
             <body className="min-h-screen bg-white" suppressHydrationWarning>
-                <Navbar />
-                <main>
-                    {children}
-                </main>
-                <Footer className="relative z-20" />
+                <Providers>
+                    <Navbar />
+                    <main>
+                        {children}
+                    </main>
+                    <Footer className="relative z-20" />
+                </Providers>
             </body>
         </html>
     );

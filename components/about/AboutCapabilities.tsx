@@ -2,34 +2,26 @@
 
 import { motion } from 'framer-motion';
 import { ShieldCheck, Cpu, Globe, Settings, Database, Terminal } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 const capabilities = [
   {
     icon: <ShieldCheck size={24} />,
-    title: "Secure AI Infrastructure",
-    desc: "Deploying LLM workflows in air-gapped industrial environments where security, repeatability, and operational control matter.",
     tags: ["Ollama", "Dify", "Air-gapped"],
-    note: "Built for restricted production zones.",
     color: "text-emerald-600",
     bg: "bg-emerald-50",
     border: "hover:border-emerald-200"
   },
   {
     icon: <Globe size={24} />,
-    title: "Global System Transfer",
-    desc: "Leading technical transfer and system migration work across sites, turning local know-how into repeatable team capability.",
     tags: ["Migration", "Training", "Scale"],
-    note: "Designed for cross-site adoption.",
     color: "text-rose-700",
     bg: "bg-rose-50",
     border: "hover:border-rose-200"
   },
   {
     icon: <Cpu size={24} />,
-    title: "Industrial Automation & Vision",
-    desc: "Building Python and OpenCV-based automation tools for manufacturing workflows, robotic alignment, and test system reliability.",
     tags: ["Python", "OpenCV", "Robotics"],
-    note: "Focused on practical shop-floor execution.",
     color: "text-orange-700",
     bg: "bg-orange-50",
     border: "hover:border-orange-200"
@@ -37,6 +29,10 @@ const capabilities = [
 ];
 
 export default function AboutCapabilities() {
+  const { t, tArray } = useI18n();
+  const capabilityCopy = tArray<{ title: string; desc: string; note: string }>('about.capabilities.cards');
+  const techCopy = tArray<{ title: string; desc: string }>('about.capabilities.tech');
+
   return (
     <section className="pt-16 pb-10 px-6 relative z-10">
       <div className="max-w-5xl mx-auto">
@@ -47,16 +43,20 @@ export default function AboutCapabilities() {
             viewport={{ once: true }}
             className="w-10 h-1 bg-slate-900 rounded-full mb-3"
           />
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Core Competencies</h2>
+          <span className="mb-2 text-[10px] font-black uppercase tracking-[0.24em] text-orange-700">{t('about.capabilities.eyebrow')}</span>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">{t('about.capabilities.title')}</h2>
           <p className="mt-3 max-w-2xl text-sm text-slate-500 font-medium leading-relaxed">
-            I focus on turning AI, automation, and manufacturing software into systems that can survive real production constraints.
+            {t('about.capabilities.subtitle')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {capabilities.map((cap, i) => (
+          {capabilities.map((cap, i) => {
+            const copy = capabilityCopy[i];
+
+            return (
             <motion.div
-              key={cap.title}
+              key={copy.title}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -69,9 +69,9 @@ export default function AboutCapabilities() {
                 </div>
 
                 <div className="space-y-3">
-                  <h3 className="text-xl font-black leading-tight text-slate-900">{cap.title}</h3>
+                  <h3 className="text-xl font-black leading-tight text-slate-900">{copy.title}</h3>
                   <p className="text-sm font-medium leading-relaxed text-slate-500">
-                    {cap.desc}
+                    {copy.desc}
                   </p>
                 </div>
               </div>
@@ -85,21 +85,25 @@ export default function AboutCapabilities() {
                   ))}
                 </div>
                 <p className="border-t border-slate-100 pt-4 text-xs font-bold leading-relaxed text-slate-400">
-                  {cap.note}
+                  {copy.note}
                 </p>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-5 grid grid-cols-1 gap-3 border-t border-slate-100 pt-5 md:grid-cols-3">
           {[
-            { icon: <Settings size={16} />, title: "Automation", desc: "Python-driven workflows" },
-            { icon: <Database size={16} />, title: "TMS Systems", desc: "Industrial system architecture" },
-            { icon: <Terminal size={16} />, title: "Linux Systems", desc: "Secure edge operations" }
-          ].map((tech, i) => (
+            { icon: <Settings size={16} /> },
+            { icon: <Database size={16} /> },
+            { icon: <Terminal size={16} /> }
+          ].map((tech, i) => {
+            const copy = techCopy[i];
+
+            return (
             <motion.div
-              key={tech.title}
+              key={copy.title}
               initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -108,11 +112,12 @@ export default function AboutCapabilities() {
             >
               <div className="text-slate-300">{tech.icon}</div>
               <div>
-                <h4 className="mb-1 text-[10px] font-black uppercase leading-none tracking-widest text-slate-900">{tech.title}</h4>
-                <p className="text-[11px] font-bold leading-none text-slate-400">{tech.desc}</p>
+                <h4 className="mb-1 text-[10px] font-black uppercase leading-none tracking-widest text-slate-900">{copy.title}</h4>
+                <p className="text-[11px] font-bold leading-none text-slate-400">{copy.desc}</p>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

@@ -4,9 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { t } = useI18n();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
 
@@ -14,17 +17,17 @@ export default function Navbar() {
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
   const playgroundLinks = [
-    { name: 'Snake Game', href: '/snake' },
-    { name: 'Vocab Quiz', href: '/vocab-quiz' },
-    { name: 'Tetris Battle', href: '/tetris-battle', color: 'danger' as const },
-    { name: 'Demo Hub', href: '/demo' },
+    { name: t('nav.snake'), href: '/snake' },
+    { name: t('nav.vocabQuiz'), href: '/vocab-quiz' },
+    { name: t('nav.tetrisBattle'), href: '/tetris-battle', color: 'danger' as const },
+    { name: t('nav.demoHub'), href: '/demo' },
   ];
 
   const mainLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Projects', href: '/projects' },
-    { name: 'Blog', href: '/blog' },
+    { name: t('nav.home'), href: '/' },
+    { name: t('nav.about'), href: '/about' },
+    { name: t('nav.projects'), href: '/projects' },
+    { name: t('nav.blog'), href: '/blog' },
   ];
 
   const closeMenus = () => {
@@ -45,7 +48,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={isMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
             aria-expanded={isMenuOpen}
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 transition-colors hover:bg-gray-50 sm:hidden"
             onClick={() => setIsMenuOpen((open) => !open)}
@@ -87,7 +90,7 @@ export default function Navbar() {
               aria-expanded={isPlaygroundOpen}
               onClick={() => setIsPlaygroundOpen((open) => !open)}
             >
-              Playground
+              {t('nav.playground')}
               <ChevronDown size={14} />
             </button>
 
@@ -115,17 +118,20 @@ export default function Navbar() {
             className={navLinkClass(isActive('/contact'))}
             onClick={closeMenus}
           >
-            Contact
+            {t('nav.contact')}
           </Link>
         </div>
 
-        <Link
-          href="/contact"
-          className="inline-flex h-10 items-center justify-center rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100"
-          onClick={closeMenus}
-        >
-          Let's Talk
-        </Link>
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <Link
+            href="/contact"
+            className="hidden h-10 items-center justify-center rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 md:inline-flex"
+            onClick={closeMenus}
+          >
+            {t('nav.cta')}
+          </Link>
+        </div>
       </div>
 
       {isMenuOpen && (
@@ -133,7 +139,7 @@ export default function Navbar() {
         {[
           ...mainLinks,
           ...playgroundLinks,
-          { name: 'Contact', href: '/contact' },
+          { name: t('nav.contact'), href: '/contact' },
         ].map((item, index) => (
           <div key={`${item.name}-${index}`}>
             <Link

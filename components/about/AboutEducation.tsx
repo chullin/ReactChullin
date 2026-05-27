@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Link } from '@heroui/link';
 import { ArrowUpRight } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 const education = [
   {
@@ -22,6 +23,14 @@ const education = [
 ];
 
 export default function AboutEducation() {
+  const { t, tArray } = useI18n();
+  const educationCopy = tArray<{
+    degree: string;
+    school: string;
+    period: string;
+    work: string;
+  }>('about.education.items');
+
   return (
     <section className="py-10 px-6 relative z-10 overflow-hidden">
       <div className="max-w-4xl mx-auto">
@@ -34,12 +43,15 @@ export default function AboutEducation() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
             >
-                <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-4">Academic Foundation</h2>
+                <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-4">{t('about.education.title')}</h2>
                 <div className="w-12 h-1 bg-orange-600 rounded-full" />
             </motion.div>
 
             <div className="space-y-8">
-              {education.map((edu, i) => (
+              {education.map((edu, i) => {
+                const copy = educationCopy[i];
+
+                return (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
@@ -49,20 +61,21 @@ export default function AboutEducation() {
                   className="group relative"
                 >
                   <div className="flex flex-col gap-2">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{edu.period}</span>
-                    <h3 className="text-2xl font-black text-slate-900 group-hover:text-orange-700 transition-colors">{edu.degree}</h3>
-                    <p className="text-slate-500 font-bold text-sm mb-4">{edu.school}</p>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{copy.period}</span>
+                    <h3 className="text-2xl font-black text-slate-900 group-hover:text-orange-700 transition-colors">{copy.degree}</h3>
+                    <p className="text-slate-500 font-bold text-sm mb-4">{copy.school}</p>
                     <Link
                       isExternal
                       href={edu.link}
                       className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-orange-700 transition-colors font-medium border-b border-slate-100 pb-1 w-fit group/link"
                     >
-                      <span>{edu.thesis || edu.project}</span>
+                      <span>{copy.work}</span>
                       <ArrowUpRight size={14} className="group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5 transition-transform" />
                     </Link>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -81,13 +94,11 @@ export default function AboutEducation() {
                 
                 <div className="relative z-10 space-y-6">
                     <h3 className="text-3xl md:text-5xl font-normal text-slate-900 leading-[1.1] tracking-normal font-playfair italic">
-                        "Bridging the gap between <br />
-                        <span className="text-orange-700 font-playfair italic">AI Innovation</span> <br className="hidden md:block" />
-                        & <span className="text-rose-700 font-playfair italic">Industrial Implementation</span>"
+                        "{t('about.education.quote')}"
                     </h3>
                     <div className="space-y-4">
                         <p className="text-slate-500 leading-relaxed font-medium">
-                            這個網站不只是我的數位名片，也是我記錄 AI 應用、自動化系統與軟體工程實踐的技術知識庫。我致力於將複雜的 AI 技術轉化為工業現場可實踐的解決方案。
+                            {t('about.education.body')}
                         </p>
                         <div className="flex flex-wrap gap-2">
                             {['AI Strategy', 'Robotics', 'Automation'].map(tag => (

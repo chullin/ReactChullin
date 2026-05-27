@@ -1,15 +1,12 @@
 'use client';
 
 import { motion } from 'framer-motion';
-
-const stats = [
-  { label: 'Global Scale', value: '3+', sub: 'Technical Transfers' },
-  { label: 'Deployment', value: '100%', sub: 'Air-gap Security' },
-  { label: 'AI Solutions', value: '5+', sub: 'Production Systems' },
-  { label: 'Academic', value: 'CS', sub: 'National Chung Cheng University' },
-];
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 export default function AboutStats() {
+  const { tArray } = useI18n();
+  const stats = tArray<{ label: string; value: string; sub: string }>('about.stats');
+
   return (
     <section className="px-6 relative z-10">
       <div className="max-w-3xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">

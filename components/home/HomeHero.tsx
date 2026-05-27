@@ -1,27 +1,32 @@
+'use client';
+
 import Link from 'next/link';
 import NextImage from 'next/image';
 import { Code2, Cpu, ArrowRight, BookOpen } from 'lucide-react';
 import personalPortrait from '@/src/images/personalQ.png';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 export default function HomeHero() {
+  const { t } = useI18n();
+
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_62%,#ffffff_100%)] pt-20 pb-32">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="text-center lg:text-left">
           <div>
             <div className="mb-6 inline-flex h-6 items-center rounded-full bg-orange-50 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">
-              Software Engineer @ Foxconn
+              {t('homeHero.badge')}
             </div>
           </div>
           
           <h1 className="text-5xl lg:text-7xl font-black mb-4 leading-[1.1] tracking-tight">
-            陳憲億 <span className="text-gradient">Joseph Chen</span>
+            {t('homeHero.headlineName')} <span className="text-gradient">{t('homeHero.headlineAlias')}</span>
           </h1>
           
           <p className="text-lg lg:text-xl text-gray-600 mb-10 font-medium leading-relaxed max-w-2xl mx-auto lg:mx-0">
-            專注於將 AI、自動化與軟體系統落地到製造現場，包含離線 LLM 部署、測試管理平台與 OpenCV 視覺自動化。<br className="hidden md:block" />
+            {t('homeHero.intro')}<br className="hidden md:block" />
             <span className="text-slate-400 text-base lg:text-lg block mt-3 font-normal">
-              I build secure AI and automation systems for manufacturing environments, from air-gapped LLM deployment to vision-based testing workflows.
+              {t('homeHero.introSub')}
             </span>
           </p>
 
@@ -30,7 +35,7 @@ export default function HomeHero() {
               href="/about"
               className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-[var(--theme-primary)] px-8 text-base font-bold text-white shadow-xl shadow-orange-700/20 transition-all hover:-translate-y-0.5 hover:bg-[var(--theme-primary-hover)] hover:shadow-orange-700/30 sm:w-auto"
             >
-              View About / CV
+              {t('homeHero.aboutCta')}
               <ArrowRight size={20} />
             </Link>
             <Link
@@ -38,13 +43,13 @@ export default function HomeHero() {
               className="inline-flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-orange-50 px-8 text-base font-bold text-orange-700 transition-colors hover:bg-orange-100 sm:w-auto"
             >
               <BookOpen size={18} />
-              Read Blog
+              {t('homeHero.blogCta')}
             </Link>
             <Link
               href="/projects"
               className="inline-flex h-14 w-full items-center justify-center rounded-xl border border-slate-200 px-8 text-base font-bold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto"
             >
-              Projects
+              {t('homeHero.projectsCta')}
             </Link>
           </div>
         </div>
@@ -68,7 +73,7 @@ export default function HomeHero() {
             <div className="relative w-[calc(100%-24px)] h-[calc(100%-24px)] bg-white rounded-full p-2 shadow-2xl ring-4 ring-orange-100/70 overflow-hidden z-10">
               <NextImage
                 src={personalPortrait}
-                alt="Joseph Chen Profile"
+                alt={t('homeHero.imageAlt')}
                 fill
                 sizes="(max-width: 768px) 260px, 340px"
                 className="object-cover rounded-full hover:scale-105 transition-transform duration-700"
@@ -84,8 +89,8 @@ export default function HomeHero() {
                     <Code2 size={24} />
                   </div>
                   <div>
-                    <p className="font-black text-sm text-slate-900 leading-none">AI Integration</p>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1.5">Specialist</p>
+                    <p className="font-black text-sm text-slate-900 leading-none">{t('homeHero.cardAiTitle')}</p>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1.5">{t('homeHero.cardAiSub')}</p>
                   </div>
                 </div>
               </div>
@@ -98,8 +103,8 @@ export default function HomeHero() {
                     <Cpu size={24} />
                   </div>
                   <div>
-                    <p className="font-black text-sm text-slate-900 leading-none">Automation</p>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1.5">Smart Systems</p>
+                    <p className="font-black text-sm text-slate-900 leading-none">{t('homeHero.cardAutomationTitle')}</p>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1.5">{t('homeHero.cardAutomationSub')}</p>
                   </div>
                 </div>
               </div>

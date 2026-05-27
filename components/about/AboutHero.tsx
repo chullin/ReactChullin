@@ -5,6 +5,7 @@ import { Link, Button } from '@heroui/react';
 import NextImage from 'next/image';
 import { Download, Mail } from 'lucide-react';
 import aboutPortrait from '@/src/images/about.png';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 const GithubIcon = ({ size = 20 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -21,9 +22,10 @@ const LinkedinIcon = ({ size = 20 }) => (
   </svg>
 );
 
-const skills = ["AI Infrastructure", "Automation", "Industrial Software"];
-
 export default function AboutHero() {
+  const { t, tArray } = useI18n();
+  const skills = tArray<string>('about.hero.skills');
+
   return (
     <section className="relative flex justify-center px-6 pb-8 pt-14">
       <motion.div
@@ -52,7 +54,7 @@ export default function AboutHero() {
             <div className="watercolor-blob-mask relative h-[88%] min-h-[300px] w-[92%] overflow-hidden bg-white shadow-[0_28px_80px_rgba(15,23,42,0.12)] md:min-h-[330px] lg:min-h-[470px]">
               <NextImage
                 src={aboutPortrait}
-                alt="Joseph Chen portrait"
+                alt={t('about.hero.imageAlt')}
                 fill
                 sizes="(max-width: 767px) 92vw, (max-width: 1024px) 42vw, 430px"
                 className="object-cover object-center transition-transform duration-700 group-hover:scale-[1.025]"
@@ -65,25 +67,25 @@ export default function AboutHero() {
 
             <div className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/60 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 shadow-[0_10px_28px_rgba(15,23,42,0.08)] backdrop-blur-md md:left-7 md:top-7">
               <span className="h-1.5 w-1.5 rounded-full bg-orange-600 shadow-[0_0_12px_rgba(194,65,12,0.35)]" />
-              Digital Identity
+              {t('about.hero.visualBadge')}
             </div>
           </div>
 
           <div className="flex flex-col justify-center px-5 py-9 text-left md:px-7 md:py-9 lg:px-11 lg:py-12">
             <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/50 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] lg:mb-7">
               <span className="h-1.5 w-1.5 rounded-full bg-orange-600 shadow-[0_0_12px_rgba(194,65,12,0.35)]" />
-              Premium Profile
+              {t('about.hero.badge')}
             </div>
 
             <div className="mb-6 space-y-3 lg:mb-7 lg:space-y-4">
               <h1 className="max-w-xl text-[2.6rem] font-bold leading-[0.98] tracking-tight text-slate-950 md:text-[3rem] lg:text-6xl">
-                Joseph Chen <span className="font-light text-slate-400">/</span> 陳憲億
+                {t('about.hero.title')}
               </h1>
               <p className="text-sm font-medium tracking-[0.02em] text-orange-700 md:text-base">
-                AI Application & Automation Engineer
+                {t('about.hero.role')}
               </p>
               <p className="max-w-lg text-sm font-normal leading-7 text-slate-500 lg:text-[15px]">
-                Building secure AI infrastructure and automation systems for real-world manufacturing environments.
+                {t('about.hero.summary')}
               </p>
             </div>
 
@@ -104,7 +106,7 @@ export default function AboutHero() {
                   className="h-12 rounded-full bg-slate-950 px-7 font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)] transition-all duration-500 hover:bg-slate-800"
                   startContent={<Download size={17} />}
                 >
-                  Resume PDF
+                  {t('about.hero.resume')}
                 </Button>
               </Link>
               <div className="flex gap-2">

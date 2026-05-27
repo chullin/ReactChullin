@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { Mail, UserCircle } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 const Github = ({ size = 20 }: { size?: number }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -17,6 +20,7 @@ const Linkedin = ({ size = 20 }: { size?: number }) => (
 );
 
 export default function Footer({ className }: { className?: string }) {
+    const { t } = useI18n();
     const socialLinks = [
         { icon: <UserCircle size={20} />, href: "https://www.cake.me/s--g59SDSH82OEybvapXS0q5A--/fg6ts15", label: "Cake" },
         { icon: <Github size={20} />, href: "https://github.com/chullin", label: "GitHub" },
@@ -28,9 +32,9 @@ export default function Footer({ className }: { className?: string }) {
             <div className="max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
                     <div className="text-center md:text-left">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">陳憲億 Joseph Chen</h3>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('footer.name')}</h3>
                         <p className="text-gray-500 max-w-xs transition-opacity hover:opacity-80">
-                            Software Engineer focused on AI Applications & Automation at Hon Hai Technology Group.
+                            {t('footer.tagline')}
                         </p>
                     </div>
 
@@ -61,7 +65,7 @@ export default function Footer({ className }: { className?: string }) {
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-gray-400">
-                        Copyright &copy; 陳憲億 Joseph Chen 2026
+                        {t('footer.copyright')}
                     </p>
                 </div>
             </div>

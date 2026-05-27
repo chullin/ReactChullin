@@ -10,6 +10,7 @@ import {
 } from '@heroui/react';
 import { Mail, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
     size?: number | string;
@@ -72,6 +73,8 @@ const LinkedinIcon = ({ size = 24, ...props }: IconProps) => (
 );
 
 export default function ContactContent() {
+    const { t } = useI18n();
+
     return (
         <div className="bg-gray-50/30 min-h-[calc(100vh-80px)] flex items-center justify-center py-20 px-6">
             <div className="max-w-xl w-full">
@@ -95,10 +98,9 @@ export default function ContactContent() {
                             </div>
 
                             <div className="space-y-2">
-                                <h2 className="text-3xl font-black tracking-tight text-gray-900">Let's work together!</h2>
+                                <h2 className="text-3xl font-black tracking-tight text-gray-900">{t('contactPage.title')}</h2>
                                 <p className="text-gray-500 font-medium leading-relaxed">
-                                    歡迎隨時聯絡我！不論是技術交流、專案合作<br />
-                                    或是任何有趣的想法，都非常樂意討論。
+                                    {t('contactPage.body')}
                                 </p>
                             </div>
 
@@ -110,14 +112,14 @@ export default function ContactContent() {
                                     radius="full"
                                     startContent={<Mail size={24} />}
                                 >
-                                    聯絡我 (Email Me)
+                                    {t('contactPage.email')}
                                 </Button>
                             </Link>
 
                             <div className="w-full space-y-6 pt-4">
                                 <div className="flex items-center gap-4">
                                     <Divider className="flex-1 opacity-50" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 whitespace-nowrap">Find me elsewhere</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 whitespace-nowrap">{t('contactPage.elsewhere')}</span>
                                     <Divider className="flex-1 opacity-50" />
                                 </div>
 
@@ -167,8 +169,8 @@ export default function ContactContent() {
                                         <Globe size={18} />
                                     </div>
                                     <div className="text-left">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase">Location</p>
-                                        <p className="text-sm font-bold text-gray-700">Kaohsiung, Taiwan</p>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase">{t('contactPage.locationLabel')}</p>
+                                        <p className="text-sm font-bold text-gray-700">{t('common.location')}</p>
                                     </div>
                                 </div>
                             </div>

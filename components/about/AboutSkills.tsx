@@ -2,36 +2,29 @@
 
 import { motion } from 'framer-motion';
 import { Bot, Boxes, Code2, Cpu, LockKeyhole, MonitorCog, Network, Workflow } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/I18nProvider';
 
 const skillGroups = [
   {
     icon: <Bot size={18} />,
-    title: "AI Infrastructure",
-    desc: "Local LLM services, RAG workflows, and offline deployment patterns.",
     skills: ["Ollama", "Dify", "RAG Workflow", "Model Serving"],
     color: "text-emerald-600",
     bg: "bg-emerald-50"
   },
   {
     icon: <Workflow size={18} />,
-    title: "Automation Systems",
-    desc: "Python tooling for test flows, manufacturing operations, and repeatable process control.",
     skills: ["Python", "Tkinter", "OpenCV", "Test Tools"],
     color: "text-orange-700",
     bg: "bg-orange-50"
   },
   {
     icon: <MonitorCog size={18} />,
-    title: "Industrial Software",
-    desc: "Production-facing systems where reliability, traceability, and team handoff are essential.",
     skills: ["TMS", "API Design", "System Migration", "Operations"],
     color: "text-rose-700",
     bg: "bg-rose-50"
   },
   {
     icon: <Code2 size={18} />,
-    title: "Web & Platform",
-    desc: "Modern web interfaces and deployment foundations for internal and external products.",
     skills: ["Next.js", "React", "Docker", "Linux"],
     color: "text-amber-700",
     bg: "bg-amber-50"
@@ -41,45 +34,44 @@ const skillGroups = [
 const focusItems = [
   {
     icon: <LockKeyhole size={16} />,
-    title: "Secure by default",
-    desc: "Designing AI deployment flows for isolated and auditable environments."
   },
   {
     icon: <Cpu size={16} />,
-    title: "Production first",
-    desc: "Prioritizing maintainability, operator experience, and controlled rollout."
   },
   {
     icon: <Network size={16} />,
-    title: "Transferable systems",
-    desc: "Turning one-site solutions into repeatable processes for global teams."
   },
   {
     icon: <Boxes size={16} />,
-    title: "Practical integration",
-    desc: "Connecting models, tools, and existing factory systems without overcomplication."
   }
 ];
 
 export default function AboutSkills() {
+  const { t, tArray } = useI18n();
+  const groupCopy = tArray<{ title: string; desc: string }>('about.skills.groups');
+  const focusCopy = tArray<{ title: string; desc: string }>('about.skills.focusItems');
+
   return (
     <section className="py-14 px-6 relative z-10">
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-8 items-start">
         <div>
           <div className="mb-8">
-            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-700">Technical Stack</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-700">{t('about.skills.eyebrow')}</span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">
-              Tools I use to ship reliable systems
+              {t('about.skills.title')}
             </h2>
             <p className="mt-3 max-w-2xl text-sm font-medium leading-relaxed text-slate-500">
-              Instead of rating skills by abstract percentages, this stack is organized by the kind of production problems I usually solve.
+              {t('about.skills.subtitle')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {skillGroups.map((group, i) => (
+            {skillGroups.map((group, i) => {
+              const copy = groupCopy[i];
+
+              return (
               <motion.div
-                key={group.title}
+                key={copy.title}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -89,9 +81,9 @@ export default function AboutSkills() {
                 <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${group.bg} ${group.color}`}>
                   {group.icon}
                 </div>
-                <h3 className="text-lg font-black text-slate-900">{group.title}</h3>
+                <h3 className="text-lg font-black text-slate-900">{copy.title}</h3>
                 <p className="mt-2 min-h-[60px] text-sm font-medium leading-relaxed text-slate-500">
-                  {group.desc}
+                  {copy.desc}
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {group.skills.map((skill) => (
@@ -101,7 +93,8 @@ export default function AboutSkills() {
                   ))}
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -112,19 +105,22 @@ export default function AboutSkills() {
           className="lg:sticky lg:top-28 rounded-2xl border border-slate-800 bg-slate-950 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.22)]"
         >
           <div className="mb-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400">Current Focus</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400">{t('about.skills.focusEyebrow')}</span>
             <h3 className="mt-2 text-2xl font-black tracking-tight text-white">
-              Engineering AI for controlled production environments.
+              {t('about.skills.focusTitle')}
             </h3>
             <p className="mt-3 text-sm font-medium leading-relaxed text-slate-400">
-              My strongest work sits between software engineering, AI deployment, and the practical constraints of manufacturing sites.
+              {t('about.skills.focusBody')}
             </p>
           </div>
 
           <div className="space-y-3">
-            {focusItems.map((item, i) => (
+            {focusItems.map((item, i) => {
+              const copy = focusCopy[i];
+
+              return (
               <motion.div
-                key={item.title}
+                key={copy.title}
                 initial={{ opacity: 0, x: 10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
@@ -133,11 +129,12 @@ export default function AboutSkills() {
               >
                 <div className="mt-0.5 text-emerald-400">{item.icon}</div>
                 <div>
-                  <h4 className="text-sm font-black text-white">{item.title}</h4>
-                  <p className="mt-1 text-xs font-medium leading-relaxed text-slate-400">{item.desc}</p>
+                  <h4 className="text-sm font-black text-white">{copy.title}</h4>
+                  <p className="mt-1 text-xs font-medium leading-relaxed text-slate-400">{copy.desc}</p>
                 </div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </motion.aside>
       </div>
