@@ -17,6 +17,7 @@ export default function Navbar() {
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
   const playgroundLinks = [
+    { name: t('nav.imageCompressor'), href: '/image-compressor' },
     { name: t('nav.snake'), href: '/snake' },
     { name: t('nav.vocabQuiz'), href: '/vocab-quiz' },
     { name: t('nav.tetrisBattle'), href: '/tetris-battle', color: 'danger' as const },
