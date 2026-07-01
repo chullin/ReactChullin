@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ChevronDown, LoaderCircle, Menu, X } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useI18n } from '@/lib/i18n/I18nProvider';
 
@@ -12,6 +12,11 @@ export default function Navbar() {
   const { t } = useI18n();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
 
   const isActive = (path: string) => pathname === path;
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
@@ -36,15 +41,28 @@ export default function Navbar() {
     setIsPlaygroundOpen(false);
   };
 
-  const navLinkClass = (active: boolean) =>
+  const handleNavClick = (href: string) => {
+    closeMenus();
+
+    if (href !== pathname) {
+      setPendingHref(href);
+    }
+  };
+
+  const navLinkClass = (active: boolean, pending = false) =>
     `px-3 py-2 rounded-lg transition-colors text-sm font-semibold ${
-      active
+      active || pending
         ? 'text-[var(--theme-primary)] font-bold bg-orange-50'
         : 'text-gray-600 hover:text-[var(--theme-primary)] hover:bg-orange-50/70'
-    }`;
+    } ${pending ? 'cursor-wait ring-1 ring-orange-200' : ''}`;
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-gray-100 bg-white/80 backdrop-blur-md">
+      {pendingHref && (
+        <div className="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden bg-orange-100">
+          <div className="h-full w-1/2 animate-[nav-progress_1s_ease-in-out_infinite] bg-gradient-to-r from-orange-500 via-rose-500 to-orange-500" />
+        </div>
+      )}
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-6">
         <div className="flex items-center gap-4">
           <button
@@ -60,7 +78,7 @@ export default function Navbar() {
           <Link
             href="/"
             className="text-2xl font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80"
-            onClick={closeMenus}
+            onClick={() => handleNavClick('/')}
           >
             Joseph Chen
           </Link>
@@ -72,10 +90,12 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               aria-current={isActive(link.href) ? 'page' : undefined}
-              className={navLinkClass(isActive(link.href))}
-              onClick={closeMenus}
+              aria-busy={pendingHref === link.href}
+              className={`${navLinkClass(isActive(link.href), pendingHref === link.href)} inline-flex items-center gap-2`}
+              onClick={() => handleNavClick(link.href)}
             >
               {link.name}
+              {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
             </Link>
           ))}
 
@@ -96,19 +116,23 @@ export default function Navbar() {
             </button>
 
             {isPlaygroundOpen && (
-              <div className="absolute left-0 top-full mt-2 w-52 rounded-xl border border-gray-100 bg-white p-2 shadow-xl">
-                {playgroundLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`block rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 ${
-                      isActive(link.href) ? 'text-[var(--theme-primary)]' : 'text-gray-600'
-                    } ${link.color === 'danger' ? 'hover:text-rose-600' : ''}`}
-                    onClick={closeMenus}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+              <div className="absolute left-0 top-full w-52 pt-2">
+                <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-xl">
+                  {playgroundLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-busy={pendingHref === link.href}
+                      className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 ${
+                        isActive(link.href) || pendingHref === link.href ? 'text-[var(--theme-primary)]' : 'text-gray-600'
+                      } ${link.color === 'danger' ? 'hover:text-rose-600' : ''}`}
+                      onClick={() => handleNavClick(link.href)}
+                    >
+                      <span>{link.name}</span>
+                      {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -116,10 +140,12 @@ export default function Navbar() {
           <Link
             href="/contact"
             aria-current={isActive('/contact') ? 'page' : undefined}
-            className={navLinkClass(isActive('/contact'))}
-            onClick={closeMenus}
+            aria-busy={pendingHref === '/contact'}
+            className={`${navLinkClass(isActive('/contact'), pendingHref === '/contact')} inline-flex items-center gap-2`}
+            onClick={() => handleNavClick('/contact')}
           >
             {t('nav.contact')}
+            {pendingHref === '/contact' && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
           </Link>
         </div>
 
@@ -127,10 +153,12 @@ export default function Navbar() {
           <LanguageSwitcher />
           <Link
             href="/contact"
-            className="hidden h-10 items-center justify-center rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 md:inline-flex"
-            onClick={closeMenus}
+            aria-busy={pendingHref === '/contact'}
+            className={`hidden h-10 items-center justify-center gap-2 rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 md:inline-flex ${pendingHref === '/contact' ? 'cursor-wait ring-1 ring-orange-200' : ''}`}
+            onClick={() => handleNavClick('/contact')}
           >
             {t('nav.cta')}
+            {pendingHref === '/contact' && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
           </Link>
         </div>
       </div>
@@ -144,13 +172,15 @@ export default function Navbar() {
         ].map((item, index) => (
           <div key={`${item.name}-${index}`}>
             <Link
-              className={`block w-full rounded-lg py-2 text-lg ${
-                isActive(item.href) ? 'font-bold text-[var(--theme-primary)]' : 'text-gray-600'
+              aria-busy={pendingHref === item.href}
+              className={`flex w-full items-center justify-between rounded-lg py-2 text-lg ${
+                isActive(item.href) || pendingHref === item.href ? 'font-bold text-[var(--theme-primary)]' : 'text-gray-600'
               }`}
               href={item.href}
-              onClick={closeMenus}
+              onClick={() => handleNavClick(item.href)}
             >
-              {item.name}
+              <span>{item.name}</span>
+              {pendingHref === item.href && <LoaderCircle size={16} className="animate-spin" aria-hidden="true" />}
             </Link>
           </div>
         ))}

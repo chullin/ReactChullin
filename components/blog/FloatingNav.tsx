@@ -14,7 +14,7 @@ import {
   Chip,
   Tooltip
 } from '@heroui/react';
-import { Menu, LayoutList, ChevronRight, Hash, Bookmark, Search, X } from 'lucide-react';
+import { LayoutList, Bookmark, Search, X, LoaderCircle } from 'lucide-react';
 import Link from 'next/link';
 import { series, type Post, type Series } from '@/config/blog';
 import { Input } from '@heroui/react';
@@ -24,6 +24,7 @@ export default function FloatingNav() {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [bookmarkedHrefs, setBookmarkedHrefs] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   
   // Only show on article pages
   const isArticlePage = pathname !== '/blog' && pathname.startsWith('/blog/');
@@ -50,6 +51,7 @@ export default function FloatingNav() {
   useEffect(() => {
     onClose();
     setSearchTerm('');
+    setPendingHref(null);
   }, [pathname]);
 
   if (!isArticlePage) return null;
@@ -70,6 +72,7 @@ export default function FloatingNav() {
         <Tooltip content="文章導覽 / 切換類別" placement="left">
           <Button
             isIconOnly
+            aria-label="文章導覽 / 切換類別"
             color="primary"
             variant="shadow"
             radius="full"
@@ -159,17 +162,25 @@ export default function FloatingNav() {
                               <Link
                                 key={idx}
                                 href={post.href}
+                                aria-busy={pendingHref === post.href}
                                 className={`group relative flex flex-col py-2 px-3 rounded-xl transition-all ${
-                                  isActive 
+                                  isActive || pendingHref === post.href
                                     ? 'bg-primary-50 text-primary shadow-sm' 
                                     : 'hover:bg-gray-50 text-gray-600'
-                                }`}
+                                } ${pendingHref === post.href ? 'cursor-wait ring-1 ring-primary-200' : ''}`}
+                                onClick={() => {
+                                  if (!isActive) {
+                                    setPendingHref(post.href);
+                                  }
+                                }}
                               >
                                 <div className="flex items-center justify-between gap-2">
-                                  <span className={`text-xs font-bold leading-snug ${isActive ? 'text-primary' : 'group-hover:text-primary'}`}>
+                                  <span className={`text-xs font-bold leading-snug ${isActive || pendingHref === post.href ? 'text-primary' : 'group-hover:text-primary'}`}>
                                     {post.ep ? `${post.ep} — ` : ''}{post.title}
                                   </span>
-                                  {isBookmarked && (
+                                  {pendingHref === post.href ? (
+                                    <LoaderCircle size={12} className="shrink-0 animate-spin text-primary" aria-hidden="true" />
+                                  ) : isBookmarked && (
                                     <Bookmark size={10} className="text-danger shrink-0" fill="currentColor" />
                                   )}
                                 </div>

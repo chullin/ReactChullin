@@ -1,6 +1,7 @@
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google';
 import { Providers } from './providers';
 
@@ -21,13 +22,13 @@ const playfair = Playfair_Display({
 export const metadata = {
     metadataBase: new URL('https://chullin.tw'),
     title: {
-        default: '陳憲億 Joseph Chen | AI Application & Automation Engineer',
+        default: 'Joseph Chen 陳憲億 | AI Application & Automation Engineer',
         template: '%s | Joseph Chen'
     },
-    description: '陳憲億（Joseph Chen）是 AI 應用與自動化工程師，專注於離線 AI 部署、智慧製造、React 與 Python 系統整合。分享深度技術筆記。',
-    keywords: ['Joseph Chen', '陳憲億', 'AI Application Engineer', 'Automation Engineer', 'Foxconn', '鴻海', 'Python Automation', 'OpenCV', 'React', '離線 AI', '系統重構'],
-    authors: [{ name: '陳憲億 Joseph Chen' }],
-    creator: '陳憲億 Joseph Chen',
+    description: 'Joseph Chen（陳憲億）是 AI 應用與自動化工程師，專注於離線 AI 部署、智慧製造、React 與 Python 系統整合。分享深度技術筆記。',
+    keywords: ['Joseph Chen', '陳憲億', 'Joseph Chen Taiwan', 'Joseph Chen Portfolio', 'AI Application Engineer', 'Automation Engineer', 'Foxconn', '鴻海', 'Python Automation', 'OpenCV', 'React', '離線 AI', '系統重構'],
+    authors: [{ name: 'Joseph Chen 陳憲億', url: 'https://chullin.tw' }],
+    creator: 'Joseph Chen 陳憲億',
     verification: {
         google: 'Tmye4gYSZJvx8O85kCLZrOhKl52Adtlg5Ntr-qAVMAM',
     },
@@ -35,9 +36,9 @@ export const metadata = {
         type: 'website',
         locale: 'zh_TW',
         url: 'https://chullin.tw/',
-        title: '陳憲億 Joseph Chen | Software Engineer & AI Developer',
-        description: '陳憲億（Joseph Chen）的個人品牌網站。分享 AI、React、Python 與系統開發技術。',
-        siteName: '陳憲億 Joseph Chen Portfolio',
+        title: 'Joseph Chen 陳憲億 | Software Engineer & AI Developer',
+        description: 'Joseph Chen（陳憲億）的個人品牌網站。分享 AI、React、Python 與系統開發技術。',
+        siteName: 'Joseph Chen Portfolio',
         images: [
             {
                 url: '/assets/profile3.webp',
@@ -49,8 +50,8 @@ export const metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: '陳憲億 Joseph Chen | Software Engineer',
-        description: 'Explore the portfolio of Joseph Chen, a Software Engineer in AI & Robotics.',
+        title: 'Joseph Chen 陳憲億 | Software Engineer',
+        description: 'Explore the portfolio of Joseph Chen, also known as 陳憲億, a Software Engineer in AI & Robotics.',
         images: ['/assets/profile3.webp'],
     },
     alternates: {
@@ -67,22 +68,40 @@ export const metadata = {
 
 const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "陳憲億",
-    "alternateName": "Joseph Chen",
-    "url": "https://chullin.tw/",
-    "jobTitle": "Software Engineer",
-    "worksFor": {
-        "@type": "Organization",
-        "name": "Foxconn"
-    },
-    "description": "陳憲億（Joseph Chen）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。",
-    "knowsAbout": ["Python", "AI", "React", "Next.js", "System Design", "Automation"],
-    "image": "https://chullin.tw/assets/profile3.webp",
-    "sameAs": [
-        "https://github.com/chullin",
-        "https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en",
-        "https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about"
+    "@graph": [
+        {
+            "@type": "WebSite",
+            "@id": "https://chullin.tw/#website",
+            "url": "https://chullin.tw/",
+            "name": "Joseph Chen Portfolio",
+            "alternateName": ["Joseph Chen 陳憲億", "陳憲億 Joseph Chen"],
+            "publisher": {
+                "@id": "https://chullin.tw/#person"
+            },
+            "inLanguage": ["zh-Hant", "en"]
+        },
+        {
+            "@type": "Person",
+            "@id": "https://chullin.tw/#person",
+            "name": "Joseph Chen",
+            "alternateName": ["陳憲億", "Joseph Chen 陳憲億", "陳憲億 Joseph Chen", "Sian-Yi Chen"],
+            "url": "https://chullin.tw/",
+            "mainEntityOfPage": "https://chullin.tw/",
+            "jobTitle": "Software Engineer",
+            "worksFor": {
+                "@type": "Organization",
+                "name": "Foxconn"
+            },
+            "description": "Joseph Chen（陳憲億）是 Foxconn 軟體工程師，專注於 AI、自動化、React、Python 與系統開發。",
+            "knowsAbout": ["Python", "AI", "React", "Next.js", "System Design", "Automation", "Offline AI Deployment", "OpenCV"],
+            "image": "https://chullin.tw/assets/profile3.webp",
+            "sameAs": [
+                "https://chullin.tw/",
+                "https://github.com/chullin",
+                "https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en",
+                "https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about"
+            ]
+        }
     ]
 };
 
@@ -96,6 +115,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
             </head>
             <body className="min-h-screen bg-white" suppressHydrationWarning>
+                <GoogleAnalytics />
                 <Providers>
                     <Navbar />
                     <main>
