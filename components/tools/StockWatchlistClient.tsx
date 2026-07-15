@@ -63,19 +63,19 @@ type HistoryPoint = {
 
 type StockDetails = {
   quote?: StockQuote | null;
-  fundamentals?: Record<string, number | string | null> | null;
   news?: { title: string; url: string; pubDate?: string; source?: string }[];
   history?: HistoryPoint[];
-  dividends?: { year: string; cash: number; stock: number }[];
-  institutions?: {
-    date?: string;
-    rows: { label: string; value: number; delta: number | null }[];
-  } | null;
 };
 
 type DetailsResponse = {
   success?: boolean;
   data?: StockDetails;
+};
+
+type PeriodOption = {
+  label: string;
+  months?: number;
+  ytd?: boolean;
 };
 
 const LISTS = [
@@ -97,6 +97,29 @@ const STORAGE_KEY = 'stock-watchlist:v1';
 const ACTIVE_LIST_KEY = 'stock-watchlist-active-list:v1';
 const ACTIVE_MARKET_KEY = 'stock-watchlist-active-market:v1';
 const REFRESH_INTERVAL_MS = 30_000;
+const PRICE_PERIODS: PeriodOption[] = [
+  { label: '1M', months: 1 },
+  { label: '3M', months: 3 },
+  { label: '6M', months: 6 },
+  { label: 'YTD', ytd: true },
+  { label: '1Y', months: 12 },
+  { label: '3Y', months: 36 },
+  { label: '5Y', months: 60 },
+] satisfies PeriodOption[];
+const STAFF_PERIODS: PeriodOption[] = [
+  { label: '6M', months: 6 },
+  { label: '1Y', months: 12 },
+  { label: '2Y', months: 24 },
+  { label: '3.5Y', months: 42 },
+  { label: '5Y', months: 60 },
+] satisfies PeriodOption[];
+const VRVP_PERIODS: PeriodOption[] = [
+  { label: '3M', months: 3 },
+  { label: '6M', months: 6 },
+  { label: '1Y', months: 12 },
+  { label: '3Y', months: 36 },
+  { label: '5Y', months: 60 },
+] satisfies PeriodOption[];
 
 function createEmptyWatchlists() {
   return LISTS.reduce<Watchlists>((acc, list) => {
@@ -167,29 +190,32 @@ function formatPercent(value: number | null | undefined) {
   return `${prefix}${value.toFixed(2)}%`;
 }
 
-function formatMetric(value: unknown, digits = 2) {
-  if (!isFiniteNumber(value)) return '-';
-  return value.toLocaleString('en-US', {
-    minimumFractionDigits: digits,
-    maximumFractionDigits: digits,
-  });
-}
-
-function formatCompact(value: unknown) {
-  if (!isFiniteNumber(value)) return '-';
-
-  return Intl.NumberFormat('en-US', {
-    notation: 'compact',
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
 function formatDate(value?: string) {
   if (!value) return '-';
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) return value.slice(0, 10);
   return date.toISOString().slice(0, 10);
+}
+
+function periodStart(period: { months?: number; ytd?: boolean }) {
+  const date = new Date();
+
+  if (period.ytd) {
+    return new Date(date.getFullYear(), 0, 1);
+  }
+
+  date.setMonth(date.getMonth() - (period.months || 12));
+  return date;
+}
+
+function filterHistory(points: HistoryPoint[] = [], period: { months?: number; ytd?: boolean }) {
+  const start = periodStart(period).getTime();
+  return points.filter((point) => Date.parse(point.date) >= start && isFiniteNumber(point.close));
+}
+
+function getCloseValues(points: HistoryPoint[]) {
+  return points.map((point) => point.close).filter(isFiniteNumber);
 }
 
 function linePath(values: number[]) {
@@ -206,6 +232,48 @@ function linePath(values: number[]) {
       return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(' ');
+}
+
+function horizontalLineY(value: number, min: number, max: number) {
+  return 6 + (1 - (value - min) / (max - min || 1)) * 88;
+}
+
+function calculateStaff(values: number[]) {
+  if (!values.length) return null;
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const variance = values.reduce((sum, value) => sum + (value - average) ** 2, 0) / values.length;
+  const stdev = Math.sqrt(variance);
+
+  return [
+    { label: '+2σ', value: average + stdev * 2 },
+    { label: '+1σ', value: average + stdev },
+    { label: '均線', value: average },
+    { label: '-1σ', value: average - stdev },
+    { label: '-2σ', value: average - stdev * 2 },
+  ];
+}
+
+function calculateVrvp(points: HistoryPoint[], binCount = 20) {
+  const valid = points.filter((point) => isFiniteNumber(point.close) && isFiniteNumber(point.volume));
+  const prices = valid.map((point) => point.close as number);
+
+  if (!prices.length) return [];
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  const step = (max - min || 1) / binCount;
+  const bins = Array.from({ length: binCount }, (_, index) => ({
+    low: min + step * index,
+    high: min + step * (index + 1),
+    volume: 0,
+  }));
+
+  for (const point of valid) {
+    const index = Math.min(binCount - 1, Math.max(0, Math.floor(((point.close as number) - min) / step)));
+    bins[index].volume += point.volume || 0;
+  }
+
+  return bins.reverse();
 }
 
 function rangePercent(quote: StockQuote) {
@@ -262,20 +330,28 @@ function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive
   );
 }
 
-function DetailChart({ mode, points }: { mode: string; points: HistoryPoint[] }) {
-  const values = points.map((point) => point.close).filter(isFiniteNumber);
-  const volumes = points.map((point) => point.volume || 0);
+function DetailChart({
+  mode,
+  points,
+  periodLabel,
+}: {
+  mode: string;
+  points: HistoryPoint[];
+  periodLabel: string;
+}) {
+  const values = getCloseValues(points);
   const path = linePath(values);
   const min = values.length ? Math.min(...values) : 0;
   const max = values.length ? Math.max(...values) : 0;
-  const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
   const last = values.at(-1);
   const first = values[0];
   const positive = isFiniteNumber(last) && isFiniteNumber(first) ? last >= first : true;
   const stroke = positive ? '#089981' : '#f23645';
-  const volumeMax = Math.max(...volumes, 1);
+  const staff = calculateStaff(values);
+  const vrvp = calculateVrvp(points);
+  const maxVolume = Math.max(...vrvp.map((bin) => bin.volume), 1);
 
-  if (!values.length || !path) {
+  if (!values.length || (!path && mode !== 'vrvp')) {
     return (
       <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-sm font-bold text-slate-400">
         暫無圖表資料
@@ -286,78 +362,65 @@ function DetailChart({ mode, points }: { mode: string; points: HistoryPoint[] })
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4">
       <div className="mb-3 flex items-center justify-between text-xs font-bold text-slate-400">
-        <span>近一年</span>
+        <span>{periodLabel}</span>
         <span>
           {formatPrice(min)} - {formatPrice(max)}
         </span>
       </div>
       <div className="relative h-64 overflow-hidden rounded-xl bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)]">
         {mode === 'vrvp' ? (
-          <div className="flex h-full items-end gap-px px-3 pb-6 pt-4">
-            {volumes.slice(-90).map((volume, index) => (
-              <div
-                key={`${volume}-${index}`}
-                className="flex-1 rounded-t bg-orange-500/35"
-                style={{ height: `${Math.max(4, (volume / volumeMax) * 86)}%` }}
-              />
+          <div className="flex h-full flex-col justify-between gap-1 px-4 py-4">
+            {vrvp.map((bin) => (
+              <div key={`${bin.low}-${bin.high}`} className="grid grid-cols-[4.5rem_1fr] items-center gap-3">
+                <span className="text-right text-[10px] font-bold tabular-nums text-slate-400">
+                  {formatPrice(bin.low)} - {formatPrice(bin.high)}
+                </span>
+                <div className="h-2.5 rounded-full bg-orange-50">
+                  <div
+                    className="h-full rounded-full bg-orange-600/60"
+                    style={{ width: `${Math.max(2, (bin.volume / maxVolume) * 100)}%` }}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         ) : (
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full overflow-visible p-3">
-            {mode === 'staff' ? (
-              <>
-                <line x1="0" x2="100" y1="22" y2="22" stroke="#fed7aa" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <line x1="0" x2="100" y1="50" y2="50" stroke="#fdba74" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <line x1="0" x2="100" y1="78" y2="78" stroke="#fed7aa" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-              </>
-            ) : null}
-            {mode === 'vwap' ? (
-              <line
-                x1="0"
-                x2="100"
-                y1={String(6 + (1 - (average - min) / (max - min || 1)) * 88)}
-                y2={String(6 + (1 - (average - min) / (max - min || 1)) * 88)}
-                stroke="#c2410c"
-                strokeDasharray="4 3"
-                strokeWidth="1.5"
-                vectorEffect="non-scaling-stroke"
-              />
-            ) : null}
+            {mode === 'staff' && staff
+              ? staff.map((line, index) => (
+                  <line
+                    key={line.label}
+                    x1="0"
+                    x2="100"
+                    y1={String(horizontalLineY(line.value, min, max))}
+                    y2={String(horizontalLineY(line.value, min, max))}
+                    stroke={index === 2 ? '#c2410c' : '#fdba74'}
+                    strokeDasharray={index === 2 ? '0' : '3 3'}
+                    strokeWidth={index === 2 ? '1.4' : '1'}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                ))
+              : null}
             <path d={path} fill="none" stroke={stroke} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
           </svg>
         )}
       </div>
+      {mode === 'staff' && staff ? (
+        <div className="mt-3 grid grid-cols-5 gap-2">
+          {staff.map((line) => (
+            <div key={line.label} className="rounded-xl bg-slate-50 px-2 py-2 text-center">
+              <p className="text-[10px] font-black text-slate-400">{line.label}</p>
+              <p className="mt-1 text-xs font-black tabular-nums text-slate-700">{formatPrice(line.value)}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {mode === 'vrvp' ? (
+        <p className="mt-3 text-xs font-bold leading-relaxed text-slate-400">
+          VRVP 依照所選時間區間，將成交量累加到對應價格帶，用來觀察成交量密集區。
+        </p>
+      ) : null}
     </div>
-  );
-}
-
-function DetailTable({
-  title,
-  rows,
-}: {
-  title: string;
-  rows: { label: string; value: string; sublabel?: string }[];
-}) {
-  if (!rows.some((row) => row.value !== '-')) return null;
-
-  return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <div className="border-b border-slate-100 bg-orange-50/60 px-4 py-3 text-sm font-black text-slate-700">
-        {title}
-      </div>
-      <div className="grid grid-cols-2">
-        {rows.map((row, index) => (
-          <div
-            key={row.label}
-            className={`px-4 py-3 ${index % 2 ? 'border-l border-slate-100' : ''} ${index > 1 ? 'border-t border-slate-100' : ''}`}
-          >
-            <p className="text-xs font-bold text-slate-400">{row.sublabel || row.label}</p>
-            <p className="mt-1 text-lg font-black text-slate-900">{row.value}</p>
-            {row.sublabel ? <p className="text-[11px] font-medium text-slate-400">{row.label}</p> : null}
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }
 
@@ -373,17 +436,37 @@ function StockDetailModal({
   const [details, setDetails] = useState<StockDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('price');
+  const [pricePeriod, setPricePeriod] = useState(PRICE_PERIODS[4]);
+  const [staffPeriod, setStaffPeriod] = useState(STAFF_PERIODS[3]);
+  const [vrvpPeriod, setVrvpPeriod] = useState(VRVP_PERIODS[2]);
   const activeQuote = details?.quote || quote;
   const positive = (activeQuote?.changePercent || 0) > 0;
   const negative = (activeQuote?.changePercent || 0) < 0;
   const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
-  const fundamentals = details?.fundamentals || {};
   const chartTabs = [
     { value: 'price', label: '股價走勢', short: '走勢', icon: LineChart },
     { value: 'staff', label: '樂活五線譜', short: '五線譜', icon: Activity },
-    { value: 'vrvp', label: '成交量分佈', short: 'VRVP', icon: BarChart3 },
-    { value: 'vwap', label: '成交量加權平均', short: 'VWAP', icon: LineChart },
+    { value: 'vrvp', label: 'VRVP', short: 'VRVP', icon: BarChart3 },
   ];
+  const activePeriod = mode === 'staff' ? staffPeriod : mode === 'vrvp' ? vrvpPeriod : pricePeriod;
+  const activePeriodOptions = mode === 'staff' ? STAFF_PERIODS : mode === 'vrvp' ? VRVP_PERIODS : PRICE_PERIODS;
+  const chartPoints = useMemo(
+    () => filterHistory(details?.history || [], activePeriod),
+    [activePeriod, details?.history],
+  );
+  const setActivePeriod = (period: typeof PRICE_PERIODS[number] | typeof STAFF_PERIODS[number] | typeof VRVP_PERIODS[number]) => {
+    if (mode === 'staff') {
+      setStaffPeriod(period as typeof STAFF_PERIODS[number]);
+      return;
+    }
+
+    if (mode === 'vrvp') {
+      setVrvpPeriod(period as typeof VRVP_PERIODS[number]);
+      return;
+    }
+
+    setPricePeriod(period as typeof PRICE_PERIODS[number]);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -477,7 +560,22 @@ function StockDetailModal({
             })}
           </div>
 
-          <DetailChart mode={mode} points={details?.history || []} />
+          <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl bg-orange-50/80 p-1 ring-1 ring-orange-100">
+            {activePeriodOptions.map((period) => (
+              <button
+                key={period.label}
+                type="button"
+                onClick={() => setActivePeriod(period)}
+                className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors ${
+                  activePeriod.label === period.label ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {period.label}
+              </button>
+            ))}
+          </div>
+
+          <DetailChart mode={mode} points={chartPoints} periodLabel={activePeriod.label} />
 
           {loading ? (
             <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
@@ -485,96 +583,49 @@ function StockDetailModal({
             </div>
           ) : null}
 
-          <div className="mt-5 grid gap-5 lg:grid-cols-[1.25fr_0.9fr]">
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-              <div className="flex items-center gap-2 border-b border-slate-100 bg-orange-50/60 px-4 py-3 text-sm font-black text-slate-700">
-                <Newspaper size={16} className="text-orange-700" />
-                最新相關新聞
-              </div>
-              <div className="divide-y divide-slate-100">
-                {(details?.news || []).slice(0, 5).map((news) => (
-                  <a
-                    key={news.url}
-                    href={news.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block px-4 py-3 transition-colors hover:bg-orange-50/60"
-                  >
-                    <div className="flex gap-3">
-                      <p className="flex-1 text-sm font-bold leading-relaxed text-slate-800">{news.title}</p>
-                      <ExternalLink size={14} className="mt-1 shrink-0 text-slate-300" />
-                    </div>
-                    <p className="mt-1 text-xs font-medium text-slate-400">
-                      {news.source || 'News'} · {formatDate(news.pubDate)}
-                    </p>
-                  </a>
-                ))}
-                {!details?.news?.length && !loading ? (
-                  <div className="px-4 py-8 text-center text-sm font-bold text-slate-400">暫無新聞資料</div>
-                ) : null}
-              </div>
-            </section>
-
-            <div className="space-y-5">
-              <DetailTable
-                title="估值指標"
-                rows={[
-                  { label: '本益比', sublabel: 'TTM P/E', value: formatMetric(fundamentals.trailingPE) },
-                  { label: '預估本益比', sublabel: 'Fwd P/E', value: formatMetric(fundamentals.forwardPE) },
-                  { label: '每股盈餘', sublabel: 'EPS', value: formatMetric(fundamentals.trailingEps) },
-                  { label: '預估每股盈餘', sublabel: 'Fwd EPS', value: formatMetric(fundamentals.forwardEps) },
-                  { label: '市值', sublabel: 'Market Cap', value: formatCompact(fundamentals.marketCap) },
-                  { label: '股價淨值比', sublabel: 'P/B', value: formatMetric(fundamentals.priceToBook) },
-                ]}
-              />
-
-              {details?.institutions ? (
-                <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                  <div className="flex items-center justify-between border-b border-slate-100 bg-orange-50/60 px-4 py-3">
-                    <span className="text-sm font-black text-slate-700">盤後動態</span>
-                    <span className="text-xs font-bold text-slate-400">{details.institutions.date}</span>
+          <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="flex items-center gap-2 border-b border-slate-100 bg-orange-50/60 px-4 py-3 text-sm font-black text-slate-700">
+              <Newspaper size={16} className="text-orange-700" />
+              最新相關新聞
+            </div>
+            <div className="divide-y divide-slate-100">
+              {(details?.news || []).slice(0, 8).map((news) => (
+                <a
+                  key={news.url}
+                  href={news.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block px-4 py-3 transition-colors hover:bg-orange-50/60"
+                >
+                  <div className="flex gap-3">
+                    <p className="flex-1 text-sm font-bold leading-relaxed text-slate-800">{news.title}</p>
+                    <ExternalLink size={14} className="mt-1 shrink-0 text-slate-300" />
                   </div>
-                  <div className="divide-y divide-slate-100">
-                    {details.institutions.rows.map((row) => (
-                      <div key={row.label} className="grid grid-cols-3 px-4 py-2.5 text-sm">
-                        <span className="font-bold text-slate-700">{row.label}</span>
-                        <span className="text-right font-bold tabular-nums text-slate-600">{formatCompact(row.value)}</span>
-                        <span className="text-right font-bold tabular-nums text-slate-400">{formatCompact(row.delta)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                  <p className="mt-1 text-xs font-medium text-slate-400">
+                    {news.source || 'News'} · {formatDate(news.pubDate)}
+                  </p>
+                </a>
+              ))}
+              {!details?.news?.length && !loading ? (
+                <div className="px-4 py-8 text-center text-sm font-bold text-slate-400">暫無新聞資料</div>
               ) : null}
             </div>
-          </div>
+          </section>
 
-          {details?.dividends?.length ? (
-            <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-              <div className="border-b border-slate-100 bg-orange-50/60 px-4 py-3 text-sm font-black text-slate-700">
-                配息紀錄
-              </div>
-              <div className="max-h-80 overflow-y-auto">
-                <table className="w-full table-fixed text-sm">
-                  <thead className="sticky top-0 bg-white text-xs font-black text-slate-400">
-                    <tr>
-                      <th className="px-4 py-2 text-left">年份</th>
-                      <th className="px-4 py-2 text-right">現金股利</th>
-                      <th className="px-4 py-2 text-right">股票股利</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {details.dividends.map((row) => (
-                      <tr key={row.year}>
-                        <td className="px-4 py-2 font-bold text-slate-700">{row.year}</td>
-                        <td className="px-4 py-2 text-right font-bold tabular-nums text-slate-600">{formatMetric(row.cash)}</td>
-                        <td className="px-4 py-2 text-right font-bold tabular-nums text-slate-600">{formatMetric(row.stock)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          ) : null}
+          <section className="mt-5 grid gap-3 rounded-2xl border border-orange-100 bg-orange-50/50 p-4 text-xs font-bold leading-relaxed text-slate-500 sm:grid-cols-3">
+            <div>
+              <p className="text-orange-700">股價走勢</p>
+              <p className="mt-1">可切換 1M、3M、6M、YTD、1Y、3Y、5Y。</p>
+            </div>
+            <div>
+              <p className="text-orange-700">五線譜</p>
+              <p className="mt-1">依選定時間長度計算均線與正負標準差線。</p>
+            </div>
+            <div>
+              <p className="text-orange-700">VRVP</p>
+              <p className="mt-1">按價格區間累加成交量，呈現量能密集區。</p>
+            </div>
+          </section>
         </div>
       </div>
     </div>
