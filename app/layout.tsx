@@ -1,9 +1,8 @@
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import { Plus_Jakarta_Sans, Playfair_Display } from 'next/font/google';
 import { Providers } from './providers';
+import { SiteFooter, SiteHeader } from '@/components/SiteChrome';
 
 const plusJakarta = Plus_Jakarta_Sans({
     subsets: ['latin'],
@@ -117,11 +116,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body className="min-h-screen bg-white" suppressHydrationWarning>
                 <GoogleAnalytics />
                 <Providers>
-                    <Navbar />
+                    <SiteHeader />
                     <main>
                         {children}
                     </main>
-                    <Footer className="relative z-20" />
+                    <SiteFooter />
                 </Providers>
             </body>
         </html>
