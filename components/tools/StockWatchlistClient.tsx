@@ -1,6 +1,7 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { FormEvent, TouchEvent, WheelEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
   BarChart3,
@@ -218,6 +219,10 @@ function getCloseValues(points: HistoryPoint[]) {
   return points.map((point) => point.close).filter(isFiniteNumber);
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
 function linePath(values: number[]) {
   if (values.length < 2) return '';
 
@@ -234,8 +239,48 @@ function linePath(values: number[]) {
     .join(' ');
 }
 
+function chartPath(points: HistoryPoint[], min: number, max: number) {
+  const valid = points.filter((point): point is HistoryPoint & { close: number } => isFiniteNumber(point.close));
+
+  if (valid.length < 2) return '';
+
+  return valid
+    .map((point, index) => {
+      const x = 8 + (index / (valid.length - 1)) * 84;
+      const y = horizontalLineY(point.close, min, max);
+      return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    })
+    .join(' ');
+}
+
 function horizontalLineY(value: number, min: number, max: number) {
-  return 6 + (1 - (value - min) / (max - min || 1)) * 88;
+  return 8 + (1 - (value - min) / (max - min || 1)) * 78;
+}
+
+function chartX(index: number, total: number) {
+  return total <= 1 ? 8 : 8 + (index / (total - 1)) * 84;
+}
+
+function formatAxisDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value.slice(5);
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+}
+
+function makeDateTicks(points: HistoryPoint[]) {
+  if (!points.length) return [];
+  const indexes = Array.from(new Set([0, Math.floor((points.length - 1) / 2), points.length - 1]));
+  return indexes.map((index) => ({
+    label: formatAxisDate(points[index].date),
+    x: chartX(index, points.length),
+  }));
+}
+
+function makePriceTicks(min: number, max: number) {
+  return [max, min + (max - min) / 2, min].map((value) => ({
+    label: formatPrice(value),
+    y: horizontalLineY(value, min, max),
+  }));
 }
 
 function calculateStaff(values: number[]) {
@@ -339,10 +384,25 @@ function DetailChart({
   points: HistoryPoint[];
   periodLabel: string;
 }) {
-  const values = getCloseValues(points);
-  const path = linePath(values);
+  const [range, setRange] = useState({ start: 0, end: 1 });
+  const pinchRef = useRef<{ distance: number; centerRatio: number; range: { start: number; end: number } } | null>(null);
+
+  useEffect(() => {
+    setRange({ start: 0, end: 1 });
+    pinchRef.current = null;
+  }, [mode, periodLabel, points]);
+
+  const visiblePoints = useMemo(() => {
+    if (mode === 'vrvp' || points.length <= 2) return points;
+    const maxIndex = points.length - 1;
+    const startIndex = Math.floor(range.start * maxIndex);
+    const endIndex = Math.max(startIndex + 1, Math.ceil(range.end * maxIndex));
+    return points.slice(startIndex, endIndex + 1);
+  }, [mode, points, range]);
+  const values = getCloseValues(visiblePoints);
   const min = values.length ? Math.min(...values) : 0;
   const max = values.length ? Math.max(...values) : 0;
+  const path = chartPath(visiblePoints, min, max);
   const last = values.at(-1);
   const first = values[0];
   const positive = isFiniteNumber(last) && isFiniteNumber(first) ? last >= first : true;
@@ -350,6 +410,51 @@ function DetailChart({
   const staff = calculateStaff(values);
   const vrvp = calculateVrvp(points);
   const maxVolume = Math.max(...vrvp.map((bin) => bin.volume), 1);
+  const dateTicks = makeDateTicks(visiblePoints);
+  const priceTicks = makePriceTicks(min, max);
+
+  const updateZoom = useCallback((nextSpan: number, anchorRatio: number) => {
+    setRange((current) => {
+      const span = clamp(nextSpan, Math.min(1, 24 / Math.max(points.length, 1)), 1);
+      const currentSpan = current.end - current.start;
+      const anchor = current.start + currentSpan * clamp(anchorRatio, 0, 1);
+      const start = clamp(anchor - span * anchorRatio, 0, 1 - span);
+      return { start, end: start + span };
+    });
+  }, [points.length]);
+
+  const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+    if (mode === 'vrvp' || points.length < 25) return;
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    const anchorRatio = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+    const currentSpan = range.end - range.start;
+    updateZoom(currentSpan * (event.deltaY < 0 ? 0.82 : 1.22), anchorRatio);
+  }, [mode, points.length, range, updateZoom]);
+
+  const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    if (mode === 'vrvp' || event.touches.length !== 2) return;
+    const [firstTouch, secondTouch] = Array.from(event.touches);
+    const rect = event.currentTarget.getBoundingClientRect();
+    const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
+    const center = (firstTouch.clientX + secondTouch.clientX) / 2;
+    pinchRef.current = {
+      distance,
+      centerRatio: clamp((center - rect.left) / rect.width, 0, 1),
+      range,
+    };
+  }, [mode, range]);
+
+  const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
+    if (mode === 'vrvp' || event.touches.length !== 2 || !pinchRef.current) return;
+    event.preventDefault();
+    const [firstTouch, secondTouch] = Array.from(event.touches);
+    const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
+    const initial = pinchRef.current;
+    const scale = distance / Math.max(initial.distance, 1);
+    const span = (initial.range.end - initial.range.start) / Math.max(scale, 0.2);
+    updateZoom(span, initial.centerRatio);
+  }, [mode, updateZoom]);
 
   if (!values.length || (!path && mode !== 'vrvp')) {
     return (
@@ -367,7 +472,15 @@ function DetailChart({
           {formatPrice(min)} - {formatPrice(max)}
         </span>
       </div>
-      <div className="relative h-64 overflow-hidden rounded-xl bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)]">
+      <div
+        className="relative h-72 overflow-hidden rounded-xl bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] touch-none"
+        onWheel={handleWheel}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={() => {
+          pinchRef.current = null;
+        }}
+      >
         {mode === 'vrvp' ? (
           <div className="flex h-full flex-col justify-between gap-1 px-4 py-4">
             {vrvp.map((bin) => (
@@ -386,6 +499,53 @@ function DetailChart({
           </div>
         ) : (
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full overflow-visible p-3">
+            {priceTicks.map((tick) => (
+              <g key={tick.label}>
+                <line
+                  x1="8"
+                  x2="92"
+                  y1={String(tick.y)}
+                  y2={String(tick.y)}
+                  stroke="#e2e8f0"
+                  strokeWidth="0.7"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <text
+                  x="96"
+                  y={String(tick.y)}
+                  dominantBaseline="middle"
+                  textAnchor="end"
+                  className="fill-slate-400 text-[3.2px] font-bold"
+                  vectorEffect="non-scaling-stroke"
+                >
+                  {tick.label}
+                </text>
+              </g>
+            ))}
+            {dateTicks.map((tick) => (
+              <g key={`${tick.label}-${tick.x}`}>
+                <line
+                  x1={String(tick.x)}
+                  x2={String(tick.x)}
+                  y1="8"
+                  y2="86"
+                  stroke="#f1f5f9"
+                  strokeWidth="0.6"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <text
+                  x={String(tick.x)}
+                  y="96"
+                  textAnchor="middle"
+                  className="fill-slate-400 text-[3.2px] font-bold"
+                  vectorEffect="non-scaling-stroke"
+                >
+                  {tick.label}
+                </text>
+              </g>
+            ))}
+            <line x1="8" x2="92" y1="86" y2="86" stroke="#94a3b8" strokeWidth="0.9" vectorEffect="non-scaling-stroke" />
+            <line x1="8" x2="8" y1="8" y2="86" stroke="#94a3b8" strokeWidth="0.9" vectorEffect="non-scaling-stroke" />
             {mode === 'staff' && staff
               ? staff.map((line, index) => (
                   <line
@@ -405,6 +565,18 @@ function DetailChart({
           </svg>
         )}
       </div>
+      {mode !== 'vrvp' ? (
+        <div className="mt-2 flex items-center justify-between text-[11px] font-bold text-slate-400">
+          <span>滾輪或雙指可縮放</span>
+          <button
+            type="button"
+            onClick={() => setRange({ start: 0, end: 1 })}
+            className="rounded-lg px-2 py-1 text-orange-700 transition-colors hover:bg-orange-50"
+          >
+            重設縮放
+          </button>
+        </div>
+      ) : null}
       {mode === 'staff' && staff ? (
         <div className="mt-3 grid grid-cols-5 gap-2">
           {staff.map((line) => (
