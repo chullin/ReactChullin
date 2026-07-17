@@ -1,7 +1,7 @@
 'use client';
 
-import type { FormEvent, TouchEvent, WheelEvent } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { FormEvent, PointerEvent as ReactPointerEvent, TouchEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
   BarChart3,
@@ -58,6 +58,9 @@ type BatchQuoteResponse = {
 
 type HistoryPoint = {
   date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
   close: number | null;
   volume: number | null;
 };
@@ -199,6 +202,12 @@ function formatDate(value?: string) {
   return date.toISOString().slice(0, 10);
 }
 
+function formatTooltipDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+}
+
 function periodStart(period: { months?: number; ytd?: boolean }) {
   const date = new Date();
 
@@ -223,6 +232,13 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
+const CHART_BOUNDS = {
+  left: 18,
+  right: 82,
+  top: 20,
+  bottom: 32,
+};
+
 function linePath(values: number[]) {
   if (values.length < 2) return '';
 
@@ -239,48 +255,181 @@ function linePath(values: number[]) {
     .join(' ');
 }
 
-function chartPath(points: HistoryPoint[], min: number, max: number) {
+function chartPath(points: HistoryPoint[], min: number, max: number, width = 100, height = 100) {
   const valid = points.filter((point): point is HistoryPoint & { close: number } => isFiniteNumber(point.close));
 
   if (valid.length < 2) return '';
 
   return valid
     .map((point, index) => {
-      const x = 8 + (index / (valid.length - 1)) * 84;
-      const y = horizontalLineY(point.close, min, max);
+      const x = chartX(index, valid.length, width);
+      const y = horizontalLineY(point.close, min, max, height);
       return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(' ');
 }
 
-function horizontalLineY(value: number, min: number, max: number) {
-  return 8 + (1 - (value - min) / (max - min || 1)) * 78;
+function horizontalLineY(value: number, min: number, max: number, height = 100) {
+  return CHART_BOUNDS.top + (1 - (value - min) / (max - min || 1)) * Math.max(1, height - CHART_BOUNDS.top - CHART_BOUNDS.bottom);
 }
 
-function chartX(index: number, total: number) {
-  return total <= 1 ? 8 : 8 + (index / (total - 1)) * 84;
+function chartX(index: number, total: number, width = 100) {
+  const right = Math.max(CHART_BOUNDS.left + 1, width - CHART_BOUNDS.right);
+  return total <= 1
+    ? CHART_BOUNDS.left
+    : CHART_BOUNDS.left + (index / (total - 1)) * (right - CHART_BOUNDS.left);
 }
 
-function formatAxisDate(value: string) {
+function chartRight(width: number) {
+  return Math.max(CHART_BOUNDS.left + 1, width - CHART_BOUNDS.right);
+}
+
+function chartBottom(height: number) {
+  return Math.max(CHART_BOUNDS.top + 1, height - CHART_BOUNDS.bottom);
+}
+
+function formatMonthTick(value: string, previousYear?: number) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value.slice(0, 7);
+  const year = date.getFullYear();
+  if (date.getMonth() === 0 && previousYear !== year) return `${year}年`;
+  return `${date.getMonth() + 1}月`;
+}
+
+function formatDayTick(value: string, includeMonth: boolean) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value.slice(5);
-  return `${date.getMonth() + 1}/${date.getDate()}`;
+  return includeMonth ? `${date.getMonth() + 1}/${date.getDate()}` : `${date.getDate()}`;
 }
 
-function makeDateTicks(points: HistoryPoint[]) {
+function makeDateTicks(points: HistoryPoint[], width = 100) {
   if (!points.length) return [];
-  const indexes = Array.from(new Set([0, Math.floor((points.length - 1) / 2), points.length - 1]));
-  return indexes.map((index) => ({
-    label: formatAxisDate(points[index].date),
-    x: chartX(index, points.length),
-  }));
+  const ticks: { label: string; x: number }[] = [];
+  const shouldShowDays = points.length <= 95;
+
+  if (shouldShowDays) {
+    const targetTicks = width >= 900 ? 14 : width >= 640 ? 10 : 6;
+    const step = Math.max(1, Math.ceil(points.length / targetTicks));
+
+    points.forEach((point, index) => {
+      if (index !== 0 && index !== points.length - 1 && index % step !== 0) return;
+      const previousPoint = points[Math.max(0, index - step)];
+      const previousDate = previousPoint ? new Date(previousPoint.date) : null;
+      const currentDate = new Date(point.date);
+      const includeMonth =
+        index === 0 ||
+        index === points.length - 1 ||
+        !previousDate ||
+        Number.isNaN(previousDate.getTime()) ||
+        previousDate.getMonth() !== currentDate.getMonth();
+
+      ticks.push({
+        label: formatDayTick(point.date, includeMonth),
+        x: chartX(index, points.length, width),
+      });
+    });
+
+    return ticks;
+  }
+
+  let previousMonth = -1;
+  let previousYear: number | undefined;
+
+  points.forEach((point, index) => {
+    const date = new Date(point.date);
+    if (Number.isNaN(date.getTime())) return;
+    const month = date.getMonth();
+    const year = date.getFullYear();
+
+    if (index === 0 || month !== previousMonth) {
+      ticks.push({
+        label: formatMonthTick(point.date, previousYear),
+        x: chartX(index, points.length, width),
+      });
+    }
+
+    previousMonth = month;
+    previousYear = year;
+  });
+
+  const visibleTicks: { label: string; x: number }[] = [];
+
+  for (const tick of ticks) {
+    const previous = visibleTicks.at(-1);
+
+    if (!previous || tick.x - previous.x >= (width >= 900 ? 84 : 70)) {
+      visibleTicks.push(tick);
+    }
+  }
+
+  return visibleTicks;
 }
 
-function makePriceTicks(min: number, max: number) {
-  return [max, min + (max - min) / 2, min].map((value) => ({
+function niceStep(rawStep: number) {
+  const exponent = Math.floor(Math.log10(rawStep || 1));
+  const magnitude = 10 ** exponent;
+  const normalized = rawStep / magnitude;
+  const nice = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  return nice * magnitude;
+}
+
+function makeNicePriceDomain(min: number, max: number, targetCount = 8) {
+  const range = max - min || Math.max(Math.abs(max), 1);
+  const step = niceStep(range / Math.max(targetCount - 1, 1));
+  return {
+    min: Math.floor(min / step) * step,
+    max: Math.ceil(max / step) * step,
+    step,
+  };
+}
+
+function makePriceTicks(min: number, max: number, step: number, height = 100) {
+  const ticks: { label: string; value: number; y: number }[] = [];
+
+  for (let value = min; value <= max + step * 0.5; value += step) {
+    ticks.push({
+      label: formatPrice(value),
+      value,
+      y: horizontalLineY(value, min, max, height),
+    });
+  }
+
+  return ticks;
+}
+
+function getPriceDomain(points: HistoryPoint[]) {
+  const prices = points.flatMap((point) => [
+    point.high,
+    point.low,
+    point.open,
+    point.close,
+  ]).filter(isFiniteNumber);
+
+  if (!prices.length) return { min: 0, max: 0 };
+
+  return {
+    min: Math.min(...prices),
+    max: Math.max(...prices),
+  };
+}
+
+function getCandlePoint(point: HistoryPoint) {
+  const close = point.close;
+  if (!isFiniteNumber(close)) return null;
+
+  const open = isFiniteNumber(point.open) ? point.open : close;
+  const high = isFiniteNumber(point.high) ? point.high : Math.max(open, close);
+  const low = isFiniteNumber(point.low) ? point.low : Math.min(open, close);
+
+  return { open, high, low, close };
+}
+
+function makeCloseMarker(value: number, min: number, max: number, height = 100) {
+  return {
     label: formatPrice(value),
-    y: horizontalLineY(value, min, max),
-  }));
+    value,
+    y: horizontalLineY(value, min, max, height),
+  };
 }
 
 function calculateStaff(values: number[]) {
@@ -385,12 +534,46 @@ function DetailChart({
   periodLabel: string;
 }) {
   const [range, setRange] = useState({ start: 0, end: 1 });
+  const [chartSize, setChartSize] = useState({ width: 900, height: 288 });
+  const [hoveredCandle, setHoveredCandle] = useState<{
+    point: HistoryPoint;
+    candle: { open: number; high: number; low: number; close: number };
+    x: number;
+    y: number;
+  } | null>(null);
+  const [isDraggingChart, setIsDraggingChart] = useState(false);
+  const chartRef = useRef<HTMLDivElement | null>(null);
   const pinchRef = useRef<{ distance: number; centerRatio: number; range: { start: number; end: number } } | null>(null);
+  const dragRef = useRef<{ pointerId: number; startX: number; range: { start: number; end: number } } | null>(null);
 
   useEffect(() => {
     setRange({ start: 0, end: 1 });
+    setHoveredCandle(null);
+    setIsDraggingChart(false);
     pinchRef.current = null;
+    dragRef.current = null;
   }, [mode, periodLabel, points]);
+
+  useLayoutEffect(() => {
+    const element = chartRef.current;
+    if (!element) return;
+
+    const updateSize = () => {
+      const rect = element.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      setChartSize({
+        width: Math.max(320, Math.round(rect.width)),
+        height: Math.max(240, Math.round(rect.height)),
+      });
+    };
+
+    updateSize();
+
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [mode, points.length]);
 
   const visiblePoints = useMemo(() => {
     if (mode === 'vrvp' || points.length <= 2) return points;
@@ -400,9 +583,15 @@ function DetailChart({
     return points.slice(startIndex, endIndex + 1);
   }, [mode, points, range]);
   const values = getCloseValues(visiblePoints);
-  const min = values.length ? Math.min(...values) : 0;
-  const max = values.length ? Math.max(...values) : 0;
-  const path = chartPath(visiblePoints, min, max);
+  const closeDomain = {
+    min: values.length ? Math.min(...values) : 0,
+    max: values.length ? Math.max(...values) : 0,
+  };
+  const rawDomain = mode === 'price' ? getPriceDomain(visiblePoints) : closeDomain;
+  const priceAxis = makeNicePriceDomain(rawDomain.min, rawDomain.max, mode === 'price' ? 9 : 3);
+  const min = priceAxis.min;
+  const max = priceAxis.max;
+  const path = chartPath(visiblePoints, min, max, chartSize.width, chartSize.height);
   const last = values.at(-1);
   const first = values[0];
   const positive = isFiniteNumber(last) && isFiniteNumber(first) ? last >= first : true;
@@ -410,27 +599,39 @@ function DetailChart({
   const staff = calculateStaff(values);
   const vrvp = calculateVrvp(points);
   const maxVolume = Math.max(...vrvp.map((bin) => bin.volume), 1);
-  const dateTicks = makeDateTicks(visiblePoints);
-  const priceTicks = makePriceTicks(min, max);
+  const dateTicks = makeDateTicks(visiblePoints, chartSize.width);
+  const priceTicks = makePriceTicks(min, max, priceAxis.step, chartSize.height);
+  const plotWidth = Math.max(1, chartRight(chartSize.width) - CHART_BOUNDS.left);
+  const candleWidth = clamp((plotWidth / Math.max(visiblePoints.length, 1)) * 0.62, 1, 8);
+  const hasCandles = visiblePoints.some((point) => getCandlePoint(point));
+  const closeMarker = isFiniteNumber(last) ? makeCloseMarker(last, min, max, chartSize.height) : null;
+  const canPan = mode === 'price' && range.end - range.start < 0.999 && points.length > visiblePoints.length;
 
-  const updateZoom = useCallback((nextSpan: number, anchorRatio: number) => {
+  const updateZoom = useCallback((factor: number, anchorRatio: number) => {
     setRange((current) => {
-      const span = clamp(nextSpan, Math.min(1, 24 / Math.max(points.length, 1)), 1);
       const currentSpan = current.end - current.start;
+      const span = clamp(currentSpan * factor, Math.min(1, 24 / Math.max(points.length, 1)), 1);
       const anchor = current.start + currentSpan * clamp(anchorRatio, 0, 1);
       const start = clamp(anchor - span * anchorRatio, 0, 1 - span);
       return { start, end: start + span };
     });
   }, [points.length]);
 
-  const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
-    if (mode === 'vrvp' || points.length < 25) return;
-    event.preventDefault();
-    const rect = event.currentTarget.getBoundingClientRect();
-    const anchorRatio = clamp((event.clientX - rect.left) / rect.width, 0, 1);
-    const currentSpan = range.end - range.start;
-    updateZoom(currentSpan * (event.deltaY < 0 ? 0.82 : 1.22), anchorRatio);
-  }, [mode, points.length, range, updateZoom]);
+  useEffect(() => {
+    const element = chartRef.current;
+    if (!element || mode === 'vrvp' || points.length < 25) return;
+
+    const handleNativeWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const rect = element.getBoundingClientRect();
+      const anchorRatio = clamp((event.clientX - rect.left) / rect.width, 0, 1);
+      updateZoom(event.deltaY < 0 ? 0.82 : 1.22, anchorRatio);
+    };
+
+    element.addEventListener('wheel', handleNativeWheel, { passive: false });
+    return () => element.removeEventListener('wheel', handleNativeWheel);
+  }, [mode, points.length, updateZoom]);
 
   const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
     if (mode === 'vrvp' || event.touches.length !== 2) return;
@@ -452,11 +653,74 @@ function DetailChart({
     const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
     const initial = pinchRef.current;
     const scale = distance / Math.max(initial.distance, 1);
-    const span = (initial.range.end - initial.range.start) / Math.max(scale, 0.2);
-    updateZoom(span, initial.centerRatio);
-  }, [mode, updateZoom]);
+    const currentSpan = range.end - range.start;
+    const targetSpan = (initial.range.end - initial.range.start) / Math.max(scale, 0.2);
+    updateZoom(targetSpan / Math.max(currentSpan, 0.001), initial.centerRatio);
+  }, [mode, range, updateZoom]);
 
-  if (!values.length || (!path && mode !== 'vrvp')) {
+  const updateHoveredCandle = useCallback((clientX: number) => {
+    if (mode !== 'price' || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
+    const rect = chartRef.current.getBoundingClientRect();
+    const ratio = clamp((clientX - rect.left - CHART_BOUNDS.left) / Math.max(plotWidth, 1), 0, 1);
+    const index = Math.round(ratio * (visiblePoints.length - 1));
+    const point = visiblePoints[index];
+    const candle = point ? getCandlePoint(point) : null;
+
+    if (!point || !candle) {
+      setHoveredCandle(null);
+      return;
+    }
+
+    setHoveredCandle({
+      point,
+      candle,
+      x: chartX(index, visiblePoints.length, chartSize.width),
+      y: horizontalLineY(candle.high, min, max, chartSize.height),
+    });
+  }, [chartSize.height, chartSize.width, isDraggingChart, min, max, mode, plotWidth, visiblePoints]);
+
+  const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (mode !== 'price' || !canPan || event.button !== 0) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      range,
+    };
+    setIsDraggingChart(true);
+    setHoveredCandle(null);
+  }, [canPan, mode, range]);
+
+  const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+
+    if (!drag || drag.pointerId !== event.pointerId) {
+      updateHoveredCandle(event.clientX);
+      return;
+    }
+
+    event.preventDefault();
+    const span = drag.range.end - drag.range.start;
+    const deltaRatio = ((event.clientX - drag.startX) / Math.max(plotWidth, 1)) * span;
+    const start = clamp(drag.range.start - deltaRatio, 0, 1 - span);
+    setRange({ start, end: start + span });
+  }, [plotWidth, updateHoveredCandle]);
+
+  const endPointerDrag = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+
+    if (drag?.pointerId === event.pointerId) {
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      dragRef.current = null;
+      setIsDraggingChart(false);
+      updateHoveredCandle(event.clientX);
+    }
+  }, [updateHoveredCandle]);
+
+  if (!values.length || (mode === 'price' && !hasCandles) || (mode !== 'price' && mode !== 'vrvp' && !path)) {
     return (
       <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-sm font-bold text-slate-400">
         暫無圖表資料
@@ -473,8 +737,18 @@ function DetailChart({
         </span>
       </div>
       <div
-        className="relative h-72 overflow-hidden rounded-xl bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] touch-none"
-        onWheel={handleWheel}
+        ref={chartRef}
+        className={`relative h-72 overflow-hidden rounded-xl bg-white touch-none ${
+          mode === 'price' ? (canPan ? (isDraggingChart ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-crosshair') : ''
+        }`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endPointerDrag}
+        onPointerCancel={endPointerDrag}
+        onPointerLeave={(event) => {
+          endPointerDrag(event);
+          setHoveredCandle(null);
+        }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={() => {
@@ -498,24 +772,27 @@ function DetailChart({
             ))}
           </div>
         ) : (
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full overflow-visible p-3">
+          <svg
+            viewBox={`0 0 ${chartSize.width} ${chartSize.height}`}
+            className="h-full w-full overflow-visible"
+          >
             {priceTicks.map((tick) => (
-              <g key={tick.label}>
+              <g key={`${tick.label}-${tick.value}`}>
                 <line
-                  x1="8"
-                  x2="92"
+                  x1={String(CHART_BOUNDS.left)}
+                  x2={String(chartRight(chartSize.width))}
                   y1={String(tick.y)}
                   y2={String(tick.y)}
-                  stroke="#e2e8f0"
+                  stroke="#e5e7eb"
                   strokeWidth="0.7"
                   vectorEffect="non-scaling-stroke"
                 />
                 <text
-                  x="96"
+                  x={String(chartSize.width - 14)}
                   y={String(tick.y)}
                   dominantBaseline="middle"
                   textAnchor="end"
-                  className="fill-slate-400 text-[3.2px] font-bold"
+                  className="fill-slate-400 text-[11px] font-bold"
                   vectorEffect="non-scaling-stroke"
                 >
                   {tick.label}
@@ -527,33 +804,143 @@ function DetailChart({
                 <line
                   x1={String(tick.x)}
                   x2={String(tick.x)}
-                  y1="8"
-                  y2="86"
-                  stroke="#f1f5f9"
+                  y1={String(CHART_BOUNDS.top)}
+                  y2={String(chartBottom(chartSize.height))}
+                  stroke="#eef2f7"
                   strokeWidth="0.6"
                   vectorEffect="non-scaling-stroke"
                 />
                 <text
                   x={String(tick.x)}
-                  y="96"
+                  y={String(chartSize.height - 10)}
                   textAnchor="middle"
-                  className="fill-slate-400 text-[3.2px] font-bold"
+                  className="fill-slate-400 text-[11px] font-bold"
                   vectorEffect="non-scaling-stroke"
                 >
                   {tick.label}
                 </text>
               </g>
             ))}
-            <line x1="8" x2="92" y1="86" y2="86" stroke="#94a3b8" strokeWidth="0.9" vectorEffect="non-scaling-stroke" />
-            <line x1="8" x2="8" y1="8" y2="86" stroke="#94a3b8" strokeWidth="0.9" vectorEffect="non-scaling-stroke" />
+            <line
+              x1={String(CHART_BOUNDS.left)}
+              x2={String(chartRight(chartSize.width))}
+              y1={String(chartBottom(chartSize.height))}
+              y2={String(chartBottom(chartSize.height))}
+              stroke="#cbd5e1"
+              strokeWidth="0.9"
+              vectorEffect="non-scaling-stroke"
+            />
+            <line
+              x1={String(chartRight(chartSize.width))}
+              x2={String(chartRight(chartSize.width))}
+              y1={String(CHART_BOUNDS.top)}
+              y2={String(chartBottom(chartSize.height))}
+              stroke="#cbd5e1"
+              strokeWidth="0.9"
+              vectorEffect="non-scaling-stroke"
+            />
+            {mode === 'price' && closeMarker ? (
+              <>
+                <line
+                  x1={String(CHART_BOUNDS.left)}
+                  x2={String(chartRight(chartSize.width))}
+                  y1={String(closeMarker.y)}
+                  y2={String(closeMarker.y)}
+                  stroke="#089981"
+                  strokeDasharray="1.5 1.5"
+                  strokeWidth="0.9"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <rect
+                  x={String(chartRight(chartSize.width) + 4)}
+                  y={String(closeMarker.y - 10)}
+                  width="66"
+                  height="20"
+                  rx="4"
+                  fill="#089981"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <text
+                  x={String(chartRight(chartSize.width) + 37)}
+                  y={String(closeMarker.y)}
+                  dominantBaseline="middle"
+                  textAnchor="middle"
+                  className="fill-white text-[11px] font-black"
+                  vectorEffect="non-scaling-stroke"
+                >
+                  {closeMarker.label}
+                </text>
+              </>
+            ) : null}
+            {mode === 'price' && hoveredCandle ? (
+              <>
+                <line
+                  x1={String(hoveredCandle.x)}
+                  x2={String(hoveredCandle.x)}
+                  y1={String(CHART_BOUNDS.top)}
+                  y2={String(chartBottom(chartSize.height))}
+                  stroke="#64748b"
+                  strokeDasharray="3 3"
+                  strokeWidth="0.8"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <line
+                  x1={String(CHART_BOUNDS.left)}
+                  x2={String(chartRight(chartSize.width))}
+                  y1={String(horizontalLineY(hoveredCandle.candle.close, min, max, chartSize.height))}
+                  y2={String(horizontalLineY(hoveredCandle.candle.close, min, max, chartSize.height))}
+                  stroke="#64748b"
+                  strokeDasharray="3 3"
+                  strokeWidth="0.8"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </>
+            ) : null}
+            {mode === 'price'
+              ? visiblePoints.map((point, index) => {
+                  const candle = getCandlePoint(point);
+                  if (!candle) return null;
+                  const x = chartX(index, visiblePoints.length, chartSize.width);
+                  const highY = horizontalLineY(candle.high, min, max, chartSize.height);
+                  const lowY = horizontalLineY(candle.low, min, max, chartSize.height);
+                  const openY = horizontalLineY(candle.open, min, max, chartSize.height);
+                  const closeY = horizontalLineY(candle.close, min, max, chartSize.height);
+                  const bodyTop = Math.min(openY, closeY);
+                  const bodyHeight = Math.max(0.45, Math.abs(closeY - openY));
+                  const rising = candle.close >= candle.open;
+                  const color = rising ? '#089981' : '#f23645';
+
+                  return (
+                    <g key={`${point.date}-${index}`}>
+                      <line
+                        x1={String(x)}
+                        x2={String(x)}
+                        y1={String(highY)}
+                        y2={String(lowY)}
+                        stroke={color}
+                        strokeWidth="0.7"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <rect
+                        x={String(x - candleWidth / 2)}
+                        y={String(bodyTop)}
+                        width={String(candleWidth)}
+                        height={String(bodyHeight)}
+                        fill={color}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </g>
+                  );
+                })
+              : null}
             {mode === 'staff' && staff
               ? staff.map((line, index) => (
                   <line
                     key={line.label}
-                    x1="0"
-                    x2="100"
-                    y1={String(horizontalLineY(line.value, min, max))}
-                    y2={String(horizontalLineY(line.value, min, max))}
+                    x1={String(CHART_BOUNDS.left)}
+                    x2={String(chartRight(chartSize.width))}
+                    y1={String(horizontalLineY(line.value, min, max, chartSize.height))}
+                    y2={String(horizontalLineY(line.value, min, max, chartSize.height))}
                     stroke={index === 2 ? '#c2410c' : '#fdba74'}
                     strokeDasharray={index === 2 ? '0' : '3 3'}
                     strokeWidth={index === 2 ? '1.4' : '1'}
@@ -561,9 +948,32 @@ function DetailChart({
                   />
                 ))
               : null}
-            <path d={path} fill="none" stroke={stroke} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
+            {mode !== 'price' ? (
+              <path d={path} fill="none" stroke={stroke} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
+            ) : null}
           </svg>
         )}
+        {mode === 'price' && hoveredCandle ? (
+          <div
+            className="pointer-events-none absolute z-10 w-44 rounded-xl border border-slate-200 bg-white/95 p-3 text-xs font-bold text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur"
+            style={{
+              left: clamp(hoveredCandle.x + 12, 8, chartSize.width - 184),
+              top: clamp(hoveredCandle.y + 12, 8, chartSize.height - 132),
+            }}
+          >
+            <p className="mb-2 font-black text-slate-900">{formatTooltipDate(hoveredCandle.point.date)}</p>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 tabular-nums">
+              <span className="text-slate-400">開盤</span>
+              <span className="text-right text-slate-700">{formatPrice(hoveredCandle.candle.open)}</span>
+              <span className="text-slate-400">最高</span>
+              <span className="text-right text-emerald-700">{formatPrice(hoveredCandle.candle.high)}</span>
+              <span className="text-slate-400">最低</span>
+              <span className="text-right text-rose-700">{formatPrice(hoveredCandle.candle.low)}</span>
+              <span className="text-slate-400">收盤</span>
+              <span className="text-right text-slate-900">{formatPrice(hoveredCandle.candle.close)}</span>
+            </div>
+          </div>
+        ) : null}
       </div>
       {mode !== 'vrvp' ? (
         <div className="mt-2 flex items-center justify-between text-[11px] font-bold text-slate-400">
@@ -1186,6 +1596,24 @@ export default function StockWatchlistClient() {
             {message.text}
           </div>
         ) : null}
+
+        <section className="mt-5 rounded-2xl border border-orange-100 bg-white/85 p-4 shadow-sm shadow-orange-700/5 sm:flex sm:items-center sm:justify-between sm:gap-5">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Tribute</p>
+            <p className="mt-1 text-sm font-bold leading-relaxed text-slate-700">
+              這個自選股看盤頁面以 Jack Su 的工具為基礎重新製作，在此向他的優秀作品致敬。如果你喜歡這類實用工具，也推薦前往他的網站，體驗更多功能。
+            </p>
+          </div>
+          <a
+            href="https://www.jacksu.tw/tool"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex h-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100 transition-colors hover:bg-orange-100 sm:mt-0"
+          >
+            前往 Jack Su 工具頁
+            <ExternalLink size={15} className="ml-1.5" />
+          </a>
+        </section>
 
         {activeItems.length ? (
           <div className="mt-7 mb-4 flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
