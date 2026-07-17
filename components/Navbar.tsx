@@ -45,7 +45,11 @@ export default function Navbar() {
   const compactMoreLinks = [
     { name: t('nav.projects'), href: '/projects' },
     ...playgroundLinks,
+    { name: t('nav.memory'), href: '/memory' },
     { name: t('nav.contact'), href: '/contact' },
+  ];
+  const utilityLinks = [
+    { name: t('nav.memory'), href: '/memory' },
   ];
 
   const closeMenus = () => {
@@ -218,6 +222,20 @@ export default function Navbar() {
             {t('nav.contact')}
             {pendingHref === '/contact' && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
           </Link>
+
+          {utilityLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive(link.href) ? 'page' : undefined}
+              aria-busy={pendingHref === link.href}
+              className={`${navLinkClass(isActive(link.href), pendingHref === link.href)} inline-flex items-center gap-2`}
+              onClick={() => handleNavClick(link.href)}
+            >
+              {link.name}
+              {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center gap-2">
@@ -239,6 +257,7 @@ export default function Navbar() {
         {[
           ...mainLinks,
           ...playgroundLinks,
+          ...utilityLinks,
           { name: t('nav.contact'), href: '/contact' },
         ].map((item, index) => (
           <div key={`${item.name}-${index}`}>
