@@ -583,12 +583,21 @@ function DetailChart({
     return points.slice(startIndex, endIndex + 1);
   }, [mode, points, range]);
   const values = getCloseValues(visiblePoints);
+  const isCandlestickMode = mode === 'price' || mode === 'staff';
   const closeDomain = {
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
   };
-  const rawDomain = mode === 'price' ? getPriceDomain(visiblePoints) : closeDomain;
-  const priceAxis = makeNicePriceDomain(rawDomain.min, rawDomain.max, mode === 'price' ? 9 : 3);
+  const staff = calculateStaff(values);
+  const rawPriceDomain = isCandlestickMode ? getPriceDomain(visiblePoints) : closeDomain;
+  const staffValues = mode === 'staff' && staff ? staff.map((line) => line.value) : [];
+  const rawDomain = staffValues.length
+    ? {
+        min: Math.min(rawPriceDomain.min, ...staffValues),
+        max: Math.max(rawPriceDomain.max, ...staffValues),
+      }
+    : rawPriceDomain;
+  const priceAxis = makeNicePriceDomain(rawDomain.min, rawDomain.max, isCandlestickMode ? 9 : 3);
   const min = priceAxis.min;
   const max = priceAxis.max;
   const path = chartPath(visiblePoints, min, max, chartSize.width, chartSize.height);
@@ -596,7 +605,6 @@ function DetailChart({
   const first = values[0];
   const positive = isFiniteNumber(last) && isFiniteNumber(first) ? last >= first : true;
   const stroke = positive ? '#089981' : '#f23645';
-  const staff = calculateStaff(values);
   const vrvp = calculateVrvp(points);
   const maxVolume = Math.max(...vrvp.map((bin) => bin.volume), 1);
   const dateTicks = makeDateTicks(visiblePoints, chartSize.width);
@@ -604,8 +612,8 @@ function DetailChart({
   const plotWidth = Math.max(1, chartRight(chartSize.width) - CHART_BOUNDS.left);
   const candleWidth = clamp((plotWidth / Math.max(visiblePoints.length, 1)) * 0.62, 1, 8);
   const hasCandles = visiblePoints.some((point) => getCandlePoint(point));
-  const closeMarker = isFiniteNumber(last) ? makeCloseMarker(last, min, max, chartSize.height) : null;
-  const canPan = mode === 'price' && range.end - range.start < 0.999 && points.length > visiblePoints.length;
+  const closeMarker = isCandlestickMode && isFiniteNumber(last) ? makeCloseMarker(last, min, max, chartSize.height) : null;
+  const canPan = isCandlestickMode && range.end - range.start < 0.999 && points.length > visiblePoints.length;
 
   const updateZoom = useCallback((factor: number, anchorRatio: number) => {
     setRange((current) => {
@@ -659,7 +667,7 @@ function DetailChart({
   }, [mode, range, updateZoom]);
 
   const updateHoveredCandle = useCallback((clientX: number) => {
-    if (mode !== 'price' || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
+    if (!isCandlestickMode || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
     const rect = chartRef.current.getBoundingClientRect();
     const ratio = clamp((clientX - rect.left - CHART_BOUNDS.left) / Math.max(plotWidth, 1), 0, 1);
     const index = Math.round(ratio * (visiblePoints.length - 1));
@@ -677,10 +685,10 @@ function DetailChart({
       x: chartX(index, visiblePoints.length, chartSize.width),
       y: horizontalLineY(candle.high, min, max, chartSize.height),
     });
-  }, [chartSize.height, chartSize.width, isDraggingChart, min, max, mode, plotWidth, visiblePoints]);
+  }, [chartSize.height, chartSize.width, isCandlestickMode, isDraggingChart, min, max, plotWidth, visiblePoints]);
 
   const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (mode !== 'price' || !canPan || event.button !== 0) return;
+    if (!isCandlestickMode || !canPan || event.button !== 0) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = {
@@ -690,7 +698,7 @@ function DetailChart({
     };
     setIsDraggingChart(true);
     setHoveredCandle(null);
-  }, [canPan, mode, range]);
+  }, [canPan, isCandlestickMode, range]);
 
   const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
@@ -720,7 +728,7 @@ function DetailChart({
     }
   }, [updateHoveredCandle]);
 
-  if (!values.length || (mode === 'price' && !hasCandles) || (mode !== 'price' && mode !== 'vrvp' && !path)) {
+  if (!values.length || (isCandlestickMode && !hasCandles) || (!isCandlestickMode && mode !== 'vrvp' && !path)) {
     return (
       <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 text-sm font-bold text-slate-400">
         暫無圖表資料
@@ -739,7 +747,7 @@ function DetailChart({
       <div
         ref={chartRef}
         className={`relative h-72 overflow-hidden rounded-xl bg-white touch-none ${
-          mode === 'price' ? (canPan ? (isDraggingChart ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-crosshair') : ''
+          isCandlestickMode ? (canPan ? (isDraggingChart ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-crosshair') : ''
         }`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -839,7 +847,7 @@ function DetailChart({
               strokeWidth="0.9"
               vectorEffect="non-scaling-stroke"
             />
-            {mode === 'price' && closeMarker ? (
+            {isCandlestickMode && closeMarker ? (
               <>
                 <line
                   x1={String(CHART_BOUNDS.left)}
@@ -872,7 +880,7 @@ function DetailChart({
                 </text>
               </>
             ) : null}
-            {mode === 'price' && hoveredCandle ? (
+            {isCandlestickMode && hoveredCandle ? (
               <>
                 <line
                   x1={String(hoveredCandle.x)}
@@ -896,7 +904,7 @@ function DetailChart({
                 />
               </>
             ) : null}
-            {mode === 'price'
+            {isCandlestickMode
               ? visiblePoints.map((point, index) => {
                   const candle = getCandlePoint(point);
                   if (!candle) return null;
@@ -948,12 +956,12 @@ function DetailChart({
                   />
                 ))
               : null}
-            {mode !== 'price' ? (
+            {!isCandlestickMode ? (
               <path d={path} fill="none" stroke={stroke} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
             ) : null}
           </svg>
         )}
-        {mode === 'price' && hoveredCandle ? (
+        {isCandlestickMode && hoveredCandle ? (
           <div
             className="pointer-events-none absolute z-10 w-44 rounded-xl border border-slate-200 bg-white/95 p-3 text-xs font-bold text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur"
             style={{
