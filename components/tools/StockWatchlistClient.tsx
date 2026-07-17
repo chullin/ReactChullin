@@ -65,6 +65,20 @@ type HistoryPoint = {
   volume: number | null;
 };
 
+type VrvpBin = {
+  low: number;
+  high: number;
+  volume: number;
+};
+
+type VrvpProfile = {
+  bins: VrvpBin[];
+  maxVolume: number;
+  poc: VrvpBin | null;
+  vah: number | null;
+  val: number | null;
+};
+
 type StockDetails = {
   quote?: StockQuote | null;
   news?: { title: string; url: string; pubDate?: string; source?: string }[];
@@ -447,11 +461,13 @@ function calculateStaff(values: number[]) {
   ];
 }
 
-function calculateVrvp(points: HistoryPoint[], binCount = 20) {
+function calculateVrvp(points: HistoryPoint[], binCount = 56): VrvpProfile {
   const valid = points.filter((point) => isFiniteNumber(point.close) && isFiniteNumber(point.volume));
   const prices = valid.map((point) => point.close as number);
 
-  if (!prices.length) return [];
+  if (!prices.length) {
+    return { bins: [], maxVolume: 1, poc: null, vah: null, val: null };
+  }
 
   const min = Math.min(...prices);
   const max = Math.max(...prices);
@@ -467,7 +483,47 @@ function calculateVrvp(points: HistoryPoint[], binCount = 20) {
     bins[index].volume += point.volume || 0;
   }
 
-  return bins.reverse();
+  const maxVolume = Math.max(...bins.map((bin) => bin.volume), 1);
+  const totalVolume = bins.reduce((sum, bin) => sum + bin.volume, 0);
+  const pocIndex = bins.reduce((bestIndex, bin, index) => (bin.volume > bins[bestIndex].volume ? index : bestIndex), 0);
+  const poc = bins[pocIndex] || null;
+  const included = new Set<number>();
+  let cumulativeVolume = poc?.volume || 0;
+  let lowerIndex = pocIndex - 1;
+  let upperIndex = pocIndex + 1;
+
+  if (poc) included.add(pocIndex);
+
+  while (cumulativeVolume < totalVolume * 0.7 && (lowerIndex >= 0 || upperIndex < bins.length)) {
+    const lowerVolume = lowerIndex >= 0 ? bins[lowerIndex].volume : -1;
+    const upperVolume = upperIndex < bins.length ? bins[upperIndex].volume : -1;
+
+    if (upperVolume >= lowerVolume) {
+      if (upperIndex < bins.length) {
+        included.add(upperIndex);
+        cumulativeVolume += bins[upperIndex].volume;
+      }
+      upperIndex += 1;
+    } else {
+      if (lowerIndex >= 0) {
+        included.add(lowerIndex);
+        cumulativeVolume += bins[lowerIndex].volume;
+      }
+      lowerIndex -= 1;
+    }
+  }
+
+  const valueAreaBins = Array.from(included)
+    .map((index) => bins[index])
+    .filter(Boolean);
+
+  return {
+    bins: bins.slice().reverse(),
+    maxVolume,
+    poc,
+    vah: valueAreaBins.length ? Math.max(...valueAreaBins.map((bin) => bin.high)) : null,
+    val: valueAreaBins.length ? Math.min(...valueAreaBins.map((bin) => bin.low)) : null,
+  };
 }
 
 function rangePercent(quote: StockQuote) {
@@ -576,25 +632,34 @@ function DetailChart({
   }, [mode, points.length]);
 
   const visiblePoints = useMemo(() => {
-    if (mode === 'vrvp' || points.length <= 2) return points;
+    if (points.length <= 2) return points;
     const maxIndex = points.length - 1;
     const startIndex = Math.floor(range.start * maxIndex);
     const endIndex = Math.max(startIndex + 1, Math.ceil(range.end * maxIndex));
     return points.slice(startIndex, endIndex + 1);
   }, [mode, points, range]);
   const values = getCloseValues(visiblePoints);
-  const isCandlestickMode = mode === 'price' || mode === 'staff';
+  const isCandlestickMode = mode === 'price' || mode === 'staff' || mode === 'vrvp';
   const closeDomain = {
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
   };
   const staff = calculateStaff(values);
+  const vrvpProfile = calculateVrvp(visiblePoints);
   const rawPriceDomain = isCandlestickMode ? getPriceDomain(visiblePoints) : closeDomain;
   const staffValues = mode === 'staff' && staff ? staff.map((line) => line.value) : [];
-  const rawDomain = staffValues.length
+  const vrvpValues = mode === 'vrvp'
+    ? [
+        vrvpProfile.vah,
+        vrvpProfile.val,
+        vrvpProfile.poc ? (vrvpProfile.poc.low + vrvpProfile.poc.high) / 2 : null,
+      ].filter(isFiniteNumber)
+    : [];
+  const domainValues = [...staffValues, ...vrvpValues];
+  const rawDomain = domainValues.length
     ? {
-        min: Math.min(rawPriceDomain.min, ...staffValues),
-        max: Math.max(rawPriceDomain.max, ...staffValues),
+        min: Math.min(rawPriceDomain.min, ...domainValues),
+        max: Math.max(rawPriceDomain.max, ...domainValues),
       }
     : rawPriceDomain;
   const priceAxis = makeNicePriceDomain(rawDomain.min, rawDomain.max, isCandlestickMode ? 9 : 3);
@@ -605,8 +670,6 @@ function DetailChart({
   const first = values[0];
   const positive = isFiniteNumber(last) && isFiniteNumber(first) ? last >= first : true;
   const stroke = positive ? '#089981' : '#f23645';
-  const vrvp = calculateVrvp(points);
-  const maxVolume = Math.max(...vrvp.map((bin) => bin.volume), 1);
   const dateTicks = makeDateTicks(visiblePoints, chartSize.width);
   const priceTicks = makePriceTicks(min, max, priceAxis.step, chartSize.height);
   const plotWidth = Math.max(1, chartRight(chartSize.width) - CHART_BOUNDS.left);
@@ -614,6 +677,16 @@ function DetailChart({
   const hasCandles = visiblePoints.some((point) => getCandlePoint(point));
   const closeMarker = isCandlestickMode && isFiniteNumber(last) ? makeCloseMarker(last, min, max, chartSize.height) : null;
   const canPan = isCandlestickMode && range.end - range.start < 0.999 && points.length > visiblePoints.length;
+  const profileWidth = Math.min(220, Math.max(96, plotWidth * 0.32));
+  const pocValue = vrvpProfile.poc ? (vrvpProfile.poc.low + vrvpProfile.poc.high) / 2 : null;
+  const vrvpLevels = mode === 'vrvp'
+    ? [
+        { label: 'VAH', value: vrvpProfile.vah, color: '#2563eb' },
+        { label: 'POC', value: pocValue, color: '#f97316' },
+        { label: 'VAL', value: vrvpProfile.val, color: '#2563eb' },
+      ].filter((level): level is { label: string; value: number; color: string } => isFiniteNumber(level.value))
+    : [];
+  const closeMarkerColor = mode === 'vrvp' ? '#f23645' : '#089981';
 
   const updateZoom = useCallback((factor: number, anchorRatio: number) => {
     setRange((current) => {
@@ -627,7 +700,7 @@ function DetailChart({
 
   useEffect(() => {
     const element = chartRef.current;
-    if (!element || mode === 'vrvp' || points.length < 25) return;
+    if (!element || points.length < 25) return;
 
     const handleNativeWheel = (event: WheelEvent) => {
       event.preventDefault();
@@ -639,10 +712,10 @@ function DetailChart({
 
     element.addEventListener('wheel', handleNativeWheel, { passive: false });
     return () => element.removeEventListener('wheel', handleNativeWheel);
-  }, [mode, points.length, updateZoom]);
+  }, [points.length, updateZoom]);
 
   const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    if (mode === 'vrvp' || event.touches.length !== 2) return;
+    if (event.touches.length !== 2) return;
     const [firstTouch, secondTouch] = Array.from(event.touches);
     const rect = event.currentTarget.getBoundingClientRect();
     const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
@@ -652,10 +725,10 @@ function DetailChart({
       centerRatio: clamp((center - rect.left) / rect.width, 0, 1),
       range,
     };
-  }, [mode, range]);
+  }, [range]);
 
   const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    if (mode === 'vrvp' || event.touches.length !== 2 || !pinchRef.current) return;
+    if (event.touches.length !== 2 || !pinchRef.current) return;
     event.preventDefault();
     const [firstTouch, secondTouch] = Array.from(event.touches);
     const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
@@ -664,7 +737,7 @@ function DetailChart({
     const currentSpan = range.end - range.start;
     const targetSpan = (initial.range.end - initial.range.start) / Math.max(scale, 0.2);
     updateZoom(targetSpan / Math.max(currentSpan, 0.001), initial.centerRatio);
-  }, [mode, range, updateZoom]);
+  }, [range, updateZoom]);
 
   const updateHoveredCandle = useCallback((clientX: number) => {
     if (!isCandlestickMode || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
@@ -763,27 +836,10 @@ function DetailChart({
           pinchRef.current = null;
         }}
       >
-        {mode === 'vrvp' ? (
-          <div className="flex h-full flex-col justify-between gap-1 px-4 py-4">
-            {vrvp.map((bin) => (
-              <div key={`${bin.low}-${bin.high}`} className="grid grid-cols-[4.5rem_1fr] items-center gap-3">
-                <span className="text-right text-[10px] font-bold tabular-nums text-slate-400">
-                  {formatPrice(bin.low)} - {formatPrice(bin.high)}
-                </span>
-                <div className="h-2.5 rounded-full bg-orange-50">
-                  <div
-                    className="h-full rounded-full bg-orange-600/60"
-                    style={{ width: `${Math.max(2, (bin.volume / maxVolume) * 100)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <svg
-            viewBox={`0 0 ${chartSize.width} ${chartSize.height}`}
-            className="h-full w-full overflow-visible"
-          >
+        <svg
+          viewBox={`0 0 ${chartSize.width} ${chartSize.height}`}
+          className="h-full w-full overflow-visible"
+        >
             {priceTicks.map((tick) => (
               <g key={`${tick.label}-${tick.value}`}>
                 <line
@@ -847,6 +903,84 @@ function DetailChart({
               strokeWidth="0.9"
               vectorEffect="non-scaling-stroke"
             />
+            {mode === 'vrvp'
+              ? vrvpProfile.bins.map((bin) => {
+                  const highY = horizontalLineY(bin.high, min, max, chartSize.height);
+                  const lowY = horizontalLineY(bin.low, min, max, chartSize.height);
+                  const y = Math.min(highY, lowY);
+                  const height = Math.max(1, Math.abs(lowY - highY) - 0.25);
+                  const width = Math.max(1, (bin.volume / vrvpProfile.maxVolume) * profileWidth);
+
+                  return (
+                    <rect
+                      key={`${bin.low}-${bin.high}`}
+                      x={String(CHART_BOUNDS.left)}
+                      y={String(y)}
+                      width={String(width)}
+                      height={String(height)}
+                      fill="#9dbbff"
+                      opacity="0.65"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  );
+                })
+              : null}
+            {vrvpLevels.map((level) => {
+              const y = horizontalLineY(level.value, min, max, chartSize.height);
+              const labelX = clamp(CHART_BOUNDS.left + profileWidth + 10, CHART_BOUNDS.left + 8, chartRight(chartSize.width) - 92);
+
+              return (
+                <g key={level.label}>
+                  <line
+                    x1={String(CHART_BOUNDS.left)}
+                    x2={String(chartRight(chartSize.width))}
+                    y1={String(y)}
+                    y2={String(y)}
+                    stroke={level.color}
+                    strokeWidth={level.label === 'POC' ? '1.25' : '1.45'}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  <rect
+                    x={String(labelX)}
+                    y={String(y - 10)}
+                    width="34"
+                    height="20"
+                    rx="4"
+                    fill={level.color}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  <text
+                    x={String(labelX + 17)}
+                    y={String(y)}
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    className="fill-white text-[10px] font-black"
+                    vectorEffect="non-scaling-stroke"
+                  >
+                    {level.label}
+                  </text>
+                  <rect
+                    x={String(chartRight(chartSize.width) + 4)}
+                    y={String(y - 10)}
+                    width="66"
+                    height="20"
+                    rx="4"
+                    fill={level.color}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  <text
+                    x={String(chartRight(chartSize.width) + 37)}
+                    y={String(y)}
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    className="fill-white text-[11px] font-black"
+                    vectorEffect="non-scaling-stroke"
+                  >
+                    {formatPrice(level.value)}
+                  </text>
+                </g>
+              );
+            })}
             {isCandlestickMode && closeMarker ? (
               <>
                 <line
@@ -854,7 +988,7 @@ function DetailChart({
                   x2={String(chartRight(chartSize.width))}
                   y1={String(closeMarker.y)}
                   y2={String(closeMarker.y)}
-                  stroke="#089981"
+                  stroke={closeMarkerColor}
                   strokeDasharray="1.5 1.5"
                   strokeWidth="0.9"
                   vectorEffect="non-scaling-stroke"
@@ -865,7 +999,7 @@ function DetailChart({
                   width="66"
                   height="20"
                   rx="4"
-                  fill="#089981"
+                  fill={closeMarkerColor}
                   vectorEffect="non-scaling-stroke"
                 />
                 <text
@@ -959,8 +1093,7 @@ function DetailChart({
             {!isCandlestickMode ? (
               <path d={path} fill="none" stroke={stroke} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
             ) : null}
-          </svg>
-        )}
+        </svg>
         {isCandlestickMode && hoveredCandle ? (
           <div
             className="pointer-events-none absolute z-10 w-44 rounded-xl border border-slate-200 bg-white/95 p-3 text-xs font-bold text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur"
@@ -1007,7 +1140,7 @@ function DetailChart({
       ) : null}
       {mode === 'vrvp' ? (
         <p className="mt-3 text-xs font-bold leading-relaxed text-slate-400">
-          VRVP 依照所選時間區間，將成交量累加到對應價格帶，用來觀察成交量密集區。
+          VRVP 依照目前可視時間區間，將成交量累加到對應價格帶，並標示 POC、VAH、VAL 觀察量能密集區。
         </p>
       ) : null}
     </div>
@@ -1213,7 +1346,7 @@ function StockDetailModal({
             </div>
             <div>
               <p className="text-orange-700">VRVP</p>
-              <p className="mt-1">按價格區間累加成交量，呈現量能密集區。</p>
+              <p className="mt-1">結合 K 線、量價分佈與 POC、VAH、VAL 線標。</p>
             </div>
           </section>
         </div>
