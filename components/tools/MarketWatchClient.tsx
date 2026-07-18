@@ -1,7 +1,7 @@
 'use client';
 
 import type { FormEvent } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -16,8 +16,19 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react';
-import type { MarketAssetType, MarketQuote, MarketSearchResult, MarketWatchItem } from '@/lib/market/types';
+import type {
+  AlertConditionType,
+  AlertTriggerMode,
+  MarketAssetType,
+  MarketQuote,
+  MarketSearchResult,
+  MarketWatchItem,
+  NotificationEvent,
+  PriceAlert,
+} from '@/lib/market/types';
 import { defaultFxSearchResults } from '@/lib/market/providers/fxProvider';
+import { didCrossAlertTarget, isAlertCoolingDown } from '@/lib/market/alerts';
+import { InAppNotificationProvider, createNotificationEvent } from '@/lib/market/notifications';
 
 type QuotesResponse = {
   success?: boolean;
@@ -33,6 +44,9 @@ type SearchResponse = {
 
 const STORAGE_KEY = 'market-watchlist:v1';
 const FILTER_KEY = 'market-watchlist-filter:v1';
+const ALERTS_KEY = 'market-watchlist-alerts:v1';
+const NOTIFICATION_EVENTS_KEY = 'market-watchlist-notification-events:v1';
+const LOCAL_USER_ID = 'local-market-watch-user';
 
 const ASSET_FILTERS: { value: MarketAssetType | 'all'; label: string }[] = [
   { value: 'all', label: '全部' },
@@ -45,6 +59,13 @@ const ASSET_TYPE_LABELS: Record<MarketAssetType, string> = {
   tw_stock: '台股',
   us_stock: '美股',
   fx: '外匯',
+};
+
+const ALERT_CONDITION_LABELS: Record<AlertConditionType, string> = {
+  price_above: '價格高於',
+  price_below: '價格低於',
+  change_percent_above: '漲跌幅高於',
+  change_percent_below: '漲跌幅低於',
 };
 
 function createDefaultItems(): MarketWatchItem[] {
@@ -107,6 +128,19 @@ function formatUpdatedAt(value: string | null) {
 function trendLabel(changePercent: number | null | undefined) {
   if (!isFiniteNumber(changePercent) || changePercent === 0) return '持平';
   return changePercent > 0 ? '上漲' : '下跌';
+}
+
+function formatAlertCondition(alert: Pick<PriceAlert, 'conditionType' | 'targetValue'>) {
+  const suffix = alert.conditionType.includes('percent') ? '%' : '';
+  return `${ALERT_CONDITION_LABELS[alert.conditionType]} ${alert.targetValue}${suffix}`;
+}
+
+function createAlertId(assetId: string) {
+  return `${assetId}:alert:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function sortAlerts(alerts: PriceAlert[]) {
+  return [...alerts].sort((first, second) => Date.parse(second.createdAt) - Date.parse(first.createdAt));
 }
 
 function quoteTone(quote?: MarketQuote) {
@@ -272,22 +306,229 @@ function AddAssetDialog({
   );
 }
 
+function AlertDialog({
+  item,
+  quote,
+  alerts,
+  events,
+  onClose,
+  onCreate,
+  onToggle,
+  onRemove,
+}: {
+  item: MarketWatchItem;
+  quote?: MarketQuote;
+  alerts: PriceAlert[];
+  events: NotificationEvent[];
+  onClose: () => void;
+  onCreate: (input: {
+    conditionType: AlertConditionType;
+    targetValue: number;
+    triggerMode: AlertTriggerMode;
+    cooldownMinutes: number;
+  }) => void;
+  onToggle: (alertId: string) => void;
+  onRemove: (alertId: string) => void;
+}) {
+  const [conditionType, setConditionType] = useState<AlertConditionType>('price_above');
+  const [targetValue, setTargetValue] = useState(() => quote?.currentPrice?.toString() || '');
+  const [triggerMode, setTriggerMode] = useState<AlertTriggerMode>('once');
+  const [cooldownMinutes, setCooldownMinutes] = useState('60');
+  const [formError, setFormError] = useState<string | null>(null);
+  const assetEvents = events.filter((event) => alerts.some((alert) => alert.alertId === event.alertId)).slice(0, 6);
+
+  const submitAlert = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const parsedTarget = Number(targetValue);
+    const parsedCooldown = Number(cooldownMinutes);
+
+    if (!Number.isFinite(parsedTarget)) {
+      setFormError('請輸入有效的目標價格。');
+      return;
+    }
+
+    if (!Number.isFinite(parsedCooldown) || parsedCooldown < 0) {
+      setFormError('Cooldown 分鐘數不可小於 0。');
+      return;
+    }
+
+    onCreate({
+      conditionType,
+      targetValue: parsedTarget,
+      triggerMode,
+      cooldownMinutes: parsedCooldown,
+    });
+    setTargetValue('');
+    setFormError(null);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Price Alerts</p>
+            <h2 className="mt-1 text-xl font-black text-slate-900">{item.displayName}</h2>
+            <p className="mt-1 text-xs font-bold text-slate-400">
+              {item.symbol} · 目前 {formatPrice(quote?.currentPrice, quote?.currency)} {quote?.currency || item.currency}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
+            aria-label="關閉"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <div className="grid max-h-[calc(92vh-76px)] gap-5 overflow-y-auto p-5 lg:grid-cols-[1fr_1.05fr]">
+          <section className="rounded-2xl border border-orange-100 bg-orange-50/50 p-4">
+            <h3 className="text-sm font-black text-slate-900">新增通知</h3>
+            <form onSubmit={submitAlert} className="mt-4 space-y-3">
+              <label className="block">
+                <span className="text-xs font-black text-slate-500">條件</span>
+                <select
+                  value={conditionType}
+                  onChange={(event) => setConditionType(event.target.value as AlertConditionType)}
+                  className="mt-1 h-11 w-full rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+                >
+                  <option value="price_above">價格高於</option>
+                  <option value="price_below">價格低於</option>
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="text-xs font-black text-slate-500">目標價格</span>
+                <input
+                  value={targetValue}
+                  onChange={(event) => setTargetValue(event.target.value)}
+                  inputMode="decimal"
+                  className="mt-1 h-11 w-full rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold tabular-nums text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+                  placeholder="例如 650"
+                />
+              </label>
+
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="text-xs font-black text-slate-500">模式</span>
+                  <select
+                    value={triggerMode}
+                    onChange={(event) => setTriggerMode(event.target.value as AlertTriggerMode)}
+                    className="mt-1 h-11 w-full rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+                  >
+                    <option value="once">once</option>
+                    <option value="repeat">repeat</option>
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="text-xs font-black text-slate-500">Cooldown</span>
+                  <input
+                    value={cooldownMinutes}
+                    onChange={(event) => setCooldownMinutes(event.target.value)}
+                    inputMode="numeric"
+                    className="mt-1 h-11 w-full rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold tabular-nums text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+                  />
+                </label>
+              </div>
+
+              {formError ? <p className="text-xs font-bold text-rose-700">{formError}</p> : null}
+
+              <button
+                type="submit"
+                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)]"
+              >
+                <Bell size={16} />
+                建立通知
+              </button>
+            </form>
+          </section>
+
+          <section>
+            <h3 className="text-sm font-black text-slate-900">通知清單</h3>
+            <div className="mt-3 space-y-2">
+              {sortAlerts(alerts).map((alert) => (
+                <div key={alert.alertId} className="rounded-2xl border border-slate-200 bg-white p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black text-slate-900">{formatAlertCondition(alert)}</p>
+                      <p className="mt-1 text-xs font-bold text-slate-400">
+                        {alert.triggerMode} · cooldown {alert.cooldownMinutes} 分鐘
+                      </p>
+                    </div>
+                    <span className={`rounded-md px-2 py-1 text-[10px] font-black ${alert.isEnabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                      {alert.isEnabled ? '啟用' : '停用'}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onToggle(alert.alertId)}
+                      className="h-9 flex-1 rounded-lg bg-slate-100 px-3 text-xs font-black text-slate-700 transition hover:bg-slate-200"
+                    >
+                      {alert.isEnabled ? '停用' : '啟用'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onRemove(alert.alertId)}
+                      className="h-9 rounded-lg bg-rose-50 px-3 text-xs font-black text-rose-700 transition hover:bg-rose-100"
+                    >
+                      移除
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {!alerts.length ? (
+                <div className="rounded-2xl border border-dashed border-slate-200 py-8 text-center text-sm font-bold text-slate-400">
+                  尚未設定到價通知
+                </div>
+              ) : null}
+            </div>
+
+            <h3 className="mt-5 text-sm font-black text-slate-900">最近觸發</h3>
+            <div className="mt-3 space-y-2">
+              {assetEvents.map((event) => (
+                <div key={`${event.alertId}-${event.triggeredAt}`} className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-500">
+                  {formatUpdatedAt(event.triggeredAt)} · {ALERT_CONDITION_LABELS[event.conditionType]} {event.targetValue}，觸發價 {formatPrice(event.triggeredPrice, quote?.currency)}
+                </div>
+              ))}
+              {!assetEvents.length ? (
+                <p className="rounded-xl bg-slate-50 px-3 py-3 text-xs font-bold text-slate-400">尚無觸發紀錄</p>
+              ) : null}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MarketAssetCard({
   item,
   quote,
+  alertCount,
   loading,
   isFirst,
   isLast,
   onOpen,
+  onOpenAlerts,
   onMove,
   onRemove,
 }: {
   item: MarketWatchItem;
   quote?: MarketQuote;
+  alertCount: number;
   loading: boolean;
   isFirst: boolean;
   isLast: boolean;
   onOpen: (item: MarketWatchItem) => void;
+  onOpenAlerts: (item: MarketWatchItem) => void;
   onMove: (assetId: string, direction: -1 | 1) => void;
   onRemove: (assetId: string) => void;
 }) {
@@ -312,7 +553,20 @@ function MarketAssetCard({
               {item.symbol} · {item.exchange}
             </p>
           </div>
-          <Bell size={18} className="mt-1 shrink-0 text-slate-300" aria-label="尚未設定通知" />
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenAlerts(item);
+            }}
+            className={`mt-1 inline-flex h-9 shrink-0 items-center gap-1 rounded-lg px-2 text-xs font-black transition ${
+              alertCount ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'bg-slate-100 text-slate-400 hover:text-slate-700'
+            }`}
+            aria-label="設定通知"
+          >
+            <Bell size={15} />
+            {alertCount || 0}
+          </button>
         </div>
 
         {loading && !quote ? (
@@ -343,7 +597,13 @@ function MarketAssetCard({
       </button>
 
       <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-        <span className="text-[11px] font-bold text-slate-400">通知：未設定</span>
+        <button
+          type="button"
+          onClick={() => onOpenAlerts(item)}
+          className="text-[11px] font-bold text-slate-400 transition hover:text-orange-700"
+        >
+          通知：{alertCount ? `${alertCount} 筆` : '未設定'}
+        </button>
         <div className="flex items-center gap-1">
           <button
             type="button"
@@ -442,10 +702,14 @@ export default function MarketWatchClient() {
   const [mounted, setMounted] = useState(false);
   const [items, setItems] = useState<MarketWatchItem[]>(() => createDefaultItems());
   const [quotes, setQuotes] = useState<Record<string, MarketQuote>>({});
+  const previousQuotesRef = useRef<Record<string, MarketQuote>>({});
   const [activeFilter, setActiveFilter] = useState<MarketAssetType | 'all'>('all');
   const [quotesLoading, setQuotesLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [alerts, setAlerts] = useState<PriceAlert[]>([]);
+  const [notificationEvents, setNotificationEvents] = useState<NotificationEvent[]>([]);
+  const notificationProvider = useMemo(() => new InAppNotificationProvider(), []);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [searchAssetType, setSearchAssetType] = useState<MarketAssetType | 'all'>('all');
@@ -453,6 +717,8 @@ export default function MarketWatchClient() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<MarketWatchItem | null>(null);
+  const [alertItem, setAlertItem] = useState<MarketWatchItem | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -460,6 +726,8 @@ export default function MarketWatchClient() {
     try {
       const storedItems = window.localStorage.getItem(STORAGE_KEY);
       const storedFilter = window.localStorage.getItem(FILTER_KEY);
+      const storedAlerts = window.localStorage.getItem(ALERTS_KEY);
+      const storedEvents = window.localStorage.getItem(NOTIFICATION_EVENTS_KEY);
 
       if (storedItems) {
         const parsed = JSON.parse(storedItems) as MarketWatchItem[];
@@ -468,6 +736,14 @@ export default function MarketWatchClient() {
 
       if (storedFilter && ASSET_FILTERS.some((filter) => filter.value === storedFilter)) {
         setActiveFilter(storedFilter as MarketAssetType | 'all');
+      }
+
+      if (storedAlerts) {
+        setAlerts(JSON.parse(storedAlerts) as PriceAlert[]);
+      }
+
+      if (storedEvents) {
+        setNotificationEvents(JSON.parse(storedEvents) as NotificationEvent[]);
       }
     } catch {
       setItems(createDefaultItems());
@@ -488,6 +764,30 @@ export default function MarketWatchClient() {
     window.localStorage.setItem(FILTER_KEY, activeFilter);
   }, [activeFilter, mounted]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    const id = window.setTimeout(() => {
+      window.localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts));
+    }, 200);
+
+    return () => window.clearTimeout(id);
+  }, [alerts, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const id = window.setTimeout(() => {
+      window.localStorage.setItem(NOTIFICATION_EVENTS_KEY, JSON.stringify(notificationEvents.slice(0, 100)));
+    }, 200);
+
+    return () => window.clearTimeout(id);
+  }, [mounted, notificationEvents]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = window.setTimeout(() => setToast(null), 4200);
+    return () => window.clearTimeout(id);
+  }, [toast]);
+
   const sortedItems = useMemo(
     () => [...items].sort((first, second) => first.sortOrder - second.sortOrder),
     [items],
@@ -497,6 +797,74 @@ export default function MarketWatchClient() {
     if (activeFilter === 'all') return sortedItems;
     return sortedItems.filter((item) => item.assetType === activeFilter);
   }, [activeFilter, sortedItems]);
+
+  const alertsByAssetId = useMemo(() => {
+    return alerts.reduce<Record<string, PriceAlert[]>>((groups, alert) => {
+      groups[alert.assetId] = [...(groups[alert.assetId] || []), alert];
+      return groups;
+    }, {});
+  }, [alerts]);
+
+  const evaluateAlerts = useCallback(async (nextQuotes: Record<string, MarketQuote>) => {
+    const previousQuotes = previousQuotesRef.current;
+    const now = new Date().toISOString();
+    const triggeredAlertIds = new Set<string>();
+    const newEvents: NotificationEvent[] = [];
+
+    for (const alert of alerts) {
+      if (!alert.isEnabled) continue;
+      const previousQuote = previousQuotes[alert.assetId];
+      const nextQuote = nextQuotes[alert.assetId];
+
+      if (!previousQuote || !nextQuote) continue;
+      if (isAlertCoolingDown(alert.lastTriggeredAt, alert.cooldownMinutes)) continue;
+
+      const previousValue = alert.conditionType.includes('percent')
+        ? previousQuote.changePercent
+        : previousQuote.currentPrice;
+      const currentValue = alert.conditionType.includes('percent')
+        ? nextQuote.changePercent
+        : nextQuote.currentPrice;
+
+      const crossed = didCrossAlertTarget({
+        previousPrice: previousValue,
+        currentPrice: currentValue,
+        conditionType: alert.conditionType,
+        targetValue: alert.targetValue,
+      });
+
+      if (!crossed || !isFiniteNumber(currentValue)) continue;
+
+      const pendingEvent = createNotificationEvent(alert, currentValue, now);
+      const deliveredEvent = await notificationProvider.send({
+        alert,
+        event: pendingEvent,
+        assetName: nextQuote.displayName,
+        symbol: nextQuote.symbol,
+        detailUrl: `/market-watch?asset=${encodeURIComponent(nextQuote.assetId)}`,
+      });
+
+      triggeredAlertIds.add(alert.alertId);
+      newEvents.push(deliveredEvent);
+    }
+
+    if (!newEvents.length) return;
+
+    setNotificationEvents((current) => [...newEvents, ...current].slice(0, 100));
+    setAlerts((current) =>
+      current.map((alert) => {
+        if (!triggeredAlertIds.has(alert.alertId)) return alert;
+
+        return {
+          ...alert,
+          isEnabled: alert.triggerMode === 'once' ? false : alert.isEnabled,
+          lastTriggeredAt: now,
+          updatedAt: now,
+        };
+      }),
+    );
+    setToast(`已觸發 ${newEvents.length} 筆到價通知`);
+  }, [alerts, notificationProvider]);
 
   const refreshQuotes = useCallback(async () => {
     if (!sortedItems.length) {
@@ -517,13 +885,15 @@ export default function MarketWatchClient() {
       }
 
       setQuotes(payload.data);
+      await evaluateAlerts(payload.data);
+      previousQuotesRef.current = payload.data;
       setUpdatedAt(new Date().toISOString());
     } catch {
       setError('市場資料更新失敗，請稍後再試。');
     } finally {
       setQuotesLoading(false);
     }
-  }, [sortedItems]);
+  }, [evaluateAlerts, sortedItems]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -578,6 +948,7 @@ export default function MarketWatchClient() {
 
   const removeAsset = useCallback((assetId: string) => {
     setItems((current) => current.filter((item) => item.assetId !== assetId).map((item, index) => ({ ...item, sortOrder: index })));
+    setAlerts((current) => current.filter((alert) => alert.assetId !== assetId));
   }, []);
 
   const moveAsset = useCallback((assetId: string, direction: -1 | 1) => {
@@ -601,6 +972,54 @@ export default function MarketWatchClient() {
     setSearchError(null);
     setSearchResults(searchAssetType === 'fx' ? defaultFxSearchResults() : []);
   };
+
+  const createAlert = useCallback(
+    (item: MarketWatchItem, input: {
+      conditionType: AlertConditionType;
+      targetValue: number;
+      triggerMode: AlertTriggerMode;
+      cooldownMinutes: number;
+    }) => {
+      const now = new Date().toISOString();
+      setAlerts((current) => [
+        ...current,
+        {
+          alertId: createAlertId(item.assetId),
+          userId: LOCAL_USER_ID,
+          assetId: item.assetId,
+          conditionType: input.conditionType,
+          targetValue: input.targetValue,
+          isEnabled: true,
+          triggerMode: input.triggerMode,
+          cooldownMinutes: input.cooldownMinutes,
+          lastTriggeredAt: null,
+          createdAt: now,
+          updatedAt: now,
+        },
+      ]);
+      setToast('到價通知已建立');
+    },
+    [],
+  );
+
+  const toggleAlert = useCallback((alertId: string) => {
+    const now = new Date().toISOString();
+    setAlerts((current) =>
+      current.map((alert) =>
+        alert.alertId === alertId
+          ? {
+              ...alert,
+              isEnabled: !alert.isEnabled,
+              updatedAt: now,
+            }
+          : alert,
+      ),
+    );
+  }, []);
+
+  const removeAlert = useCallback((alertId: string) => {
+    setAlerts((current) => current.filter((alert) => alert.alertId !== alertId));
+  }, []);
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_44%,#f8fafc_100%)] px-4 pb-16 pt-10 text-slate-900 sm:px-6">
@@ -667,6 +1086,12 @@ export default function MarketWatchClient() {
           </div>
         ) : null}
 
+        {toast ? (
+          <div className="mb-5 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700 ring-1 ring-emerald-100">
+            {toast}
+          </div>
+        ) : null}
+
         {!mounted ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2].map((item) => (
@@ -680,10 +1105,12 @@ export default function MarketWatchClient() {
                 key={item.assetId}
                 item={item}
                 quote={quotes[item.assetId]}
+                alertCount={(alertsByAssetId[item.assetId] || []).length}
                 loading={quotesLoading}
                 isFirst={index === 0}
                 isLast={index === visibleItems.length - 1}
                 onOpen={setSelectedItem}
+                onOpenAlerts={setAlertItem}
                 onMove={moveAsset}
                 onRemove={removeAsset}
               />
@@ -726,6 +1153,19 @@ export default function MarketWatchClient() {
           item={selectedItem}
           quote={quotes[selectedItem.assetId]}
           onClose={() => setSelectedItem(null)}
+        />
+      ) : null}
+
+      {alertItem ? (
+        <AlertDialog
+          item={alertItem}
+          quote={quotes[alertItem.assetId]}
+          alerts={alertsByAssetId[alertItem.assetId] || []}
+          events={notificationEvents}
+          onClose={() => setAlertItem(null)}
+          onCreate={(input) => createAlert(alertItem, input)}
+          onToggle={toggleAlert}
+          onRemove={removeAlert}
         />
       ) : null}
     </div>

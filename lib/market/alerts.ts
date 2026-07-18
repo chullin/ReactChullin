@@ -8,11 +8,11 @@ export function didCrossAlertTarget({
 }: PriceCrossingInput) {
   if (previousPrice === null || currentPrice === null) return false;
 
-  if (conditionType === 'price_above') {
+  if (conditionType === 'price_above' || conditionType === 'change_percent_above') {
     return previousPrice <= targetValue && currentPrice > targetValue;
   }
 
-  if (conditionType === 'price_below') {
+  if (conditionType === 'price_below' || conditionType === 'change_percent_below') {
     return previousPrice >= targetValue && currentPrice < targetValue;
   }
 
