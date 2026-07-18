@@ -10,3 +10,9 @@
 - Prefer one logical commit per completed task, not one commit per small edit.
 - Do not automatically push. Push only when the user asks.
 - Never commit secrets, private keys, `.env` files, credentials, or generated build cache files.
+
+## Deletion Safety
+
+- Never permanently delete project files or user files directly.
+- If something must be removed, move it to the operating system Trash first so it can be recovered.
+- Avoid destructive cleanup commands. Do not use direct deletion commands such as `rm`, `rm -rf`, or equivalent permanent removal unless the user explicitly overrides this rule for that exact action.
