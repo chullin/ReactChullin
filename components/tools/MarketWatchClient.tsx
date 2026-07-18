@@ -19,8 +19,10 @@ import {
 import type {
   AlertConditionType,
   AlertTriggerMode,
+  MarketChartPoint,
   MarketAssetType,
   MarketQuote,
+  MarketRange,
   MarketSearchResult,
   MarketWatchItem,
   NotificationEvent,
@@ -42,6 +44,12 @@ type SearchResponse = {
   error?: string;
 };
 
+type TimeSeriesResponse = {
+  success?: boolean;
+  data?: MarketChartPoint[];
+  error?: string;
+};
+
 const STORAGE_KEY = 'market-watchlist:v1';
 const FILTER_KEY = 'market-watchlist-filter:v1';
 const ALERTS_KEY = 'market-watchlist-alerts:v1';
@@ -54,6 +62,8 @@ const ASSET_FILTERS: { value: MarketAssetType | 'all'; label: string }[] = [
   { value: 'us_stock', label: '美股' },
   { value: 'fx', label: '外匯' },
 ];
+
+const CHART_RANGES: MarketRange[] = ['1D', '5D', '1M', '6M', '1Y'];
 
 const ASSET_TYPE_LABELS: Record<MarketAssetType, string> = {
   tw_stock: '台股',
@@ -179,6 +189,46 @@ function Sparkline({ quote }: { quote?: MarketQuote }) {
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full overflow-visible">
       <path d={path} fill="none" stroke={tone.accent} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
     </svg>
+  );
+}
+
+function PriceChart({ points, accent }: { points: MarketChartPoint[]; accent: string }) {
+  const values = points.map((point) => point.price ?? point.close).filter(isFiniteNumber);
+
+  if (values.length < 2) {
+    return (
+      <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-sm font-bold text-slate-400">
+        暫無圖表資料
+      </div>
+    );
+  }
+
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const path = values
+    .map((value, index) => {
+      const x = 3 + (index / (values.length - 1)) * 94;
+      const y = 10 + (1 - (value - min) / range) * 76;
+      return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
+    })
+    .join(' ');
+  const first = values[0];
+  const last = values.at(-1);
+
+  return (
+    <div className="relative h-full overflow-hidden rounded-xl bg-white">
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full">
+        <path d={path} fill="none" stroke={accent} strokeWidth="2.2" vectorEffect="non-scaling-stroke" />
+        <line x1="3" x2="97" y1="86" y2="86" stroke="#e2e8f0" strokeWidth="0.8" vectorEffect="non-scaling-stroke" />
+      </svg>
+      <div className="absolute left-3 top-3 rounded-lg bg-white/90 px-2 py-1 text-[11px] font-black tabular-nums text-slate-500 shadow-sm ring-1 ring-slate-100">
+        {formatPrice(first)} → {formatPrice(last)}
+      </div>
+      <div className="absolute bottom-3 right-3 rounded-lg bg-white/90 px-2 py-1 text-[11px] font-black tabular-nums text-slate-500 shadow-sm ring-1 ring-slate-100">
+        {formatPrice(min)} - {formatPrice(max)}
+      </div>
+    </div>
   );
 }
 
@@ -647,6 +697,41 @@ function DetailDialog({
   onClose: () => void;
 }) {
   const tone = quoteTone(quote);
+  const [range, setRange] = useState<MarketRange>('1M');
+  const [points, setPoints] = useState<MarketChartPoint[]>(quote?.chartData || []);
+  const [chartLoading, setChartLoading] = useState(false);
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadTimeSeries() {
+      setChartLoading(true);
+      setChartError(null);
+
+      try {
+        const payload = await fetchJson<TimeSeriesResponse>(
+          `/api/market/timeseries?assetId=${encodeURIComponent(item.assetId)}&range=${range}`,
+        );
+
+        if (!cancelled) {
+          setPoints(payload.success && payload.data ? payload.data : []);
+        }
+      } catch {
+        if (!cancelled) {
+          setChartError('圖表資料讀取失敗。');
+          setPoints([]);
+        }
+      } finally {
+        if (!cancelled) setChartLoading(false);
+      }
+    }
+
+    loadTimeSeries();
+    return () => {
+      cancelled = true;
+    };
+  }, [item.assetId, range]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm" onClick={onClose}>
@@ -690,8 +775,31 @@ function DetailDialog({
           </div>
         </div>
 
-        <div className="h-64 rounded-2xl border border-slate-200 bg-white p-4">
-          <Sparkline quote={quote} />
+        <div className="mb-3 flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 ring-1 ring-orange-100">
+          {CHART_RANGES.map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => setRange(option)}
+              className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-black transition ${
+                range === option ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+
+        <div className="h-72 rounded-2xl border border-slate-200 bg-white p-4">
+          {chartLoading ? (
+            <div className="h-full animate-pulse rounded-xl bg-orange-50" />
+          ) : chartError ? (
+            <div className="flex h-full items-center justify-center rounded-xl bg-rose-50 text-sm font-bold text-rose-700">
+              {chartError}
+            </div>
+          ) : (
+            <PriceChart points={points} accent={tone.accent} />
+          )}
         </div>
       </div>
     </div>
