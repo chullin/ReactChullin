@@ -17,7 +17,7 @@ export type MarketDataProvider = {
 };
 
 export function marketAssetId(assetType: MarketAssetType, symbol: string, exchange: string) {
-  return `${assetType}:${exchange}:${symbol}`.toUpperCase();
+  return `${assetType}:${exchange}:${symbol.toUpperCase()}`;
 }
 
 export function isFiniteMarketNumber(value: unknown): value is number {

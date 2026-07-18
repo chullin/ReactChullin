@@ -39,7 +39,7 @@ function parseAssetToken(token: string): MarketAssetRequest | null {
 }
 
 function quoteKey(asset: MarketAssetRequest) {
-  return `${asset.assetType}:${asset.exchange}:${asset.symbol}`.toUpperCase();
+  return `${asset.assetType}:${asset.exchange}:${asset.symbol}`;
 }
 
 async function fetchStockQuotes(request: NextRequest, assets: MarketAssetRequest[]) {
