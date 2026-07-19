@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { MarketAssetType, MarketQuote } from '@/lib/market/types';
-import { defaultFxPairs, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
+import { defaultFxPairs, fetchFxQuote, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
 import {
   assetTypeToStockMarket,
   normalizeStockSymbol,
@@ -71,16 +71,26 @@ async function fetchStockQuotes(request: NextRequest, assets: MarketAssetRequest
   }, {});
 }
 
-function getFxQuotes(assets: MarketAssetRequest[]) {
+async function getFxQuotes(assets: MarketAssetRequest[]) {
   const pairMap = new Map(defaultFxPairs.map((pair) => [normalizeFxSymbol(pair.symbol), pair]));
+  const entries = await Promise.all(
+    assets.map(async (asset) => {
+      if (asset.assetType !== 'fx') return null;
 
-  return assets.reduce<Record<string, MarketQuote>>((quotes, asset) => {
-    if (asset.assetType !== 'fx') return quotes;
+      const pair = pairMap.get(normalizeFxSymbol(asset.symbol));
+      if (!pair) return null;
 
-    const pair = pairMap.get(normalizeFxSymbol(asset.symbol));
-    if (!pair) return quotes;
+      try {
+        return [quoteKey(asset), await fetchFxQuote(pair)] as const;
+      } catch {
+        return [quoteKey(asset), seedFxQuote(pair)] as const;
+      }
+    }),
+  );
 
-    quotes[quoteKey(asset)] = seedFxQuote(pair);
+  return entries.reduce<Record<string, MarketQuote>>((quotes, entry) => {
+    if (!entry) return quotes;
+    quotes[entry[0]] = entry[1];
     return quotes;
   }, {});
 }
@@ -107,7 +117,7 @@ export async function GET(request: NextRequest) {
   try {
     const [stockQuotes, fxQuotes] = await Promise.all([
       fetchStockQuotes(request, assets),
-      Promise.resolve(getFxQuotes(assets)),
+      getFxQuotes(assets),
     ]);
 
     return NextResponse.json({

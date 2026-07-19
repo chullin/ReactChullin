@@ -2,7 +2,7 @@ export type MarketAssetType = 'tw_stock' | 'us_stock' | 'fx';
 
 export type MarketStatus = 'open' | 'closed' | 'pre_market' | 'after_hours' | 'unknown';
 
-export type MarketRange = '1D' | '5D' | '1M' | '6M' | '1Y';
+export type MarketRange = '1D' | '5D' | '1M' | '6M' | '1Y' | '5Y' | 'MAX';
 
 export type MarketInterval = '1m' | '5m' | '1h' | '1d';
 

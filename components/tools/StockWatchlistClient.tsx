@@ -82,6 +82,34 @@ type BatchQuoteResponse = {
   data?: Record<string, StockQuote>;
 };
 
+type MarketQuoteResponse = {
+  success?: boolean;
+  data?: Record<string, {
+    symbol: string;
+    displayName?: string;
+    currentPrice?: number | null;
+    previousClose?: number | null;
+    priceChange?: number | null;
+    changePercent?: number | null;
+    currency?: string;
+    exchange?: string;
+    chartData?: { timestamp: string; price: number | null }[];
+  }>;
+};
+
+type MarketTimeseriesResponse = {
+  success?: boolean;
+  data?: {
+    timestamp: string;
+    price: number | null;
+    open?: number | null;
+    high?: number | null;
+    low?: number | null;
+    close?: number | null;
+    volume?: number | null;
+  }[];
+};
+
 type HistoryPoint = {
   date: string;
   open: number | null;
@@ -134,10 +162,7 @@ type PeriodOption = {
 
 type FxPeriodOption = {
   label: string;
-  days?: number;
-  months?: number;
-  years?: number;
-  all?: boolean;
+  range: '1D' | '5D' | '1M' | '1Y' | '5Y' | 'MAX';
 };
 
 const DEFAULT_LISTS: WatchlistDef[] = [
@@ -185,12 +210,12 @@ const VRVP_PERIODS: PeriodOption[] = [
   { label: '5Y', months: 60 },
 ] satisfies PeriodOption[];
 const FX_PERIODS: FxPeriodOption[] = [
-  { label: '1天', days: 1 },
-  { label: '5天', days: 5 },
-  { label: '1個月', months: 1 },
-  { label: '1年', years: 1 },
-  { label: '5年', years: 5 },
-  { label: '最久', all: true },
+  { label: '1天', range: '1D' },
+  { label: '5天', range: '5D' },
+  { label: '1個月', range: '1M' },
+  { label: '1年', range: '1Y' },
+  { label: '5年', range: '5Y' },
+  { label: '最久', range: 'MAX' },
 ] satisfies FxPeriodOption[];
 
 function defaultFxItems(): StockItem[] {
@@ -280,6 +305,11 @@ function apiStockToken(symbol: string, market: Market) {
   return `${symbol}:${market}`;
 }
 
+function marketAssetToken(symbol: string, market: Market) {
+  if (market === '外匯') return `fx:FX:${symbol}`;
+  return `${market === '台股' ? 'tw_stock' : 'us_stock'}:${market}:${symbol}`;
+}
+
 function isStockMarket(market: Market): market is '美股' | '台股' {
   return market === '美股' || market === '台股';
 }
@@ -299,6 +329,21 @@ function fxQuoteToStockQuote(symbol: string): StockQuote | null {
     previousClose: quote.previousClose,
     currency: quote.currency,
     sparkline: quote.chartData.map((point) => point.price).filter(isFiniteNumber),
+    quoteType: 'FX',
+    exchange: quote.exchange,
+  };
+}
+
+function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>[string]): StockQuote {
+  return {
+    symbol: quote.symbol,
+    longName: quote.displayName,
+    price: quote.currentPrice,
+    previousClose: quote.previousClose,
+    change: quote.priceChange,
+    changePercent: quote.changePercent,
+    currency: quote.currency,
+    sparkline: (quote.chartData || []).map((point) => point.price).filter(isFiniteNumber),
     quoteType: 'FX',
     exchange: quote.exchange,
   };
@@ -398,58 +443,6 @@ function currencyDisplayName(code: string) {
   };
 
   return names[code] || code;
-}
-
-function hashString(value: string) {
-  return value.split('').reduce((hash, char) => ((hash << 5) - hash + char.charCodeAt(0)) | 0, 0);
-}
-
-function fxPeriodDurationMs(period: FxPeriodOption) {
-  const dayMs = 24 * 60 * 60_000;
-
-  if (period.all) return 10 * 365 * dayMs;
-  if (period.years) return period.years * 365 * dayMs;
-  if (period.months) return period.months * 30 * dayMs;
-  return (period.days || 1) * dayMs;
-}
-
-function fxPointCount(period: FxPeriodOption) {
-  if (period.days === 1) return 72;
-  if (period.days === 5) return 100;
-  if (period.months) return 120;
-  if (period.years === 1) return 160;
-  if (period.years === 5) return 220;
-  return 260;
-}
-
-function makeFxHistory(symbol: string, quote: StockQuote | undefined, period: FxPeriodOption): HistoryPoint[] {
-  const currentPrice = quote?.price;
-  if (!isFiniteNumber(currentPrice)) return [];
-
-  const previousClose = isFiniteNumber(quote?.previousClose) ? quote.previousClose : currentPrice;
-  const count = fxPointCount(period);
-  const duration = fxPeriodDurationMs(period);
-  const seed = Math.abs(hashString(symbol));
-  const amplitude = currentPrice * (period.days ? 0.0025 : period.months ? 0.012 : period.years === 1 ? 0.035 : 0.08);
-  const trendStart = previousClose - (currentPrice - previousClose) * (period.days ? 1.2 : period.months ? 6 : 18);
-  const now = Date.now();
-
-  return Array.from({ length: count }, (_item, index) => {
-    const ratio = count <= 1 ? 1 : index / (count - 1);
-    const date = new Date(now - duration + duration * ratio);
-    const wave = Math.sin(ratio * Math.PI * (period.days ? 4 : period.months ? 8 : 18) + seed) * amplitude;
-    const smallWave = Math.cos(ratio * Math.PI * (period.days ? 13 : 31) + seed / 7) * amplitude * 0.45;
-    const close = index === count - 1 ? currentPrice : trendStart + (currentPrice - trendStart) * ratio + wave + smallWave;
-
-    return {
-      date: date.toISOString(),
-      open: close,
-      high: close,
-      low: close,
-      close,
-      volume: null,
-    };
-  });
 }
 
 function periodStart(period: { months?: number; ytd?: boolean }) {
@@ -1583,16 +1576,56 @@ function FxDetailPanel({
   loading: boolean;
 }) {
   const [activePeriod, setActivePeriod] = useState(FX_PERIODS[1]);
+  const [chartPoints, setChartPoints] = useState<HistoryPoint[]>(points);
+  const [chartLoading, setChartLoading] = useState(false);
   const { base, quote: quoteCurrency } = splitCurrencyPair(item.symbol);
   const baseName = currencyDisplayName(base);
   const quoteName = currencyDisplayName(quoteCurrency);
   const rate = quote?.price || null;
-  const chartPoints = useMemo(
-    () => makeFxHistory(item.symbol, quote, activePeriod),
-    [activePeriod, item.symbol, quote],
-  );
   const updatedAt = chartPoints.at(-1)?.date || points.at(-1)?.date;
   const reverseRate = isFiniteNumber(rate) && rate !== 0 ? 1 / rate : null;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFxSeries() {
+      setChartLoading(true);
+
+      try {
+        const assetId = marketAssetToken(item.symbol, item.market);
+        const payload = await fetchJson<MarketTimeseriesResponse>(
+          `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(activePeriod.range)}`,
+        );
+        const nextPoints = (payload.data || [])
+          .filter((point) => isFiniteNumber(point.price))
+          .map((point) => {
+            const price = point.price as number;
+
+            return {
+              date: point.timestamp,
+              open: point.open ?? price,
+              high: point.high ?? price,
+              low: point.low ?? price,
+              close: point.close ?? price,
+              volume: point.volume ?? null,
+            };
+          });
+
+        if (!cancelled) {
+          setChartPoints(nextPoints.length ? nextPoints : points);
+        }
+      } catch {
+        if (!cancelled) setChartPoints(points);
+      } finally {
+        if (!cancelled) setChartLoading(false);
+      }
+    }
+
+    loadFxSeries();
+    return () => {
+      cancelled = true;
+    };
+  }, [activePeriod, item.market, item.symbol, points]);
 
   return (
     <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
@@ -1662,7 +1695,7 @@ function FxDetailPanel({
           </div>
         </div>
         <DetailChart mode="line" points={chartPoints} periodLabel={activePeriod.label} />
-        {loading ? (
+        {loading || chartLoading ? (
           <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
             詳細資料載入中...
           </div>
@@ -2385,8 +2418,19 @@ export default function StockWatchlistClient() {
     setQuotesLoading(true);
 
     try {
-      const fxQuotes = activeItems.reduce<Record<string, StockQuote>>((acc, item) => {
-        if (item.market !== '外匯') return acc;
+      const fxItems = activeItems.filter((item) => item.market === '外匯');
+      const fxQuotes = fxItems.length
+        ? Object.entries(
+            (await fetchJson<MarketQuoteResponse>(
+              `/api/market/quotes?assets=${encodeURIComponent(fxItems.map((item) => marketAssetToken(item.symbol, item.market)).join(','))}`,
+            )).data || {},
+          ).reduce<Record<string, StockQuote>>((acc, [_key, quote]) => {
+            acc[stockKey(quote.symbol, '外匯')] = marketQuoteToStockQuote(quote);
+            return acc;
+          }, {})
+        : {};
+      const fallbackFxQuotes = fxItems.reduce<Record<string, StockQuote>>((acc, item) => {
+        if (fxQuotes[stockKey(item.symbol, item.market)]) return acc;
         const quote = fxQuoteToStockQuote(item.symbol);
         if (quote) acc[stockKey(item.symbol, item.market)] = quote;
         return acc;
@@ -2396,7 +2440,7 @@ export default function StockWatchlistClient() {
             `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
           )).data || {}
         : {};
-      const nextQuotes = { ...stockQuotes, ...fxQuotes };
+      const nextQuotes = { ...stockQuotes, ...fallbackFxQuotes, ...fxQuotes };
       const previousQuotes = previousQuotesRef.current;
       const now = new Date();
       const triggeredAlertIds = new Set<string>();

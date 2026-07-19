@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { MarketAssetType, MarketChartPoint, MarketRange } from '@/lib/market/types';
-import { defaultFxPairs, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
+import { defaultFxPairs, fetchFxTimeSeries, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
 import { assetTypeToStockMarket, normalizeStockSymbol } from '@/lib/market/providers/stockMarketProvider';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +25,8 @@ const rangeDays: Record<MarketRange, number> = {
   '1M': 31,
   '6M': 183,
   '1Y': 366,
+  '5Y': 5 * 366,
+  MAX: 20 * 366,
 };
 
 function parseAssetId(assetId: string) {
@@ -42,7 +44,7 @@ function parseAssetId(assetId: string) {
 }
 
 function parseRange(value: string | null): MarketRange {
-  if (value === '1D' || value === '5D' || value === '1M' || value === '6M' || value === '1Y') {
+  if (value === '1D' || value === '5D' || value === '1M' || value === '6M' || value === '1Y' || value === '5Y' || value === 'MAX') {
     return value;
   }
 
@@ -54,29 +56,14 @@ function filterByRange(points: MarketChartPoint[], range: MarketRange) {
   return points.filter((point) => Date.parse(point.timestamp) >= earliest);
 }
 
-function fxSeries(symbol: string, range: MarketRange) {
+async function fxSeries(symbol: string, range: MarketRange) {
   const pair = defaultFxPairs.find((item) => normalizeFxSymbol(item.symbol) === normalizeFxSymbol(symbol));
   if (!pair) return [];
 
-  const quote = seedFxQuote(pair);
-  const days = rangeDays[range];
-  const pointCount = range === '1D' ? 24 : range === '5D' ? 30 : range === '1M' ? 31 : range === '6M' ? 62 : 80;
-  const stepMs = (days * 24 * 60 * 60_000) / Math.max(pointCount - 1, 1);
-  const amplitude = Math.max(Math.abs(pair.currentPrice - pair.previousClose), pair.currentPrice * 0.002);
+  const points = await fetchFxTimeSeries(pair.symbol, range);
+  if (points.length) return points;
 
-  const points: MarketChartPoint[] = Array.from({ length: pointCount }, (_, index) => {
-    const ratio = index / Math.max(pointCount - 1, 1);
-    const wave = Math.sin(ratio * Math.PI * 2) * amplitude * 0.42;
-    const drift = pair.previousClose + (pair.currentPrice - pair.previousClose) * ratio;
-    const price = index === pointCount - 1 ? pair.currentPrice : drift + wave;
-
-    return {
-      timestamp: new Date(Date.now() - (pointCount - index - 1) * stepMs).toISOString(),
-      price,
-    };
-  });
-
-  return [...points, ...quote.chartData.slice(-1)];
+  return seedFxQuote(pair).chartData;
 }
 
 async function stockSeries(request: NextRequest, assetId: string, range: MarketRange) {
@@ -129,7 +116,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = asset.assetType === 'fx' ? fxSeries(asset.symbol, range) : await stockSeries(request, assetId, range);
+    const data = asset.assetType === 'fx' ? await fxSeries(asset.symbol, range) : await stockSeries(request, assetId, range);
     return NextResponse.json({ success: true, data });
   } catch {
     return NextResponse.json(
