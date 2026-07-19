@@ -102,6 +102,16 @@ type VrvpProfile = {
   val: number | null;
 };
 
+type StaffLine = {
+  label: string;
+  startValue: number;
+  midValue: number;
+  endValue: number;
+  offset: number;
+  color: string;
+  tagColor: string;
+};
+
 type StockDetails = {
   quote?: StockQuote | null;
   news?: { title: string; url: string; pubDate?: string; source?: string }[];
@@ -543,19 +553,48 @@ function makeCloseMarker(value: number, min: number, max: number, height = 100) 
   };
 }
 
-function calculateStaff(values: number[]) {
-  if (!values.length) return null;
-  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
-  const variance = values.reduce((sum, value) => sum + (value - average) ** 2, 0) / values.length;
-  const stdev = Math.sqrt(variance);
+function calculateStaff(points: HistoryPoint[]): StaffLine[] | null {
+  const valid = points
+    .map((point, index) => ({ index, close: point.close }))
+    .filter((point): point is { index: number; close: number } => isFiniteNumber(point.close));
 
-  return [
-    { label: '+2σ', value: average + stdev * 2 },
-    { label: '+1σ', value: average + stdev },
-    { label: '均線', value: average },
-    { label: '-1σ', value: average - stdev },
-    { label: '-2σ', value: average - stdev * 2 },
+  if (!valid.length) return null;
+
+  const count = valid.length;
+  const averageX = valid.reduce((sum, point) => sum + point.index, 0) / count;
+  const averageY = valid.reduce((sum, point) => sum + point.close, 0) / count;
+  const varianceX = valid.reduce((sum, point) => sum + (point.index - averageX) ** 2, 0);
+  const covariance = valid.reduce((sum, point) => sum + (point.index - averageX) * (point.close - averageY), 0);
+  const slope = varianceX === 0 ? 0 : covariance / varianceX;
+  const intercept = averageY - slope * averageX;
+  const residualVariance = valid.reduce((sum, point) => {
+    const trendValue = intercept + slope * point.index;
+    return sum + (point.close - trendValue) ** 2;
+  }, 0) / count;
+  const residualStdev = Math.sqrt(residualVariance);
+  const fallbackBand = Math.max(Math.abs(averageY) * 0.04, 1);
+  const band = residualStdev > 0 ? residualStdev : fallbackBand;
+  const startIndex = valid[0].index;
+  const endIndex = valid.at(-1)?.index ?? startIndex;
+  const midIndex = startIndex + (endIndex - startIndex) * 0.5;
+  const levels = [
+    { label: '+2σ', offset: 2, color: '#2563eb', tagColor: '#2563eb' },
+    { label: '+1σ', offset: 1, color: '#0891b2', tagColor: '#0284c7' },
+    { label: '零線', offset: 0, color: '#f97316', tagColor: '#f97316' },
+    { label: '-1σ', offset: -1, color: '#10b981', tagColor: '#10b981' },
+    { label: '-2σ', offset: -2, color: '#4ade80', tagColor: '#4ade80' },
   ];
+
+  return levels.map((level) => {
+    const lineOffset = band * level.offset;
+
+    return {
+      ...level,
+      startValue: intercept + slope * startIndex + lineOffset,
+      midValue: intercept + slope * midIndex + lineOffset,
+      endValue: intercept + slope * endIndex + lineOffset,
+    };
+  });
 }
 
 function calculateVrvp(points: HistoryPoint[], binCount = 56): VrvpProfile {
@@ -746,10 +785,10 @@ function DetailChart({
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
   };
-  const staff = calculateStaff(values);
+  const staff = calculateStaff(visiblePoints);
   const vrvpProfile = calculateVrvp(visiblePoints);
   const rawPriceDomain = isCandlestickMode ? getPriceDomain(visiblePoints) : closeDomain;
-  const staffValues = mode === 'staff' && staff ? staff.map((line) => line.value) : [];
+  const staffValues = mode === 'staff' && staff ? staff.flatMap((line) => [line.startValue, line.midValue, line.endValue]) : [];
   const vrvpValues = mode === 'vrvp'
     ? [
         vrvpProfile.vah,
@@ -776,6 +815,7 @@ function DetailChart({
   const priceTicks = makePriceTicks(min, max, priceAxis.step, chartSize.height);
   const plotWidth = Math.max(1, chartRight(chartSize.width) - CHART_BOUNDS.left);
   const candleWidth = clamp((plotWidth / Math.max(visiblePoints.length, 1)) * 0.62, 1, 8);
+  const staffLabelX = CHART_BOUNDS.left + plotWidth * 0.5;
   const hasCandles = visiblePoints.some((point) => getCandlePoint(point));
   const closeMarker = isCandlestickMode && isFiniteNumber(last) ? makeCloseMarker(last, min, max, chartSize.height) : null;
   const canPan = isCandlestickMode && range.end - range.start < 0.999 && points.length > visiblePoints.length;
@@ -1178,19 +1218,66 @@ function DetailChart({
                 })
               : null}
             {mode === 'staff' && staff
-              ? staff.map((line, index) => (
-                  <line
-                    key={line.label}
-                    x1={String(CHART_BOUNDS.left)}
-                    x2={String(chartRight(chartSize.width))}
-                    y1={String(horizontalLineY(line.value, min, max, chartSize.height))}
-                    y2={String(horizontalLineY(line.value, min, max, chartSize.height))}
-                    stroke={index === 2 ? '#c2410c' : '#fdba74'}
-                    strokeDasharray={index === 2 ? '0' : '3 3'}
-                    strokeWidth={index === 2 ? '1.4' : '1'}
-                    vectorEffect="non-scaling-stroke"
-                  />
-                ))
+              ? staff.map((line) => {
+                  const startY = horizontalLineY(line.startValue, min, max, chartSize.height);
+                  const midY = horizontalLineY(line.midValue, min, max, chartSize.height);
+                  const endY = horizontalLineY(line.endValue, min, max, chartSize.height);
+                  const levelTagWidth = line.label === '零線' ? 34 : 38;
+                  const valueTagWidth = 70;
+
+                  return (
+                    <g key={line.label}>
+                      <line
+                        x1={String(CHART_BOUNDS.left)}
+                        x2={String(chartRight(chartSize.width))}
+                        y1={String(startY)}
+                        y2={String(endY)}
+                        stroke={line.color}
+                        strokeWidth={line.offset === 0 ? '1.45' : '1.25'}
+                        opacity={line.offset === 0 ? '0.95' : '0.9'}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <rect
+                        x={String(clamp(staffLabelX - levelTagWidth / 2, CHART_BOUNDS.left + 8, chartRight(chartSize.width) - levelTagWidth - 8))}
+                        y={String(midY - 10)}
+                        width={String(levelTagWidth)}
+                        height="20"
+                        rx="4"
+                        fill={line.tagColor}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <text
+                        x={String(clamp(staffLabelX, CHART_BOUNDS.left + 8 + levelTagWidth / 2, chartRight(chartSize.width) - 8 - levelTagWidth / 2))}
+                        y={String(midY)}
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        className="fill-white text-[10px] font-black"
+                        vectorEffect="non-scaling-stroke"
+                      >
+                        {line.label}
+                      </text>
+                      <rect
+                        x={String(chartRight(chartSize.width) + 4)}
+                        y={String(endY - 10)}
+                        width={String(valueTagWidth)}
+                        height="20"
+                        rx="4"
+                        fill={line.tagColor}
+                        vectorEffect="non-scaling-stroke"
+                      />
+                      <text
+                        x={String(chartRight(chartSize.width) + 4 + valueTagWidth / 2)}
+                        y={String(endY)}
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        className="fill-white text-[11px] font-black"
+                        vectorEffect="non-scaling-stroke"
+                      >
+                        {formatPrice(line.endValue)}
+                      </text>
+                    </g>
+                  );
+                })
               : null}
             {!isCandlestickMode ? (
               <path d={path} fill="none" stroke={stroke} strokeWidth="2.25" vectorEffect="non-scaling-stroke" />
@@ -1235,7 +1322,7 @@ function DetailChart({
           {staff.map((line) => (
             <div key={line.label} className="rounded-xl bg-slate-50 px-2 py-2 text-center">
               <p className="text-[10px] font-black text-slate-400">{line.label}</p>
-              <p className="mt-1 text-xs font-black tabular-nums text-slate-700">{formatPrice(line.value)}</p>
+              <p className="mt-1 text-xs font-black tabular-nums text-slate-700">{formatPrice(line.endValue)}</p>
             </div>
           ))}
         </div>
