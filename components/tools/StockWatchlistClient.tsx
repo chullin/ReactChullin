@@ -740,7 +740,7 @@ function DetailChart({
   } | null>(null);
   const [isDraggingChart, setIsDraggingChart] = useState(false);
   const chartRef = useRef<HTMLDivElement | null>(null);
-  const pinchRef = useRef<{ distance: number; centerRatio: number; range: { start: number; end: number } } | null>(null);
+  const pinchRef = useRef<{ distance: number; centerX: number; centerRatio: number; range: { start: number; end: number } } | null>(null);
   const dragRef = useRef<{ pointerId: number; startX: number; range: { start: number; end: number } } | null>(null);
 
   useEffect(() => {
@@ -856,14 +856,31 @@ function DetailChart({
     return () => element.removeEventListener('wheel', handleNativeWheel);
   }, [points.length, updateZoom]);
 
+  const setRangeFromTouch = useCallback((initial: NonNullable<typeof pinchRef.current>, distance: number, centerX: number) => {
+    const initialSpan = initial.range.end - initial.range.start;
+    const scale = distance / Math.max(initial.distance, 1);
+    const span = clamp(initialSpan / Math.max(scale, 0.2), Math.min(1, 24 / Math.max(points.length, 1)), 1);
+    const anchorRatio = clamp(initial.centerRatio, 0, 1);
+    const anchor = initial.range.start + initialSpan * anchorRatio;
+    const deltaRatio = ((centerX - initial.centerX) / Math.max(plotWidth, 1)) * span;
+    const start = clamp(anchor - span * anchorRatio - deltaRatio, 0, 1 - span);
+
+    setRange({ start, end: start + span });
+  }, [plotWidth, points.length]);
+
   const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
-    if (event.touches.length !== 2) return;
+    if (event.touches.length !== 2) {
+      pinchRef.current = null;
+      return;
+    }
+
     const [firstTouch, secondTouch] = Array.from(event.touches);
     const rect = event.currentTarget.getBoundingClientRect();
     const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
     const center = (firstTouch.clientX + secondTouch.clientX) / 2;
     pinchRef.current = {
       distance,
+      centerX: center,
       centerRatio: clamp((center - rect.left) / rect.width, 0, 1),
       range,
     };
@@ -874,17 +891,17 @@ function DetailChart({
     event.preventDefault();
     const [firstTouch, secondTouch] = Array.from(event.touches);
     const distance = Math.hypot(firstTouch.clientX - secondTouch.clientX, firstTouch.clientY - secondTouch.clientY);
+    const center = (firstTouch.clientX + secondTouch.clientX) / 2;
     const initial = pinchRef.current;
-    const scale = distance / Math.max(initial.distance, 1);
-    const currentSpan = range.end - range.start;
-    const targetSpan = (initial.range.end - initial.range.start) / Math.max(scale, 0.2);
-    updateZoom(targetSpan / Math.max(currentSpan, 0.001), initial.centerRatio);
-  }, [range, updateZoom]);
+    setRangeFromTouch(initial, distance, center);
+  }, [setRangeFromTouch]);
 
-  const updateHoveredCandle = useCallback((clientX: number) => {
+  const updateHoveredCandle = useCallback((clientX: number, clientY: number) => {
     if (!isCandlestickMode || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
     const rect = chartRef.current.getBoundingClientRect();
-    const ratio = clamp((clientX - rect.left - CHART_BOUNDS.left) / Math.max(plotWidth, 1), 0, 1);
+    const svgX = ((clientX - rect.left) / Math.max(rect.width, 1)) * chartSize.width;
+    const svgY = ((clientY - rect.top) / Math.max(rect.height, 1)) * chartSize.height;
+    const ratio = clamp((svgX - CHART_BOUNDS.left) / Math.max(plotWidth, 1), 0, 1);
     const index = Math.round(ratio * (visiblePoints.length - 1));
     const point = visiblePoints[index];
     const candle = point ? getCandlePoint(point) : null;
@@ -894,15 +911,45 @@ function DetailChart({
       return;
     }
 
+    const x = chartX(index, visiblePoints.length, chartSize.width);
+    const highY = horizontalLineY(candle.high, min, max, chartSize.height);
+    const lowY = horizontalLineY(candle.low, min, max, chartSize.height);
+    const openY = horizontalLineY(candle.open, min, max, chartSize.height);
+    const closeY = horizontalLineY(candle.close, min, max, chartSize.height);
+    const bodyTop = Math.min(openY, closeY);
+    const bodyBottom = Math.max(openY, closeY);
+    const hitTolerance = 8;
+    const nearCandleX = Math.abs(svgX - x) <= Math.max(hitTolerance, candleWidth * 1.9);
+    const nearCandle =
+      nearCandleX &&
+      (
+        (svgY >= highY - hitTolerance && svgY <= lowY + hitTolerance) ||
+        (svgY >= bodyTop - hitTolerance && svgY <= bodyBottom + hitTolerance)
+      );
+    const nearStaffLine = mode === 'staff' && staff
+      ? staff.some((line) => {
+          const lineY = horizontalLineY(line.startValue, min, max, chartSize.height) +
+            (horizontalLineY(line.endValue, min, max, chartSize.height) - horizontalLineY(line.startValue, min, max, chartSize.height)) * ratio;
+
+          return svgX >= CHART_BOUNDS.left && svgX <= chartRight(chartSize.width) && Math.abs(svgY - lineY) <= hitTolerance;
+        })
+      : false;
+
+    if (!nearCandle && !nearStaffLine) {
+      setHoveredCandle(null);
+      return;
+    }
+
     setHoveredCandle({
       point,
       candle,
-      x: chartX(index, visiblePoints.length, chartSize.width),
-      y: horizontalLineY(candle.high, min, max, chartSize.height),
+      x,
+      y: highY,
     });
-  }, [chartSize.height, chartSize.width, isCandlestickMode, isDraggingChart, min, max, plotWidth, visiblePoints]);
+  }, [candleWidth, chartSize.height, chartSize.width, isCandlestickMode, isDraggingChart, min, max, mode, plotWidth, staff, visiblePoints]);
 
   const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'touch') return;
     if (!isCandlestickMode || !canPan || event.button !== 0) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -919,7 +966,7 @@ function DetailChart({
     const drag = dragRef.current;
 
     if (!drag || drag.pointerId !== event.pointerId) {
-      updateHoveredCandle(event.clientX);
+      updateHoveredCandle(event.clientX, event.clientY);
       return;
     }
 
@@ -939,7 +986,7 @@ function DetailChart({
       }
       dragRef.current = null;
       setIsDraggingChart(false);
-      updateHoveredCandle(event.clientX);
+      updateHoveredCandle(event.clientX, event.clientY);
     }
   }, [updateHoveredCandle]);
 
@@ -961,7 +1008,7 @@ function DetailChart({
       </div>
       <div
         ref={chartRef}
-        className={`relative h-72 overflow-hidden rounded-xl bg-white touch-none ${
+        className={`relative h-72 overflow-hidden rounded-xl bg-white touch-pan-y ${
           isCandlestickMode ? (canPan ? (isDraggingChart ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-crosshair') : ''
         }`}
         onPointerDown={handlePointerDown}
@@ -975,6 +1022,9 @@ function DetailChart({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={() => {
+          pinchRef.current = null;
+        }}
+        onTouchCancel={() => {
           pinchRef.current = null;
         }}
       >
@@ -1307,7 +1357,7 @@ function DetailChart({
       </div>
       {mode !== 'vrvp' ? (
         <div className="mt-2 flex items-center justify-between text-[11px] font-bold text-slate-400">
-          <span>滾輪或雙指可縮放</span>
+          <span>滾輪縮放；手機雙指可縮放與平移</span>
           <button
             type="button"
             onClick={() => setRange({ start: 0, end: 1 })}
