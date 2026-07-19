@@ -858,6 +858,16 @@ function rangePercent(quote: StockQuote) {
   return Math.max(2, Math.min(100, ((price - low) / (high - low)) * 100));
 }
 
+function dragPlacement(event: DragEvent<HTMLElement>): 'before' | 'after' {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const isWide = rect.width >= rect.height;
+  const pastMiddle = isWide
+    ? event.clientX > rect.left + rect.width / 2
+    : event.clientY > rect.top + rect.height / 2;
+
+  return pastMiddle ? 'after' : 'before';
+}
+
 function isMarketOpen(market: Market) {
   if (market === '外匯') {
     const day = new Date().getUTCDay();
@@ -2083,6 +2093,7 @@ function StockCard({
   loading,
   alertCount,
   isDragging,
+  dropPlacement,
   onRemove,
   onOpen,
   onOpenAlerts,
@@ -2097,6 +2108,7 @@ function StockCard({
   loading: boolean;
   alertCount: number;
   isDragging: boolean;
+  dropPlacement: 'before' | 'after' | null;
   onRemove: (symbol: string, market: Market) => void;
   onOpen: (item: StockItem) => void;
   onOpenAlerts: (item: StockItem) => void;
@@ -2129,9 +2141,29 @@ function StockCard({
       onDrop={(event) => onDrop(event, item)}
       onDragEnd={onDragEnd}
       className={`group relative cursor-pointer rounded-2xl border bg-white px-3 pb-3 pt-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-2xl hover:shadow-orange-700/10 focus:outline focus:outline-2 focus:outline-orange-500/40 sm:px-4 sm:pb-4 ${
-        isDragging ? 'border-orange-200 opacity-55 ring-2 ring-orange-100' : item.pinned ? 'border-orange-200' : 'border-slate-200'
+        isDragging
+          ? 'border-orange-200 opacity-55 ring-2 ring-orange-100'
+          : dropPlacement
+            ? 'border-orange-300 bg-orange-50/40 ring-2 ring-orange-200'
+            : item.pinned
+              ? 'border-orange-200'
+              : 'border-slate-200'
       }`}
     >
+      {dropPlacement ? (
+        <div
+          className={`pointer-events-none absolute left-2 right-2 z-20 flex items-center gap-2 ${
+            dropPlacement === 'before' ? '-top-3' : '-bottom-3'
+          }`}
+          aria-hidden="true"
+        >
+          <span className="h-3 w-3 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
+          <span className="h-1 flex-1 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
+          <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black text-white shadow-sm shadow-orange-700/30">
+            放這裡
+          </span>
+        </div>
+      ) : null}
       <div
         className="absolute left-2 top-2 z-10 rounded-lg p-1 text-slate-300 transition-colors group-hover:bg-slate-50 group-hover:text-slate-500"
         aria-hidden="true"
@@ -2427,6 +2459,8 @@ export default function StockWatchlistClient() {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
   const [draggedItemKey, setDraggedItemKey] = useState<string | null>(null);
+  const [dragTarget, setDragTarget] = useState<{ key: string; placement: 'before' | 'after' } | null>(null);
+  const draggedItemKeyRef = useRef<string | null>(null);
   const missingSymbolCache = useRef(new Map<string, number>());
   const previousQuotesRef = useRef<Record<string, StockQuote>>({});
 
@@ -2764,30 +2798,41 @@ export default function StockWatchlistClient() {
 
   const handleCardDragStart = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
     const key = stockKey(item.symbol, item.market);
+    draggedItemKeyRef.current = key;
     setDraggedItemKey(key);
+    setDragTarget(null);
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', key);
   }, []);
 
-  const handleCardDragOver = useCallback((event: DragEvent<HTMLElement>) => {
+  const handleCardDragOver = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
-  }, []);
+    const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKeyRef.current || draggedItemKey;
+    const targetKey = stockKey(item.symbol, item.market);
+
+    if (!fromKey || fromKey === targetKey) {
+      setDragTarget(null);
+      return;
+    }
+
+    const placement = dragPlacement(event);
+    setDragTarget((current) =>
+      current?.key === targetKey && current.placement === placement
+        ? current
+        : { key: targetKey, placement },
+    );
+  }, [draggedItemKey]);
 
   const handleCardDrop = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
     event.preventDefault();
-    const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKey;
+    const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKeyRef.current || draggedItemKey;
     const toKey = stockKey(item.symbol, item.market);
-    const rect = event.currentTarget.getBoundingClientRect();
-    const placement = rect.width >= rect.height
-      ? event.clientX > rect.left + rect.width / 2
-        ? 'after'
-        : 'before'
-      : event.clientY > rect.top + rect.height / 2
-        ? 'after'
-        : 'before';
+    const placement = dragPlacement(event);
 
+    draggedItemKeyRef.current = null;
     setDraggedItemKey(null);
+    setDragTarget(null);
 
     if (!fromKey) return;
 
@@ -2795,7 +2840,9 @@ export default function StockWatchlistClient() {
   }, [draggedItemKey, reorderStock]);
 
   const handleCardDragEnd = useCallback(() => {
+    draggedItemKeyRef.current = null;
     setDraggedItemKey(null);
+    setDragTarget(null);
   }, []);
 
   const createAlert = useCallback((item: StockItem, input: Pick<LocalPriceAlert, 'conditionType' | 'targetValue' | 'triggerMode' | 'cooldownMinutes'>) => {
@@ -3050,6 +3097,7 @@ export default function StockWatchlistClient() {
                   loading={quotesLoading}
                   alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
                   isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
+                  dropPlacement={dragTarget?.key === stockKey(item.symbol, item.market) ? dragTarget.placement : null}
                   onRemove={removeStock}
                   onOpen={setSelectedStock}
                   onOpenAlerts={setAlertItem}
