@@ -25,7 +25,6 @@ export default function Navbar() {
   const playgroundLinks = [
     { name: t('nav.imageCompressor'), href: '/image-compressor' },
     { name: 'Market Watch', href: '/market-watch' },
-    { name: t('nav.stockWatchlist'), href: '/tool/stock/stock-watchlist' },
     { name: t('nav.snake'), href: '/snake' },
     { name: t('nav.vocabQuiz'), href: '/vocab-quiz' },
     { name: t('nav.tetrisBattle'), href: '/tetris-battle', color: 'danger' as const },
