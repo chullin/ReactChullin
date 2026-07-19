@@ -17,8 +17,9 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react';
+import { defaultFxPairs, seedFxQuote } from '@/lib/market/providers/fxProvider';
 
-type Market = '美股' | '台股';
+type Market = '美股' | '台股' | '外匯';
 
 type StockItem = {
   symbol: string;
@@ -114,6 +115,7 @@ const MARKET_TABS = [
   { label: '全部', value: '全部' },
   { label: '美股', value: '美股' },
   { label: '台股', value: '台股' },
+  { label: '外匯', value: '外匯' },
 ] as const;
 
 const STORAGE_KEY = 'stock-watchlist:v1';
@@ -145,11 +147,33 @@ const VRVP_PERIODS: PeriodOption[] = [
   { label: '5Y', months: 60 },
 ] satisfies PeriodOption[];
 
+function defaultFxItems(): StockItem[] {
+  return defaultFxPairs.map((pair) => ({
+    symbol: pair.symbol,
+    market: '外匯' as const,
+  }));
+}
+
 function createEmptyWatchlists(lists: WatchlistDef[] = DEFAULT_LISTS) {
-  return lists.reduce<Watchlists>((acc, list) => {
+  const watchlists = lists.reduce<Watchlists>((acc, list) => {
     acc[list.id] = [];
     return acc;
   }, {});
+
+  watchlists['庫存'] = defaultFxItems();
+  return watchlists;
+}
+
+function mergeStoredWatchlists(base: Watchlists, stored: Watchlists): Watchlists {
+  const merged = { ...base, ...stored };
+  const inventory = merged['庫存'] || [];
+  const existingKeys = new Set(inventory.map((item) => stockKey(item.symbol, item.market)));
+  const missingFxItems = defaultFxItems().filter((item) => !existingKeys.has(stockKey(item.symbol, item.market)));
+
+  return {
+    ...merged,
+    庫存: [...inventory, ...missingFxItems],
+  };
 }
 
 function normalizeWatchlistDefs(value: unknown): WatchlistDef[] {
@@ -176,6 +200,7 @@ function displaySymbol(value: string) {
 
 function detectMarkets(symbol: string): Market[] {
   if (!symbol) return [];
+  if (/^[A-Z]{3}[/-][A-Z]{3}$/.test(symbol)) return ['外匯'];
   return /^\d+[A-Z]?$/.test(symbol) ? ['台股'] : ['美股'];
 }
 
@@ -185,6 +210,30 @@ function stockKey(symbol: string, market: Market) {
 
 function apiStockToken(symbol: string, market: Market) {
   return `${symbol}:${market}`;
+}
+
+function isStockMarket(market: Market): market is '美股' | '台股' {
+  return market === '美股' || market === '台股';
+}
+
+function fxQuoteToStockQuote(symbol: string): StockQuote | null {
+  const pair = defaultFxPairs.find((item) => item.symbol === symbol);
+  if (!pair) return null;
+
+  const quote = seedFxQuote(pair);
+
+  return {
+    symbol: quote.symbol,
+    longName: quote.displayName,
+    price: quote.currentPrice,
+    change: quote.priceChange,
+    changePercent: quote.changePercent,
+    previousClose: quote.previousClose,
+    currency: quote.currency,
+    sparkline: quote.chartData.map((point) => point.price).filter(isFiniteNumber),
+    quoteType: 'FX',
+    exchange: quote.exchange,
+  };
 }
 
 function isFiniteNumber(value: unknown): value is number {
@@ -559,6 +608,11 @@ function rangePercent(quote: StockQuote) {
 }
 
 function isMarketOpen(market: Market) {
+  if (market === '外匯') {
+    const day = new Date().getUTCDay();
+    return day !== 0 && day !== 6;
+  }
+
   const now = new Date();
   const utc = now.getTime() + now.getTimezoneOffset() * 60_000;
   const offset = market === '台股' ? 8 : isUsDst(now) ? -4 : -5;
@@ -1217,6 +1271,27 @@ function StockDetailModal({
     async function loadDetails() {
       setLoading(true);
       try {
+        if (item.market === '外匯') {
+          const values = quote?.sparkline || [];
+          const history = values.map((value, index) => ({
+            date: new Date(Date.now() - (values.length - index - 1) * 60 * 60_000).toISOString().slice(0, 10),
+            open: value,
+            high: value,
+            low: value,
+            close: value,
+            volume: null,
+          }));
+
+          if (!cancelled) {
+            setDetails({
+              quote: quote || null,
+              news: [],
+              history,
+            });
+          }
+          return;
+        }
+
         const name = quote?.longName || quote?.name || item.symbol;
         const payload = await fetchJson<DetailsResponse>(
           `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&name=${encodeURIComponent(name)}`,
@@ -1236,7 +1311,7 @@ function StockDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [item.market, item.symbol, quote?.longName, quote?.name]);
+  }, [item.market, item.symbol, quote, quote?.longName, quote?.name]);
 
   useEffect(() => {
     const { body, documentElement } = document;
@@ -1439,7 +1514,7 @@ function StockCard({
 
       <div className="mb-1 flex items-center gap-2 pr-6">
         <span className="flex h-5 min-w-7 shrink-0 items-center justify-center rounded-md bg-orange-50 px-1.5 text-[10px] font-black text-orange-700 ring-1 ring-orange-100">
-          {item.market === '美股' ? 'US' : 'TW'}
+          {item.market === '美股' ? 'US' : item.market === '台股' ? 'TW' : 'FX'}
         </span>
         <span className="text-base font-black tracking-tight text-slate-900 sm:text-lg">
           {displaySymbol(item.symbol)}
@@ -1537,7 +1612,7 @@ export default function StockWatchlistClient() {
       setWatchlistDefs(nextListDefs);
 
       if (storedWatchlists) {
-        setWatchlists({ ...createEmptyWatchlists(nextListDefs), ...JSON.parse(storedWatchlists) });
+        setWatchlists(mergeStoredWatchlists(createEmptyWatchlists(nextListDefs), JSON.parse(storedWatchlists)));
       }
 
       if (storedList && nextListDefs.some((list) => list.id === storedList)) {
@@ -1580,12 +1655,13 @@ export default function StockWatchlistClient() {
   }, [activeItems, activeMarket]);
 
   const stocksParam = useMemo(() => {
-    if (!activeItems.length) return '';
-    return activeItems.map((item) => apiStockToken(item.symbol, item.market)).join(',');
+    const stockItems = activeItems.filter((item) => isStockMarket(item.market));
+    if (!stockItems.length) return '';
+    return stockItems.map((item) => apiStockToken(item.symbol, item.market)).join(',');
   }, [activeItems]);
 
   const refreshQuotes = useCallback(async () => {
-    if (!stocksParam) {
+    if (!activeItems.length) {
       setQuotes({});
       return;
     }
@@ -1593,17 +1669,25 @@ export default function StockWatchlistClient() {
     setQuotesLoading(true);
 
     try {
-      const payload = await fetchJson<BatchQuoteResponse>(
-        `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
-      );
+      const fxQuotes = activeItems.reduce<Record<string, StockQuote>>((acc, item) => {
+        if (item.market !== '外匯') return acc;
+        const quote = fxQuoteToStockQuote(item.symbol);
+        if (quote) acc[stockKey(item.symbol, item.market)] = quote;
+        return acc;
+      }, {});
+      const stockQuotes = stocksParam
+        ? (await fetchJson<BatchQuoteResponse>(
+            `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
+          )).data || {}
+        : {};
 
-      setQuotes(payload.success && payload.data ? payload.data : {});
+      setQuotes({ ...stockQuotes, ...fxQuotes });
     } catch {
       setMessage({ text: '報價更新失敗，請稍後再試', type: 'error' });
     } finally {
       setQuotesLoading(false);
     }
-  }, [stocksParam]);
+  }, [activeItems, stocksParam]);
 
   useEffect(() => {
     refreshQuotes();
@@ -1649,6 +1733,11 @@ export default function StockWatchlistClient() {
         await Promise.all(
           markets.map(async (market) => {
             try {
+              if (market === '外匯') {
+                const quote = fxQuoteToStockQuote(normalized.replace('-', '/'));
+                return quote?.price ? { market, quote } : null;
+              }
+
               const payload = await fetchJson<QuoteResponse>(
                 `/api/stock/quote?symbol=${encodeURIComponent(normalized)}&market=${encodeURIComponent(market)}`,
               );
@@ -1677,11 +1766,11 @@ export default function StockWatchlistClient() {
 
       setWatchlists((current) => ({
         ...current,
-        [activeListId]: [...(current[activeListId] || []), { symbol: normalized, market: target.market }],
+        [activeListId]: [...(current[activeListId] || []), { symbol: target.market === '外匯' ? normalized.replace('-', '/') : normalized, market: target.market }],
       }));
       setQuotes((current) => ({
         ...current,
-        [stockKey(normalized, target.market)]: target.quote,
+        [stockKey(target.market === '外匯' ? normalized.replace('-', '/') : normalized, target.market)]: target.quote,
       }));
       setSymbol('');
       setIsAddPanelOpen(false);
@@ -1893,13 +1982,13 @@ export default function StockWatchlistClient() {
 
         {mounted && activeItems.length === 0 ? (
           <div className="mt-8 rounded-2xl border border-dashed border-orange-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
-            尚未新增任何股票，先試試 AAPL 或 2330
+            尚未新增任何標的，先試試 AAPL、2330 或 USD/TWD
           </div>
         ) : null}
 
         {mounted && activeItems.length > 0 && filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
-            此市場沒有股票
+            此分類沒有標的
           </div>
         ) : null}
 
@@ -1920,7 +2009,7 @@ export default function StockWatchlistClient() {
 
             <div className="mt-5 inline-flex items-center rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-100">
               <Info size={14} className="text-orange-600" />
-              <span className="ml-1.5 font-medium">每張卡片右側的小線圖為該股票本年迄今股價變化</span>
+              <span className="ml-1.5 font-medium">每張卡片右側的小線圖顯示該標的近期價格變化</span>
             </div>
           </>
         ) : null}
