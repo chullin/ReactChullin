@@ -574,24 +574,42 @@ function chartBottom(height: number) {
   return Math.max(CHART_BOUNDS.top + 1, height - CHART_BOUNDS.bottom);
 }
 
-function formatMonthTick(value: string, previousYear?: number) {
+function formatMonthTick(value: string, showYearMonth = false, previousYear?: number) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value.slice(0, 7);
   const year = date.getFullYear();
+  if (showYearMonth) return `${year}/${date.getMonth() + 1}`;
   if (date.getMonth() === 0 && previousYear !== year) return `${year}年`;
   return `${date.getMonth() + 1}月`;
 }
 
-function formatDayTick(value: string, includeMonth: boolean) {
+function formatDayTick(value: string, includeMonth: boolean, includeTime = false) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value.slice(5);
+  if (includeTime) {
+    const time = date.toLocaleTimeString('zh-TW', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+
+    return includeMonth ? `${date.getMonth() + 1}/${date.getDate()} ${time}` : time;
+  }
+
   return includeMonth ? `${date.getMonth() + 1}/${date.getDate()}` : `${date.getDate()}`;
 }
 
 function makeDateTicks(points: HistoryPoint[], width = 100) {
   if (!points.length) return [];
   const ticks: { label: string; x: number }[] = [];
-  const shouldShowDays = points.length <= 95;
+  const firstTime = Date.parse(points[0]?.date || '');
+  const lastTime = Date.parse(points.at(-1)?.date || '');
+  const spanDays = Number.isFinite(firstTime) && Number.isFinite(lastTime)
+    ? Math.max(0, (lastTime - firstTime) / 86_400_000)
+    : points.length;
+  const shouldShowDays = spanDays <= 45;
+  const shouldShowTime = spanDays <= 2;
+  const shouldShowYearMonth = spanDays >= 365;
 
   if (shouldShowDays) {
     const targetTicks = width >= 900 ? 14 : width >= 640 ? 10 : 6;
@@ -603,6 +621,7 @@ function makeDateTicks(points: HistoryPoint[], width = 100) {
       const previousDate = previousPoint ? new Date(previousPoint.date) : null;
       const currentDate = new Date(point.date);
       const includeMonth =
+        shouldShowTime ||
         index === 0 ||
         index === points.length - 1 ||
         !previousDate ||
@@ -610,7 +629,7 @@ function makeDateTicks(points: HistoryPoint[], width = 100) {
         previousDate.getMonth() !== currentDate.getMonth();
 
       ticks.push({
-        label: formatDayTick(point.date, includeMonth),
+        label: formatDayTick(point.date, includeMonth, shouldShowTime),
         x: chartX(index, points.length, width),
       });
     });
@@ -629,7 +648,7 @@ function makeDateTicks(points: HistoryPoint[], width = 100) {
 
     if (index === 0 || month !== previousMonth) {
       ticks.push({
-        label: formatMonthTick(point.date, previousYear),
+        label: formatMonthTick(point.date, shouldShowYearMonth, previousYear),
         x: chartX(index, points.length, width),
       });
     }
@@ -2717,22 +2736,24 @@ export default function StockWatchlistClient() {
     }));
   }, [activeListId]);
 
-  const reorderStock = useCallback((fromKey: string, toKey: string) => {
+  const reorderStock = useCallback((fromKey: string, toKey: string, placement: 'before' | 'after') => {
     if (fromKey === toKey) return;
 
     setWatchlists((current) => {
       const list = current[activeListId] || [];
       const fromIndex = list.findIndex((item) => stockKey(item.symbol, item.market) === fromKey);
+      const targetIndex = list.findIndex((item) => stockKey(item.symbol, item.market) === toKey);
 
-      if (fromIndex < 0) return current;
+      if (fromIndex < 0 || targetIndex < 0) return current;
 
       const nextList = [...list];
       const [moved] = nextList.splice(fromIndex, 1);
-      const toIndex = nextList.findIndex((item) => stockKey(item.symbol, item.market) === toKey);
+      const adjustedTargetIndex = nextList.findIndex((item) => stockKey(item.symbol, item.market) === toKey);
 
-      if (toIndex < 0) return current;
+      if (adjustedTargetIndex < 0) return current;
 
-      nextList.splice(toIndex, 0, moved);
+      const insertIndex = placement === 'after' ? adjustedTargetIndex + 1 : adjustedTargetIndex;
+      nextList.splice(insertIndex, 0, moved);
 
       return {
         ...current,
@@ -2757,11 +2778,20 @@ export default function StockWatchlistClient() {
     event.preventDefault();
     const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKey;
     const toKey = stockKey(item.symbol, item.market);
+    const rect = event.currentTarget.getBoundingClientRect();
+    const placement = rect.width >= rect.height
+      ? event.clientX > rect.left + rect.width / 2
+        ? 'after'
+        : 'before'
+      : event.clientY > rect.top + rect.height / 2
+        ? 'after'
+        : 'before';
+
     setDraggedItemKey(null);
 
     if (!fromKey) return;
 
-    reorderStock(fromKey, toKey);
+    reorderStock(fromKey, toKey, placement);
   }, [draggedItemKey, reorderStock]);
 
   const handleCardDragEnd = useCallback(() => {
