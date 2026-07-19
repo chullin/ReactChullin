@@ -1,6 +1,6 @@
 'use client';
 
-import type { FormEvent, PointerEvent as ReactPointerEvent, TouchEvent } from 'react';
+import type { DragEvent, FormEvent, PointerEvent as ReactPointerEvent, TouchEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
@@ -8,10 +8,12 @@ import {
   Bell,
   ChevronDown,
   ExternalLink,
+  GripVertical,
   Info,
   LineChart,
   Minus,
   Newspaper,
+  Pin,
   Plus,
   RefreshCw,
   TrendingDown,
@@ -25,6 +27,7 @@ type Market = '美股' | '台股' | '外匯';
 type StockItem = {
   symbol: string;
   market: Market;
+  pinned?: boolean;
 };
 
 type Watchlists = Record<string, StockItem[]>;
@@ -148,6 +151,7 @@ const LIST_DEFS_KEY = 'stock-watchlist-list-defs:v1';
 const ALERTS_KEY = 'stock-watchlist-alerts:v1';
 const ACTIVE_LIST_KEY = 'stock-watchlist-active-list:v1';
 const ACTIVE_MARKET_KEY = 'stock-watchlist-active-market:v1';
+const FX_TOP_MIGRATION_KEY = 'stock-watchlist-fx-top-migrated:v1';
 const REFRESH_INTERVAL_MS = 30_000;
 const PRICE_PERIODS: PeriodOption[] = [
   { label: '1M', months: 1 },
@@ -180,6 +184,25 @@ function defaultFxItems(): StockItem[] {
   }));
 }
 
+function normalizeStockItems(items: StockItem[] = []) {
+  return items
+    .filter((item): item is StockItem => typeof item?.symbol === 'string' && typeof item?.market === 'string')
+    .map((item) => ({
+      symbol: item.symbol,
+      market: item.market,
+      pinned: Boolean(item.pinned),
+    }));
+}
+
+function placeDefaultFxFirst(items: StockItem[]) {
+  const fxItems = defaultFxItems()
+    .map((fxItem) => items.find((item) => stockKey(item.symbol, item.market) === stockKey(fxItem.symbol, fxItem.market)) || fxItem);
+  const defaultFxKeys = new Set(defaultFxItems().map((item) => stockKey(item.symbol, item.market)));
+  const others = items.filter((item) => !defaultFxKeys.has(stockKey(item.symbol, item.market)));
+
+  return [...fxItems, ...others];
+}
+
 function createEmptyWatchlists(lists: WatchlistDef[] = DEFAULT_LISTS) {
   const watchlists = lists.reduce<Watchlists>((acc, list) => {
     acc[list.id] = [];
@@ -191,7 +214,10 @@ function createEmptyWatchlists(lists: WatchlistDef[] = DEFAULT_LISTS) {
 }
 
 function mergeStoredWatchlists(base: Watchlists, stored: Watchlists): Watchlists {
-  const merged = { ...base, ...stored };
+  const normalizedStored = Object.fromEntries(
+    Object.entries(stored).map(([id, items]) => [id, normalizeStockItems(items)]),
+  );
+  const merged = { ...base, ...normalizedStored };
   const inventory = merged['庫存'] || [];
   const existingKeys = new Set(inventory.map((item) => stockKey(item.symbol, item.market)));
   const missingFxItems = defaultFxItems().filter((item) => !existingKeys.has(stockKey(item.symbol, item.market)));
@@ -374,6 +400,55 @@ function linePath(values: number[]) {
       return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
     })
     .join(' ');
+}
+
+function sparklineStaffPaths(values: number[]) {
+  if (values.length < 3) return null;
+
+  const count = values.length;
+  const averageX = (count - 1) / 2;
+  const averageY = values.reduce((sum, value) => sum + value, 0) / count;
+  const varianceX = values.reduce((sum, _value, index) => sum + (index - averageX) ** 2, 0);
+  const covariance = values.reduce((sum, value, index) => sum + (index - averageX) * (value - averageY), 0);
+  const slope = varianceX === 0 ? 0 : covariance / varianceX;
+  const intercept = averageY - slope * averageX;
+  const residualVariance = values.reduce((sum, value, index) => {
+    const trendValue = intercept + slope * index;
+    return sum + (value - trendValue) ** 2;
+  }, 0) / count;
+  const band = Math.sqrt(residualVariance) || Math.max(Math.abs(averageY) * 0.03, 1);
+  const levels = [-2, -1, 0, 1, 2];
+  const lineValues = levels.map((level) => ({
+    level,
+    start: intercept + band * level,
+    end: intercept + slope * (count - 1) + band * level,
+  }));
+  const domainValues = [
+    ...values,
+    ...lineValues.flatMap((line) => [line.start, line.end]),
+  ];
+  const min = Math.min(...domainValues);
+  const max = Math.max(...domainValues);
+  const range = max - min || 1;
+
+  return {
+    pricePath: values
+      .map((value, index) => {
+        const x = 2 + (index / (values.length - 1)) * 96;
+        const y = 6 + (1 - (value - min) / range) * 88;
+        return `${index === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)}`;
+      })
+      .join(' '),
+    staffPaths: lineValues.map((line) => {
+      const startY = 6 + (1 - (line.start - min) / range) * 88;
+      const endY = 6 + (1 - (line.end - min) / range) * 88;
+
+      return {
+        level: line.level,
+        d: `M 2 ${startY.toFixed(2)} L 98 ${endY.toFixed(2)}`,
+      };
+    }),
+  };
 }
 
 function chartPath(points: HistoryPoint[], min: number, max: number, width = 100, height = 100) {
@@ -707,7 +782,9 @@ function isUsDst(date: Date) {
 
 function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive: boolean; negative: boolean }) {
   const values = quote?.sparkline || [];
-  const path = linePath(values);
+  const staffChart = sparklineStaffPaths(values);
+  const path = staffChart?.pricePath || linePath(values);
+  const staffPaths = staffChart?.staffPaths || [];
   const stroke = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
 
   if (!path) {
@@ -716,6 +793,17 @@ function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive
 
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full overflow-visible">
+      {staffPaths.map((line) => (
+        <path
+          key={line.level}
+          d={line.d}
+          fill="none"
+          stroke={line.level === 0 ? '#f97316' : line.level > 0 ? '#0284c7' : '#22c55e'}
+          strokeWidth={line.level === 0 ? '1.2' : '0.9'}
+          opacity={line.level === 0 ? '0.65' : '0.42'}
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
       <path d={path} fill="none" stroke={stroke} strokeWidth="2" vectorEffect="non-scaling-stroke" />
     </svg>
   );
@@ -1638,17 +1726,29 @@ function StockCard({
   quote,
   loading,
   alertCount,
+  isDragging,
   onRemove,
   onOpen,
   onOpenAlerts,
+  onTogglePinned,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: {
   item: StockItem;
   quote?: StockQuote;
   loading: boolean;
   alertCount: number;
+  isDragging: boolean;
   onRemove: (symbol: string, market: Market) => void;
   onOpen: (item: StockItem) => void;
   onOpenAlerts: (item: StockItem) => void;
+  onTogglePinned: (item: StockItem) => void;
+  onDragStart: (event: DragEvent<HTMLElement>, item: StockItem) => void;
+  onDragOver: (event: DragEvent<HTMLElement>, item: StockItem) => void;
+  onDrop: (event: DragEvent<HTMLElement>, item: StockItem) => void;
+  onDragEnd: () => void;
 }) {
   const positive = (quote?.changePercent || 0) > 0;
   const negative = (quote?.changePercent || 0) < 0;
@@ -1660,6 +1760,7 @@ function StockCard({
     <article
       role="button"
       tabIndex={0}
+      draggable
       onClick={() => onOpen(item)}
       onKeyDown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -1667,8 +1768,20 @@ function StockCard({
           onOpen(item);
         }
       }}
-      className="group relative cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 pb-3 pt-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-2xl hover:shadow-orange-700/10 focus:outline focus:outline-2 focus:outline-orange-500/40 sm:px-4 sm:pb-4"
+      onDragStart={(event) => onDragStart(event, item)}
+      onDragOver={(event) => onDragOver(event, item)}
+      onDrop={(event) => onDrop(event, item)}
+      onDragEnd={onDragEnd}
+      className={`group relative cursor-pointer rounded-2xl border bg-white px-3 pb-3 pt-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-2xl hover:shadow-orange-700/10 focus:outline focus:outline-2 focus:outline-orange-500/40 sm:px-4 sm:pb-4 ${
+        isDragging ? 'border-orange-200 opacity-55 ring-2 ring-orange-100' : item.pinned ? 'border-orange-200' : 'border-slate-200'
+      }`}
     >
+      <div
+        className="absolute left-2 top-2 z-10 rounded-lg p-1 text-slate-300 transition-colors group-hover:bg-slate-50 group-hover:text-slate-500"
+        aria-hidden="true"
+      >
+        <GripVertical size={14} />
+      </div>
       <button
         type="button"
         onClick={(event) => {
@@ -1684,9 +1797,22 @@ function StockCard({
         type="button"
         onClick={(event) => {
           event.stopPropagation();
+          onTogglePinned(item);
+        }}
+        className={`absolute right-8 top-2 z-10 rounded-lg p-1 transition-colors ${
+          item.pinned ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-300 hover:bg-orange-50 hover:text-orange-700'
+        }`}
+        aria-label={item.pinned ? '取消置頂' : '置頂'}
+      >
+        <Pin size={13} />
+      </button>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
           onOpenAlerts(item);
         }}
-        className={`absolute right-8 top-2 z-10 inline-flex h-6 items-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition-colors ${
+        className={`absolute right-14 top-2 z-10 inline-flex h-6 items-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition-colors ${
           alertCount ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-300 hover:bg-orange-50 hover:text-orange-700'
         }`}
         aria-label="設定通知"
@@ -1695,10 +1821,15 @@ function StockCard({
         {alertCount || ''}
       </button>
 
-      <div className="mb-1 flex items-center gap-2 pr-6">
+      <div className="mb-1 flex items-center gap-2 pl-5 pr-16">
         <span className="flex h-5 min-w-7 shrink-0 items-center justify-center rounded-md bg-orange-50 px-1.5 text-[10px] font-black text-orange-700 ring-1 ring-orange-100">
           {item.market === '美股' ? 'US' : item.market === '台股' ? 'TW' : 'FX'}
         </span>
+        {item.pinned ? (
+          <span className="flex h-5 shrink-0 items-center rounded-md bg-orange-100 px-1.5 text-[10px] font-black text-orange-700">
+            置頂
+          </span>
+        ) : null}
         <span className="text-base font-black tracking-tight text-slate-900 sm:text-lg">
           {displaySymbol(item.symbol)}
         </span>
@@ -1939,6 +2070,7 @@ export default function StockWatchlistClient() {
   const [quotesLoading, setQuotesLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
+  const [draggedItemKey, setDraggedItemKey] = useState<string | null>(null);
   const missingSymbolCache = useRef(new Map<string, number>());
   const previousQuotesRef = useRef<Record<string, StockQuote>>({});
 
@@ -1951,12 +2083,22 @@ export default function StockWatchlistClient() {
       const storedAlerts = localStorage.getItem(ALERTS_KEY);
       const storedList = localStorage.getItem(ACTIVE_LIST_KEY);
       const storedMarket = localStorage.getItem(ACTIVE_MARKET_KEY);
+      const fxTopMigrated = localStorage.getItem(FX_TOP_MIGRATION_KEY) === 'true';
       const nextListDefs = storedListDefs ? normalizeWatchlistDefs(JSON.parse(storedListDefs)) : DEFAULT_LISTS;
 
       setWatchlistDefs(nextListDefs);
 
       if (storedWatchlists) {
-        setWatchlists(mergeStoredWatchlists(createEmptyWatchlists(nextListDefs), JSON.parse(storedWatchlists)));
+        const nextWatchlists = mergeStoredWatchlists(createEmptyWatchlists(nextListDefs), JSON.parse(storedWatchlists));
+
+        if (!fxTopMigrated) {
+          nextWatchlists['庫存'] = placeDefaultFxFirst(nextWatchlists['庫存'] || []);
+          localStorage.setItem(FX_TOP_MIGRATION_KEY, 'true');
+        }
+
+        setWatchlists(nextWatchlists);
+      } else if (!fxTopMigrated) {
+        localStorage.setItem(FX_TOP_MIGRATION_KEY, 'true');
       }
 
       if (storedList && nextListDefs.some((list) => list.id === storedList)) {
@@ -2007,6 +2149,12 @@ export default function StockWatchlistClient() {
     if (activeMarket === '全部') return activeItems;
     return activeItems.filter((item) => item.market === activeMarket);
   }, [activeItems, activeMarket]);
+  const displayItems = useMemo(() => {
+    const pinnedItems = filteredItems.filter((item) => item.pinned);
+    const normalItems = filteredItems.filter((item) => !item.pinned);
+
+    return [...pinnedItems, ...normalItems];
+  }, [filteredItems]);
 
   const alertsByKey = useMemo(() => {
     return alerts.reduce<Record<string, LocalPriceAlert[]>>((groups, alert) => {
@@ -2210,6 +2358,68 @@ export default function StockWatchlistClient() {
     [activeListId],
   );
 
+  const togglePinned = useCallback((targetItem: StockItem) => {
+    setWatchlists((current) => ({
+      ...current,
+      [activeListId]: (current[activeListId] || []).map((item) =>
+        stockKey(item.symbol, item.market) === stockKey(targetItem.symbol, targetItem.market)
+          ? { ...item, pinned: !item.pinned }
+          : item,
+      ),
+    }));
+  }, [activeListId]);
+
+  const reorderStock = useCallback((fromKey: string, toKey: string) => {
+    if (fromKey === toKey) return;
+
+    setWatchlists((current) => {
+      const list = current[activeListId] || [];
+      const fromIndex = list.findIndex((item) => stockKey(item.symbol, item.market) === fromKey);
+
+      if (fromIndex < 0) return current;
+
+      const nextList = [...list];
+      const [moved] = nextList.splice(fromIndex, 1);
+      const toIndex = nextList.findIndex((item) => stockKey(item.symbol, item.market) === toKey);
+
+      if (toIndex < 0) return current;
+
+      nextList.splice(toIndex, 0, moved);
+
+      return {
+        ...current,
+        [activeListId]: nextList,
+      };
+    });
+  }, [activeListId]);
+
+  const handleCardDragStart = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
+    const key = stockKey(item.symbol, item.market);
+    setDraggedItemKey(key);
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', key);
+  }, []);
+
+  const handleCardDragOver = useCallback((event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const handleCardDrop = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
+    event.preventDefault();
+    const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKey;
+    const toKey = stockKey(item.symbol, item.market);
+    setDraggedItemKey(null);
+
+    if (!fromKey) return;
+
+    reorderStock(fromKey, toKey);
+  }, [draggedItemKey, reorderStock]);
+
+  const handleCardDragEnd = useCallback(() => {
+    setDraggedItemKey(null);
+  }, []);
+
   const createAlert = useCallback((item: StockItem, input: Pick<LocalPriceAlert, 'conditionType' | 'targetValue' | 'triggerMode' | 'cooldownMinutes'>) => {
     const now = new Date().toISOString();
     setAlerts((current) => [
@@ -2307,7 +2517,15 @@ export default function StockWatchlistClient() {
         </header>
 
         {isAddPanelOpen ? (
-        <form onSubmit={onSubmit} className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6">
+        <form onSubmit={onSubmit} className="relative rounded-2xl border border-slate-200 bg-white/90 p-5 pt-11 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6 sm:pt-11">
+          <button
+            type="button"
+            onClick={() => setIsAddPanelOpen(false)}
+            className="absolute right-3 top-3 rounded-xl p-2 text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
+            aria-label="關閉新增標的"
+          >
+            <X size={18} />
+          </button>
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="flex-1">
               <label htmlFor="stockSymbol" className="block text-sm font-bold leading-6 text-slate-700">
@@ -2443,26 +2661,32 @@ export default function StockWatchlistClient() {
           </div>
         ) : null}
 
-        {filteredItems.length ? (
+        {displayItems.length ? (
           <>
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredItems.map((item) => (
+              {displayItems.map((item) => (
                 <StockCard
                   key={stockKey(item.symbol, item.market)}
                   item={item}
                   quote={quotes[stockKey(item.symbol, item.market)]}
                   loading={quotesLoading}
                   alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
+                  isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
                   onRemove={removeStock}
                   onOpen={setSelectedStock}
                   onOpenAlerts={setAlertItem}
+                  onTogglePinned={togglePinned}
+                  onDragStart={handleCardDragStart}
+                  onDragOver={handleCardDragOver}
+                  onDrop={handleCardDrop}
+                  onDragEnd={handleCardDragEnd}
                 />
               ))}
             </div>
 
             <div className="mt-5 inline-flex items-center rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-100">
               <Info size={14} className="text-orange-600" />
-              <span className="ml-1.5 font-medium">每張卡片右側的小線圖顯示該標的近期價格變化</span>
+              <span className="ml-1.5 font-medium">每張卡片右側的小線圖顯示近期價格與迷你五線譜；可拖曳卡片調整順序</span>
             </div>
           </>
         ) : null}
