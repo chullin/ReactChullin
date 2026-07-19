@@ -584,10 +584,22 @@ function MarketAssetCard({
 }) {
   const tone = quoteTone(quote);
   const TrendIcon = tone.positive ? TrendingUp : tone.negative ? TrendingDown : Clock3;
+  const openCard = () => onOpen(item);
 
   return (
     <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-orange-100 hover:shadow-xl hover:shadow-orange-700/10">
-      <button type="button" onClick={() => onOpen(item)} className="block w-full text-left">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={openCard}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openCard();
+          }
+        }}
+        className="block w-full cursor-pointer text-left focus:outline focus:outline-2 focus:outline-orange-500/40"
+      >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -644,7 +656,7 @@ function MarketAssetCard({
             </div>
           </div>
         )}
-      </button>
+      </div>
 
       <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
         <button
