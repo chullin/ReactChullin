@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import MarketWatchClient from '@/components/tools/MarketWatchClient';
+import StockWatchlistClient from '@/components/tools/StockWatchlistClient';
 
 export const metadata: Metadata = {
   title: 'Market Watch 市場觀察清單 | Joseph Chen',
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function MarketWatchPage() {
-  return <MarketWatchClient />;
+  return <StockWatchlistClient />;
 }
