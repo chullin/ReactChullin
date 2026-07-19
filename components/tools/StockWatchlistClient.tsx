@@ -11,6 +11,8 @@ import {
   LineChart,
   Minus,
   Newspaper,
+  Plus,
+  RefreshCw,
   TrendingDown,
   TrendingUp,
   X,
@@ -24,6 +26,11 @@ type StockItem = {
 };
 
 type Watchlists = Record<string, StockItem[]>;
+
+type WatchlistDef = {
+  id: string;
+  name: string;
+};
 
 type StockQuote = {
   symbol: string;
@@ -96,13 +103,11 @@ type PeriodOption = {
   ytd?: boolean;
 };
 
-const LISTS = [
+const DEFAULT_LISTS: WatchlistDef[] = [
   { id: '庫存', name: '庫存' },
   { id: '觀察清單 1', name: '觀察清單 1' },
   { id: '觀察清單 2', name: '觀察清單 2' },
   { id: '觀察清單 3', name: '觀察清單 3' },
-  { id: '觀察清單 4', name: '觀察清單 4' },
-  { id: '觀察清單 5', name: '觀察清單 5' },
 ];
 
 const MARKET_TABS = [
@@ -112,6 +117,7 @@ const MARKET_TABS = [
 ] as const;
 
 const STORAGE_KEY = 'stock-watchlist:v1';
+const LIST_DEFS_KEY = 'stock-watchlist-list-defs:v1';
 const ACTIVE_LIST_KEY = 'stock-watchlist-active-list:v1';
 const ACTIVE_MARKET_KEY = 'stock-watchlist-active-market:v1';
 const REFRESH_INTERVAL_MS = 30_000;
@@ -139,11 +145,25 @@ const VRVP_PERIODS: PeriodOption[] = [
   { label: '5Y', months: 60 },
 ] satisfies PeriodOption[];
 
-function createEmptyWatchlists() {
-  return LISTS.reduce<Watchlists>((acc, list) => {
+function createEmptyWatchlists(lists: WatchlistDef[] = DEFAULT_LISTS) {
+  return lists.reduce<Watchlists>((acc, list) => {
     acc[list.id] = [];
     return acc;
   }, {});
+}
+
+function normalizeWatchlistDefs(value: unknown): WatchlistDef[] {
+  if (!Array.isArray(value)) return DEFAULT_LISTS;
+  const merged = [...DEFAULT_LISTS, ...value.filter((item): item is WatchlistDef => {
+    return typeof item?.id === 'string' && typeof item?.name === 'string';
+  })];
+  const seen = new Set<string>();
+
+  return merged.filter((item) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  });
 }
 
 function normalizeSymbol(value: string) {
@@ -1492,10 +1512,12 @@ function StockCard({
 export default function StockWatchlistClient() {
   const [mounted, setMounted] = useState(false);
   const [symbol, setSymbol] = useState('');
+  const [watchlistDefs, setWatchlistDefs] = useState<WatchlistDef[]>(DEFAULT_LISTS);
   const [watchlists, setWatchlists] = useState<Watchlists>(() => createEmptyWatchlists());
-  const [activeListId, setActiveListId] = useState(LISTS[0].id);
+  const [activeListId, setActiveListId] = useState(DEFAULT_LISTS[0].id);
   const [activeMarket, setActiveMarket] = useState<(typeof MARKET_TABS)[number]['value']>('全部');
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
+  const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [quotesLoading, setQuotesLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -1506,15 +1528,19 @@ export default function StockWatchlistClient() {
     setMounted(true);
 
     try {
+      const storedListDefs = localStorage.getItem(LIST_DEFS_KEY);
       const storedWatchlists = localStorage.getItem(STORAGE_KEY);
       const storedList = localStorage.getItem(ACTIVE_LIST_KEY);
       const storedMarket = localStorage.getItem(ACTIVE_MARKET_KEY);
+      const nextListDefs = storedListDefs ? normalizeWatchlistDefs(JSON.parse(storedListDefs)) : DEFAULT_LISTS;
+
+      setWatchlistDefs(nextListDefs);
 
       if (storedWatchlists) {
-        setWatchlists({ ...createEmptyWatchlists(), ...JSON.parse(storedWatchlists) });
+        setWatchlists({ ...createEmptyWatchlists(nextListDefs), ...JSON.parse(storedWatchlists) });
       }
 
-      if (storedList && LISTS.some((list) => list.id === storedList)) {
+      if (storedList && nextListDefs.some((list) => list.id === storedList)) {
         setActiveListId(storedList);
       }
 
@@ -1531,6 +1557,11 @@ export default function StockWatchlistClient() {
     const id = window.setTimeout(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlists)), 250);
     return () => window.clearTimeout(id);
   }, [mounted, watchlists]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem(LIST_DEFS_KEY, JSON.stringify(watchlistDefs));
+  }, [mounted, watchlistDefs]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -1653,6 +1684,7 @@ export default function StockWatchlistClient() {
         [stockKey(normalized, target.market)]: target.quote,
       }));
       setSymbol('');
+      setIsAddPanelOpen(false);
       setMessage({ text: '新增成功', type: 'success' });
     } catch {
       setMessage({ text: '查詢失敗，請稍後再試', type: 'error' });
@@ -1678,26 +1710,68 @@ export default function StockWatchlistClient() {
     [activeListId],
   );
 
+  const createWatchlist = useCallback(() => {
+    const nextIndex = watchlistDefs.filter((list) => list.name.startsWith('觀察清單')).length + 1;
+    const rawName = window.prompt('請輸入新的觀察清單名稱', `觀察清單 ${nextIndex}`);
+    const name = rawName?.trim();
+
+    if (!name) return;
+
+    if (watchlistDefs.some((list) => list.name === name || list.id === name)) {
+      setMessage({ text: `${name} 已存在`, type: 'error' });
+      return;
+    }
+
+    const nextList = { id: name, name };
+    setWatchlistDefs((current) => [...current, nextList]);
+    setWatchlists((current) => ({ ...current, [nextList.id]: [] }));
+    setActiveListId(nextList.id);
+    setMessage({ text: `已新增「${name}」`, type: 'success' });
+  }, [watchlistDefs]);
+
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_48%,#fafafa_100%)] px-6 pb-16 pt-12 text-slate-900">
       <main className="mx-auto w-full max-w-6xl">
-        <div className="mb-10">
-          <div className="mb-5 inline-flex h-6 items-center rounded-full bg-orange-50 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">
-            Stock Watchlist
+        <header className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="mb-5 inline-flex h-6 items-center rounded-full bg-orange-50 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">
+              Market Watch
+            </div>
+            <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+              市場<span className="text-gradient">觀察清單</span>
+            </h1>
+            <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-slate-500 sm:text-base">
+              建立自己的台股、美股與匯率觀察清單，保留股價走勢、五線譜、VRVP 與新聞等完整分析內容。
+            </p>
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-            自選股<span className="text-gradient">看盤</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-slate-500 sm:text-base">
-            建立自己的美股與台股追蹤清單，快速查看即時報價、漲跌幅與今年以來的小線圖。
-          </p>
-        </div>
 
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={refreshQuotes}
+              disabled={quotesLoading}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-white px-4 text-sm font-black text-orange-700 shadow-sm transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <RefreshCw size={17} className={quotesLoading ? 'animate-spin' : ''} />
+              重新整理
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAddPanelOpen((open) => !open)}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)]"
+            >
+              <Plus size={17} />
+              新增標的
+            </button>
+          </div>
+        </header>
+
+        {isAddPanelOpen ? (
         <form onSubmit={onSubmit} className="rounded-2xl border border-slate-200 bg-white/90 p-5 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6">
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="flex-1">
               <label htmlFor="stockSymbol" className="block text-sm font-bold leading-6 text-slate-700">
-                股票代號
+                標的代號
               </label>
               <div className="relative mt-2 flex items-center">
                 <input
@@ -1705,7 +1779,7 @@ export default function StockWatchlistClient() {
                   value={symbol}
                   onChange={(event) => setSymbol(event.target.value.toUpperCase())}
                   className="block h-[3.25rem] w-full appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-left font-medium text-slate-700 placeholder:text-slate-400 focus:border-orange-200 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-orange-500/40 focus:ring-4 focus:ring-orange-100"
-                  placeholder="輸入美股或台股代號"
+                  placeholder="輸入美股或台股代號，例如 AAPL 或 2330"
                 />
               </div>
             </div>
@@ -1721,7 +1795,7 @@ export default function StockWatchlistClient() {
                   onChange={(event) => setActiveListId(event.target.value)}
                   className="h-[3.25rem] w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-left font-medium text-slate-700 focus:border-orange-200 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-orange-500/40 focus:ring-4 focus:ring-orange-100"
                 >
-                  {LISTS.map((list) => (
+                  {watchlistDefs.map((list) => (
                     <option key={list.id} value={list.id}>
                       {list.name}
                     </option>
@@ -1745,6 +1819,7 @@ export default function StockWatchlistClient() {
             </button>
           </div>
         </form>
+        ) : null}
 
         {message ? (
           <div
@@ -1776,7 +1851,7 @@ export default function StockWatchlistClient() {
 
         {activeItems.length ? (
           <div className="mt-7 mb-4 flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
-            {LISTS.map((list) => (
+            {watchlistDefs.map((list) => (
               <button
                 key={list.id}
                 type="button"
@@ -1788,6 +1863,14 @@ export default function StockWatchlistClient() {
                 {list.name}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={createWatchlist}
+              className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold text-orange-700 transition-colors hover:bg-white hover:text-orange-800"
+            >
+              <Plus size={13} />
+              新增清單
+            </button>
           </div>
         ) : null}
 
