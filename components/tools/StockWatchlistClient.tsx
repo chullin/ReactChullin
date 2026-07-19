@@ -355,6 +355,35 @@ function formatTooltipDate(value: string) {
   return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 }
 
+function formatFxTimestamp(value?: string) {
+  if (!value) return '-';
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return formatDate(value);
+
+  return `${date.getMonth() + 1}月${date.getDate()}日 ${date.toLocaleTimeString('zh-TW', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })}`;
+}
+
+function splitCurrencyPair(symbol: string) {
+  const [base = symbol, quote = ''] = symbol.replace('-', '/').split('/');
+  return { base, quote };
+}
+
+function currencyDisplayName(code: string) {
+  const names: Record<string, string> = {
+    CNY: '人民幣',
+    HKD: '港幣',
+    TWD: '新臺幣',
+    USD: '美元',
+  };
+
+  return names[code] || code;
+}
+
 function periodStart(period: { months?: number; ytd?: boolean }) {
   const date = new Date();
 
@@ -799,12 +828,12 @@ function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive
           d={line.d}
           fill="none"
           stroke={line.level === 0 ? '#f97316' : line.level > 0 ? '#0284c7' : '#22c55e'}
-          strokeWidth={line.level === 0 ? '1.2' : '0.9'}
-          opacity={line.level === 0 ? '0.65' : '0.42'}
+          strokeWidth={line.level === 0 ? '1.55' : '1.15'}
+          opacity={line.level === 0 ? '0.78' : '0.58'}
           vectorEffect="non-scaling-stroke"
         />
       ))}
-      <path d={path} fill="none" stroke={stroke} strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      <path d={path} fill="none" stroke={stroke} strokeWidth="2.35" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
@@ -1474,6 +1503,91 @@ function DetailChart({
   );
 }
 
+function FxDetailPanel({
+  item,
+  quote,
+  points,
+  loading,
+}: {
+  item: StockItem;
+  quote?: StockQuote;
+  points: HistoryPoint[];
+  loading: boolean;
+}) {
+  const { base, quote: quoteCurrency } = splitCurrencyPair(item.symbol);
+  const baseName = currencyDisplayName(base);
+  const quoteName = currencyDisplayName(quoteCurrency);
+  const rate = quote?.price || null;
+  const updatedAt = points.at(-1)?.date;
+  const reverseRate = isFiniteNumber(rate) && rate !== 0 ? 1 / rate : null;
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <p className="text-xs font-black uppercase tracking-widest text-orange-700">Currency Converter</p>
+        <h2 className="mt-2 text-3xl font-black tabular-nums text-slate-900">
+          1 {baseName} 等於
+        </h2>
+        <div className="mt-1 text-4xl font-black tabular-nums text-slate-900">
+          {formatPrice(rate, quoteCurrency)}
+          <span className="ml-2 text-xl font-black">{quoteName}</span>
+        </div>
+        <p className="mt-3 text-xs font-bold text-slate-400">
+          {formatFxTimestamp(updatedAt)} · 參考匯率
+        </p>
+
+        <div className="mt-6 space-y-3">
+          <div className="grid grid-cols-[1fr_auto] overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div className="px-3 py-3 text-lg font-bold tabular-nums text-slate-800">1</div>
+            <div className="flex min-w-28 items-center justify-between gap-3 border-l border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-600">
+              {baseName}
+              <ChevronDown size={16} className="text-slate-400" />
+            </div>
+          </div>
+          <div className="grid grid-cols-[1fr_auto] overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div className="px-3 py-3 text-lg font-bold tabular-nums text-slate-800">{formatPrice(rate, quoteCurrency)}</div>
+            <div className="flex min-w-28 items-center justify-between gap-3 border-l border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-600">
+              {quoteName}
+              <ChevronDown size={16} className="text-slate-400" />
+            </div>
+          </div>
+        </div>
+
+        <dl className="mt-5 grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">
+          <div className="flex items-center justify-between gap-3">
+            <dt>反向匯率</dt>
+            <dd className="tabular-nums text-slate-900">1 {quoteName} = {formatPrice(reverseRate, base)} {baseName}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt>變動</dt>
+            <dd className={quote && (quote.changePercent || 0) >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+              {formatChange(quote?.change, quoteCurrency)} ({formatPercent(quote?.changePercent)})
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Exchange Rate</p>
+            <h3 className="mt-1 text-xl font-black text-slate-900">{base}/{quoteCurrency} 匯率走勢</h3>
+          </div>
+          <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-black text-orange-700 ring-1 ring-orange-100">
+            近期
+          </span>
+        </div>
+        <DetailChart mode="line" points={points} periodLabel="近期匯率" />
+        {loading ? (
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
+            詳細資料載入中...
+          </div>
+        ) : null}
+      </section>
+    </div>
+  );
+}
+
 function StockDetailModal({
   item,
   quote,
@@ -1490,6 +1604,7 @@ function StockDetailModal({
   const [staffPeriod, setStaffPeriod] = useState(STAFF_PERIODS[3]);
   const [vrvpPeriod, setVrvpPeriod] = useState(VRVP_PERIODS[2]);
   const activeQuote = details?.quote || quote;
+  const isFx = item.market === '外匯';
   const positive = (activeQuote?.changePercent || 0) > 0;
   const negative = (activeQuote?.changePercent || 0) < 0;
   const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
@@ -1504,6 +1619,7 @@ function StockDetailModal({
     () => filterHistory(details?.history || [], activePeriod),
     [activePeriod, details?.history],
   );
+  const fxChartPoints = details?.history || [];
   const setActivePeriod = (period: typeof PRICE_PERIODS[number] | typeof STAFF_PERIODS[number] | typeof VRVP_PERIODS[number]) => {
     if (mode === 'staff') {
       setStaffPeriod(period as typeof STAFF_PERIODS[number]);
@@ -1527,7 +1643,7 @@ function StockDetailModal({
         if (item.market === '外匯') {
           const values = quote?.sparkline || [];
           const history = values.map((value, index) => ({
-            date: new Date(Date.now() - (values.length - index - 1) * 60 * 60_000).toISOString().slice(0, 10),
+            date: new Date(Date.now() - (values.length - index - 1) * 60 * 60_000).toISOString(),
             open: value,
             high: value,
             low: value,
@@ -1629,6 +1745,10 @@ function StockDetailModal({
             </div>
           </header>
 
+          {isFx ? (
+            <FxDetailPanel item={item} quote={activeQuote || undefined} points={fxChartPoints} loading={loading} />
+          ) : (
+            <>
           <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1">
             {chartTabs.map((tab) => {
               const Icon = tab.icon;
@@ -1715,6 +1835,8 @@ function StockDetailModal({
               <p className="mt-1">結合 K 線、量價分佈與 POC、VAH、VAL 線標。</p>
             </div>
           </section>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -1871,7 +1993,7 @@ function StockCard({
                 </span>
               </div>
             </div>
-            <div className="h-6 w-12 shrink-0 sm:h-10 sm:w-20">
+            <div className="h-12 w-24 shrink-0 sm:h-16 sm:w-32">
               <Sparkline quote={quote} positive={positive} negative={negative} />
             </div>
           </div>
