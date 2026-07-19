@@ -2187,7 +2187,7 @@ function StockCard({
       onDragOver={(event) => onDragOver(event, item)}
       onDrop={(event) => onDrop(event, item)}
       onDragEnd={onDragEnd}
-      className={`group relative cursor-pointer rounded-2xl border bg-white px-3 pb-3 pt-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-2xl hover:shadow-orange-700/10 focus:outline focus:outline-2 focus:outline-orange-500/40 sm:px-4 sm:pb-4 ${
+      className={`group relative cursor-pointer rounded-2xl border bg-white px-4 pb-4 pt-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-orange-100 hover:shadow-2xl hover:shadow-orange-700/10 focus:outline focus:outline-2 focus:outline-orange-500/40 ${
         isDragging
           ? 'border-orange-200 opacity-55 ring-2 ring-orange-100'
           : dropPlacement
@@ -2256,7 +2256,7 @@ function StockCard({
         {alertCount || ''}
       </button>
 
-      <div className="mb-1 flex items-center gap-2 pl-5 pr-16">
+      <div className="mb-1 flex items-center gap-2 pl-5 pr-24 sm:pr-16">
         <span className="flex h-5 min-w-7 shrink-0 items-center justify-center rounded-md bg-orange-50 px-1.5 text-[10px] font-black text-orange-700 ring-1 ring-orange-100">
           {item.market === '美股' ? 'US' : item.market === '台股' ? 'TW' : 'FX'}
         </span>
@@ -2265,17 +2265,17 @@ function StockCard({
             置頂
           </span>
         ) : null}
-        <span className="text-base font-black tracking-tight text-slate-900 sm:text-lg">
+        <span className="min-w-0 text-lg font-black tracking-tight text-slate-900 sm:text-lg">
           {displaySymbol(item.symbol)}
         </span>
       </div>
 
       {quote?.longName ? (
-        <div className="mb-2 truncate text-[11px] font-medium text-slate-500 sm:text-xs">{quote.longName}</div>
+        <div className="mb-3 truncate text-xs font-medium text-slate-500">{quote.longName}</div>
       ) : loading ? (
-        <div className="mb-2 h-4 w-24 animate-pulse rounded bg-orange-50" />
+        <div className="mb-3 h-4 w-24 animate-pulse rounded bg-orange-50" />
       ) : (
-        <div className="mb-2 text-[11px] text-slate-400">無法取得資料</div>
+        <div className="mb-3 text-xs text-slate-400">無法取得資料</div>
       )}
 
       {loading && !quote ? (
@@ -2285,17 +2285,17 @@ function StockCard({
         </div>
       ) : quote ? (
         <>
-          <div className="flex items-end justify-between gap-2">
+          <div className="flex items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="whitespace-nowrap text-lg font-semibold tabular-nums sm:text-2xl" style={{ color: accent }}>
+              <div className="whitespace-nowrap text-2xl font-semibold tabular-nums" style={{ color: accent }}>
                 {formatPrice(quote.price, quote.currency)}
                 {quote.currency ? (
-                  <span className="ml-1 text-[10px] font-normal sm:text-xs">{quote.currency}</span>
+                  <span className="ml-1 text-xs font-normal">{quote.currency}</span>
                 ) : null}
               </div>
               <div className="flex items-center gap-1.5">
                 <span
-                  className="mt-0.5 inline-flex h-6 items-center gap-0.5 rounded px-[0.37rem] py-[0.2rem] text-[10px] font-medium tabular-nums sm:mt-1 sm:px-1.5 sm:py-1 sm:text-xs"
+                  className="mt-1 inline-flex h-6 items-center gap-0.5 rounded px-1.5 py-1 text-xs font-medium tabular-nums"
                   style={{ color: accent, backgroundColor: accentBg }}
                 >
                   {positive ? <TrendingUp size={10} /> : negative ? <TrendingDown size={10} /> : <Minus size={10} />}
@@ -2306,23 +2306,23 @@ function StockCard({
                 </span>
               </div>
             </div>
-            <div className="h-12 w-24 shrink-0 sm:h-16 sm:w-32">
+            <div className="h-16 w-32 shrink-0">
               <Sparkline quote={quote} positive={positive} negative={negative} />
             </div>
           </div>
 
           {range !== null ? (
             <div className="mt-3 flex items-center gap-1.5 border-t border-slate-100 pt-3">
-              <span className="shrink-0 rounded-md bg-slate-100 px-[5px] py-[1px] text-[9px] font-bold text-slate-400">
+              <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-400">
                 52W
               </span>
-              <span className="shrink-0 text-[9px] tabular-nums text-slate-400 sm:text-[10px]">
+              <span className="shrink-0 text-[10px] tabular-nums text-slate-400">
                 {formatPrice(quote.fiftyTwoWeekLow, quote.currency)}
               </span>
               <div className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-slate-100">
                 <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${range}%`, backgroundColor: accent }} />
               </div>
-              <span className="shrink-0 text-[9px] tabular-nums text-slate-400 sm:text-[10px]">
+              <span className="shrink-0 text-[10px] tabular-nums text-slate-400">
                 {formatPrice(quote.fiftyTwoWeekHigh, quote.currency)}
               </span>
             </div>
@@ -3135,7 +3135,7 @@ export default function StockWatchlistClient() {
 
         {displayItems.length ? (
           <>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
               {displayItems.map((item) => (
                 <StockCard
                   key={stockKey(item.symbol, item.market)}
