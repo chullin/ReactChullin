@@ -5,6 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import {
   Activity,
   BarChart3,
+  Bell,
   ChevronDown,
   ExternalLink,
   Info,
@@ -31,6 +32,20 @@ type Watchlists = Record<string, StockItem[]>;
 type WatchlistDef = {
   id: string;
   name: string;
+};
+
+type LocalPriceAlert = {
+  alertId: string;
+  symbol: string;
+  market: Market;
+  conditionType: 'price_above' | 'price_below';
+  targetValue: number;
+  isEnabled: boolean;
+  triggerMode: 'once' | 'repeat';
+  cooldownMinutes: number;
+  lastTriggeredAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 type StockQuote = {
@@ -120,6 +135,7 @@ const MARKET_TABS = [
 
 const STORAGE_KEY = 'stock-watchlist:v1';
 const LIST_DEFS_KEY = 'stock-watchlist-list-defs:v1';
+const ALERTS_KEY = 'stock-watchlist-alerts:v1';
 const ACTIVE_LIST_KEY = 'stock-watchlist-active-list:v1';
 const ACTIVE_MARKET_KEY = 'stock-watchlist-active-market:v1';
 const REFRESH_INTERVAL_MS = 30_000;
@@ -234,6 +250,18 @@ function fxQuoteToStockQuote(symbol: string): StockQuote | null {
     quoteType: 'FX',
     exchange: quote.exchange,
   };
+}
+
+function alertKey(symbol: string, market: Market) {
+  return stockKey(symbol, market);
+}
+
+function formatAlertText(alert: LocalPriceAlert) {
+  return `${alert.conditionType === 'price_above' ? '價格高於' : '價格低於'} ${alert.targetValue}`;
+}
+
+function createAlertId(symbol: string, market: Market) {
+  return `${alertKey(symbol, market)}:${Date.now()}:${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function isFiniteNumber(value: unknown): value is number {
@@ -1472,14 +1500,18 @@ function StockCard({
   item,
   quote,
   loading,
+  alertCount,
   onRemove,
   onOpen,
+  onOpenAlerts,
 }: {
   item: StockItem;
   quote?: StockQuote;
   loading: boolean;
+  alertCount: number;
   onRemove: (symbol: string, market: Market) => void;
   onOpen: (item: StockItem) => void;
+  onOpenAlerts: (item: StockItem) => void;
 }) {
   const positive = (quote?.changePercent || 0) > 0;
   const negative = (quote?.changePercent || 0) < 0;
@@ -1510,6 +1542,20 @@ function StockCard({
         aria-label="移除"
       >
         <X size={14} />
+      </button>
+      <button
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpenAlerts(item);
+        }}
+        className={`absolute right-8 top-2 z-10 inline-flex h-6 items-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition-colors ${
+          alertCount ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-300 hover:bg-orange-50 hover:text-orange-700'
+        }`}
+        aria-label="設定通知"
+      >
+        <Bell size={12} />
+        {alertCount || ''}
       </button>
 
       <div className="mb-1 flex items-center gap-2 pr-6">
@@ -1578,9 +1624,166 @@ function StockCard({
               </span>
             </div>
           ) : null}
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenAlerts(item);
+            }}
+            className="mt-3 text-[11px] font-bold text-slate-400 transition hover:text-orange-700"
+          >
+            通知：{alertCount ? `${alertCount} 筆` : '未設定'}
+          </button>
         </>
       ) : null}
     </article>
+  );
+}
+
+function AlertManagerModal({
+  item,
+  quote,
+  alerts,
+  onClose,
+  onCreate,
+  onToggle,
+  onRemove,
+}: {
+  item: StockItem;
+  quote?: StockQuote;
+  alerts: LocalPriceAlert[];
+  onClose: () => void;
+  onCreate: (input: Pick<LocalPriceAlert, 'conditionType' | 'targetValue' | 'triggerMode' | 'cooldownMinutes'>) => void;
+  onToggle: (alertId: string) => void;
+  onRemove: (alertId: string) => void;
+}) {
+  const [conditionType, setConditionType] = useState<LocalPriceAlert['conditionType']>('price_above');
+  const [targetValue, setTargetValue] = useState(() => quote?.price?.toString() || '');
+  const [triggerMode, setTriggerMode] = useState<LocalPriceAlert['triggerMode']>('once');
+  const [cooldownMinutes, setCooldownMinutes] = useState('60');
+  const [error, setError] = useState<string | null>(null);
+
+  const submitAlert = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const parsedTarget = Number(targetValue);
+    const parsedCooldown = Number(cooldownMinutes);
+
+    if (!Number.isFinite(parsedTarget)) {
+      setError('請輸入有效目標價格');
+      return;
+    }
+
+    if (!Number.isFinite(parsedCooldown) || parsedCooldown < 0) {
+      setError('Cooldown 不可小於 0');
+      return;
+    }
+
+    onCreate({
+      conditionType,
+      targetValue: parsedTarget,
+      triggerMode,
+      cooldownMinutes: parsedCooldown,
+    });
+    setTargetValue('');
+    setError(null);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" onClick={onClose}>
+      <div className="w-full max-w-2xl rounded-3xl bg-white p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Price Alerts</p>
+            <h2 className="mt-1 text-xl font-black text-slate-900">{displaySymbol(item.symbol)}</h2>
+            <p className="mt-1 text-xs font-bold text-slate-400">
+              {item.market} · 目前 {formatPrice(quote?.price, quote?.currency)} {quote?.currency || ''}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl p-2 text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
+            aria-label="關閉"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={submitAlert} className="grid gap-3 rounded-2xl border border-orange-100 bg-orange-50/50 p-4 sm:grid-cols-[1fr_1fr_auto]">
+          <select
+            value={conditionType}
+            onChange={(event) => setConditionType(event.target.value as LocalPriceAlert['conditionType'])}
+            className="h-11 rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+          >
+            <option value="price_above">價格高於</option>
+            <option value="price_below">價格低於</option>
+          </select>
+          <input
+            value={targetValue}
+            onChange={(event) => setTargetValue(event.target.value)}
+            inputMode="decimal"
+            className="h-11 rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold tabular-nums text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+            placeholder="目標價格"
+          />
+          <button
+            type="submit"
+            className="inline-flex h-11 items-center justify-center rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20"
+          >
+            新增
+          </button>
+          <select
+            value={triggerMode}
+            onChange={(event) => setTriggerMode(event.target.value as LocalPriceAlert['triggerMode'])}
+            className="h-11 rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+          >
+            <option value="once">once</option>
+            <option value="repeat">repeat</option>
+          </select>
+          <input
+            value={cooldownMinutes}
+            onChange={(event) => setCooldownMinutes(event.target.value)}
+            inputMode="numeric"
+            className="h-11 rounded-xl border border-orange-100 bg-white px-3 text-sm font-bold tabular-nums text-slate-700 outline-none focus:ring-4 focus:ring-orange-100"
+            placeholder="Cooldown 分鐘"
+          />
+          {error ? <p className="text-xs font-bold text-rose-700 sm:col-span-3">{error}</p> : null}
+        </form>
+
+        <div className="mt-5 space-y-2">
+          {alerts.map((alert) => (
+            <div key={alert.alertId} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+              <div>
+                <p className="text-sm font-black text-slate-900">{formatAlertText(alert)}</p>
+                <p className="mt-1 text-xs font-bold text-slate-400">
+                  {alert.triggerMode} · cooldown {alert.cooldownMinutes} 分鐘 · {alert.isEnabled ? '啟用' : '停用'}
+                </p>
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={() => onToggle(alert.alertId)}
+                  className="h-9 rounded-lg bg-slate-100 px-3 text-xs font-black text-slate-700 transition hover:bg-slate-200"
+                >
+                  {alert.isEnabled ? '停用' : '啟用'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onRemove(alert.alertId)}
+                  className="h-9 rounded-lg bg-rose-50 px-3 text-xs font-black text-rose-700 transition hover:bg-rose-100"
+                >
+                  移除
+                </button>
+              </div>
+            </div>
+          ))}
+          {!alerts.length ? (
+            <div className="rounded-2xl border border-dashed border-slate-200 py-8 text-center text-sm font-bold text-slate-400">
+              尚未設定通知
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1593,11 +1796,14 @@ export default function StockWatchlistClient() {
   const [activeMarket, setActiveMarket] = useState<(typeof MARKET_TABS)[number]['value']>('全部');
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
+  const [alerts, setAlerts] = useState<LocalPriceAlert[]>([]);
+  const [alertItem, setAlertItem] = useState<StockItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [quotesLoading, setQuotesLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
   const missingSymbolCache = useRef(new Map<string, number>());
+  const previousQuotesRef = useRef<Record<string, StockQuote>>({});
 
   useEffect(() => {
     setMounted(true);
@@ -1605,6 +1811,7 @@ export default function StockWatchlistClient() {
     try {
       const storedListDefs = localStorage.getItem(LIST_DEFS_KEY);
       const storedWatchlists = localStorage.getItem(STORAGE_KEY);
+      const storedAlerts = localStorage.getItem(ALERTS_KEY);
       const storedList = localStorage.getItem(ACTIVE_LIST_KEY);
       const storedMarket = localStorage.getItem(ACTIVE_MARKET_KEY);
       const nextListDefs = storedListDefs ? normalizeWatchlistDefs(JSON.parse(storedListDefs)) : DEFAULT_LISTS;
@@ -1621,6 +1828,10 @@ export default function StockWatchlistClient() {
 
       if (storedMarket && MARKET_TABS.some((tab) => tab.value === storedMarket)) {
         setActiveMarket(storedMarket as typeof activeMarket);
+      }
+
+      if (storedAlerts) {
+        setAlerts(JSON.parse(storedAlerts));
       }
     } catch {
       setWatchlists(createEmptyWatchlists());
@@ -1640,6 +1851,12 @@ export default function StockWatchlistClient() {
 
   useEffect(() => {
     if (!mounted) return;
+    const id = window.setTimeout(() => localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts)), 250);
+    return () => window.clearTimeout(id);
+  }, [alerts, mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
     localStorage.setItem(ACTIVE_LIST_KEY, activeListId);
   }, [mounted, activeListId]);
 
@@ -1653,6 +1870,14 @@ export default function StockWatchlistClient() {
     if (activeMarket === '全部') return activeItems;
     return activeItems.filter((item) => item.market === activeMarket);
   }, [activeItems, activeMarket]);
+
+  const alertsByKey = useMemo(() => {
+    return alerts.reduce<Record<string, LocalPriceAlert[]>>((groups, alert) => {
+      const key = alertKey(alert.symbol, alert.market);
+      groups[key] = [...(groups[key] || []), alert];
+      return groups;
+    }, {});
+  }, [alerts]);
 
   const stocksParam = useMemo(() => {
     const stockItems = activeItems.filter((item) => isStockMarket(item.market));
@@ -1680,14 +1905,62 @@ export default function StockWatchlistClient() {
             `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
           )).data || {}
         : {};
+      const nextQuotes = { ...stockQuotes, ...fxQuotes };
+      const previousQuotes = previousQuotesRef.current;
+      const now = new Date();
+      const triggeredAlertIds = new Set<string>();
+      let triggeredCount = 0;
 
-      setQuotes({ ...stockQuotes, ...fxQuotes });
+      for (const alert of alerts) {
+        if (!alert.isEnabled) continue;
+        const key = stockKey(alert.symbol, alert.market);
+        const previousPrice = previousQuotes[key]?.price;
+        const currentPrice = nextQuotes[key]?.price;
+
+        if (!isFiniteNumber(previousPrice) || !isFiniteNumber(currentPrice)) continue;
+
+        if (alert.lastTriggeredAt) {
+          const lastTriggeredTime = Date.parse(alert.lastTriggeredAt);
+          if (!Number.isNaN(lastTriggeredTime) && now.getTime() - lastTriggeredTime < alert.cooldownMinutes * 60_000) {
+            continue;
+          }
+        }
+
+        const crossed = alert.conditionType === 'price_above'
+          ? previousPrice <= alert.targetValue && currentPrice > alert.targetValue
+          : previousPrice >= alert.targetValue && currentPrice < alert.targetValue;
+
+        if (!crossed) continue;
+
+        triggeredCount += 1;
+        triggeredAlertIds.add(alert.alertId);
+      }
+
+      if (triggeredAlertIds.size) {
+        const nowIso = now.toISOString();
+        setAlerts((current) =>
+          current.map((alert) => {
+            if (!triggeredAlertIds.has(alert.alertId)) return alert;
+
+            return {
+              ...alert,
+              isEnabled: alert.triggerMode === 'once' ? false : alert.isEnabled,
+              lastTriggeredAt: nowIso,
+              updatedAt: nowIso,
+            };
+          }),
+        );
+        setMessage({ text: `已觸發 ${triggeredCount} 筆到價通知`, type: 'success' });
+      }
+
+      previousQuotesRef.current = nextQuotes;
+      setQuotes(nextQuotes);
     } catch {
       setMessage({ text: '報價更新失敗，請稍後再試', type: 'error' });
     } finally {
       setQuotesLoading(false);
     }
-  }, [activeItems, stocksParam]);
+  }, [activeItems, alerts, stocksParam]);
 
   useEffect(() => {
     refreshQuotes();
@@ -1795,9 +2068,50 @@ export default function StockWatchlistClient() {
           (item) => item.symbol !== targetSymbol || item.market !== targetMarket,
         ),
       }));
+      setAlerts((current) => current.filter((alert) => alert.symbol !== targetSymbol || alert.market !== targetMarket));
     },
     [activeListId],
   );
+
+  const createAlert = useCallback((item: StockItem, input: Pick<LocalPriceAlert, 'conditionType' | 'targetValue' | 'triggerMode' | 'cooldownMinutes'>) => {
+    const now = new Date().toISOString();
+    setAlerts((current) => [
+      ...current,
+      {
+        alertId: createAlertId(item.symbol, item.market),
+        symbol: item.symbol,
+        market: item.market,
+        conditionType: input.conditionType,
+        targetValue: input.targetValue,
+        isEnabled: true,
+        triggerMode: input.triggerMode,
+        cooldownMinutes: input.cooldownMinutes,
+        lastTriggeredAt: null,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+    setMessage({ text: '到價通知已建立', type: 'success' });
+  }, []);
+
+  const toggleAlert = useCallback((alertId: string) => {
+    const now = new Date().toISOString();
+    setAlerts((current) =>
+      current.map((alert) =>
+        alert.alertId === alertId
+          ? {
+              ...alert,
+              isEnabled: !alert.isEnabled,
+              updatedAt: now,
+            }
+          : alert,
+      ),
+    );
+  }, []);
+
+  const removeAlert = useCallback((alertId: string) => {
+    setAlerts((current) => current.filter((alert) => alert.alertId !== alertId));
+  }, []);
 
   const createWatchlist = useCallback(() => {
     const nextIndex = watchlistDefs.filter((list) => list.name.startsWith('觀察清單')).length + 1;
@@ -2001,8 +2315,10 @@ export default function StockWatchlistClient() {
                   item={item}
                   quote={quotes[stockKey(item.symbol, item.market)]}
                   loading={quotesLoading}
+                  alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
                   onRemove={removeStock}
                   onOpen={setSelectedStock}
+                  onOpenAlerts={setAlertItem}
                 />
               ))}
             </div>
@@ -2020,6 +2336,18 @@ export default function StockWatchlistClient() {
           item={selectedStock}
           quote={quotes[stockKey(selectedStock.symbol, selectedStock.market)]}
           onClose={() => setSelectedStock(null)}
+        />
+      ) : null}
+
+      {alertItem ? (
+        <AlertManagerModal
+          item={alertItem}
+          quote={quotes[stockKey(alertItem.symbol, alertItem.market)]}
+          alerts={alertsByKey[alertKey(alertItem.symbol, alertItem.market)] || []}
+          onClose={() => setAlertItem(null)}
+          onCreate={(input) => createAlert(alertItem, input)}
+          onToggle={toggleAlert}
+          onRemove={removeAlert}
         />
       ) : null}
     </div>
