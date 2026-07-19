@@ -37,6 +37,11 @@ type YahooFxChartResponse = {
   };
 };
 
+type CurrencyApiResponse = {
+  date?: string;
+  [currency: string]: unknown;
+};
+
 export const defaultFxPairs: FxPairSeed[] = [
   {
     symbol: 'USD/TWD',
@@ -128,6 +133,91 @@ function yahooFxRange(range: string) {
   return { range: '1mo', interval: '1d' };
 }
 
+function formatDateKey(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date: Date, days: number) {
+  const nextDate = new Date(date);
+  nextDate.setUTCDate(nextDate.getUTCDate() + days);
+  return nextDate;
+}
+
+function startOfDay(date: Date) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+}
+
+function currencyApiSchedule(range: string) {
+  const end = startOfDay(new Date());
+  const earliestSupported = new Date(Date.UTC(2024, 6, 19));
+  const days = range === '1D' ? 1 : range === '5D' ? 5 : range === '1M' ? 31 : range === '1Y' ? 366 : range === '5Y' ? 5 * 366 : 20 * 366;
+  const step = range === '1D' || range === '5D' ? 1 : range === '1M' ? 2 : range === '1Y' ? 7 : 30;
+  const start = new Date(Math.max(addDays(end, -days).getTime(), earliestSupported.getTime()));
+  const dates: string[] = [];
+
+  for (let cursor = start; cursor <= end; cursor = addDays(cursor, step)) {
+    dates.push(formatDateKey(cursor));
+  }
+
+  const yesterday = formatDateKey(addDays(end, -1));
+  if (!dates.includes(yesterday)) dates.push(yesterday);
+
+  return dates;
+}
+
+async function fetchCurrencyApiPoint(symbol: string, date: string) {
+  const [base, quote] = normalizeFxSymbol(symbol).split('/');
+  if (!base || !quote) return null;
+
+  const baseKey = base.toLowerCase();
+  const quoteKey = quote.toLowerCase();
+  const url = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${date}/v1/currencies/${baseKey}.json`;
+
+  try {
+    const response = await fetch(url, {
+      cache: 'force-cache',
+      next: { revalidate: 60 * 60 * 12 },
+      headers: {
+        accept: 'application/json',
+        'user-agent': 'Mozilla/5.0',
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const payload = (await response.json()) as CurrencyApiResponse;
+    const rates = payload[baseKey];
+    const price = rates && typeof rates === 'object' ? (rates as Record<string, unknown>)[quoteKey] : null;
+
+    if (!isFiniteMarketNumber(price)) return null;
+
+    return {
+      timestamp: new Date(`${payload.date || date}T00:00:00.000Z`).toISOString(),
+      price,
+      open: price,
+      high: price,
+      low: price,
+      close: price,
+      volume: null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchCurrencyApiTimeSeries(symbol: string, range: string) {
+  const dates = currencyApiSchedule(range);
+  const points = await Promise.all(dates.map((date) => fetchCurrencyApiPoint(symbol, date)));
+  const byDate = new Map<string, NonNullable<(typeof points)[number]>>();
+
+  points.forEach((point) => {
+    if (!point) return;
+    byDate.set(point.timestamp.slice(0, 10), point);
+  });
+
+  return [...byDate.values()].sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+}
+
 async function fetchYahooFxChart(symbol: string, range = '1M') {
   const config = yahooFxRange(range);
   const hosts = ['query1.finance.yahoo.com', 'query2.finance.yahoo.com'];
@@ -163,7 +253,7 @@ export async function fetchFxTimeSeries(symbol: string, range = '1M') {
   const timestamps = result?.timestamp || [];
   const quote = result?.indicators?.quote?.[0] || {};
 
-  return timestamps
+  const yahooPoints = timestamps
     .map((timestamp, index) => {
       const close = quote.close?.[index] ?? null;
 
@@ -180,6 +270,11 @@ export async function fetchFxTimeSeries(symbol: string, range = '1M') {
       };
     })
     .filter((point): point is NonNullable<typeof point> => Boolean(point));
+
+  if (yahooPoints.length >= 2) return yahooPoints;
+
+  const fallbackPoints = await fetchCurrencyApiTimeSeries(symbol, range);
+  return fallbackPoints.length >= 2 ? fallbackPoints : yahooPoints;
 }
 
 export async function fetchFxQuote(pair: FxPairSeed): Promise<MarketQuote> {

@@ -385,6 +385,17 @@ function formatPrice(value: number | null | undefined, currency?: string) {
   });
 }
 
+function formatConversionInput(value: number | null | undefined) {
+  if (!isFiniteNumber(value)) return '';
+  const rounded = Math.abs(value) >= 100 ? value.toFixed(2) : value.toFixed(4);
+  return rounded.replace(/\.?0+$/, '');
+}
+
+function parseConversionInput(value: string) {
+  const parsed = Number(value.replace(/,/g, '').trim());
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function formatChange(value: number | null | undefined, currency?: string) {
   if (!isFiniteNumber(value)) return '-';
   const prefix = value >= 0 ? '+' : '';
@@ -860,10 +871,7 @@ function rangePercent(quote: StockQuote) {
 
 function dragPlacement(event: DragEvent<HTMLElement>): 'before' | 'after' {
   const rect = event.currentTarget.getBoundingClientRect();
-  const isWide = rect.width >= rect.height;
-  const pastMiddle = isWide
-    ? event.clientX > rect.left + rect.width / 2
-    : event.clientY > rect.top + rect.height / 2;
+  const pastMiddle = event.clientX > rect.left + rect.width / 2;
 
   return pastMiddle ? 'after' : 'before';
 }
@@ -1705,12 +1713,31 @@ function FxDetailPanel({
   const [activePeriod, setActivePeriod] = useState(FX_PERIODS[1]);
   const [chartPoints, setChartPoints] = useState<HistoryPoint[]>(points);
   const [chartLoading, setChartLoading] = useState(false);
+  const [baseAmount, setBaseAmount] = useState('1');
+  const [quoteAmount, setQuoteAmount] = useState('');
+  const [lastEditedAmount, setLastEditedAmount] = useState<'base' | 'quote'>('base');
   const { base, quote: quoteCurrency } = splitCurrencyPair(item.symbol);
   const baseName = currencyDisplayName(base);
   const quoteName = currencyDisplayName(quoteCurrency);
   const rate = quote?.price || null;
   const updatedAt = chartPoints.at(-1)?.date || points.at(-1)?.date;
   const reverseRate = isFiniteNumber(rate) && rate !== 0 ? 1 / rate : null;
+
+  useEffect(() => {
+    if (!isFiniteNumber(rate)) {
+      setQuoteAmount('');
+      return;
+    }
+
+    if (lastEditedAmount === 'base') {
+      const amount = parseConversionInput(baseAmount);
+      setQuoteAmount(amount === null ? '' : formatConversionInput(amount * rate));
+      return;
+    }
+
+    const amount = parseConversionInput(quoteAmount);
+    setBaseAmount(amount === null || rate === 0 ? '' : formatConversionInput(amount / rate));
+  }, [baseAmount, lastEditedAmount, quoteAmount, rate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1771,14 +1798,34 @@ function FxDetailPanel({
 
         <div className="mt-6 space-y-3">
           <div className="grid grid-cols-[1fr_auto] overflow-hidden rounded-xl border border-slate-200 bg-white">
-            <div className="px-3 py-3 text-lg font-bold tabular-nums text-slate-800">1</div>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={baseAmount}
+              onChange={(event) => {
+                setLastEditedAmount('base');
+                setBaseAmount(event.target.value);
+              }}
+              className="min-w-0 px-3 py-3 text-lg font-bold tabular-nums text-slate-800 outline-none focus:bg-orange-50/50"
+              aria-label={`${baseName} 金額`}
+            />
             <div className="flex min-w-28 items-center justify-between gap-3 border-l border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-600">
               {baseName}
               <ChevronDown size={16} className="text-slate-400" />
             </div>
           </div>
           <div className="grid grid-cols-[1fr_auto] overflow-hidden rounded-xl border border-slate-200 bg-white">
-            <div className="px-3 py-3 text-lg font-bold tabular-nums text-slate-800">{formatPrice(rate, quoteCurrency)}</div>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={quoteAmount}
+              onChange={(event) => {
+                setLastEditedAmount('quote');
+                setQuoteAmount(event.target.value);
+              }}
+              className="min-w-0 px-3 py-3 text-lg font-bold tabular-nums text-slate-800 outline-none focus:bg-orange-50/50"
+              aria-label={`${quoteName} 金額`}
+            />
             <div className="flex min-w-28 items-center justify-between gap-3 border-l border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-600">
               {quoteName}
               <ChevronDown size={16} className="text-slate-400" />
@@ -2152,14 +2199,14 @@ function StockCard({
     >
       {dropPlacement ? (
         <div
-          className={`pointer-events-none absolute left-2 right-2 z-20 flex items-center gap-2 ${
-            dropPlacement === 'before' ? '-top-3' : '-bottom-3'
+          className={`pointer-events-none absolute bottom-2 top-2 z-20 flex flex-col items-center gap-2 ${
+            dropPlacement === 'before' ? '-left-3' : '-right-3'
           }`}
           aria-hidden="true"
         >
           <span className="h-3 w-3 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
-          <span className="h-1 flex-1 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
-          <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black text-white shadow-sm shadow-orange-700/30">
+          <span className="w-1 flex-1 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
+          <span className="-rotate-90 whitespace-nowrap rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black text-white shadow-sm shadow-orange-700/30">
             放這裡
           </span>
         </div>
