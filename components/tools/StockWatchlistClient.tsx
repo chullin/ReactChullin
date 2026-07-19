@@ -916,6 +916,12 @@ function DetailChart({
     x: number;
     y: number;
   } | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<{
+    point: HistoryPoint;
+    value: number;
+    x: number;
+    y: number;
+  } | null>(null);
   const [isDraggingChart, setIsDraggingChart] = useState(false);
   const chartRef = useRef<HTMLDivElement | null>(null);
   const pinchRef = useRef<{ distance: number; centerX: number; centerRatio: number; range: { start: number; end: number } } | null>(null);
@@ -924,6 +930,7 @@ function DetailChart({
   useEffect(() => {
     setRange({ start: 0, end: 1 });
     setHoveredCandle(null);
+    setHoveredPoint(null);
     setIsDraggingChart(false);
     pinchRef.current = null;
     dragRef.current = null;
@@ -959,6 +966,7 @@ function DetailChart({
   }, [mode, points, range]);
   const values = getCloseValues(visiblePoints);
   const isCandlestickMode = mode === 'price' || mode === 'staff' || mode === 'vrvp';
+  const isPriceChartMode = isCandlestickMode || mode === 'line';
   const closeDomain = {
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
@@ -996,7 +1004,7 @@ function DetailChart({
   const staffLabelX = CHART_BOUNDS.left + plotWidth * 0.5;
   const hasCandles = visiblePoints.some((point) => getCandlePoint(point));
   const closeMarker = isCandlestickMode && isFiniteNumber(last) ? makeCloseMarker(last, min, max, chartSize.height) : null;
-  const canPan = isCandlestickMode && range.end - range.start < 0.999 && points.length > visiblePoints.length;
+  const canPan = isPriceChartMode && range.end - range.start < 0.999 && points.length > visiblePoints.length;
   const profileWidth = Math.min(220, Math.max(96, plotWidth * 0.32));
   const pocValue = vrvpProfile.poc ? (vrvpProfile.poc.low + vrvpProfile.poc.high) / 2 : null;
   const vrvpLevels = mode === 'vrvp'
@@ -1074,22 +1082,60 @@ function DetailChart({
     setRangeFromTouch(initial, distance, center);
   }, [setRangeFromTouch]);
 
-  const updateHoveredCandle = useCallback((clientX: number, clientY: number) => {
-    if (!isCandlestickMode || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
+  const updateHoveredChartPoint = useCallback((clientX: number, clientY: number) => {
+    if (!isPriceChartMode || isDraggingChart || !chartRef.current || !visiblePoints.length) return;
     const rect = chartRef.current.getBoundingClientRect();
     const svgX = ((clientX - rect.left) / Math.max(rect.width, 1)) * chartSize.width;
     const svgY = ((clientY - rect.top) / Math.max(rect.height, 1)) * chartSize.height;
     const ratio = clamp((svgX - CHART_BOUNDS.left) / Math.max(plotWidth, 1), 0, 1);
     const index = Math.round(ratio * (visiblePoints.length - 1));
     const point = visiblePoints[index];
-    const candle = point ? getCandlePoint(point) : null;
 
-    if (!point || !candle) {
+    if (!point) {
       setHoveredCandle(null);
+      setHoveredPoint(null);
       return;
     }
 
     const x = chartX(index, visiblePoints.length, chartSize.width);
+    const lineValue = point.close;
+
+    if (!isCandlestickMode) {
+      if (!isFiniteNumber(lineValue)) {
+        setHoveredPoint(null);
+        return;
+      }
+
+      const y = horizontalLineY(lineValue, min, max, chartSize.height);
+      const insidePlot =
+        svgX >= CHART_BOUNDS.left &&
+        svgX <= chartRight(chartSize.width) &&
+        svgY >= CHART_BOUNDS.top &&
+        svgY <= chartBottom(chartSize.height);
+
+      if (!insidePlot) {
+        setHoveredPoint(null);
+        return;
+      }
+
+      setHoveredCandle(null);
+      setHoveredPoint({
+        point,
+        value: lineValue,
+        x,
+        y,
+      });
+      return;
+    }
+
+    const candle = getCandlePoint(point);
+
+    if (!candle) {
+      setHoveredCandle(null);
+      setHoveredPoint(null);
+      return;
+    }
+
     const highY = horizontalLineY(candle.high, min, max, chartSize.height);
     const lowY = horizontalLineY(candle.low, min, max, chartSize.height);
     const openY = horizontalLineY(candle.open, min, max, chartSize.height);
@@ -1115,20 +1161,22 @@ function DetailChart({
 
     if (!nearCandle && !nearStaffLine) {
       setHoveredCandle(null);
+      setHoveredPoint(null);
       return;
     }
 
+    setHoveredPoint(null);
     setHoveredCandle({
       point,
       candle,
       x,
       y: highY,
     });
-  }, [candleWidth, chartSize.height, chartSize.width, isCandlestickMode, isDraggingChart, min, max, mode, plotWidth, staff, visiblePoints]);
+  }, [candleWidth, chartSize.height, chartSize.width, isCandlestickMode, isDraggingChart, isPriceChartMode, min, max, mode, plotWidth, staff, visiblePoints]);
 
   const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'touch') return;
-    if (!isCandlestickMode || !canPan || event.button !== 0) return;
+    if (!isPriceChartMode || !canPan || event.button !== 0) return;
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = {
@@ -1138,13 +1186,14 @@ function DetailChart({
     };
     setIsDraggingChart(true);
     setHoveredCandle(null);
-  }, [canPan, isCandlestickMode, range]);
+    setHoveredPoint(null);
+  }, [canPan, isPriceChartMode, range]);
 
   const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
 
     if (!drag || drag.pointerId !== event.pointerId) {
-      updateHoveredCandle(event.clientX, event.clientY);
+      updateHoveredChartPoint(event.clientX, event.clientY);
       return;
     }
 
@@ -1153,7 +1202,7 @@ function DetailChart({
     const deltaRatio = ((event.clientX - drag.startX) / Math.max(plotWidth, 1)) * span;
     const start = clamp(drag.range.start - deltaRatio, 0, 1 - span);
     setRange({ start, end: start + span });
-  }, [plotWidth, updateHoveredCandle]);
+  }, [plotWidth, updateHoveredChartPoint]);
 
   const endPointerDrag = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
@@ -1164,9 +1213,9 @@ function DetailChart({
       }
       dragRef.current = null;
       setIsDraggingChart(false);
-      updateHoveredCandle(event.clientX, event.clientY);
+      updateHoveredChartPoint(event.clientX, event.clientY);
     }
-  }, [updateHoveredCandle]);
+  }, [updateHoveredChartPoint]);
 
   if (!values.length || (isCandlestickMode && !hasCandles) || (!isCandlestickMode && mode !== 'vrvp' && !path)) {
     return (
@@ -1187,7 +1236,7 @@ function DetailChart({
       <div
         ref={chartRef}
         className={`relative h-72 overflow-hidden rounded-xl bg-white touch-pan-y ${
-          isCandlestickMode ? (canPan ? (isDraggingChart ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-crosshair') : ''
+          isPriceChartMode ? (canPan ? (isDraggingChart ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-crosshair') : ''
         }`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -1196,6 +1245,7 @@ function DetailChart({
         onPointerLeave={(event) => {
           endPointerDrag(event);
           setHoveredCandle(null);
+          setHoveredPoint(null);
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -1408,6 +1458,39 @@ function DetailChart({
                 />
               </>
             ) : null}
+            {!isCandlestickMode && hoveredPoint ? (
+              <>
+                <line
+                  x1={String(hoveredPoint.x)}
+                  x2={String(hoveredPoint.x)}
+                  y1={String(CHART_BOUNDS.top)}
+                  y2={String(chartBottom(chartSize.height))}
+                  stroke="#64748b"
+                  strokeDasharray="3 3"
+                  strokeWidth="0.8"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <line
+                  x1={String(CHART_BOUNDS.left)}
+                  x2={String(chartRight(chartSize.width))}
+                  y1={String(hoveredPoint.y)}
+                  y2={String(hoveredPoint.y)}
+                  stroke="#64748b"
+                  strokeDasharray="3 3"
+                  strokeWidth="0.8"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <circle
+                  cx={String(hoveredPoint.x)}
+                  cy={String(hoveredPoint.y)}
+                  r="4"
+                  fill={stroke}
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </>
+            ) : null}
             {isCandlestickMode
               ? visiblePoints.map((point, index) => {
                   const candle = getCandlePoint(point);
@@ -1529,6 +1612,21 @@ function DetailChart({
               <span className="text-right text-rose-700">{formatPrice(hoveredCandle.candle.low)}</span>
               <span className="text-slate-400">收盤</span>
               <span className="text-right text-slate-900">{formatPrice(hoveredCandle.candle.close)}</span>
+            </div>
+          </div>
+        ) : null}
+        {!isCandlestickMode && hoveredPoint ? (
+          <div
+            className="pointer-events-none absolute z-10 w-40 rounded-xl border border-slate-200 bg-white/95 p-3 text-xs font-bold text-slate-600 shadow-xl shadow-slate-900/10 backdrop-blur"
+            style={{
+              left: clamp(hoveredPoint.x + 12, 8, chartSize.width - 168),
+              top: clamp(hoveredPoint.y + 12, 8, chartSize.height - 88),
+            }}
+          >
+            <p className="mb-2 font-black text-slate-900">{formatTooltipDate(hoveredPoint.point.date)}</p>
+            <div className="flex items-center justify-between gap-3 tabular-nums">
+              <span className="text-slate-400">價格</span>
+              <span className="text-right text-slate-900">{formatPrice(hoveredPoint.value)}</span>
             </div>
           </div>
         ) : null}
