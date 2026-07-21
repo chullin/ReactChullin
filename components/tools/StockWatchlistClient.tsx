@@ -69,6 +69,15 @@ type StockQuote = {
   exchange?: string;
   fiftyTwoWeekHigh?: number | null;
   fiftyTwoWeekLow?: number | null;
+  bankRate?: {
+    bankBuy: number | null;
+    bankSell: number | null;
+    cashBuy: number | null;
+    cashSell: number | null;
+    updatedAt: string | null;
+    sourceName: string;
+    sourceUrl: string;
+  };
 };
 
 type QuoteResponse = {
@@ -94,6 +103,7 @@ type MarketQuoteResponse = {
     currency?: string;
     exchange?: string;
     chartData?: { timestamp: string; price: number | null }[];
+    bankRate?: StockQuote['bankRate'];
   }>;
 };
 
@@ -352,6 +362,7 @@ function fxQuoteToStockQuote(symbol: string): StockQuote | null {
     sparkline: quote.chartData.map((point) => point.price).filter(isFiniteNumber),
     quoteType: 'FX',
     exchange: quote.exchange,
+    bankRate: quote.bankRate,
   };
 }
 
@@ -367,6 +378,7 @@ function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>
     sparkline: (quote.chartData || []).map((point) => point.price).filter(isFiniteNumber),
     quoteType: 'FX',
     exchange: quote.exchange,
+    bankRate: quote.bankRate,
   };
 }
 
@@ -1741,7 +1753,8 @@ function FxDetailPanel({
   const baseName = currencyDisplayName(base);
   const quoteName = currencyDisplayName(quoteCurrency);
   const rate = quote?.price || null;
-  const updatedAt = chartPoints.at(-1)?.date || points.at(-1)?.date;
+  const bankRate = quote?.bankRate;
+  const updatedAt = bankRate?.updatedAt || chartPoints.at(-1)?.date || points.at(-1)?.date;
   const reverseRate = isFiniteNumber(rate) && rate !== 0 ? 1 / rate : null;
 
   useEffect(() => {
@@ -1814,7 +1827,7 @@ function FxDetailPanel({
           <span className="ml-2 text-xl font-black">{quoteName}</span>
         </div>
         <p className="mt-3 text-xs font-bold text-slate-400">
-          {formatFxTimestamp(updatedAt)} · 參考匯率
+          {formatFxTimestamp(updatedAt)} · {bankRate ? '台新銀行即期賣出價' : '參考匯率'}
         </p>
 
         <div className="mt-6 space-y-3">
@@ -1855,6 +1868,41 @@ function FxDetailPanel({
         </div>
 
         <dl className="mt-5 grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">
+          {bankRate ? (
+            <>
+              <div className="grid grid-cols-2 gap-2 border-b border-slate-200 pb-3">
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
+                  <dt className="text-[11px] text-slate-400">即期買入（我賣）</dt>
+                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.bankBuy, quoteCurrency)}</dd>
+                </div>
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
+                  <dt className="text-[11px] text-slate-400">即期賣出（我買）</dt>
+                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.bankSell, quoteCurrency)}</dd>
+                </div>
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
+                  <dt className="text-[11px] text-slate-400">現鈔買入</dt>
+                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.cashBuy, quoteCurrency)}</dd>
+                </div>
+                <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
+                  <dt className="text-[11px] text-slate-400">現鈔賣出</dt>
+                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.cashSell, quoteCurrency)}</dd>
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt>資料來源</dt>
+                <dd>
+                  <a
+                    href={bankRate.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-orange-700 underline-offset-4 hover:underline"
+                  >
+                    {bankRate.sourceName}
+                  </a>
+                </dd>
+              </div>
+            </>
+          ) : null}
           <div className="flex items-center justify-between gap-3">
             <dt>反向匯率</dt>
             <dd className="tabular-nums text-slate-900">1 {quoteName} = {formatPrice(reverseRate, base)} {baseName}</dd>
@@ -2331,6 +2379,23 @@ function StockCard({
               <Sparkline quote={quote} positive={positive} negative={negative} />
             </div>
           </div>
+
+          {item.market === '外匯' && quote.bankRate ? (
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+              <div className="rounded-xl bg-slate-50 px-2.5 py-2">
+                <p className="text-[10px] font-black text-slate-400">銀行買入（我賣）</p>
+                <p className="mt-1 text-sm font-black tabular-nums text-slate-800">
+                  {formatPrice(quote.bankRate.bankBuy, quote.currency)}
+                </p>
+              </div>
+              <div className="rounded-xl bg-orange-50 px-2.5 py-2">
+                <p className="text-[10px] font-black text-orange-700">銀行賣出（我買）</p>
+                <p className="mt-1 text-sm font-black tabular-nums text-orange-800">
+                  {formatPrice(quote.bankRate.bankSell, quote.currency)}
+                </p>
+              </div>
+            </div>
+          ) : null}
 
           {range !== null ? (
             <div className="mt-3 flex items-center gap-1.5 border-t border-slate-100 pt-3">

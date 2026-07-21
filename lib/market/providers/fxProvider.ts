@@ -42,6 +42,11 @@ type CurrencyApiResponse = {
   [currency: string]: unknown;
 };
 
+type TaishinBankRate = NonNullable<MarketQuote['bankRate']>;
+
+const TAISHIN_RATE_URL = 'https://www.taishinbank.com.tw/eServiceA/transactionrate/transactionrateExport.jsp?no=5';
+let taishinRateCache: { expiresAt: number; rates: Record<string, TaishinBankRate> } | null = null;
+
 export const defaultFxPairs: FxPairSeed[] = [
   {
     symbol: 'USD/TWD',
@@ -135,6 +140,100 @@ function yahooFxRange(range: string) {
 
 function formatDateKey(date: Date) {
   return date.toISOString().slice(0, 10);
+}
+
+function parseOptionalNumber(value: string) {
+  const match = value.match(/-?\d+(?:\.\d+)?/);
+  if (!match) return null;
+  const parsed = Number(match[0]);
+  return isFiniteMarketNumber(parsed) ? parsed : null;
+}
+
+function stripHtml(value: string) {
+  return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function decodeDocumentWritelnString(value: string) {
+  return value
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, code: string) => String.fromCharCode(parseInt(code, 16)))
+    .replace(/\\\//g, '/')
+    .replace(/\\"/g, '"')
+    .replace(/\\'/g, "'")
+    .replace(/\\\\/g, '\\');
+}
+
+function parseTaishinTimestamp(value: string | null) {
+  if (!value) return null;
+  const match = value.match(/(\d{4})\/(\d{2})\/(\d{2})\s+(\d{2}):(\d{2}):(\d{2})/);
+  if (!match) return null;
+  const [, year, month, day, hour, minute, second] = match;
+  return `${year}-${month}-${day}T${hour}:${minute}:${second}+08:00`;
+}
+
+function parseTaishinRateScript(script: string) {
+  const html = [...script.matchAll(/document\.writeln\('([\s\S]*?)'\);/g)]
+    .map((match) => decodeDocumentWritelnString(match[1]))
+    .join('\n');
+  const updatedAt = parseTaishinTimestamp(html.match(/更新時間\s*:\s*([^<]+)/)?.[1] || null);
+  const rates: Record<string, TaishinBankRate> = {};
+
+  for (const row of html.match(/<tr>[\s\S]*?<\/tr>/g) || []) {
+    const currency = row.match(/queryhistory\('([A-Z]+)'\)/)?.[1];
+    if (!currency) continue;
+    if (rates[currency]) continue;
+
+    const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((cell) => stripHtml(cell[1]));
+    const values = cells.map(parseOptionalNumber);
+
+    if (values.length < 4 || values.slice(0, 4).filter(isFiniteMarketNumber).length < 2) continue;
+
+    rates[currency] = {
+      bankBuy: values[0],
+      bankSell: values[1],
+      cashBuy: values[2],
+      cashSell: values[3],
+      updatedAt,
+      sourceName: '台新銀行',
+      sourceUrl: 'https://www.taishinbank.com.tw/TSB/personal/deposit/lookup/realtime/',
+    };
+  }
+
+  return rates;
+}
+
+async function fetchTaishinBankRates() {
+  if (taishinRateCache && taishinRateCache.expiresAt > Date.now()) {
+    return taishinRateCache.rates;
+  }
+
+  try {
+    const response = await fetch(TAISHIN_RATE_URL, {
+      cache: 'no-store',
+      headers: {
+        accept: 'application/javascript,text/javascript,*/*',
+        'user-agent': 'Mozilla/5.0',
+      },
+    });
+
+    if (!response.ok) return {};
+
+    const rates = parseTaishinRateScript(await response.text());
+    taishinRateCache = {
+      expiresAt: Date.now() + 60_000,
+      rates,
+    };
+    return rates;
+  } catch {
+    return {};
+  }
+}
+
+async function fetchTaishinBankRate(symbol: string) {
+  const [base, quote] = normalizeFxSymbol(symbol).split('/');
+  if (!base || quote !== 'TWD') return null;
+
+  const rates = await fetchTaishinBankRates();
+  return rates[base] || null;
 }
 
 function addDays(date: Date, days: number) {
@@ -279,11 +378,16 @@ export async function fetchFxTimeSeries(symbol: string, range = '1M') {
 
 export async function fetchFxQuote(pair: FxPairSeed): Promise<MarketQuote> {
   const fallback = seedFxQuote(pair);
-  const payload = await fetchYahooFxChart(pair.symbol, '5D');
+  const [payload, bankRate] = await Promise.all([
+    fetchYahooFxChart(pair.symbol, '5D'),
+    fetchTaishinBankRate(pair.symbol),
+  ]);
   const result = payload?.chart?.result?.[0];
   const meta = result?.meta;
   const chartData = await fetchFxTimeSeries(pair.symbol, '5D');
-  const currentPrice = isFiniteMarketNumber(meta?.regularMarketPrice)
+  const currentPrice = isFiniteMarketNumber(bankRate?.bankSell)
+    ? bankRate.bankSell
+    : isFiniteMarketNumber(meta?.regularMarketPrice)
     ? meta.regularMarketPrice
     : chartData.at(-1)?.price ?? fallback.currentPrice;
   const previousClose = isFiniteMarketNumber(meta?.chartPreviousClose)
@@ -300,7 +404,8 @@ export async function fetchFxQuote(pair: FxPairSeed): Promise<MarketQuote> {
     priceChange,
     changePercent,
     currency: meta?.currency || pair.currency,
-    updatedAt: meta?.regularMarketTime ? new Date(meta.regularMarketTime * 1000).toISOString() : new Date().toISOString(),
+    updatedAt: bankRate?.updatedAt || (meta?.regularMarketTime ? new Date(meta.regularMarketTime * 1000).toISOString() : new Date().toISOString()),
     chartData: chartData.length ? chartData : fallback.chartData,
+    bankRate: bankRate || undefined,
   };
 }

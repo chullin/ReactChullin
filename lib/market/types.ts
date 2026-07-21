@@ -45,6 +45,15 @@ export type MarketQuote = MarketAsset & {
   marketStatus: MarketStatus;
   updatedAt: string;
   chartData: MarketChartPoint[];
+  bankRate?: {
+    bankBuy: number | null;
+    bankSell: number | null;
+    cashBuy: number | null;
+    cashSell: number | null;
+    updatedAt: string | null;
+    sourceName: string;
+    sourceUrl: string;
+  };
 };
 
 export type MarketSearchResult = MarketAsset & {
