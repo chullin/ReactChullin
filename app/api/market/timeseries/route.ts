@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { MarketAssetType, MarketChartPoint, MarketRange } from '@/lib/market/types';
+import type { FxRateMode, MarketAssetType, MarketChartPoint, MarketRange } from '@/lib/market/types';
 import { defaultFxPairs, fetchFxTimeSeries, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
 import { assetTypeToStockMarket, normalizeStockSymbol } from '@/lib/market/providers/stockMarketProvider';
 
@@ -51,16 +51,24 @@ function parseRange(value: string | null): MarketRange {
   return '1M';
 }
 
+function parseFxRateMode(value: string | null): FxRateMode {
+  if (value === 'bankBuy' || value === 'bankSell' || value === 'cashBuy' || value === 'cashSell') {
+    return value;
+  }
+
+  return 'bankSell';
+}
+
 function filterByRange(points: MarketChartPoint[], range: MarketRange) {
   const earliest = Date.now() - rangeDays[range] * 24 * 60 * 60_000;
   return points.filter((point) => Date.parse(point.timestamp) >= earliest);
 }
 
-async function fxSeries(symbol: string, range: MarketRange) {
+async function fxSeries(symbol: string, range: MarketRange, rateMode: FxRateMode) {
   const pair = defaultFxPairs.find((item) => normalizeFxSymbol(item.symbol) === normalizeFxSymbol(symbol));
   if (!pair) return [];
 
-  const points = await fetchFxTimeSeries(pair.symbol, range);
+  const points = await fetchFxTimeSeries(pair.symbol, range, rateMode);
   if (points.length) return points;
 
   return seedFxQuote(pair).chartData;
@@ -99,6 +107,7 @@ async function stockSeries(request: NextRequest, assetId: string, range: MarketR
 export async function GET(request: NextRequest) {
   const assetId = request.nextUrl.searchParams.get('assetId')?.trim();
   const range = parseRange(request.nextUrl.searchParams.get('range'));
+  const rateMode = parseFxRateMode(request.nextUrl.searchParams.get('rateMode'));
 
   if (!assetId) {
     return NextResponse.json(
@@ -116,7 +125,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = asset.assetType === 'fx' ? await fxSeries(asset.symbol, range) : await stockSeries(request, assetId, range);
+    const data = asset.assetType === 'fx' ? await fxSeries(asset.symbol, range, rateMode) : await stockSeries(request, assetId, range);
     return NextResponse.json({ success: true, data });
   } catch {
     return NextResponse.json(

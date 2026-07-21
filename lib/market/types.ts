@@ -6,6 +6,8 @@ export type MarketRange = '1D' | '5D' | '1M' | '6M' | '1Y' | '5Y' | 'MAX';
 
 export type MarketInterval = '1m' | '5m' | '1h' | '1d';
 
+export type FxRateMode = 'bankBuy' | 'bankSell' | 'cashBuy' | 'cashSell';
+
 export type AlertConditionType =
   | 'price_above'
   | 'price_below'

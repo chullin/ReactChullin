@@ -20,6 +20,7 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react';
+import type { FxRateMode } from '@/lib/market/types';
 import { defaultFxPairs, seedFxQuote } from '@/lib/market/providers/fxProvider';
 
 type Market = '美股' | '台股' | '外匯';
@@ -178,8 +179,6 @@ type FxPeriodOption = {
   label: string;
   range: '1D' | '5D' | '1M' | '1Y' | '5Y' | 'MAX';
 };
-
-type FxRateMode = 'bankBuy' | 'bankSell' | 'cashBuy' | 'cashSell';
 
 const DEFAULT_LISTS: WatchlistDef[] = [
   { id: '庫存', name: '庫存' },
@@ -1908,7 +1907,7 @@ function FxDetailPanel({
       try {
         const assetId = marketAssetToken(item.symbol, item.market);
         const payload = await fetchJson<MarketTimeseriesResponse>(
-          `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(activePeriod.range)}`,
+          `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(activePeriod.range)}&rateMode=${encodeURIComponent(activeRateMode)}`,
         );
         const nextPoints = (payload.data || [])
           .filter((point) => isFiniteNumber(point.price))
@@ -1939,7 +1938,7 @@ function FxDetailPanel({
     return () => {
       cancelled = true;
     };
-  }, [activePeriod, item.market, item.symbol, points]);
+  }, [activePeriod, activeRateMode, item.market, item.symbol, points]);
 
   return (
     <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
@@ -2059,7 +2058,7 @@ function FxDetailPanel({
           <div className="flex items-center justify-between gap-3">
             <dt className="inline-flex items-center gap-1.5">
               參考變動
-              <InfoTooltip label="變動說明" content="這裡的變動使用目前選取的台新牌告價，對照外部匯率走勢資料中的前一筆參考價計算；台新的近7日/近30日高低標籤則是台新牌告表自己的統計，兩者基準不同。" />
+              <InfoTooltip label="變動說明" content="這裡以目前選取的台新牌告價，對照台新歷史匯率走勢中的前一筆牌告價計算；台新歷史匯率最多提供近三年每日收盤價。" />
             </dt>
             <dd className={quote && (quote.changePercent || 0) >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
               {formatChange(quote?.change, quoteCurrency)} ({formatPercent(quote?.changePercent)})

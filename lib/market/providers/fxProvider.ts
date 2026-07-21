@@ -1,4 +1,4 @@
-import type { MarketQuote, MarketSearchResult, MarketStatus } from '@/lib/market/types';
+import type { FxRateMode, MarketChartPoint, MarketQuote, MarketRange, MarketSearchResult, MarketStatus } from '@/lib/market/types';
 import {
   calculatePriceChange,
   isFiniteMarketNumber,
@@ -45,7 +45,9 @@ type CurrencyApiResponse = {
 type TaishinBankRate = NonNullable<MarketQuote['bankRate']>;
 
 const TAISHIN_RATE_URL = 'https://www.taishinbank.com.tw/eServiceA/transactionrate/transactionrateExport.jsp?no=5';
+const TAISHIN_HISTORY_RATE_URL = 'https://www.taishinbank.com.tw/eServiceA/transactionrate/transactionrateExport.jsp?no=6';
 let taishinRateCache: { expiresAt: number; rates: Record<string, TaishinBankRate> } | null = null;
+const taishinHistoryCache = new Map<string, { expiresAt: number; points: MarketChartPoint[] }>();
 
 export const defaultFxPairs: FxPairSeed[] = [
   {
@@ -210,6 +212,88 @@ function parseTaishinRateScript(script: string) {
   return rates;
 }
 
+function taishinHistoryInterval(range: MarketRange) {
+  if (range === '1D' || range === '5D') return 7;
+  if (range === '1M') return 30;
+  if (range === '6M') return 180;
+  if (range === '1Y') return 365;
+  return 1095;
+}
+
+function taishinHistorySpotCash(mode: FxRateMode) {
+  return mode === 'cashBuy' || mode === 'cashSell' ? 'cash' : 'spot';
+}
+
+function taishinHistoryDatasetName(mode: FxRateMode) {
+  if (mode === 'bankBuy') return '銀行買入';
+  if (mode === 'bankSell') return '銀行賣出';
+  if (mode === 'cashBuy') return '現鈔買入';
+  return '現鈔賣出';
+}
+
+function parseTaishinHistoryDate(value: string) {
+  const match = value.match(/^(\d{4})\/(\d{2})\/(\d{2})$/);
+  if (!match) return null;
+  const [, year, month, day] = match;
+  return `${year}-${month}-${day}T00:00:00+08:00`;
+}
+
+function parseTaishinChartDates(html: string) {
+  const match = html.match(/"name":\s*\[([\s\S]*?)\]\s*,\s*"dataSet"/);
+  if (!match) return [];
+
+  return [...match[1].matchAll(/'(\d{4}\/\d{2}\/\d{2})'/g)]
+    .map((dateMatch) => parseTaishinHistoryDate(dateMatch[1]))
+    .filter((date): date is string => Boolean(date));
+}
+
+function parseTaishinDatasetValues(html: string, datasetName: string) {
+  const escapedName = datasetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = html.match(new RegExp(`"name"\\s*:\\s*"${escapedName}"[\\s\\S]*?"data"\\s*:\\s*\\[([\\s\\S]*?)\\]`));
+  if (!match) return [];
+
+  return [...match[1].matchAll(/'(-?\d+(?:\.\d+)?)'/g)]
+    .map((valueMatch) => Number(valueMatch[1]))
+    .filter(isFiniteMarketNumber);
+}
+
+function parseTaishinHistoryRateScript(script: string, mode: FxRateMode) {
+  const html = [...script.matchAll(/document\.writeln\('([\s\S]*?)'\);/g)]
+    .map((match) => decodeDocumentWritelnString(match[1]))
+    .join('\n');
+  const dates = parseTaishinChartDates(html);
+  const values = parseTaishinDatasetValues(html, taishinHistoryDatasetName(mode));
+  const length = Math.min(dates.length, values.length);
+  const points: MarketChartPoint[] = [];
+
+  for (let index = 0; index < length; index += 1) {
+    const price = values[index];
+    points.push({
+      timestamp: dates[index],
+      price,
+      open: price,
+      high: price,
+      low: price,
+      close: price,
+      volume: null,
+    });
+  }
+
+  return points.sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+}
+
+function filterTaishinHistoryRange(points: MarketChartPoint[], range: MarketRange) {
+  if (!points.length || range === '5Y' || range === 'MAX') return points;
+
+  const days = range === '1D' ? 1 : range === '5D' ? 5 : range === '1M' ? 31 : range === '6M' ? 183 : 366;
+  const latest = Date.parse(points.at(-1)?.timestamp || '');
+  if (!Number.isFinite(latest)) return points;
+
+  const earliest = latest - days * 24 * 60 * 60_000;
+  const filtered = points.filter((point) => Date.parse(point.timestamp) >= earliest);
+  return filtered.length >= 2 ? filtered : points.slice(-2);
+}
+
 async function fetchTaishinBankRates() {
   if (taishinRateCache && taishinRateCache.expiresAt > Date.now()) {
     return taishinRateCache.rates;
@@ -243,6 +327,50 @@ async function fetchTaishinBankRate(symbol: string) {
 
   const rates = await fetchTaishinBankRates();
   return rates[base] || null;
+}
+
+export async function fetchTaishinFxTimeSeries(symbol: string, range: MarketRange = '1M', mode: FxRateMode = 'bankSell') {
+  const [base, quote] = normalizeFxSymbol(symbol).split('/');
+  if (!base || quote !== 'TWD') return [];
+
+  const interval = taishinHistoryInterval(range);
+  const cacheKey = `${base}:${interval}:${range}:${mode}`;
+  const cached = taishinHistoryCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.points;
+
+  const body = new URLSearchParams({
+    queryflg: '1',
+    currencyType: base,
+    spotcash: taishinHistorySpotCash(mode),
+    queryInterval: String(interval),
+  });
+
+  try {
+    const response = await fetch(TAISHIN_HISTORY_RATE_URL, {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        accept: 'application/javascript,text/javascript,*/*',
+        'content-type': 'application/x-www-form-urlencoded',
+        referer: `https://www.taishinbank.com.tw/TSB/personal/deposit/lookup/history/${base}/`,
+        'user-agent': 'Mozilla/5.0',
+      },
+      body,
+    });
+
+    if (!response.ok) return [];
+
+    const points = filterTaishinHistoryRange(parseTaishinHistoryRateScript(await response.text(), mode), range);
+    if (points.length) {
+      taishinHistoryCache.set(cacheKey, {
+        expiresAt: Date.now() + 60 * 60_000,
+        points,
+      });
+    }
+    return points;
+  } catch {
+    return [];
+  }
 }
 
 function addDays(date: Date, days: number) {
@@ -355,7 +483,10 @@ async function fetchYahooFxChart(symbol: string, range = '1M') {
   return null;
 }
 
-export async function fetchFxTimeSeries(symbol: string, range = '1M') {
+export async function fetchFxTimeSeries(symbol: string, range: MarketRange = '1M', mode: FxRateMode = 'bankSell') {
+  const taishinPoints = await fetchTaishinFxTimeSeries(symbol, range, mode);
+  if (taishinPoints.length >= 2) return taishinPoints;
+
   const payload = await fetchYahooFxChart(symbol, range);
   const result = payload?.chart?.result?.[0];
   const timestamps = result?.timestamp || [];
@@ -387,23 +518,24 @@ export async function fetchFxTimeSeries(symbol: string, range = '1M') {
 
 export async function fetchFxQuote(pair: FxPairSeed): Promise<MarketQuote> {
   const fallback = seedFxQuote(pair);
-  const [payload, bankRate] = await Promise.all([
+  const [payload, bankRate, bankSellSeries] = await Promise.all([
     fetchYahooFxChart(pair.symbol, '5D'),
     fetchTaishinBankRate(pair.symbol),
+    fetchTaishinFxTimeSeries(pair.symbol, '5D', 'bankSell'),
   ]);
   const result = payload?.chart?.result?.[0];
   const meta = result?.meta;
-  const chartData = await fetchFxTimeSeries(pair.symbol, '5D');
+  const chartData = bankSellSeries.length >= 2 ? bankSellSeries : await fetchFxTimeSeries(pair.symbol, '5D', 'bankSell');
   const currentPrice = isFiniteMarketNumber(bankRate?.bankSell)
     ? bankRate.bankSell
     : isFiniteMarketNumber(meta?.regularMarketPrice)
     ? meta.regularMarketPrice
     : chartData.at(-1)?.price ?? fallback.currentPrice;
   const previousClose = isFiniteMarketNumber(meta?.chartPreviousClose)
-    ? meta.chartPreviousClose
-    : isFiniteMarketNumber(meta?.previousClose)
+    ? chartData.at(-2)?.price ?? meta.chartPreviousClose
+    : chartData.at(-2)?.price ?? (isFiniteMarketNumber(meta?.previousClose)
       ? meta.previousClose
-      : chartData.at(-2)?.price ?? fallback.previousClose;
+      : fallback.previousClose);
   const { priceChange, changePercent } = calculatePriceChange(currentPrice, previousClose);
 
   return {
