@@ -74,6 +74,10 @@ type StockQuote = {
     bankSell: number | null;
     cashBuy: number | null;
     cashSell: number | null;
+    bankBuyLabel?: string | null;
+    bankSellLabel?: string | null;
+    cashBuyLabel?: string | null;
+    cashSellLabel?: string | null;
     updatedAt: string | null;
     sourceName: string;
     sourceUrl: string;
@@ -175,6 +179,8 @@ type FxPeriodOption = {
   range: '1D' | '5D' | '1M' | '1Y' | '5Y' | 'MAX';
 };
 
+type FxRateMode = 'bankBuy' | 'bankSell' | 'cashBuy' | 'cashSell';
+
 const DEFAULT_LISTS: WatchlistDef[] = [
   { id: '庫存', name: '庫存' },
   { id: '觀察清單 1', name: '觀察清單 1' },
@@ -228,6 +234,12 @@ const FX_PERIODS: FxPeriodOption[] = [
   { label: '5年', range: '5Y' },
   { label: '最久', range: 'MAX' },
 ] satisfies FxPeriodOption[];
+const FX_RATE_MODES: { label: string; shortLabel: string; value: FxRateMode }[] = [
+  { label: '即期買入（我賣）', shortLabel: '即期買入', value: 'bankBuy' },
+  { label: '即期賣出（我買）', shortLabel: '即期賣出', value: 'bankSell' },
+  { label: '現鈔買入', shortLabel: '現鈔買入', value: 'cashBuy' },
+  { label: '現鈔賣出', shortLabel: '現鈔賣出', value: 'cashSell' },
+];
 
 function defaultFxItems(): StockItem[] {
   return defaultFxPairs.map((pair) => ({
@@ -345,6 +357,12 @@ function isStockMarket(market: Market): market is '美股' | '台股' {
   return market === '美股' || market === '台股';
 }
 
+function alignSparkline(values: number[], currentPrice: number | null | undefined) {
+  if (!isFiniteNumber(currentPrice)) return values;
+  if (!values.length) return [currentPrice];
+  return [...values.slice(0, -1), currentPrice];
+}
+
 function fxQuoteToStockQuote(symbol: string): StockQuote | null {
   const pair = defaultFxPairs.find((item) => item.symbol === symbol);
   if (!pair) return null;
@@ -359,7 +377,7 @@ function fxQuoteToStockQuote(symbol: string): StockQuote | null {
     changePercent: quote.changePercent,
     previousClose: quote.previousClose,
     currency: quote.currency,
-    sparkline: quote.chartData.map((point) => point.price).filter(isFiniteNumber),
+    sparkline: alignSparkline(quote.chartData.map((point) => point.price).filter(isFiniteNumber), quote.currentPrice),
     quoteType: 'FX',
     exchange: quote.exchange,
     bankRate: quote.bankRate,
@@ -375,7 +393,7 @@ function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>
     change: quote.priceChange,
     changePercent: quote.changePercent,
     currency: quote.currency,
-    sparkline: (quote.chartData || []).map((point) => point.price).filter(isFiniteNumber),
+    sparkline: alignSparkline((quote.chartData || []).map((point) => point.price).filter(isFiniteNumber), quote.currentPrice),
     quoteType: 'FX',
     exchange: quote.exchange,
     bankRate: quote.bankRate,
@@ -427,6 +445,51 @@ function formatConversionInput(value: number | null | undefined) {
 function parseConversionInput(value: string) {
   const parsed = Number(value.replace(/,/g, '').trim());
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+function bankRateValue(bankRate: StockQuote['bankRate'] | undefined, mode: FxRateMode) {
+  return bankRate?.[mode] ?? null;
+}
+
+function bankRateLabel(bankRate: StockQuote['bankRate'] | undefined, mode: FxRateMode) {
+  const labelKey = `${mode}Label` as const;
+  return bankRate?.[labelKey] || null;
+}
+
+function rateModeLabel(mode: FxRateMode) {
+  return FX_RATE_MODES.find((item) => item.value === mode)?.label || '匯率';
+}
+
+function alignFxChartPoints(points: HistoryPoint[], value: number | null | undefined, updatedAt?: string | null) {
+  if (!isFiniteNumber(value)) return points;
+  const timestamp = updatedAt || new Date().toISOString();
+  const nextPoint = {
+    date: timestamp,
+    open: value,
+    high: value,
+    low: value,
+    close: value,
+    volume: null,
+  };
+
+  if (!points.length) return [nextPoint];
+
+  const nextPoints = [...points];
+  const previousPoint = nextPoints[nextPoints.length - 1];
+  const previousHigh = previousPoint.high;
+  const previousLow = previousPoint.low;
+  nextPoints[nextPoints.length - 1] = {
+    ...previousPoint,
+    date: timestamp,
+    close: value,
+    high: isFiniteNumber(previousHigh)
+      ? Math.max(previousHigh, value)
+      : value,
+    low: isFiniteNumber(previousLow)
+      ? Math.min(previousLow, value)
+      : value,
+  };
+  return nextPoints;
 }
 
 function formatChange(value: number | null | undefined, currency?: string) {
@@ -966,6 +1029,31 @@ function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive
       ))}
       <path d={path} fill="none" stroke={stroke} strokeWidth="2.35" vectorEffect="non-scaling-stroke" />
     </svg>
+  );
+}
+
+function InfoTooltip({ label, content }: { label: string; content: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <span className="relative inline-flex">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-400 ring-1 ring-slate-200 transition hover:text-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-200"
+        aria-label={label}
+        aria-expanded={open}
+      >
+        <Info size={12} />
+      </button>
+      {open ? (
+        <span className="absolute bottom-6 right-0 z-30 w-56 rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-bold leading-relaxed text-white shadow-xl">
+          {content}
+        </span>
+      ) : null}
+    </span>
   );
 }
 
@@ -1749,13 +1837,19 @@ function FxDetailPanel({
   const [baseAmount, setBaseAmount] = useState('1');
   const [quoteAmount, setQuoteAmount] = useState('');
   const [lastEditedAmount, setLastEditedAmount] = useState<'base' | 'quote'>('base');
+  const [activeRateMode, setActiveRateMode] = useState<FxRateMode>('bankSell');
   const { base, quote: quoteCurrency } = splitCurrencyPair(item.symbol);
   const baseName = currencyDisplayName(base);
   const quoteName = currencyDisplayName(quoteCurrency);
-  const rate = quote?.price || null;
   const bankRate = quote?.bankRate;
+  const selectedRate = bankRateValue(bankRate, activeRateMode);
+  const rate = selectedRate ?? quote?.price ?? null;
   const updatedAt = bankRate?.updatedAt || chartPoints.at(-1)?.date || points.at(-1)?.date;
   const reverseRate = isFiniteNumber(rate) && rate !== 0 ? 1 / rate : null;
+  const selectedChartPoints = useMemo(
+    () => alignFxChartPoints(chartPoints, rate, updatedAt),
+    [chartPoints, rate, updatedAt],
+  );
 
   useEffect(() => {
     if (!isFiniteNumber(rate)) {
@@ -1827,7 +1921,7 @@ function FxDetailPanel({
           <span className="ml-2 text-xl font-black">{quoteName}</span>
         </div>
         <p className="mt-3 text-xs font-bold text-slate-400">
-          {formatFxTimestamp(updatedAt)} · {bankRate ? '台新銀行即期賣出價' : '參考匯率'}
+          {formatFxTimestamp(updatedAt)} · {bankRate ? `台新銀行${rateModeLabel(activeRateMode)}` : '參考匯率'}
         </p>
 
         <div className="mt-6 space-y-3">
@@ -1873,19 +1967,39 @@ function FxDetailPanel({
               <div className="grid grid-cols-2 gap-2 border-b border-slate-200 pb-3">
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
                   <dt className="text-[11px] text-slate-400">即期買入（我賣）</dt>
-                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.bankBuy, quoteCurrency)}</dd>
+                  <dd className="mt-1 flex items-center gap-1 tabular-nums text-slate-900">
+                    {formatPrice(bankRate.bankBuy, quoteCurrency)}
+                    {bankRate.bankBuyLabel ? (
+                      <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] text-rose-700">{bankRate.bankBuyLabel}</span>
+                    ) : null}
+                  </dd>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
                   <dt className="text-[11px] text-slate-400">即期賣出（我買）</dt>
-                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.bankSell, quoteCurrency)}</dd>
+                  <dd className="mt-1 flex items-center gap-1 tabular-nums text-slate-900">
+                    {formatPrice(bankRate.bankSell, quoteCurrency)}
+                    {bankRate.bankSellLabel ? (
+                      <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] text-rose-700">{bankRate.bankSellLabel}</span>
+                    ) : null}
+                  </dd>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
                   <dt className="text-[11px] text-slate-400">現鈔買入</dt>
-                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.cashBuy, quoteCurrency)}</dd>
+                  <dd className="mt-1 flex items-center gap-1 tabular-nums text-slate-900">
+                    {formatPrice(bankRate.cashBuy, quoteCurrency)}
+                    {bankRate.cashBuyLabel ? (
+                      <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] text-rose-700">{bankRate.cashBuyLabel}</span>
+                    ) : null}
+                  </dd>
                 </div>
                 <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
                   <dt className="text-[11px] text-slate-400">現鈔賣出</dt>
-                  <dd className="mt-1 tabular-nums text-slate-900">{formatPrice(bankRate.cashSell, quoteCurrency)}</dd>
+                  <dd className="mt-1 flex items-center gap-1 tabular-nums text-slate-900">
+                    {formatPrice(bankRate.cashSell, quoteCurrency)}
+                    {bankRate.cashSellLabel ? (
+                      <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[10px] text-rose-700">{bankRate.cashSellLabel}</span>
+                    ) : null}
+                  </dd>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-3">
@@ -1904,11 +2018,17 @@ function FxDetailPanel({
             </>
           ) : null}
           <div className="flex items-center justify-between gap-3">
-            <dt>反向匯率</dt>
+            <dt className="inline-flex items-center gap-1.5">
+              反向匯率
+              <InfoTooltip label="反向匯率說明" content={`以目前選取的${rateModeLabel(activeRateMode)}換算，表示 1 ${quoteName} 約可換多少 ${baseName}。`} />
+            </dt>
             <dd className="tabular-nums text-slate-900">1 {quoteName} = {formatPrice(reverseRate, base)} {baseName}</dd>
           </div>
           <div className="flex items-center justify-between gap-3">
-            <dt>變動</dt>
+            <dt className="inline-flex items-center gap-1.5">
+              變動
+              <InfoTooltip label="變動說明" content="變動以目前牌告價和前一筆參考收盤價計算，主要用來快速觀察匯率方向，實際交易仍以銀行當下牌告為準。" />
+            </dt>
             <dd className={quote && (quote.changePercent || 0) >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
               {formatChange(quote?.change, quoteCurrency)} ({formatPercent(quote?.changePercent)})
             </dd>
@@ -1937,7 +2057,28 @@ function FxDetailPanel({
             ))}
           </div>
         </div>
-        <DetailChart mode="line" points={chartPoints} periodLabel={activePeriod.label} />
+        {bankRate ? (
+          <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl bg-orange-50/80 p-1">
+            {FX_RATE_MODES.map((mode) => {
+              const disabled = !isFiniteNumber(bankRateValue(bankRate, mode.value));
+
+              return (
+                <button
+                  key={mode.value}
+                  type="button"
+                  onClick={() => setActiveRateMode(mode.value)}
+                  disabled={disabled}
+                  className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                    activeRateMode === mode.value ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  {mode.shortLabel}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+        <DetailChart mode="line" points={selectedChartPoints} periodLabel={`${activePeriod.label} · ${rateModeLabel(activeRateMode)}`} />
         {loading || chartLoading ? (
           <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
             詳細資料載入中...
@@ -2384,14 +2525,20 @@ function StockCard({
             <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
               <div className="rounded-xl bg-slate-50 px-2.5 py-2">
                 <p className="text-[10px] font-black text-slate-400">銀行買入（我賣）</p>
-                <p className="mt-1 text-sm font-black tabular-nums text-slate-800">
+                <p className="mt-1 flex flex-wrap items-center gap-1 text-sm font-black tabular-nums text-slate-800">
                   {formatPrice(quote.bankRate.bankBuy, quote.currency)}
+                  {quote.bankRate.bankBuyLabel ? (
+                    <span className="rounded bg-rose-50 px-1.5 py-0.5 text-[9px] text-rose-700">{quote.bankRate.bankBuyLabel}</span>
+                  ) : null}
                 </p>
               </div>
               <div className="rounded-xl bg-orange-50 px-2.5 py-2">
                 <p className="text-[10px] font-black text-orange-700">銀行賣出（我買）</p>
-                <p className="mt-1 text-sm font-black tabular-nums text-orange-800">
+                <p className="mt-1 flex flex-wrap items-center gap-1 text-sm font-black tabular-nums text-orange-800">
                   {formatPrice(quote.bankRate.bankSell, quote.currency)}
+                  {quote.bankRate.bankSellLabel ? (
+                    <span className="rounded bg-white px-1.5 py-0.5 text-[9px] text-orange-700">{quote.bankRate.bankSellLabel}</span>
+                  ) : null}
                 </p>
               </div>
             </div>

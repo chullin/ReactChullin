@@ -149,6 +149,10 @@ function parseOptionalNumber(value: string) {
   return isFiniteMarketNumber(parsed) ? parsed : null;
 }
 
+function parseRateLabel(value: string) {
+  return value.match(/近\d+日(?:最高|最低)/)?.[0] || null;
+}
+
 function stripHtml(value: string) {
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
@@ -184,6 +188,7 @@ function parseTaishinRateScript(script: string) {
 
     const cells = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map((cell) => stripHtml(cell[1]));
     const values = cells.map(parseOptionalNumber);
+    const labels = cells.map(parseRateLabel);
 
     if (values.length < 4 || values.slice(0, 4).filter(isFiniteMarketNumber).length < 2) continue;
 
@@ -192,6 +197,10 @@ function parseTaishinRateScript(script: string) {
       bankSell: values[1],
       cashBuy: values[2],
       cashSell: values[3],
+      bankBuyLabel: labels[0],
+      bankSellLabel: labels[1],
+      cashBuyLabel: labels[2],
+      cashSellLabel: labels[3],
       updatedAt,
       sourceName: '台新銀行',
       sourceUrl: 'https://www.taishinbank.com.tw/TSB/personal/deposit/lookup/realtime/',

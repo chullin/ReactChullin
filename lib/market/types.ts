@@ -50,6 +50,10 @@ export type MarketQuote = MarketAsset & {
     bankSell: number | null;
     cashBuy: number | null;
     cashSell: number | null;
+    bankBuyLabel?: string | null;
+    bankSellLabel?: string | null;
+    cashBuyLabel?: string | null;
+    cashSellLabel?: string | null;
     updatedAt: string | null;
     sourceName: string;
     sourceUrl: string;
