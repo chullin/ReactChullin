@@ -1,6 +1,6 @@
 'use client';
 
-import type { DragEvent, FormEvent, PointerEvent as ReactPointerEvent, TouchEvent } from 'react';
+import type { DragEvent, FormEvent, PointerEvent as ReactPointerEvent, TouchEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
@@ -1034,13 +1034,42 @@ function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive
 
 function InfoTooltip({ label, content }: { label: string; content: string }) {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState({ left: 16, top: 16 });
+
+  const updatePosition = useCallback((element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const width = Math.min(288, Math.max(220, window.innerWidth - 32));
+    const left = clamp(rect.left + rect.width / 2 - width / 2, 16, window.innerWidth - width - 16);
+    const top = rect.bottom + 8 <= window.innerHeight - 96
+      ? rect.bottom + 8
+      : Math.max(16, rect.top - 104);
+
+    setPosition({ left, top });
+  }, []);
+
+  const showTooltip = useCallback((element: HTMLElement) => {
+    updatePosition(element);
+    setOpen(true);
+  }, [updatePosition]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const closeTooltip = () => setOpen(false);
+    window.addEventListener('scroll', closeTooltip, true);
+    window.addEventListener('resize', closeTooltip);
+    return () => {
+      window.removeEventListener('scroll', closeTooltip, true);
+      window.removeEventListener('resize', closeTooltip);
+    };
+  }, [open]);
 
   return (
-    <span className="relative inline-flex">
+    <span className="inline-flex">
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        onMouseEnter={() => setOpen(true)}
+        onClick={(event) => showTooltip(event.currentTarget)}
+        onMouseEnter={(event: ReactMouseEvent<HTMLButtonElement>) => showTooltip(event.currentTarget)}
         onMouseLeave={() => setOpen(false)}
         className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-400 ring-1 ring-slate-200 transition hover:text-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-200"
         aria-label={label}
@@ -1049,7 +1078,10 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
         <Info size={12} />
       </button>
       {open ? (
-        <span className="absolute bottom-6 right-0 z-30 w-56 rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-bold leading-relaxed text-white shadow-xl">
+        <span
+          className="fixed z-50 max-w-[calc(100vw-2rem)] rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-bold leading-relaxed text-white shadow-xl"
+          style={{ left: position.left, top: position.top, width: Math.min(288, Math.max(220, typeof window === 'undefined' ? 288 : window.innerWidth - 32)) }}
+        >
           {content}
         </span>
       ) : null}
@@ -2026,8 +2058,8 @@ function FxDetailPanel({
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="inline-flex items-center gap-1.5">
-              變動
-              <InfoTooltip label="變動說明" content="變動以目前牌告價和前一筆參考收盤價計算，主要用來快速觀察匯率方向，實際交易仍以銀行當下牌告為準。" />
+              參考變動
+              <InfoTooltip label="變動說明" content="這裡的變動使用目前選取的台新牌告價，對照外部匯率走勢資料中的前一筆參考價計算；台新的近7日/近30日高低標籤則是台新牌告表自己的統計，兩者基準不同。" />
             </dt>
             <dd className={quote && (quote.changePercent || 0) >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
               {formatChange(quote?.change, quoteCurrency)} ({formatPercent(quote?.changePercent)})
