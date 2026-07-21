@@ -22,8 +22,9 @@ import {
 } from 'lucide-react';
 import type { FxRateMode } from '@/lib/market/types';
 import { defaultFxPairs, seedFxQuote } from '@/lib/market/providers/fxProvider';
+import { defaultMetalItems, normalizeMetalSymbol } from '@/lib/market/providers/metalProvider';
 
-type Market = '美股' | '台股' | '外匯';
+type Market = '美股' | '台股' | '外匯' | '貴金屬';
 
 type StockItem = {
   symbol: string;
@@ -83,6 +84,16 @@ type StockQuote = {
     sourceName: string;
     sourceUrl: string;
   };
+  metalRate?: {
+    sell: number | null;
+    buy: number | null;
+    sellChange: number | null;
+    buyChange: number | null;
+    unit: string;
+    updatedAt: string | null;
+    sourceName: string;
+    sourceUrl: string;
+  };
 };
 
 type QuoteResponse = {
@@ -109,6 +120,7 @@ type MarketQuoteResponse = {
     exchange?: string;
     chartData?: { timestamp: string; price: number | null }[];
     bankRate?: StockQuote['bankRate'];
+    metalRate?: StockQuote['metalRate'];
   }>;
 };
 
@@ -180,6 +192,8 @@ type FxPeriodOption = {
   range: '1D' | '5D' | '1M' | '1Y' | '5Y' | 'MAX';
 };
 
+type MetalRateMode = 'sell' | 'buy';
+
 const DEFAULT_LISTS: WatchlistDef[] = [
   { id: '庫存', name: '庫存' },
   { id: '觀察清單 1', name: '觀察清單 1' },
@@ -192,6 +206,7 @@ const MARKET_TABS = [
   { label: '美股', value: '美股' },
   { label: '台股', value: '台股' },
   { label: '外匯', value: '外匯' },
+  { label: '貴金屬', value: '貴金屬' },
 ] as const;
 
 const STORAGE_KEY = 'stock-watchlist:v1';
@@ -238,6 +253,10 @@ const FX_RATE_MODES: { label: string; shortLabel: string; value: FxRateMode }[] 
   { label: '即期賣出（我買）', shortLabel: '即期賣出', value: 'bankSell' },
   { label: '現鈔買入', shortLabel: '現鈔買入', value: 'cashBuy' },
   { label: '現鈔賣出', shortLabel: '現鈔賣出', value: 'cashSell' },
+];
+const METAL_RATE_MODES: { label: string; shortLabel: string; value: MetalRateMode }[] = [
+  { label: '賣出牌價', shortLabel: '賣出', value: 'sell' },
+  { label: '買進牌價', shortLabel: '買進', value: 'buy' },
 ];
 
 function defaultFxItems(): StockItem[] {
@@ -333,8 +352,15 @@ function displaySymbol(value: string) {
   return value.replace(/-/g, '.');
 }
 
+function metalDisplayName(symbol: string) {
+  const item = defaultMetalItems.find((metal) => metal.symbol === normalizeMetalSymbol(symbol));
+  return item?.displayName || displaySymbol(symbol);
+}
+
 function detectMarkets(symbol: string): Market[] {
   if (!symbol) return [];
+  const metalSymbol = normalizeMetalSymbol(symbol);
+  if (metalSymbol === 'GOLD/TWD' || metalSymbol === 'PLATINUM/TWD') return ['貴金屬'];
   if (/^[A-Z]{3}[/-][A-Z]{3}$/.test(symbol)) return ['外匯'];
   return /^\d+[A-Z]?$/.test(symbol) ? ['台股'] : ['美股'];
 }
@@ -349,7 +375,14 @@ function apiStockToken(symbol: string, market: Market) {
 
 function marketAssetToken(symbol: string, market: Market) {
   if (market === '外匯') return `fx:FX:${symbol}`;
+  if (market === '貴金屬') return `metal:GCK99:${normalizeMetalSymbol(symbol)}`;
   return `${market === '台股' ? 'tw_stock' : 'us_stock'}:${market}:${symbol}`;
+}
+
+function storedSymbolForMarket(symbol: string, market: Market) {
+  if (market === '外匯') return symbol.replace('-', '/');
+  if (market === '貴金屬') return normalizeMetalSymbol(symbol);
+  return symbol;
 }
 
 function isStockMarket(market: Market): market is '美股' | '台股' {
@@ -393,9 +426,10 @@ function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>
     changePercent: quote.changePercent,
     currency: quote.currency,
     sparkline: alignSparkline((quote.chartData || []).map((point) => point.price).filter(isFiniteNumber), quote.currentPrice),
-    quoteType: 'FX',
+    quoteType: quote.exchange === 'GCK99' ? 'METAL' : 'FX',
     exchange: quote.exchange,
     bankRate: quote.bankRate,
+    metalRate: quote.metalRate,
   };
 }
 
@@ -975,6 +1009,15 @@ function isMarketOpen(market: Market) {
   if (market === '外匯') {
     const day = new Date().getUTCDay();
     return day !== 0 && day !== 6;
+  }
+  if (market === '貴金屬') {
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60_000;
+    const taiwan = new Date(utc + 8 * 60 * 60_000);
+    const day = taiwan.getUTCDay();
+    const minutes = taiwan.getUTCHours() * 60 + taiwan.getUTCMinutes();
+
+    return day !== 0 && minutes >= 660 && minutes <= 1200;
   }
 
   const now = new Date();
@@ -2120,6 +2163,164 @@ function FxDetailPanel({
   );
 }
 
+function MetalDetailPanel({
+  item,
+  quote,
+  points,
+  loading,
+}: {
+  item: StockItem;
+  quote?: StockQuote;
+  points: HistoryPoint[];
+  loading: boolean;
+}) {
+  const [activePeriod, setActivePeriod] = useState(FX_PERIODS[2]);
+  const [activeRateMode, setActiveRateMode] = useState<MetalRateMode>('sell');
+  const [chartPoints, setChartPoints] = useState<HistoryPoint[]>(points);
+  const [chartLoading, setChartLoading] = useState(false);
+  const metalRate = quote?.metalRate;
+  const selectedRate = activeRateMode === 'sell' ? metalRate?.sell : metalRate?.buy;
+  const updatedAt = metalRate?.updatedAt || chartPoints.at(-1)?.date || points.at(-1)?.date;
+  const title = metalDisplayName(item.symbol);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMetalSeries() {
+      setChartLoading(true);
+
+      try {
+        const assetId = marketAssetToken(item.symbol, item.market);
+        const payload = await fetchJson<MarketTimeseriesResponse>(
+          `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(activePeriod.range)}&metalRateMode=${encodeURIComponent(activeRateMode)}`,
+        );
+        const nextPoints = (payload.data || [])
+          .filter((point) => isFiniteNumber(point.price))
+          .map((point) => {
+            const price = point.price as number;
+
+            return {
+              date: point.timestamp,
+              open: point.open ?? price,
+              high: point.high ?? price,
+              low: point.low ?? price,
+              close: point.close ?? price,
+              volume: point.volume ?? null,
+            };
+          });
+
+        if (!cancelled) {
+          setChartPoints(nextPoints.length ? nextPoints : points);
+        }
+      } catch {
+        if (!cancelled) setChartPoints(points);
+      } finally {
+        if (!cancelled) setChartLoading(false);
+      }
+    }
+
+    loadMetalSeries();
+    return () => {
+      cancelled = true;
+    };
+  }, [activePeriod, activeRateMode, item.market, item.symbol, points]);
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[0.78fr_1.22fr]">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <p className="text-xs font-black uppercase tracking-widest text-orange-700">Precious Metal</p>
+        <h2 className="mt-2 text-2xl font-black text-slate-900">{title}</h2>
+        <div className="mt-3 text-4xl font-black tabular-nums text-slate-900">
+          {formatPrice(selectedRate, quote?.currency)}
+          <span className="ml-2 text-lg font-black">{quote?.currency || 'TWD'}/{metalRate?.unit || '錢'}</span>
+        </div>
+        <p className="mt-3 text-xs font-bold text-slate-400">
+          {formatFxTimestamp(updatedAt)} · {metalRate ? `${metalRate.sourceName}${activeRateMode === 'sell' ? '賣出牌價' : '買進牌價'}` : '參考牌價'}
+        </p>
+
+        {metalRate ? (
+          <dl className="mt-5 grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl bg-orange-50 px-3 py-2 ring-1 ring-orange-100">
+                <dt className="text-[11px] text-orange-700">賣出牌價</dt>
+                <dd className="mt-1 tabular-nums text-orange-800">
+                  {formatPrice(metalRate.sell, quote?.currency)}
+                  <span className="ml-1 text-xs">/{metalRate.unit}</span>
+                </dd>
+                <dd className="mt-1 text-xs text-orange-700">{formatChange(metalRate.sellChange, quote?.currency)}</dd>
+              </div>
+              <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
+                <dt className="text-[11px] text-slate-400">買進牌價</dt>
+                <dd className="mt-1 tabular-nums text-slate-900">
+                  {formatPrice(metalRate.buy, quote?.currency)}
+                  <span className="ml-1 text-xs text-slate-500">/{metalRate.unit}</span>
+                </dd>
+                <dd className="mt-1 text-xs text-slate-500">{formatChange(metalRate.buyChange, quote?.currency)}</dd>
+              </div>
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <dt>資料來源</dt>
+              <dd>
+                <a
+                  href={metalRate.sourceUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-orange-700 underline-offset-4 hover:underline"
+                >
+                  {metalRate.sourceName}
+                </a>
+              </dd>
+            </div>
+          </dl>
+        ) : null}
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Price Trend</p>
+            <h3 className="mt-1 text-xl font-black text-slate-900">{title}走勢</h3>
+          </div>
+          <div className="flex gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1">
+            {FX_PERIODS.map((period) => (
+              <button
+                key={period.label}
+                type="button"
+                onClick={() => setActivePeriod(period)}
+                className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors ${
+                  activePeriod.label === period.label ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {period.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl bg-orange-50/80 p-1">
+          {METAL_RATE_MODES.map((mode) => (
+            <button
+              key={mode.value}
+              type="button"
+              onClick={() => setActiveRateMode(mode.value)}
+              className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors ${
+                activeRateMode === mode.value ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              {mode.shortLabel}
+            </button>
+          ))}
+        </div>
+        <DetailChart mode="line" points={chartPoints} periodLabel={`${activePeriod.label} · ${activeRateMode === 'sell' ? '賣出牌價' : '買進牌價'}`} />
+        {loading || chartLoading ? (
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
+            詳細資料載入中...
+          </div>
+        ) : null}
+      </section>
+    </div>
+  );
+}
+
 function StockDetailModal({
   item,
   quote,
@@ -2137,6 +2338,7 @@ function StockDetailModal({
   const [vrvpPeriod, setVrvpPeriod] = useState(VRVP_PERIODS[2]);
   const activeQuote = details?.quote || quote;
   const isFx = item.market === '外匯';
+  const isMetal = item.market === '貴金屬';
   const positive = (activeQuote?.changePercent || 0) > 0;
   const negative = (activeQuote?.changePercent || 0) < 0;
   const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
@@ -2172,7 +2374,7 @@ function StockDetailModal({
     async function loadDetails() {
       setLoading(true);
       try {
-        if (item.market === '外匯') {
+        if (item.market === '外匯' || item.market === '貴金屬') {
           const values = quote?.sparkline || [];
           const history = values.map((value, index) => ({
             date: new Date(Date.now() - (values.length - index - 1) * 60 * 60_000).toISOString(),
@@ -2279,6 +2481,8 @@ function StockDetailModal({
 
           {isFx ? (
             <FxDetailPanel item={item} quote={activeQuote || undefined} points={fxChartPoints} loading={loading} />
+          ) : isMetal ? (
+            <MetalDetailPanel item={item} quote={activeQuote || undefined} points={fxChartPoints} loading={loading} />
           ) : (
             <>
           <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1">
@@ -2499,7 +2703,7 @@ function StockCard({
 
       <div className="mb-1 flex items-center gap-2 pl-5 pr-24 sm:pr-16">
         <span className="flex h-5 min-w-7 shrink-0 items-center justify-center rounded-md bg-orange-50 px-1.5 text-[10px] font-black text-orange-700 ring-1 ring-orange-100">
-          {item.market === '美股' ? 'US' : item.market === '台股' ? 'TW' : 'FX'}
+          {item.market === '美股' ? 'US' : item.market === '台股' ? 'TW' : item.market === '外匯' ? 'FX' : 'PM'}
         </span>
         {item.pinned ? (
           <span className="flex h-5 shrink-0 items-center rounded-md bg-orange-100 px-1.5 text-[10px] font-black text-orange-700">
@@ -2570,6 +2774,25 @@ function StockCard({
                   {quote.bankRate.bankSellLabel ? (
                     <span className="rounded bg-white px-1.5 py-0.5 text-[9px] text-orange-700">{quote.bankRate.bankSellLabel}</span>
                   ) : null}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          {item.market === '貴金屬' && quote.metalRate ? (
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
+              <div className="rounded-xl bg-orange-50 px-2.5 py-2">
+                <p className="text-[10px] font-black text-orange-700">賣出牌價</p>
+                <p className="mt-1 text-sm font-black tabular-nums text-orange-800">
+                  {formatPrice(quote.metalRate.sell, quote.currency)}
+                  <span className="ml-1 text-[10px] text-orange-700">/{quote.metalRate.unit}</span>
+                </p>
+              </div>
+              <div className="rounded-xl bg-slate-50 px-2.5 py-2">
+                <p className="text-[10px] font-black text-slate-400">買進牌價</p>
+                <p className="mt-1 text-sm font-black tabular-nums text-slate-800">
+                  {formatPrice(quote.metalRate.buy, quote.currency)}
+                  <span className="ml-1 text-[10px] text-slate-500">/{quote.metalRate.unit}</span>
                 </p>
               </div>
             </div>
@@ -2889,19 +3112,19 @@ export default function StockWatchlistClient() {
     setQuotesLoading(true);
 
     try {
-      const fxItems = activeItems.filter((item) => item.market === '外匯');
-      const fxQuotes = fxItems.length
+      const marketQuoteItems = activeItems.filter((item) => item.market === '外匯' || item.market === '貴金屬');
+      const marketQuotes = marketQuoteItems.length
         ? Object.entries(
             (await fetchJson<MarketQuoteResponse>(
-              `/api/market/quotes?assets=${encodeURIComponent(fxItems.map((item) => marketAssetToken(item.symbol, item.market)).join(','))}`,
+              `/api/market/quotes?assets=${encodeURIComponent(marketQuoteItems.map((item) => marketAssetToken(item.symbol, item.market)).join(','))}`,
             )).data || {},
           ).reduce<Record<string, StockQuote>>((acc, [_key, quote]) => {
-            acc[stockKey(quote.symbol, '外匯')] = marketQuoteToStockQuote(quote);
+            acc[stockKey(quote.symbol, quote.exchange === 'GCK99' ? '貴金屬' : '外匯')] = marketQuoteToStockQuote(quote);
             return acc;
           }, {})
         : {};
-      const fallbackFxQuotes = fxItems.reduce<Record<string, StockQuote>>((acc, item) => {
-        if (fxQuotes[stockKey(item.symbol, item.market)]) return acc;
+      const fallbackFxQuotes = activeItems.filter((item) => item.market === '外匯').reduce<Record<string, StockQuote>>((acc, item) => {
+        if (marketQuotes[stockKey(item.symbol, item.market)]) return acc;
         const quote = fxQuoteToStockQuote(item.symbol);
         if (quote) acc[stockKey(item.symbol, item.market)] = quote;
         return acc;
@@ -2911,7 +3134,7 @@ export default function StockWatchlistClient() {
             `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
           )).data || {}
         : {};
-      const nextQuotes = { ...stockQuotes, ...fallbackFxQuotes, ...fxQuotes };
+      const nextQuotes = { ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes };
       const previousQuotes = previousQuotesRef.current;
       const now = new Date();
       const triggeredAlertIds = new Set<string>();
@@ -2973,7 +3196,7 @@ export default function StockWatchlistClient() {
   }, [refreshQuotes]);
 
   useEffect(() => {
-    if (!stocksParam) return;
+    if (!activeItems.length) return;
 
     const markets = Array.from(new Set(activeItems.map((item) => item.market)));
     const shouldRefresh = markets.some((market) => isMarketOpen(market));
@@ -2982,7 +3205,7 @@ export default function StockWatchlistClient() {
 
     const id = window.setInterval(refreshQuotes, REFRESH_INTERVAL_MS);
     return () => window.clearInterval(id);
-  }, [activeItems, refreshQuotes, stocksParam]);
+  }, [activeItems, refreshQuotes]);
 
   useEffect(() => {
     if (!message) return;
@@ -3017,6 +3240,15 @@ export default function StockWatchlistClient() {
                 return quote?.price ? { market, quote } : null;
               }
 
+              if (market === '貴金屬') {
+                const symbol = normalizeMetalSymbol(normalized);
+                const payload = await fetchJson<MarketQuoteResponse>(
+                  `/api/market/quotes?assets=${encodeURIComponent(marketAssetToken(symbol, market))}`,
+                );
+                const quote = Object.values(payload.data || {})[0];
+                return payload.success && quote?.currentPrice ? { market, quote: marketQuoteToStockQuote(quote) } : null;
+              }
+
               const payload = await fetchJson<QuoteResponse>(
                 `/api/stock/quote?symbol=${encodeURIComponent(normalized)}&market=${encodeURIComponent(market)}`,
               );
@@ -3035,7 +3267,7 @@ export default function StockWatchlistClient() {
         return;
       }
 
-      const target = resolved.find((item) => !existingKeys.has(stockKey(normalized, item.market)));
+      const target = resolved.find((item) => !existingKeys.has(stockKey(storedSymbolForMarket(normalized, item.market), item.market)));
 
       if (!target) {
         setMessage({ text: `${displaySymbol(normalized)} 已存在於「${activeListId}」`, type: 'error' });
@@ -3045,11 +3277,11 @@ export default function StockWatchlistClient() {
 
       setWatchlists((current) => ({
         ...current,
-        [activeListId]: [...(current[activeListId] || []), { symbol: target.market === '外匯' ? normalized.replace('-', '/') : normalized, market: target.market }],
+        [activeListId]: [...(current[activeListId] || []), { symbol: storedSymbolForMarket(normalized, target.market), market: target.market }],
       }));
       setQuotes((current) => ({
         ...current,
-        [stockKey(target.market === '外匯' ? normalized.replace('-', '/') : normalized, target.market)]: target.quote,
+        [stockKey(storedSymbolForMarket(normalized, target.market), target.market)]: target.quote,
       }));
       setSymbol('');
       setIsAddPanelOpen(false);
@@ -3236,7 +3468,7 @@ export default function StockWatchlistClient() {
               市場<span className="text-gradient">觀察清單</span>
             </h1>
             <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-slate-500 sm:text-base">
-              建立自己的台股、美股與匯率觀察清單，保留股價走勢、五線譜、VRVP 與新聞等完整分析內容。
+              建立自己的台股、美股、匯率與貴金屬觀察清單，保留股價走勢、五線譜、VRVP 與新聞等完整分析內容。
             </p>
           </div>
 
@@ -3282,9 +3514,12 @@ export default function StockWatchlistClient() {
                   value={symbol}
                   onChange={(event) => setSymbol(event.target.value.toUpperCase())}
                   className="block h-[3.25rem] w-full appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-left font-medium text-slate-700 placeholder:text-slate-400 focus:border-orange-200 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-orange-500/40 focus:ring-4 focus:ring-orange-100"
-                  placeholder="輸入美股或台股代號，例如 AAPL 或 2330"
+                  placeholder="AAPL、2330、USD/TWD、GOLD、白金"
                 />
               </div>
+              <p className="mt-2 text-xs font-medium leading-relaxed text-slate-400">
+                外匯可輸入 USD/TWD、HKD/TWD、CNY/TWD；黃金可輸入 GOLD、AU、黃金；白金可輸入 PLATINUM、PT、白金。
+              </p>
             </div>
 
             <div className="flex-1">

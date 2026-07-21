@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { MarketAssetType, MarketSearchResult } from '@/lib/market/types';
 import { defaultFxSearchResults, normalizeFxSymbol } from '@/lib/market/providers/fxProvider';
+import { defaultMetalSearchResults, normalizeMetalSymbol } from '@/lib/market/providers/metalProvider';
 import {
   assetTypeToStockMarket,
   detectStockMarkets,
@@ -10,7 +11,7 @@ import { stockSearchResult } from '@/lib/market/providers/jacksuStockAdapter';
 
 export const dynamic = 'force-dynamic';
 
-const supportedAssetTypes: MarketAssetType[] = ['tw_stock', 'us_stock', 'fx'];
+const supportedAssetTypes: MarketAssetType[] = ['tw_stock', 'us_stock', 'fx', 'metal'];
 const YAHOO_SEARCH_URL = 'https://query1.finance.yahoo.com/v1/finance/search';
 
 type YahooSearchQuote = {
@@ -110,7 +111,7 @@ export async function GET(request: NextRequest) {
   const assetType = parseAssetType(request.nextUrl.searchParams.get('assetType'));
   const results: MarketSearchResult[] = [];
 
-  if (!query && assetType !== 'fx') {
+  if (!query && assetType !== 'fx' && assetType !== 'metal') {
     return NextResponse.json({ success: true, data: results });
   }
 
@@ -119,6 +120,18 @@ export async function GET(request: NextRequest) {
     results.push(
       ...defaultFxSearchResults().filter((item) => {
         if (!query) return true;
+        return item.symbol.includes(normalizedQuery) || item.displayName.includes(query);
+      }),
+    );
+  }
+
+  if (!assetType || assetType === 'metal') {
+    const normalizedQuery = normalizeMetalSymbol(query);
+    const exactMetalMatch = normalizedQuery === 'GOLD/TWD' || normalizedQuery === 'PLATINUM/TWD';
+    results.push(
+      ...defaultMetalSearchResults().filter((item) => {
+        if (!query) return true;
+        if (exactMetalMatch) return item.symbol === normalizedQuery;
         return item.symbol.includes(normalizedQuery) || item.displayName.includes(query);
       }),
     );

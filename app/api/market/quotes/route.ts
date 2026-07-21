@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { MarketAssetType, MarketQuote } from '@/lib/market/types';
 import { defaultFxPairs, fetchFxQuote, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
+import { fetchMetalQuote, normalizeMetalSymbol } from '@/lib/market/providers/metalProvider';
 import {
   assetTypeToStockMarket,
   normalizeStockSymbol,
@@ -29,7 +30,7 @@ function parseAssetToken(token: string): MarketAssetRequest | null {
   const symbol = symbolParts.join(':');
 
   if (!assetType || !exchange || !symbol) return null;
-  if (!['tw_stock', 'us_stock', 'fx'].includes(assetType)) return null;
+  if (!['tw_stock', 'us_stock', 'fx', 'metal'].includes(assetType)) return null;
 
   return {
     assetType: assetType as MarketAssetType,
@@ -95,6 +96,23 @@ async function getFxQuotes(assets: MarketAssetRequest[]) {
   }, {});
 }
 
+async function getMetalQuotes(assets: MarketAssetRequest[]) {
+  const entries = await Promise.all(
+    assets.map(async (asset) => {
+      if (asset.assetType !== 'metal') return null;
+
+      const quote = await fetchMetalQuote(normalizeMetalSymbol(asset.symbol));
+      return quote ? [quoteKey(asset), quote] as const : null;
+    }),
+  );
+
+  return entries.reduce<Record<string, MarketQuote>>((quotes, entry) => {
+    if (!entry) return quotes;
+    quotes[entry[0]] = entry[1];
+    return quotes;
+  }, {});
+}
+
 export async function GET(request: NextRequest) {
   const assetsParam = request.nextUrl.searchParams.get('assets')?.trim();
 
@@ -115,9 +133,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const [stockQuotes, fxQuotes] = await Promise.all([
+    const [stockQuotes, fxQuotes, metalQuotes] = await Promise.all([
       fetchStockQuotes(request, assets),
       getFxQuotes(assets),
+      getMetalQuotes(assets),
     ]);
 
     return NextResponse.json({
@@ -125,6 +144,7 @@ export async function GET(request: NextRequest) {
       data: {
         ...stockQuotes,
         ...fxQuotes,
+        ...metalQuotes,
       },
     });
   } catch {

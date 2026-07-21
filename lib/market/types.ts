@@ -1,4 +1,4 @@
-export type MarketAssetType = 'tw_stock' | 'us_stock' | 'fx';
+export type MarketAssetType = 'tw_stock' | 'us_stock' | 'fx' | 'metal';
 
 export type MarketStatus = 'open' | 'closed' | 'pre_market' | 'after_hours' | 'unknown';
 
@@ -56,6 +56,16 @@ export type MarketQuote = MarketAsset & {
     bankSellLabel?: string | null;
     cashBuyLabel?: string | null;
     cashSellLabel?: string | null;
+    updatedAt: string | null;
+    sourceName: string;
+    sourceUrl: string;
+  };
+  metalRate?: {
+    sell: number | null;
+    buy: number | null;
+    sellChange: number | null;
+    buyChange: number | null;
+    unit: string;
     updatedAt: string | null;
     sourceName: string;
     sourceUrl: string;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { FxRateMode, MarketAssetType, MarketChartPoint, MarketRange } from '@/lib/market/types';
 import { defaultFxPairs, fetchFxTimeSeries, normalizeFxSymbol, seedFxQuote } from '@/lib/market/providers/fxProvider';
+import { fetchMetalTimeSeries, normalizeMetalSymbol } from '@/lib/market/providers/metalProvider';
 import { assetTypeToStockMarket, normalizeStockSymbol } from '@/lib/market/providers/stockMarketProvider';
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +35,7 @@ function parseAssetId(assetId: string) {
   const symbol = symbolParts.join(':');
 
   if (!assetType || !exchange || !symbol) return null;
-  if (!['tw_stock', 'us_stock', 'fx'].includes(assetType)) return null;
+  if (!['tw_stock', 'us_stock', 'fx', 'metal'].includes(assetType)) return null;
 
   return {
     assetType: assetType as MarketAssetType,
@@ -59,6 +60,10 @@ function parseFxRateMode(value: string | null): FxRateMode {
   return 'bankSell';
 }
 
+function parseMetalRateMode(value: string | null): 'sell' | 'buy' {
+  return value === 'buy' ? 'buy' : 'sell';
+}
+
 function filterByRange(points: MarketChartPoint[], range: MarketRange) {
   const earliest = Date.now() - rangeDays[range] * 24 * 60 * 60_000;
   return points.filter((point) => Date.parse(point.timestamp) >= earliest);
@@ -72,6 +77,10 @@ async function fxSeries(symbol: string, range: MarketRange, rateMode: FxRateMode
   if (points.length) return points;
 
   return seedFxQuote(pair).chartData;
+}
+
+async function metalSeries(symbol: string, range: MarketRange, rateMode: 'sell' | 'buy') {
+  return fetchMetalTimeSeries(normalizeMetalSymbol(symbol), range, rateMode);
 }
 
 async function stockSeries(request: NextRequest, assetId: string, range: MarketRange) {
@@ -108,6 +117,7 @@ export async function GET(request: NextRequest) {
   const assetId = request.nextUrl.searchParams.get('assetId')?.trim();
   const range = parseRange(request.nextUrl.searchParams.get('range'));
   const rateMode = parseFxRateMode(request.nextUrl.searchParams.get('rateMode'));
+  const metalRateMode = parseMetalRateMode(request.nextUrl.searchParams.get('metalRateMode'));
 
   if (!assetId) {
     return NextResponse.json(
@@ -125,7 +135,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const data = asset.assetType === 'fx' ? await fxSeries(asset.symbol, range, rateMode) : await stockSeries(request, assetId, range);
+    const data =
+      asset.assetType === 'fx'
+        ? await fxSeries(asset.symbol, range, rateMode)
+        : asset.assetType === 'metal'
+          ? await metalSeries(asset.symbol, range, metalRateMode)
+          : await stockSeries(request, assetId, range);
     return NextResponse.json({ success: true, data });
   } catch {
     return NextResponse.json(

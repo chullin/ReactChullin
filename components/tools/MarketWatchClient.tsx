@@ -29,6 +29,7 @@ import type {
   PriceAlert,
 } from '@/lib/market/types';
 import { defaultFxSearchResults } from '@/lib/market/providers/fxProvider';
+import { defaultMetalSearchResults } from '@/lib/market/providers/metalProvider';
 import { didCrossAlertTarget, isAlertCoolingDown } from '@/lib/market/alerts';
 import { InAppNotificationProvider, createNotificationEvent } from '@/lib/market/notifications';
 
@@ -61,6 +62,7 @@ const ASSET_FILTERS: { value: MarketAssetType | 'all'; label: string }[] = [
   { value: 'tw_stock', label: '台股' },
   { value: 'us_stock', label: '美股' },
   { value: 'fx', label: '外匯' },
+  { value: 'metal', label: '貴金屬' },
 ];
 
 const CHART_RANGES: MarketRange[] = ['1D', '5D', '1M', '6M', '1Y'];
@@ -69,6 +71,7 @@ const ASSET_TYPE_LABELS: Record<MarketAssetType, string> = {
   tw_stock: '台股',
   us_stock: '美股',
   fx: '外匯',
+  metal: '貴金屬',
 };
 
 const ALERT_CONDITION_LABELS: Record<AlertConditionType, string> = {
@@ -1090,7 +1093,7 @@ export default function MarketWatchClient() {
   const openAddDialog = () => {
     setIsAddOpen(true);
     setSearchError(null);
-    setSearchResults(searchAssetType === 'fx' ? defaultFxSearchResults() : []);
+    setSearchResults(searchAssetType === 'fx' ? defaultFxSearchResults() : searchAssetType === 'metal' ? defaultMetalSearchResults() : []);
   };
 
   const createAlert = useCallback(
@@ -1262,7 +1265,7 @@ export default function MarketWatchClient() {
         onQueryChange={setQuery}
         onAssetTypeChange={(value) => {
           setSearchAssetType(value);
-          setSearchResults(value === 'fx' ? defaultFxSearchResults() : []);
+          setSearchResults(value === 'fx' ? defaultFxSearchResults() : value === 'metal' ? defaultMetalSearchResults() : []);
         }}
         onSubmit={searchAssets}
         onAdd={addAsset}
