@@ -185,6 +185,7 @@ const ALERTS_KEY = 'stock-watchlist-alerts:v1';
 const ACTIVE_LIST_KEY = 'stock-watchlist-active-list:v1';
 const ACTIVE_MARKET_KEY = 'stock-watchlist-active-market:v1';
 const FX_TOP_MIGRATION_KEY = 'stock-watchlist-fx-top-migrated:v1';
+const DEFAULT_STOCK_MIGRATION_KEY = 'stock-watchlist-default-stock-migrated:v1';
 const REFRESH_INTERVAL_MS = 30_000;
 const PRICE_PERIODS: PeriodOption[] = [
   { label: '1M', months: 1 },
@@ -225,6 +226,19 @@ function defaultFxItems(): StockItem[] {
   }));
 }
 
+function defaultStockItems(): StockItem[] {
+  return [
+    {
+      symbol: '2330',
+      market: '台股',
+    },
+  ];
+}
+
+function defaultInventoryItems() {
+  return [...defaultFxItems(), ...defaultStockItems()];
+}
+
 function normalizeStockItems(items: StockItem[] = []) {
   return items
     .filter((item): item is StockItem => typeof item?.symbol === 'string' && typeof item?.market === 'string')
@@ -244,13 +258,20 @@ function placeDefaultFxFirst(items: StockItem[]) {
   return [...fxItems, ...others];
 }
 
+function addMissingDefaultStocks(items: StockItem[]) {
+  const existingKeys = new Set(items.map((item) => stockKey(item.symbol, item.market)));
+  const missingItems = defaultStockItems().filter((item) => !existingKeys.has(stockKey(item.symbol, item.market)));
+
+  return missingItems.length ? [...items, ...missingItems] : items;
+}
+
 function createEmptyWatchlists(lists: WatchlistDef[] = DEFAULT_LISTS) {
   const watchlists = lists.reduce<Watchlists>((acc, list) => {
     acc[list.id] = [];
     return acc;
   }, {});
 
-  watchlists['庫存'] = defaultFxItems();
+  watchlists['庫存'] = defaultInventoryItems();
   return watchlists;
 }
 
@@ -2521,6 +2542,7 @@ export default function StockWatchlistClient() {
       const storedList = localStorage.getItem(ACTIVE_LIST_KEY);
       const storedMarket = localStorage.getItem(ACTIVE_MARKET_KEY);
       const fxTopMigrated = localStorage.getItem(FX_TOP_MIGRATION_KEY) === 'true';
+      const defaultStockMigrated = localStorage.getItem(DEFAULT_STOCK_MIGRATION_KEY) === 'true';
       const nextListDefs = storedListDefs ? normalizeWatchlistDefs(JSON.parse(storedListDefs)) : DEFAULT_LISTS;
 
       setWatchlistDefs(nextListDefs);
@@ -2533,9 +2555,17 @@ export default function StockWatchlistClient() {
           localStorage.setItem(FX_TOP_MIGRATION_KEY, 'true');
         }
 
+        if (!defaultStockMigrated) {
+          nextWatchlists['庫存'] = addMissingDefaultStocks(nextWatchlists['庫存'] || []);
+          localStorage.setItem(DEFAULT_STOCK_MIGRATION_KEY, 'true');
+        }
+
         setWatchlists(nextWatchlists);
       } else if (!fxTopMigrated) {
         localStorage.setItem(FX_TOP_MIGRATION_KEY, 'true');
+        localStorage.setItem(DEFAULT_STOCK_MIGRATION_KEY, 'true');
+      } else if (!defaultStockMigrated) {
+        localStorage.setItem(DEFAULT_STOCK_MIGRATION_KEY, 'true');
       }
 
       if (storedList && nextListDefs.some((list) => list.id === storedList)) {
