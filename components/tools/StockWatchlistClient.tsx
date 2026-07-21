@@ -280,11 +280,13 @@ function defaultInventoryItems() {
 }
 
 function normalizeStockItems(items: StockItem[] = []) {
+  const validMarkets = new Set<Market>(['美股', '台股', '外匯', '貴金屬']);
+
   return items
-    .filter((item): item is StockItem => typeof item?.symbol === 'string' && typeof item?.market === 'string')
+    .filter((item): item is StockItem => typeof item?.symbol === 'string' && validMarkets.has(item?.market as Market))
     .map((item) => ({
       symbol: item.symbol,
-      market: item.market,
+      market: item.market as Market,
       pinned: Boolean(item.pinned),
     }));
 }
@@ -3063,6 +3065,12 @@ export default function StockWatchlistClient() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (watchlistDefs.some((list) => list.id === activeListId)) return;
+    setActiveListId(DEFAULT_LISTS[0].id);
+  }, [activeListId, mounted, watchlistDefs]);
+
+  useEffect(() => {
+    if (!mounted) return;
     const id = window.setTimeout(() => localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts)), 250);
     return () => window.clearTimeout(id);
   }, [alerts, mounted]);
@@ -3587,30 +3595,28 @@ export default function StockWatchlistClient() {
           </a>
         </section>
 
-        {activeItems.length ? (
-          <div className="mt-7 mb-4 flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
-            {watchlistDefs.map((list) => (
-              <button
-                key={list.id}
-                type="button"
-                onClick={() => setActiveListId(list.id)}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                  activeListId === list.id ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                {list.name}
-              </button>
-            ))}
+        <div className="mt-7 mb-4 flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
+          {watchlistDefs.map((list) => (
             <button
+              key={list.id}
               type="button"
-              onClick={createWatchlist}
-              className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold text-orange-700 transition-colors hover:bg-white hover:text-orange-800"
+              onClick={() => setActiveListId(list.id)}
+              className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                activeListId === list.id ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+              }`}
             >
-              <Plus size={13} />
-              新增清單
+              {list.name}
             </button>
-          </div>
-        ) : null}
+          ))}
+          <button
+            type="button"
+            onClick={createWatchlist}
+            className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold text-orange-700 transition-colors hover:bg-white hover:text-orange-800"
+          >
+            <Plus size={13} />
+            新增清單
+          </button>
+        </div>
 
         {activeItems.length ? (
           <div className="mb-5 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 tabular-nums">
@@ -3630,8 +3636,17 @@ export default function StockWatchlistClient() {
         ) : null}
 
         {mounted && activeItems.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-orange-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
-            尚未新增任何標的，先試試 AAPL、2330 或 USD/TWD
+          <div className="mt-8 rounded-2xl border border-dashed border-orange-200 bg-white/70 px-4 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
+            <p>「{activeListId}」尚未新增任何標的，先試試 AAPL、2330、USD/TWD、GOLD 或白金</p>
+            {activeListId !== DEFAULT_LISTS[0].id ? (
+              <button
+                type="button"
+                onClick={() => setActiveListId(DEFAULT_LISTS[0].id)}
+                className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100 transition hover:bg-orange-100"
+              >
+                回到庫存
+              </button>
+            ) : null}
           </div>
         ) : null}
 
