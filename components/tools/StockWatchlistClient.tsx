@@ -10,12 +10,14 @@ import {
   ExternalLink,
   GripVertical,
   Info,
+  LayoutGrid,
   LineChart,
   Minus,
   Newspaper,
   Pin,
   Plus,
   RefreshCw,
+  Table2,
   TrendingDown,
   TrendingUp,
   X,
@@ -193,6 +195,7 @@ type FxPeriodOption = {
 };
 
 type MetalRateMode = 'sell' | 'buy';
+type WatchlistViewMode = 'cards' | 'table';
 
 const DEFAULT_LISTS: WatchlistDef[] = [
   { id: '庫存', name: '庫存' },
@@ -2842,6 +2845,165 @@ function StockCard({
   );
 }
 
+function WatchlistTable({
+  items,
+  quotes,
+  quotesLoading,
+  alertsByKey,
+  onOpen,
+  onOpenAlerts,
+  onTogglePinned,
+  onRemove,
+}: {
+  items: StockItem[];
+  quotes: Record<string, StockQuote>;
+  quotesLoading: boolean;
+  alertsByKey: Record<string, LocalPriceAlert[]>;
+  onOpen: (item: StockItem) => void;
+  onOpenAlerts: (item: StockItem) => void;
+  onTogglePinned: (item: StockItem) => void;
+  onRemove: (symbol: string, market: Market) => void;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-orange-700/5">
+      <div className="overflow-x-auto">
+        <table className="min-w-[980px] w-full border-collapse text-left text-sm">
+          <thead className="bg-slate-50 text-xs font-black uppercase tracking-widest text-slate-400">
+            <tr>
+              <th className="px-4 py-3">標的</th>
+              <th className="px-4 py-3">市場</th>
+              <th className="px-4 py-3 text-right">價格</th>
+              <th className="px-4 py-3 text-right">漲跌</th>
+              <th className="px-4 py-3">走勢</th>
+              <th className="px-4 py-3">買賣參考</th>
+              <th className="px-4 py-3 text-right">操作</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {items.map((item) => {
+              const quote = quotes[stockKey(item.symbol, item.market)];
+              const positive = (quote?.changePercent || 0) > 0;
+              const negative = (quote?.changePercent || 0) < 0;
+              const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
+              const alertCount = (alertsByKey[alertKey(item.symbol, item.market)] || []).length;
+
+              return (
+                <tr
+                  key={stockKey(item.symbol, item.market)}
+                  tabIndex={0}
+                  onClick={() => onOpen(item)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onOpen(item);
+                    }
+                  }}
+                  className="group cursor-pointer transition-colors hover:bg-orange-50/40 focus:outline focus:outline-2 focus:outline-orange-500/40"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex min-w-0 items-center gap-2">
+                      {item.pinned ? (
+                        <Pin size={13} className="shrink-0 text-orange-600" />
+                      ) : null}
+                      <div className="min-w-0">
+                        <div className="font-black tracking-tight text-slate-900">{displaySymbol(item.symbol)}</div>
+                        <div className="mt-0.5 max-w-56 truncate text-xs font-medium text-slate-400">
+                          {quote?.longName || quote?.name || (quotesLoading ? '載入中...' : '無法取得資料')}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex rounded-lg bg-orange-50 px-2 py-1 text-xs font-black text-orange-700 ring-1 ring-orange-100">
+                      {item.market}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="font-black tabular-nums" style={{ color: accent }}>
+                      {formatPrice(quote?.price, quote?.currency)}
+                    </div>
+                    <div className="mt-0.5 text-xs font-bold text-slate-400">{quote?.currency || ''}</div>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="font-bold tabular-nums" style={{ color: accent }}>
+                      {formatPercent(quote?.changePercent)}
+                    </div>
+                    <div className="mt-0.5 text-xs font-bold tabular-nums" style={{ color: accent }}>
+                      {formatChange(quote?.change, quote?.currency)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="h-10 w-28">
+                      <Sparkline quote={quote} positive={positive} negative={negative} />
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {item.market === '外匯' && quote?.bankRate ? (
+                      <div className="grid gap-1 text-xs font-bold tabular-nums text-slate-500">
+                        <span>我賣 {formatPrice(quote.bankRate.bankBuy, quote.currency)}</span>
+                        <span className="text-orange-700">我買 {formatPrice(quote.bankRate.bankSell, quote.currency)}</span>
+                      </div>
+                    ) : item.market === '貴金屬' && quote?.metalRate ? (
+                      <div className="grid gap-1 text-xs font-bold tabular-nums text-slate-500">
+                        <span className="text-orange-700">我買 {formatPrice(quote.metalRate.sell, quote.currency)}/{quote.metalRate.unit}</span>
+                        <span>我賣 {formatPrice(quote.metalRate.buy, quote.currency)}/{quote.metalRate.unit}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs font-bold text-slate-300">-</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onOpenAlerts(item);
+                        }}
+                        className={`inline-flex h-8 min-w-8 items-center justify-center gap-1 rounded-lg px-2 text-xs font-black transition-colors ${
+                          alertCount ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-400 hover:bg-orange-50 hover:text-orange-700'
+                        }`}
+                        aria-label="設定通知"
+                      >
+                        <Bell size={13} />
+                        {alertCount || ''}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onTogglePinned(item);
+                        }}
+                        className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                          item.pinned ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-400 hover:bg-orange-50 hover:text-orange-700'
+                        }`}
+                        aria-label={item.pinned ? '取消置頂' : '置頂'}
+                      >
+                        <Pin size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onRemove(item.symbol, item.market);
+                        }}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
+                        aria-label="移除"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function AlertManagerModal({
   item,
   quote,
@@ -2998,6 +3160,7 @@ export default function StockWatchlistClient() {
   const [activeMarket, setActiveMarket] = useState<(typeof MARKET_TABS)[number]['value']>('全部');
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
   const [activeCardRange, setActiveCardRange] = useState<FxPeriodOption>(CARD_TREND_RANGES[2]);
+  const [viewMode, setViewMode] = useState<WatchlistViewMode>('cards');
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
   const [alerts, setAlerts] = useState<LocalPriceAlert[]>([]);
   const [alertItem, setAlertItem] = useState<StockItem | null>(null);
@@ -3660,19 +3823,43 @@ export default function StockWatchlistClient() {
         </div>
 
         {activeItems.length ? (
-          <div className="mb-5 flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 tabular-nums">
-            {MARKET_TABS.map((tab) => (
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 tabular-nums">
+              {MARKET_TABS.map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setActiveMarket(tab.value)}
+                  className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                    activeMarket === tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1 tabular-nums">
               <button
-                key={tab.value}
                 type="button"
-                onClick={() => setActiveMarket(tab.value)}
-                className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                  activeMarket === tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                onClick={() => setViewMode('cards')}
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                  viewMode === 'cards' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
-                {tab.label}
+                <LayoutGrid size={13} />
+                卡片
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setViewMode('table')}
+                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                  viewMode === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <Table2 size={13} />
+                表格
+              </button>
+            </div>
           </div>
         ) : null}
 
@@ -3722,31 +3909,44 @@ export default function StockWatchlistClient() {
 
         {displayItems.length ? (
           <>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {displayItems.map((item) => (
-                <StockCard
-                  key={stockKey(item.symbol, item.market)}
-                  item={item}
-                  quote={quotes[stockKey(item.symbol, item.market)]}
-                  loading={quotesLoading}
-                  alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
-                  isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
-                  dropPlacement={dragTarget?.key === stockKey(item.symbol, item.market) ? dragTarget.placement : null}
-                  onRemove={removeStock}
-                  onOpen={setSelectedStock}
-                  onOpenAlerts={setAlertItem}
-                  onTogglePinned={togglePinned}
-                  onDragStart={handleCardDragStart}
-                  onDragOver={handleCardDragOver}
-                  onDrop={handleCardDrop}
-                  onDragEnd={handleCardDragEnd}
-                />
-              ))}
-            </div>
+            {viewMode === 'cards' ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {displayItems.map((item) => (
+                  <StockCard
+                    key={stockKey(item.symbol, item.market)}
+                    item={item}
+                    quote={quotes[stockKey(item.symbol, item.market)]}
+                    loading={quotesLoading}
+                    alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
+                    isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
+                    dropPlacement={dragTarget?.key === stockKey(item.symbol, item.market) ? dragTarget.placement : null}
+                    onRemove={removeStock}
+                    onOpen={setSelectedStock}
+                    onOpenAlerts={setAlertItem}
+                    onTogglePinned={togglePinned}
+                    onDragStart={handleCardDragStart}
+                    onDragOver={handleCardDragOver}
+                    onDrop={handleCardDrop}
+                    onDragEnd={handleCardDragEnd}
+                  />
+                ))}
+              </div>
+            ) : (
+              <WatchlistTable
+                items={displayItems}
+                quotes={quotes}
+                quotesLoading={quotesLoading}
+                alertsByKey={alertsByKey}
+                onOpen={setSelectedStock}
+                onOpenAlerts={setAlertItem}
+                onTogglePinned={togglePinned}
+                onRemove={removeStock}
+              />
+            )}
 
             <div className="mt-5 inline-flex items-center rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-100">
               <Info size={14} className="text-orange-600" />
-              <span className="ml-1.5 font-medium">每張卡片右側的小線圖顯示近期價格與迷你五線譜；可拖曳卡片調整順序</span>
+              <span className="ml-1.5 font-medium">卡片模式可拖曳調整順序；表格模式適合快速掃描多筆標的</span>
             </div>
           </>
         ) : null}
