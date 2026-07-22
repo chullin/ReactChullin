@@ -3,6 +3,13 @@ node_modules/
 out/
 build/
 .DS_Store
+*.tsbuildinfo
+debug_*.txt
+*mismatches*.txt
+scratch/
+.vscode/
+.agents/
+app/seg
 *.local
 .venv/
 __pycache__/
