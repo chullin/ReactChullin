@@ -358,6 +358,13 @@ function displaySymbol(value: string) {
   return value.replace(/-/g, '.');
 }
 
+function marketShortLabel(market: Market) {
+  if (market === '美股') return 'US';
+  if (market === '台股') return 'TW';
+  if (market === '外匯') return 'FX';
+  return 'PM';
+}
+
 function metalDisplayName(symbol: string) {
   const item = defaultMetalItems.find((metal) => metal.symbol === normalizeMetalSymbol(symbol));
   return item?.displayName || displaySymbol(symbol);
@@ -2886,21 +2893,20 @@ function WatchlistTable({
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-orange-700/5">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[1120px] border-collapse text-left text-sm">
-          <thead className="bg-slate-50 text-xs font-black uppercase tracking-widest text-slate-400">
+      <div className="overflow-x-auto max-sm:overflow-visible">
+        <table className="w-full border-collapse text-left text-sm max-sm:block">
+          <thead className="bg-slate-50 text-xs font-black uppercase tracking-widest text-slate-400 max-sm:hidden">
             <tr>
               <th className="w-12 px-3 py-3" aria-label="排序" />
               <th className="px-4 py-3">標的</th>
-              <th className="px-4 py-3">市場</th>
+              <th className="px-2 py-3 text-center">市場</th>
               <th className="px-4 py-3 text-right">價格</th>
               <th className="px-4 py-3 text-right">漲跌</th>
               <th className="px-4 py-3">走勢</th>
-              <th className="px-4 py-3">買賣參考</th>
               <th className="px-4 py-3 text-right">操作</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-slate-100 max-sm:block max-sm:space-y-3 max-sm:divide-y-0 max-sm:bg-slate-50 max-sm:p-2">
             {items.map((item) => {
               const quote = quotes[stockKey(item.symbol, item.market)];
               const positive = (quote?.changePercent || 0) > 0;
@@ -2909,6 +2915,7 @@ function WatchlistTable({
               const alertCount = (alertsByKey[alertKey(item.symbol, item.market)] || []).length;
               const itemKey = stockKey(item.symbol, item.market);
               const rowDropPlacement = dragTarget?.key === itemKey ? dragTarget.placement : null;
+              const marketLabel = marketShortLabel(item.market);
 
               return (
                 <tr
@@ -2923,7 +2930,7 @@ function WatchlistTable({
                   }}
                   onDragOver={(event) => onDragOver(event, item, 'vertical')}
                   onDrop={(event) => onDrop(event, item, 'vertical')}
-                  className={`group cursor-pointer transition-colors hover:bg-orange-50/40 focus:outline focus:outline-2 focus:outline-orange-500/40 ${
+                  className={`group cursor-pointer transition-colors hover:bg-orange-50/40 focus:outline focus:outline-2 focus:outline-orange-500/40 max-sm:grid max-sm:grid-cols-[auto_minmax(0,1fr)_auto] max-sm:gap-x-2 max-sm:gap-y-2 max-sm:rounded-2xl max-sm:border max-sm:border-slate-200 max-sm:bg-white max-sm:p-3 max-sm:shadow-sm ${
                     draggedItemKey === itemKey
                       ? 'bg-orange-50/50 opacity-60'
                       : rowDropPlacement
@@ -2931,7 +2938,7 @@ function WatchlistTable({
                         : ''
                   }`}
                 >
-                  <td className="relative px-3 py-3">
+                  <td className="relative px-3 py-3 max-sm:col-start-1 max-sm:row-span-2 max-sm:px-0 max-sm:py-0">
                     {rowDropPlacement ? (
                       <div
                         className={`pointer-events-none absolute left-2 right-2 z-20 flex items-center gap-2 ${
@@ -2958,7 +2965,7 @@ function WatchlistTable({
                       <GripVertical size={16} />
                     </button>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 max-sm:col-start-2 max-sm:row-start-1 max-sm:min-w-0 max-sm:px-0 max-sm:py-0">
                     <div className="flex min-w-0 items-center gap-2">
                       {item.pinned ? (
                         <Pin size={13} className="shrink-0 text-orange-600" />
@@ -2971,18 +2978,33 @@ function WatchlistTable({
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex rounded-lg bg-orange-50 px-2 py-1 text-xs font-black text-orange-700 ring-1 ring-orange-100">
-                      {item.market}
+                  <td className="px-2 py-3 text-center max-sm:col-start-3 max-sm:row-start-1 max-sm:px-0 max-sm:py-0">
+                    <span className="inline-flex rounded-lg bg-orange-50 px-2 py-1 text-[10px] font-black text-orange-700 ring-1 ring-orange-100" title={item.market}>
+                      <span className="sm:hidden">{marketLabel}</span>
+                      <span className="hidden sm:inline">{marketLabel}</span>
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    <div className="font-black tabular-nums" style={{ color: accent }}>
-                      {formatPrice(quote?.price, quote?.currency)}
-                    </div>
-                    <div className="mt-0.5 text-xs font-bold text-slate-400">{quote?.currency || ''}</div>
+                  <td className="px-4 py-3 text-right max-sm:col-start-2 max-sm:row-start-2 max-sm:px-0 max-sm:py-0 max-sm:text-left">
+                    {item.market === '外匯' && quote?.bankRate ? (
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold tabular-nums text-slate-500">
+                        <span>我賣 {formatPrice(quote.bankRate.bankBuy, quote.currency)}</span>
+                        <span className="text-orange-700">我買 {formatPrice(quote.bankRate.bankSell, quote.currency)}</span>
+                      </div>
+                    ) : item.market === '貴金屬' && quote?.metalRate ? (
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold tabular-nums text-slate-500">
+                        <span className="text-orange-700">我買 {formatPrice(quote.metalRate.sell, quote.currency)}/{quote.metalRate.unit}</span>
+                        <span>我賣 {formatPrice(quote.metalRate.buy, quote.currency)}/{quote.metalRate.unit}</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="font-black tabular-nums" style={{ color: accent }}>
+                          {formatPrice(quote?.price, quote?.currency)}
+                        </div>
+                        <div className="mt-0.5 text-xs font-bold text-slate-400">{quote?.currency || ''}</div>
+                      </>
+                    )}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right max-sm:col-start-3 max-sm:row-start-2 max-sm:px-0 max-sm:py-0">
                     <div className="font-bold tabular-nums" style={{ color: accent }}>
                       {formatPercent(quote?.changePercent)}
                     </div>
@@ -2990,28 +3012,13 @@ function WatchlistTable({
                       {formatChange(quote?.change, quote?.currency)}
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="h-16 w-48">
+                  <td className="px-4 py-3 max-sm:col-span-3 max-sm:row-start-3 max-sm:px-0 max-sm:py-0">
+                    <div className="h-14 w-40 max-sm:h-16 max-sm:w-full">
                       <Sparkline quote={quote} positive={positive} negative={negative} maxPoints={24} />
                     </div>
                   </td>
-                  <td className="px-4 py-3">
-                    {item.market === '外匯' && quote?.bankRate ? (
-                      <div className="grid gap-1 text-xs font-bold tabular-nums text-slate-500">
-                        <span>我賣 {formatPrice(quote.bankRate.bankBuy, quote.currency)}</span>
-                        <span className="text-orange-700">我買 {formatPrice(quote.bankRate.bankSell, quote.currency)}</span>
-                      </div>
-                    ) : item.market === '貴金屬' && quote?.metalRate ? (
-                      <div className="grid gap-1 text-xs font-bold tabular-nums text-slate-500">
-                        <span className="text-orange-700">我買 {formatPrice(quote.metalRate.sell, quote.currency)}/{quote.metalRate.unit}</span>
-                        <span>我賣 {formatPrice(quote.metalRate.buy, quote.currency)}/{quote.metalRate.unit}</span>
-                      </div>
-                    ) : (
-                      <span className="text-xs font-bold text-slate-300">-</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex justify-end gap-1">
+                  <td className="px-4 py-3 max-sm:col-span-3 max-sm:row-start-4 max-sm:px-0 max-sm:py-0">
+                    <div className="flex justify-end gap-1 max-sm:border-t max-sm:border-slate-100 max-sm:pt-2">
                       <button
                         type="button"
                         onClick={(event) => {
