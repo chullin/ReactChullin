@@ -261,12 +261,7 @@ const METAL_RATE_MODES: { label: string; shortLabel: string; value: MetalRateMod
   { label: '賣出牌價（我買）', shortLabel: '我買', value: 'sell' },
   { label: '買進牌價（我賣）', shortLabel: '我賣', value: 'buy' },
 ];
-const CARD_TREND_RANGES: FxPeriodOption[] = [
-  { label: '1天', range: '1D' },
-  { label: '5天', range: '5D' },
-  { label: '1個月', range: '1M' },
-  { label: '1年', range: '1Y' },
-] satisfies FxPeriodOption[];
+const COMPACT_TREND_RANGE: MarketRange = '1M';
 
 function defaultFxItems(): StockItem[] {
   return defaultFxPairs.map((pair) => ({
@@ -1013,9 +1008,11 @@ function rangePercent(quote: StockQuote) {
   return Math.max(2, Math.min(100, ((price - low) / (high - low)) * 100));
 }
 
-function dragPlacement(event: DragEvent<HTMLElement>): 'before' | 'after' {
+function dragPlacement(event: DragEvent<HTMLElement>, axis: 'horizontal' | 'vertical' = 'horizontal'): 'before' | 'after' {
   const rect = event.currentTarget.getBoundingClientRect();
-  const pastMiddle = event.clientX > rect.left + rect.width / 2;
+  const pastMiddle = axis === 'horizontal'
+    ? event.clientX > rect.left + rect.width / 2
+    : event.clientY > rect.top + rect.height / 2;
 
   return pastMiddle ? 'after' : 'before';
 }
@@ -1060,8 +1057,19 @@ function isUsDst(date: Date) {
   return time >= start && time < end;
 }
 
-function Sparkline({ quote, positive, negative }: { quote?: StockQuote; positive: boolean; negative: boolean }) {
-  const values = quote?.sparkline || [];
+function Sparkline({
+  quote,
+  positive,
+  negative,
+  maxPoints = 36,
+}: {
+  quote?: StockQuote;
+  positive: boolean;
+  negative: boolean;
+  maxPoints?: number;
+}) {
+  const rawValues = quote?.sparkline || [];
+  const values = rawValues.length > maxPoints ? rawValues.slice(-maxPoints) : rawValues;
   const staffChart = sparklineStaffPaths(values);
   const path = staffChart?.pricePath || linePath(values);
   const staffPaths = staffChart?.staffPaths || [];
@@ -2850,26 +2858,39 @@ function WatchlistTable({
   quotes,
   quotesLoading,
   alertsByKey,
+  draggedItemKey,
+  dragTarget,
   onOpen,
   onOpenAlerts,
   onTogglePinned,
   onRemove,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
 }: {
   items: StockItem[];
   quotes: Record<string, StockQuote>;
   quotesLoading: boolean;
   alertsByKey: Record<string, LocalPriceAlert[]>;
+  draggedItemKey: string | null;
+  dragTarget: { key: string; placement: 'before' | 'after' } | null;
   onOpen: (item: StockItem) => void;
   onOpenAlerts: (item: StockItem) => void;
   onTogglePinned: (item: StockItem) => void;
   onRemove: (symbol: string, market: Market) => void;
+  onDragStart: (event: DragEvent<HTMLElement>, item: StockItem) => void;
+  onDragOver: (event: DragEvent<HTMLElement>, item: StockItem, axis: 'horizontal' | 'vertical') => void;
+  onDrop: (event: DragEvent<HTMLElement>, item: StockItem, axis: 'horizontal' | 'vertical') => void;
+  onDragEnd: () => void;
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-orange-700/5">
       <div className="overflow-x-auto">
-        <table className="min-w-[980px] w-full border-collapse text-left text-sm">
+        <table className="w-full min-w-[1120px] border-collapse text-left text-sm">
           <thead className="bg-slate-50 text-xs font-black uppercase tracking-widest text-slate-400">
             <tr>
+              <th className="w-12 px-3 py-3" aria-label="排序" />
               <th className="px-4 py-3">標的</th>
               <th className="px-4 py-3">市場</th>
               <th className="px-4 py-3 text-right">價格</th>
@@ -2886,10 +2907,12 @@ function WatchlistTable({
               const negative = (quote?.changePercent || 0) < 0;
               const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
               const alertCount = (alertsByKey[alertKey(item.symbol, item.market)] || []).length;
+              const itemKey = stockKey(item.symbol, item.market);
+              const rowDropPlacement = dragTarget?.key === itemKey ? dragTarget.placement : null;
 
               return (
                 <tr
-                  key={stockKey(item.symbol, item.market)}
+                  key={itemKey}
                   tabIndex={0}
                   onClick={() => onOpen(item)}
                   onKeyDown={(event) => {
@@ -2898,8 +2921,43 @@ function WatchlistTable({
                       onOpen(item);
                     }
                   }}
-                  className="group cursor-pointer transition-colors hover:bg-orange-50/40 focus:outline focus:outline-2 focus:outline-orange-500/40"
+                  onDragOver={(event) => onDragOver(event, item, 'vertical')}
+                  onDrop={(event) => onDrop(event, item, 'vertical')}
+                  className={`group cursor-pointer transition-colors hover:bg-orange-50/40 focus:outline focus:outline-2 focus:outline-orange-500/40 ${
+                    draggedItemKey === itemKey
+                      ? 'bg-orange-50/50 opacity-60'
+                      : rowDropPlacement
+                        ? 'bg-orange-50/70'
+                        : ''
+                  }`}
                 >
+                  <td className="relative px-3 py-3">
+                    {rowDropPlacement ? (
+                      <div
+                        className={`pointer-events-none absolute left-2 right-2 z-20 flex items-center gap-2 ${
+                          rowDropPlacement === 'before' ? 'top-0' : 'bottom-0'
+                        }`}
+                        aria-hidden="true"
+                      >
+                        <span className="h-2 w-2 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
+                        <span className="h-0.5 flex-1 rounded-full bg-orange-500 shadow-sm shadow-orange-700/30" />
+                        <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black text-white shadow-sm shadow-orange-700/30">
+                          放這裡
+                        </span>
+                      </div>
+                    ) : null}
+                    <button
+                      type="button"
+                      draggable
+                      onClick={(event) => event.stopPropagation()}
+                      onDragStart={(event) => onDragStart(event, item)}
+                      onDragEnd={onDragEnd}
+                      className="inline-flex h-8 w-8 cursor-grab items-center justify-center rounded-lg text-slate-300 transition-colors hover:bg-slate-100 hover:text-slate-600 active:cursor-grabbing"
+                      aria-label={`拖曳排序 ${displaySymbol(item.symbol)}`}
+                    >
+                      <GripVertical size={16} />
+                    </button>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex min-w-0 items-center gap-2">
                       {item.pinned ? (
@@ -2933,8 +2991,8 @@ function WatchlistTable({
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="h-10 w-28">
-                      <Sparkline quote={quote} positive={positive} negative={negative} />
+                    <div className="h-16 w-48">
+                      <Sparkline quote={quote} positive={positive} negative={negative} maxPoints={24} />
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -3159,7 +3217,6 @@ export default function StockWatchlistClient() {
   const [activeListId, setActiveListId] = useState(DEFAULT_LISTS[0].id);
   const [activeMarket, setActiveMarket] = useState<(typeof MARKET_TABS)[number]['value']>('全部');
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
-  const [activeCardRange, setActiveCardRange] = useState<FxPeriodOption>(CARD_TREND_RANGES[2]);
   const [viewMode, setViewMode] = useState<WatchlistViewMode>('cards');
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
   const [alerts, setAlerts] = useState<LocalPriceAlert[]>([]);
@@ -3264,7 +3321,6 @@ export default function StockWatchlistClient() {
     if (activeMarket === '全部') return activeItems;
     return activeItems.filter((item) => item.market === activeMarket);
   }, [activeItems, activeMarket]);
-  const hasCompactTrendAssets = activeItems.some((item) => item.market === '外匯' || item.market === '貴金屬');
   const displayItems = useMemo(() => {
     const pinnedItems = filteredItems.filter((item) => item.pinned);
     const normalItems = filteredItems.filter((item) => !item.pinned);
@@ -3318,7 +3374,7 @@ export default function StockWatchlistClient() {
                   ? `rateMode=bankSell`
                   : `metalRateMode=sell`;
               const payload = await fetchJson<MarketTimeseriesResponse>(
-                `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(activeCardRange.range)}&${params}`,
+                `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(COMPACT_TREND_RANGE)}&${params}`,
               );
               const sparkline = (payload.data || []).map((point) => point.price).filter(isFiniteNumber);
               return [key, sparkline] as const;
@@ -3401,7 +3457,7 @@ export default function StockWatchlistClient() {
     } finally {
       setQuotesLoading(false);
     }
-  }, [activeCardRange, activeItems, alerts, stocksParam]);
+  }, [activeItems, alerts, stocksParam]);
 
   useEffect(() => {
     refreshQuotes();
@@ -3569,7 +3625,7 @@ export default function StockWatchlistClient() {
     event.dataTransfer.setData('text/plain', key);
   }, []);
 
-  const handleCardDragOver = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
+  const handleCardDragOver = useCallback((event: DragEvent<HTMLElement>, item: StockItem, axis: 'horizontal' | 'vertical' = 'horizontal') => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
     const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKeyRef.current || draggedItemKey;
@@ -3580,7 +3636,7 @@ export default function StockWatchlistClient() {
       return;
     }
 
-    const placement = dragPlacement(event);
+    const placement = dragPlacement(event, axis);
     setDragTarget((current) =>
       current?.key === targetKey && current.placement === placement
         ? current
@@ -3588,11 +3644,11 @@ export default function StockWatchlistClient() {
     );
   }, [draggedItemKey]);
 
-  const handleCardDrop = useCallback((event: DragEvent<HTMLElement>, item: StockItem) => {
+  const handleCardDrop = useCallback((event: DragEvent<HTMLElement>, item: StockItem, axis: 'horizontal' | 'vertical' = 'horizontal') => {
     event.preventDefault();
     const fromKey = event.dataTransfer.getData('text/plain') || draggedItemKeyRef.current || draggedItemKey;
     const toKey = stockKey(item.symbol, item.market);
-    const placement = dragPlacement(event);
+    const placement = dragPlacement(event, axis);
 
     draggedItemKeyRef.current = null;
     setDraggedItemKey(null);
@@ -3863,29 +3919,6 @@ export default function StockWatchlistClient() {
           </div>
         ) : null}
 
-        {hasCompactTrendAssets ? (
-          <div className="mb-5 flex flex-col gap-2 rounded-2xl border border-orange-100 bg-white/80 p-3 shadow-sm shadow-orange-700/5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-widest text-orange-700">Card Trend</p>
-              <p className="mt-1 text-xs font-bold text-slate-400">快速切換外匯與貴金屬卡片右側迷你走勢</p>
-            </div>
-            <div className="flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
-              {CARD_TREND_RANGES.map((period) => (
-                <button
-                  key={period.range}
-                  type="button"
-                  onClick={() => setActiveCardRange(period)}
-                  className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                    activeCardRange.range === period.range ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  {period.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
         {mounted && activeItems.length === 0 ? (
           <div className="mt-8 rounded-2xl border border-dashed border-orange-200 bg-white/70 px-4 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
             <p>「{activeListId}」尚未新增任何標的，先試試 AAPL、2330、USD/TWD、GOLD 或白金</p>
@@ -3937,16 +3970,22 @@ export default function StockWatchlistClient() {
                 quotes={quotes}
                 quotesLoading={quotesLoading}
                 alertsByKey={alertsByKey}
+                draggedItemKey={draggedItemKey}
+                dragTarget={dragTarget}
                 onOpen={setSelectedStock}
                 onOpenAlerts={setAlertItem}
                 onTogglePinned={togglePinned}
                 onRemove={removeStock}
+                onDragStart={handleCardDragStart}
+                onDragOver={handleCardDragOver}
+                onDrop={handleCardDrop}
+                onDragEnd={handleCardDragEnd}
               />
             )}
 
             <div className="mt-5 inline-flex items-center rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-100">
               <Info size={14} className="text-orange-600" />
-              <span className="ml-1.5 font-medium">卡片模式可拖曳調整順序；表格模式適合快速掃描多筆標的</span>
+              <span className="ml-1.5 font-medium">卡片與表格都可拖曳調整順序；表格模式適合快速掃描多筆標的</span>
             </div>
           </>
         ) : null}
