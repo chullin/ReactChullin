@@ -20,7 +20,7 @@ import {
   TrendingUp,
   X,
 } from 'lucide-react';
-import type { FxRateMode } from '@/lib/market/types';
+import type { FxRateMode, MarketRange } from '@/lib/market/types';
 import { defaultFxPairs, seedFxQuote } from '@/lib/market/providers/fxProvider';
 import { defaultMetalItems, normalizeMetalSymbol } from '@/lib/market/providers/metalProvider';
 
@@ -189,7 +189,7 @@ type PeriodOption = {
 
 type FxPeriodOption = {
   label: string;
-  range: '1D' | '5D' | '1M' | '1Y' | '5Y' | 'MAX';
+  range: MarketRange;
 };
 
 type MetalRateMode = 'sell' | 'buy';
@@ -255,9 +255,15 @@ const FX_RATE_MODES: { label: string; shortLabel: string; value: FxRateMode }[] 
   { label: '現鈔賣出', shortLabel: '現鈔賣出', value: 'cashSell' },
 ];
 const METAL_RATE_MODES: { label: string; shortLabel: string; value: MetalRateMode }[] = [
-  { label: '賣出牌價', shortLabel: '賣出', value: 'sell' },
-  { label: '買進牌價', shortLabel: '買進', value: 'buy' },
+  { label: '賣出牌價（我買）', shortLabel: '我買', value: 'sell' },
+  { label: '買進牌價（我賣）', shortLabel: '我賣', value: 'buy' },
 ];
+const CARD_TREND_RANGES: FxPeriodOption[] = [
+  { label: '1天', range: '1D' },
+  { label: '5天', range: '5D' },
+  { label: '1個月', range: '1M' },
+  { label: '1年', range: '1Y' },
+] satisfies FxPeriodOption[];
 
 function defaultFxItems(): StockItem[] {
   return defaultFxPairs.map((pair) => ({
@@ -433,6 +439,10 @@ function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>
     bankRate: quote.bankRate,
     metalRate: quote.metalRate,
   };
+}
+
+function quoteKeyFromMarketQuote(quote: NonNullable<MarketQuoteResponse['data']>[string]) {
+  return stockKey(quote.symbol, quote.exchange === 'GCK99' ? '貴金屬' : '外匯');
 }
 
 function alertKey(symbol: string, market: Market) {
@@ -2237,14 +2247,14 @@ function MetalDetailPanel({
           <span className="ml-2 text-lg font-black">{quote?.currency || 'TWD'}/{metalRate?.unit || '錢'}</span>
         </div>
         <p className="mt-3 text-xs font-bold text-slate-400">
-          {formatFxTimestamp(updatedAt)} · {metalRate ? `${metalRate.sourceName}${activeRateMode === 'sell' ? '賣出牌價' : '買進牌價'}` : '參考牌價'}
+          {formatFxTimestamp(updatedAt)} · {metalRate ? `${metalRate.sourceName}${activeRateMode === 'sell' ? '賣出牌價（我買）' : '買進牌價（我賣）'}` : '參考牌價'}
         </p>
 
         {metalRate ? (
           <dl className="mt-5 grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-500">
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-orange-50 px-3 py-2 ring-1 ring-orange-100">
-                <dt className="text-[11px] text-orange-700">賣出牌價</dt>
+                <dt className="text-[11px] text-orange-700">賣出牌價（我買）</dt>
                 <dd className="mt-1 tabular-nums text-orange-800">
                   {formatPrice(metalRate.sell, quote?.currency)}
                   <span className="ml-1 text-xs">/{metalRate.unit}</span>
@@ -2252,7 +2262,7 @@ function MetalDetailPanel({
                 <dd className="mt-1 text-xs text-orange-700">{formatChange(metalRate.sellChange, quote?.currency)}</dd>
               </div>
               <div className="rounded-xl bg-white px-3 py-2 ring-1 ring-slate-100">
-                <dt className="text-[11px] text-slate-400">買進牌價</dt>
+                <dt className="text-[11px] text-slate-400">買進牌價（我賣）</dt>
                 <dd className="mt-1 tabular-nums text-slate-900">
                   {formatPrice(metalRate.buy, quote?.currency)}
                   <span className="ml-1 text-xs text-slate-500">/{metalRate.unit}</span>
@@ -2312,7 +2322,7 @@ function MetalDetailPanel({
             </button>
           ))}
         </div>
-        <DetailChart mode="line" points={chartPoints} periodLabel={`${activePeriod.label} · ${activeRateMode === 'sell' ? '賣出牌價' : '買進牌價'}`} />
+        <DetailChart mode="line" points={chartPoints} periodLabel={`${activePeriod.label} · ${activeRateMode === 'sell' ? '賣出牌價（我買）' : '買進牌價（我賣）'}`} />
         {loading || chartLoading ? (
           <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
             詳細資料載入中...
@@ -2784,14 +2794,14 @@ function StockCard({
           {item.market === '貴金屬' && quote.metalRate ? (
             <div className="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3">
               <div className="rounded-xl bg-orange-50 px-2.5 py-2">
-                <p className="text-[10px] font-black text-orange-700">賣出牌價</p>
+                <p className="text-[10px] font-black text-orange-700">賣出牌價（我買）</p>
                 <p className="mt-1 text-sm font-black tabular-nums text-orange-800">
                   {formatPrice(quote.metalRate.sell, quote.currency)}
                   <span className="ml-1 text-[10px] text-orange-700">/{quote.metalRate.unit}</span>
                 </p>
               </div>
               <div className="rounded-xl bg-slate-50 px-2.5 py-2">
-                <p className="text-[10px] font-black text-slate-400">買進牌價</p>
+                <p className="text-[10px] font-black text-slate-400">買進牌價（我賣）</p>
                 <p className="mt-1 text-sm font-black tabular-nums text-slate-800">
                   {formatPrice(quote.metalRate.buy, quote.currency)}
                   <span className="ml-1 text-[10px] text-slate-500">/{quote.metalRate.unit}</span>
@@ -2987,6 +2997,7 @@ export default function StockWatchlistClient() {
   const [activeListId, setActiveListId] = useState(DEFAULT_LISTS[0].id);
   const [activeMarket, setActiveMarket] = useState<(typeof MARKET_TABS)[number]['value']>('全部');
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
+  const [activeCardRange, setActiveCardRange] = useState<FxPeriodOption>(CARD_TREND_RANGES[2]);
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
   const [alerts, setAlerts] = useState<LocalPriceAlert[]>([]);
   const [alertItem, setAlertItem] = useState<StockItem | null>(null);
@@ -3090,6 +3101,7 @@ export default function StockWatchlistClient() {
     if (activeMarket === '全部') return activeItems;
     return activeItems.filter((item) => item.market === activeMarket);
   }, [activeItems, activeMarket]);
+  const hasCompactTrendAssets = activeItems.some((item) => item.market === '外匯' || item.market === '貴金屬');
   const displayItems = useMemo(() => {
     const pinnedItems = filteredItems.filter((item) => item.pinned);
     const normalItems = filteredItems.filter((item) => !item.pinned);
@@ -3127,10 +3139,39 @@ export default function StockWatchlistClient() {
               `/api/market/quotes?assets=${encodeURIComponent(marketQuoteItems.map((item) => marketAssetToken(item.symbol, item.market)).join(','))}`,
             )).data || {},
           ).reduce<Record<string, StockQuote>>((acc, [_key, quote]) => {
-            acc[stockKey(quote.symbol, quote.exchange === 'GCK99' ? '貴金屬' : '外匯')] = marketQuoteToStockQuote(quote);
+            acc[quoteKeyFromMarketQuote(quote)] = marketQuoteToStockQuote(quote);
             return acc;
           }, {})
         : {};
+      const marketSparklines: Record<string, number[]> = Object.fromEntries(
+        await Promise.all(
+          marketQuoteItems.map(async (item) => {
+            const key = stockKey(item.symbol, item.market);
+
+            try {
+              const assetId = marketAssetToken(item.symbol, item.market);
+              const params =
+                item.market === '外匯'
+                  ? `rateMode=bankSell`
+                  : `metalRateMode=sell`;
+              const payload = await fetchJson<MarketTimeseriesResponse>(
+                `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(activeCardRange.range)}&${params}`,
+              );
+              const sparkline = (payload.data || []).map((point) => point.price).filter(isFiniteNumber);
+              return [key, sparkline] as const;
+            } catch {
+              return [key, []] as const;
+            }
+          }),
+        ),
+      );
+      Object.entries(marketSparklines).forEach(([key, sparkline]) => {
+        if (!sparkline.length || !marketQuotes[key]) return;
+        marketQuotes[key] = {
+          ...marketQuotes[key],
+          sparkline: alignSparkline(sparkline, marketQuotes[key].price),
+        };
+      });
       const fallbackFxQuotes = activeItems.filter((item) => item.market === '外匯').reduce<Record<string, StockQuote>>((acc, item) => {
         if (marketQuotes[stockKey(item.symbol, item.market)]) return acc;
         const quote = fxQuoteToStockQuote(item.symbol);
@@ -3197,7 +3238,7 @@ export default function StockWatchlistClient() {
     } finally {
       setQuotesLoading(false);
     }
-  }, [activeItems, alerts, stocksParam]);
+  }, [activeCardRange, activeItems, alerts, stocksParam]);
 
   useEffect(() => {
     refreshQuotes();
@@ -3632,6 +3673,29 @@ export default function StockWatchlistClient() {
                 {tab.label}
               </button>
             ))}
+          </div>
+        ) : null}
+
+        {hasCompactTrendAssets ? (
+          <div className="mb-5 flex flex-col gap-2 rounded-2xl border border-orange-100 bg-white/80 p-3 shadow-sm shadow-orange-700/5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-widest text-orange-700">Card Trend</p>
+              <p className="mt-1 text-xs font-bold text-slate-400">快速切換外匯與貴金屬卡片右側迷你走勢</p>
+            </div>
+            <div className="flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
+              {CARD_TREND_RANGES.map((period) => (
+                <button
+                  key={period.range}
+                  type="button"
+                  onClick={() => setActiveCardRange(period)}
+                  className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                    activeCardRange.range === period.range ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                  }`}
+                >
+                  {period.label}
+                </button>
+              ))}
+            </div>
           </div>
         ) : null}
 
