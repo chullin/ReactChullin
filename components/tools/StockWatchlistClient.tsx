@@ -1128,6 +1128,26 @@ function PositionScoreBadge({ score, compact = false }: { score: PositionScore |
   );
 }
 
+const POSITION_SCORE_HELP = [
+  '位置分數是目前價格在區間高低點中的百分位。',
+  '公式：(現價 - 區間低點) / (區間高點 - 區間低點) * 100。',
+  '股票與 ETF 優先使用近 52 週高低點；外匯、黃金、白金使用背景抓到的近 1 年歷史區間。',
+  '0～20 偏低、20～40 略低、40～60 正常、60～80 略高、80～100 偏高。',
+].join('\n');
+
+const TREND_HELP = [
+  '卡片與表格的迷你走勢使用最近約 1 個月資料，並在小圖上畫出迷你五線譜，方便快速看方向。',
+  '點進股票或 ETF 詳情後，樂活五線譜會依上方週期重算；目前預設是 3.5 年，也可以切換 6M、1Y、2Y、5Y。',
+  '五線譜是用選定期間的趨勢線加上標準差通道，代表價格相對長期趨勢的位置，不等同 52 週高低點。',
+].join('\n');
+
+const BUYING_HELP = [
+  '買股票時可以把位置分數當成「貴不貴」的快速溫度計，不是買賣訊號。',
+  '分數偏低：代表接近區間低位，可以列入觀察，但仍要確認基本面、趨勢是否轉弱。',
+  '分數偏高：代表接近區間高位，追價風險較高；若五線譜仍在強勢區，可能是強者恆強，但要注意停利與回檔風險。',
+  '比較務實的看法是：位置分數看區間高低，五線譜看趨勢通道，VRVP 看成交量支撐壓力，三者一起看比單看一個數字穩。',
+].join('\n');
+
 function dragPlacement(event: DragEvent<HTMLElement>, axis: 'horizontal' | 'vertical' = 'horizontal'): 'before' | 'after' {
   const rect = event.currentTarget.getBoundingClientRect();
   const pastMiddle = axis === 'horizontal'
@@ -1220,27 +1240,45 @@ function Sparkline({
 function InfoTooltip({ label, content }: { label: string; content: string }) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState({ left: 16, top: 16 });
+  const pinnedRef = useRef(false);
 
   const updatePosition = useCallback((element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
-    const width = Math.min(288, Math.max(220, window.innerWidth - 32));
+    const width = Math.min(340, Math.max(220, window.innerWidth - 32));
     const left = clamp(rect.left + rect.width / 2 - width / 2, 16, window.innerWidth - width - 16);
-    const top = rect.bottom + 8 <= window.innerHeight - 96
+    const top = rect.bottom + 8 <= window.innerHeight - 160
       ? rect.bottom + 8
-      : Math.max(16, rect.top - 104);
+      : Math.max(16, rect.top - 184);
 
     setPosition({ left, top });
   }, []);
 
   const showTooltip = useCallback((element: HTMLElement) => {
     updatePosition(element);
+    pinnedRef.current = false;
     setOpen(true);
+  }, [updatePosition]);
+
+  const toggleTooltip = useCallback((element: HTMLElement) => {
+    updatePosition(element);
+    setOpen((current) => {
+      if (current && pinnedRef.current) {
+        pinnedRef.current = false;
+        return false;
+      }
+
+      pinnedRef.current = true;
+      return true;
+    });
   }, [updatePosition]);
 
   useEffect(() => {
     if (!open) return;
 
-    const closeTooltip = () => setOpen(false);
+    const closeTooltip = () => {
+      pinnedRef.current = false;
+      setOpen(false);
+    };
     window.addEventListener('scroll', closeTooltip, true);
     window.addEventListener('resize', closeTooltip);
     return () => {
@@ -1253,9 +1291,14 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
     <span className="inline-flex">
       <button
         type="button"
-        onClick={(event) => showTooltip(event.currentTarget)}
+        onClick={(event) => {
+          event.stopPropagation();
+          toggleTooltip(event.currentTarget);
+        }}
         onMouseEnter={(event: ReactMouseEvent<HTMLButtonElement>) => showTooltip(event.currentTarget)}
-        onMouseLeave={() => setOpen(false)}
+        onMouseLeave={() => {
+          if (!pinnedRef.current) setOpen(false);
+        }}
         className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-400 ring-1 ring-slate-200 transition hover:text-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-200"
         aria-label={label}
         aria-expanded={open}
@@ -1264,8 +1307,8 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
       </button>
       {open ? (
         <span
-          className="fixed z-50 max-w-[calc(100vw-2rem)] rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-bold leading-relaxed text-white shadow-xl"
-          style={{ left: position.left, top: position.top, width: Math.min(288, Math.max(220, typeof window === 'undefined' ? 288 : window.innerWidth - 32)) }}
+          className="fixed z-50 max-h-[min(22rem,calc(100vh-2rem))] max-w-[calc(100vw-2rem)] overflow-y-auto whitespace-pre-line rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-bold leading-relaxed text-white shadow-xl"
+          style={{ left: position.left, top: position.top, width: Math.min(340, Math.max(220, typeof window === 'undefined' ? 340 : window.innerWidth - 32)) }}
         >
           {content}
         </span>
@@ -2257,7 +2300,10 @@ function FxDetailPanel({
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-orange-700">Exchange Rate</p>
-            <h3 className="mt-1 text-xl font-black text-slate-900">{base}/{quoteCurrency} 匯率走勢</h3>
+            <h3 className="mt-1 inline-flex items-center gap-1.5 text-xl font-black text-slate-900">
+              {base}/{quoteCurrency} 匯率走勢
+              <InfoTooltip label="走勢說明" content={`外匯走勢依上方選取週期顯示台新銀行牌告歷史匯率。\n\n${POSITION_SCORE_HELP}`} />
+            </h3>
           </div>
           <div className="flex gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1">
             {FX_PERIODS.map((period) => (
@@ -2422,7 +2468,10 @@ function MetalDetailPanel({
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-orange-700">Price Trend</p>
-            <h3 className="mt-1 text-xl font-black text-slate-900">{title}走勢</h3>
+            <h3 className="mt-1 inline-flex items-center gap-1.5 text-xl font-black text-slate-900">
+              {title}走勢
+              <InfoTooltip label="走勢說明" content={`貴金屬走勢依上方選取週期顯示展寬黃金回收歷史牌價。\n\n${POSITION_SCORE_HELP}`} />
+            </h3>
           </div>
           <div className="flex gap-1 overflow-x-auto rounded-2xl bg-slate-100 p-1">
             {FX_PERIODS.map((period) => (
@@ -2646,6 +2695,21 @@ function StockDetailModal({
                 </button>
               );
             })}
+          </div>
+
+          <div className="mb-4 grid gap-2 rounded-2xl border border-orange-100 bg-orange-50/60 p-3 text-xs font-bold text-slate-600 sm:grid-cols-3">
+            <div className="flex items-start gap-2">
+              <LineChart size={14} className="mt-0.5 shrink-0 text-orange-700" />
+              <p>走勢圖依上方週期顯示價格變化；卡片小圖固定看最近約 1 個月。</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <Activity size={14} className="mt-0.5 shrink-0 text-orange-700" />
+              <p>五線譜依選定週期重算趨勢通道，預設使用 3.5 年資料。</p>
+            </div>
+            <div className="flex items-start gap-2">
+              <Info size={14} className="mt-0.5 shrink-0 text-orange-700" />
+              <p>買股票時可用位置看區間高低、五線譜看趨勢強弱、VRVP 看支撐壓力。</p>
+            </div>
           </div>
 
           <div className="mb-4 flex gap-1 overflow-x-auto rounded-2xl bg-orange-50/80 p-1 ring-1 ring-orange-100">
@@ -2895,7 +2959,10 @@ function StockCard({
                 </span>
               </div>
               <div className="mt-2">
-                <PositionScoreBadge score={position} />
+                <span className="inline-flex items-center gap-1.5">
+                  <PositionScoreBadge score={position} />
+                  <InfoTooltip label="位置分數說明" content={`${POSITION_SCORE_HELP}\n\n${BUYING_HELP}`} />
+                </span>
               </div>
             </div>
             <div className="h-16 w-32 shrink-0">
@@ -3018,9 +3085,19 @@ function WatchlistTable({
               <th className="px-4 py-3">標的</th>
               <th className="px-2 py-3 text-center">市場</th>
               <th className="px-4 py-3 text-right">價格</th>
-              <th className="px-3 py-3 text-center">位置</th>
+              <th className="px-3 py-3 text-center">
+                <span className="inline-flex items-center justify-center gap-1.5">
+                  位置
+                  <InfoTooltip label="位置分數說明" content={`${POSITION_SCORE_HELP}\n\n${BUYING_HELP}`} />
+                </span>
+              </th>
               <th className="px-4 py-3 text-right">漲跌</th>
-              <th className="px-4 py-3">走勢</th>
+              <th className="px-4 py-3">
+                <span className="inline-flex items-center gap-1.5">
+                  走勢
+                  <InfoTooltip label="走勢與五線譜說明" content={TREND_HELP} />
+                </span>
+              </th>
               <th className="px-4 py-3 text-right">操作</th>
             </tr>
           </thead>
@@ -3124,7 +3201,12 @@ function WatchlistTable({
                     )}
                   </td>
                   <td className="px-3 py-3 text-center align-middle max-sm:col-start-3 max-sm:row-start-2 max-sm:px-0 max-sm:py-0 max-sm:text-right">
-                    <PositionScoreBadge score={position} compact />
+                    <span className="inline-flex items-center justify-end gap-1">
+                      <PositionScoreBadge score={position} compact />
+                      <span className="sm:hidden">
+                        <InfoTooltip label="位置分數說明" content={`${POSITION_SCORE_HELP}\n\n${BUYING_HELP}`} />
+                      </span>
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-right align-middle max-sm:col-span-3 max-sm:row-start-3 max-sm:flex max-sm:items-center max-sm:justify-end max-sm:gap-2 max-sm:px-0 max-sm:py-0">
                     <div className="font-bold tabular-nums" style={{ color: accent }}>
