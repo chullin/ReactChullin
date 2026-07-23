@@ -2938,7 +2938,7 @@ function WatchlistTable({
                         : ''
                   }`}
                 >
-                  <td className="relative px-3 py-3 max-sm:col-start-1 max-sm:row-span-2 max-sm:px-0 max-sm:py-0">
+                  <td className="relative px-3 py-3 align-middle max-sm:col-start-1 max-sm:row-span-2 max-sm:px-0 max-sm:py-0">
                     {rowDropPlacement ? (
                       <div
                         className={`pointer-events-none absolute left-2 right-2 z-20 flex items-center gap-2 ${
@@ -2965,7 +2965,7 @@ function WatchlistTable({
                       <GripVertical size={16} />
                     </button>
                   </td>
-                  <td className="px-4 py-3 max-sm:col-start-2 max-sm:row-start-1 max-sm:min-w-0 max-sm:px-0 max-sm:py-0">
+                  <td className="px-4 py-3 align-middle max-sm:col-start-2 max-sm:row-start-1 max-sm:min-w-0 max-sm:px-0 max-sm:py-0">
                     <div className="flex min-w-0 items-center gap-2">
                       {item.pinned ? (
                         <Pin size={13} className="shrink-0 text-orange-600" />
@@ -2978,20 +2978,20 @@ function WatchlistTable({
                       </div>
                     </div>
                   </td>
-                  <td className="px-2 py-3 text-center max-sm:col-start-3 max-sm:row-start-1 max-sm:px-0 max-sm:py-0">
+                  <td className="px-2 py-3 text-center align-middle max-sm:col-start-3 max-sm:row-start-1 max-sm:px-0 max-sm:py-0">
                     <span className="inline-flex rounded-lg bg-orange-50 px-2 py-1 text-[10px] font-black text-orange-700 ring-1 ring-orange-100" title={item.market}>
                       <span className="sm:hidden">{marketLabel}</span>
                       <span className="hidden sm:inline">{marketLabel}</span>
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right max-sm:col-start-2 max-sm:row-start-2 max-sm:px-0 max-sm:py-0 max-sm:text-left">
+                  <td className="px-4 py-3 text-right align-middle max-sm:col-start-2 max-sm:row-start-2 max-sm:px-0 max-sm:py-0 max-sm:text-left">
                     {item.market === '外匯' && quote?.bankRate ? (
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold tabular-nums text-slate-500">
+                      <div className="grid gap-1 text-xs font-bold tabular-nums text-slate-500">
                         <span>我賣 {formatPrice(quote.bankRate.bankBuy, quote.currency)}</span>
                         <span className="text-orange-700">我買 {formatPrice(quote.bankRate.bankSell, quote.currency)}</span>
                       </div>
                     ) : item.market === '貴金屬' && quote?.metalRate ? (
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs font-bold tabular-nums text-slate-500">
+                      <div className="grid gap-1 text-xs font-bold tabular-nums text-slate-500">
                         <span className="text-orange-700">我買 {formatPrice(quote.metalRate.sell, quote.currency)}/{quote.metalRate.unit}</span>
                         <span>我賣 {formatPrice(quote.metalRate.buy, quote.currency)}/{quote.metalRate.unit}</span>
                       </div>
@@ -3004,7 +3004,7 @@ function WatchlistTable({
                       </>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right max-sm:col-start-3 max-sm:row-start-2 max-sm:px-0 max-sm:py-0">
+                  <td className="px-4 py-3 text-right align-middle max-sm:col-start-3 max-sm:row-start-2 max-sm:px-0 max-sm:py-0">
                     <div className="font-bold tabular-nums" style={{ color: accent }}>
                       {formatPercent(quote?.changePercent)}
                     </div>
@@ -3012,12 +3012,12 @@ function WatchlistTable({
                       {formatChange(quote?.change, quote?.currency)}
                     </div>
                   </td>
-                  <td className="px-4 py-3 max-sm:col-span-3 max-sm:row-start-3 max-sm:px-0 max-sm:py-0">
+                  <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-3 max-sm:px-0 max-sm:py-0">
                     <div className="h-14 w-40 max-sm:h-16 max-sm:w-full">
                       <Sparkline quote={quote} positive={positive} negative={negative} maxPoints={24} />
                     </div>
                   </td>
-                  <td className="px-4 py-3 max-sm:col-span-3 max-sm:row-start-4 max-sm:px-0 max-sm:py-0">
+                  <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-4 max-sm:px-0 max-sm:py-0">
                     <div className="flex justify-end gap-1 max-sm:border-t max-sm:border-slate-100 max-sm:pt-2">
                       <button
                         type="button"
