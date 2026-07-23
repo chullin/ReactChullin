@@ -1241,6 +1241,29 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState({ left: 16, top: 16 });
   const pinnedRef = useRef(false);
+  const tooltipRef = useRef<HTMLSpanElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current === null) return;
+    window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+  }, []);
+
+  const closeTooltip = useCallback(() => {
+    clearCloseTimer();
+    pinnedRef.current = false;
+    setOpen(false);
+  }, [clearCloseTimer]);
+
+  const scheduleHoverClose = useCallback(() => {
+    if (pinnedRef.current) return;
+    clearCloseTimer();
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpen(false);
+      closeTimerRef.current = null;
+    }, 160);
+  }, [clearCloseTimer]);
 
   const updatePosition = useCallback((element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
@@ -1254,12 +1277,14 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
   }, []);
 
   const showTooltip = useCallback((element: HTMLElement) => {
+    clearCloseTimer();
     updatePosition(element);
     pinnedRef.current = false;
     setOpen(true);
-  }, [updatePosition]);
+  }, [clearCloseTimer, updatePosition]);
 
   const toggleTooltip = useCallback((element: HTMLElement) => {
+    clearCloseTimer();
     updatePosition(element);
     setOpen((current) => {
       if (current && pinnedRef.current) {
@@ -1270,22 +1295,25 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
       pinnedRef.current = true;
       return true;
     });
-  }, [updatePosition]);
+  }, [clearCloseTimer, updatePosition]);
 
   useEffect(() => {
     if (!open) return;
 
-    const closeTooltip = () => {
-      pinnedRef.current = false;
-      setOpen(false);
+    const closeOnScroll = (event: Event) => {
+      if (pinnedRef.current) return;
+      if (event.target instanceof Node && tooltipRef.current?.contains(event.target)) return;
+      closeTooltip();
     };
-    window.addEventListener('scroll', closeTooltip, true);
+    window.addEventListener('scroll', closeOnScroll, true);
     window.addEventListener('resize', closeTooltip);
     return () => {
-      window.removeEventListener('scroll', closeTooltip, true);
+      window.removeEventListener('scroll', closeOnScroll, true);
       window.removeEventListener('resize', closeTooltip);
     };
-  }, [open]);
+  }, [closeTooltip, open]);
+
+  useEffect(() => clearCloseTimer, [clearCloseTimer]);
 
   return (
     <span className="inline-flex">
@@ -1296,9 +1324,7 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
           toggleTooltip(event.currentTarget);
         }}
         onMouseEnter={(event: ReactMouseEvent<HTMLButtonElement>) => showTooltip(event.currentTarget)}
-        onMouseLeave={() => {
-          if (!pinnedRef.current) setOpen(false);
-        }}
+        onMouseLeave={scheduleHoverClose}
         className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white text-slate-400 ring-1 ring-slate-200 transition hover:text-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-200"
         aria-label={label}
         aria-expanded={open}
@@ -1307,6 +1333,9 @@ function InfoTooltip({ label, content }: { label: string; content: string }) {
       </button>
       {open ? (
         <span
+          ref={tooltipRef}
+          onMouseEnter={clearCloseTimer}
+          onMouseLeave={scheduleHoverClose}
           className="fixed z-50 max-h-[min(22rem,calc(100vh-2rem))] max-w-[calc(100vw-2rem)] overflow-y-auto whitespace-pre-line rounded-xl bg-slate-900 px-3 py-2 text-left text-xs font-bold leading-relaxed text-white shadow-xl"
           style={{ left: position.left, top: position.top, width: Math.min(340, Math.max(220, typeof window === 'undefined' ? 340 : window.innerWidth - 32)) }}
         >
