@@ -139,6 +139,12 @@ type MarketTimeseriesResponse = {
   }[];
 };
 
+type MarketSeriesSummary = {
+  sparkline?: number[];
+  fiftyTwoWeekLow?: number | null;
+  fiftyTwoWeekHigh?: number | null;
+};
+
 type HistoryPoint = {
   date: string;
   open: number | null;
@@ -262,6 +268,7 @@ const METAL_RATE_MODES: { label: string; shortLabel: string; value: MetalRateMod
   { label: '買進牌價（我賣）', shortLabel: '我賣', value: 'buy' },
 ];
 const COMPACT_TREND_RANGE: MarketRange = '1M';
+const POSITION_SCORE_RANGE: MarketRange = '1Y';
 
 function defaultFxItems(): StockItem[] {
   return defaultFxPairs.map((pair) => ({
@@ -443,6 +450,18 @@ function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>
     exchange: quote.exchange,
     bankRate: quote.bankRate,
     metalRate: quote.metalRate,
+  };
+}
+
+function summarizeMarketSeries(points: NonNullable<MarketTimeseriesResponse['data']>, currentPrice: number | null | undefined): MarketSeriesSummary {
+  const prices = (points || []).map((point) => point.price).filter(isFiniteNumber);
+
+  if (!prices.length) return {};
+
+  return {
+    sparkline: alignSparkline(prices, currentPrice),
+    fiftyTwoWeekLow: Math.min(...prices),
+    fiftyTwoWeekHigh: Math.max(...prices),
   };
 }
 
@@ -3462,18 +3481,18 @@ export default function StockWatchlistClient() {
 
     try {
       const marketQuoteItems = activeItems.filter((item) => item.market === '外匯' || item.market === '貴金屬');
-      const marketQuotes = marketQuoteItems.length
-        ? Object.entries(
-            (await fetchJson<MarketQuoteResponse>(
-              `/api/market/quotes?assets=${encodeURIComponent(marketQuoteItems.map((item) => marketAssetToken(item.symbol, item.market)).join(','))}`,
-            )).data || {},
-          ).reduce<Record<string, StockQuote>>((acc, [_key, quote]) => {
-            acc[quoteKeyFromMarketQuote(quote)] = marketQuoteToStockQuote(quote);
-            return acc;
-          }, {})
-        : {};
-      const marketSparklines: Record<string, number[]> = Object.fromEntries(
-        await Promise.all(
+      const marketQuotesPromise = marketQuoteItems.length
+        ? fetchJson<MarketQuoteResponse>(
+            `/api/market/quotes?assets=${encodeURIComponent(marketQuoteItems.map((item) => marketAssetToken(item.symbol, item.market)).join(','))}`,
+          ).then((payload) =>
+            Object.entries(payload.data || {}).reduce<Record<string, StockQuote>>((acc, [_key, quote]) => {
+              acc[quoteKeyFromMarketQuote(quote)] = marketQuoteToStockQuote(quote);
+              return acc;
+            }, {}),
+          )
+        : Promise.resolve({} as Record<string, StockQuote>);
+      const marketSeriesPromise: Promise<Record<string, MarketSeriesSummary>> = marketQuoteItems.length
+        ? Promise.all(
           marketQuoteItems.map(async (item) => {
             const key = stockKey(item.symbol, item.market);
 
@@ -3483,35 +3502,40 @@ export default function StockWatchlistClient() {
                 item.market === '外匯'
                   ? `rateMode=bankSell`
                   : `metalRateMode=sell`;
-              const payload = await fetchJson<MarketTimeseriesResponse>(
-                `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(COMPACT_TREND_RANGE)}&${params}`,
-              );
-              const sparkline = (payload.data || []).map((point) => point.price).filter(isFiniteNumber);
-              return [key, sparkline] as const;
+              const [compactPayload, positionPayload] = await Promise.all([
+                fetchJson<MarketTimeseriesResponse>(
+                  `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(COMPACT_TREND_RANGE)}&${params}`,
+                ),
+                fetchJson<MarketTimeseriesResponse>(
+                  `/api/market/timeseries?assetId=${encodeURIComponent(assetId)}&range=${encodeURIComponent(POSITION_SCORE_RANGE)}&${params}`,
+                ),
+              ]);
+              const compactSummary = summarizeMarketSeries(compactPayload.data || [], null);
+              const positionSummary = summarizeMarketSeries(positionPayload.data || [], null);
+
+              return [key, {
+                sparkline: compactSummary.sparkline,
+                fiftyTwoWeekLow: positionSummary.fiftyTwoWeekLow,
+                fiftyTwoWeekHigh: positionSummary.fiftyTwoWeekHigh,
+              }] as const;
             } catch {
-              return [key, []] as const;
+              return [key, {}] as const;
             }
           }),
-        ),
-      );
-      Object.entries(marketSparklines).forEach(([key, sparkline]) => {
-        if (!sparkline.length || !marketQuotes[key]) return;
-        marketQuotes[key] = {
-          ...marketQuotes[key],
-          sparkline: alignSparkline(sparkline, marketQuotes[key].price),
-        };
-      });
+        ).then((entries) => Object.fromEntries(entries))
+        : Promise.resolve({});
+      const stockQuotesPromise = stocksParam
+        ? fetchJson<BatchQuoteResponse>(
+            `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
+          ).then((payload) => payload.data || {})
+        : Promise.resolve({} as Record<string, StockQuote>);
+      const [marketQuotes, stockQuotes] = await Promise.all([marketQuotesPromise, stockQuotesPromise]);
       const fallbackFxQuotes = activeItems.filter((item) => item.market === '外匯').reduce<Record<string, StockQuote>>((acc, item) => {
         if (marketQuotes[stockKey(item.symbol, item.market)]) return acc;
         const quote = fxQuoteToStockQuote(item.symbol);
         if (quote) acc[stockKey(item.symbol, item.market)] = quote;
         return acc;
       }, {});
-      const stockQuotes = stocksParam
-        ? (await fetchJson<BatchQuoteResponse>(
-            `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
-          )).data || {}
-        : {};
       const nextQuotes = { ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes };
       const previousQuotes = previousQuotesRef.current;
       const now = new Date();
@@ -3562,6 +3586,31 @@ export default function StockWatchlistClient() {
 
       previousQuotesRef.current = nextQuotes;
       setQuotes(nextQuotes);
+      setQuotesLoading(false);
+
+      marketSeriesPromise
+        .then((summaries) => {
+          setQuotes((current) => {
+            const next = { ...current };
+
+            Object.entries(summaries).forEach(([key, summary]) => {
+              if (!next[key]) return;
+              next[key] = {
+                ...next[key],
+                sparkline: summary.sparkline?.length
+                  ? alignSparkline(summary.sparkline, next[key].price)
+                  : next[key].sparkline,
+                fiftyTwoWeekLow: summary.fiftyTwoWeekLow ?? next[key].fiftyTwoWeekLow,
+                fiftyTwoWeekHigh: summary.fiftyTwoWeekHigh ?? next[key].fiftyTwoWeekHigh,
+              };
+            });
+
+            return next;
+          });
+        })
+        .catch(() => {
+          // Keep the fast quote result even if historical context is temporarily unavailable.
+        });
     } catch {
       setMessage({ text: '報價更新失敗，請稍後再試', type: 'error' });
     } finally {

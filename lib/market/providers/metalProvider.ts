@@ -22,7 +22,9 @@ type MetalHistoryRow = {
 type MetalRateMode = 'sell' | 'buy';
 
 const GCK99_GOLD_URL = 'https://www.gck99.com.tw/gold.php';
+const GCK99_HISTORY_URL = 'https://www.gck99.com.tw/gold1.php';
 let metalCache: { expiresAt: number; rows: MetalHistoryRow[] } | null = null;
+const metalHistoryCache = new Map<string, { expiresAt: number; rows: MetalHistoryRow[] }>();
 
 export const defaultMetalItems = [
   {
@@ -147,7 +149,7 @@ function parseHistoryRows(html: string) {
     .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
 }
 
-async function fetchGck99Rows() {
+async function fetchGck99CurrentRows() {
   if (metalCache && metalCache.expiresAt > Date.now()) return metalCache.rows;
 
   try {
@@ -170,6 +172,74 @@ async function fetchGck99Rows() {
   } catch {
     return [];
   }
+}
+
+async function fetchGck99HistoryRows(year: number, month: number) {
+  const monthKey = `${year}-${String(month).padStart(2, '0')}`;
+  const cached = metalHistoryCache.get(monthKey);
+  if (cached && cached.expiresAt > Date.now()) return cached.rows;
+
+  const url = new URL(GCK99_HISTORY_URL);
+  url.searchParams.set('yy', String(year));
+  url.searchParams.set('mm', String(month).padStart(2, '0'));
+
+  try {
+    const response = await fetch(url, {
+      cache: 'force-cache',
+      next: { revalidate: 60 * 60 * 12 },
+      headers: {
+        accept: 'text/html,application/xhtml+xml',
+        'user-agent': 'Mozilla/5.0',
+      },
+    });
+
+    if (!response.ok) return [];
+
+    const rows = parseHistoryRows(await response.text());
+    metalHistoryCache.set(monthKey, {
+      expiresAt: Date.now() + 12 * 60 * 60_000,
+      rows,
+    });
+    return rows;
+  } catch {
+    return [];
+  }
+}
+
+function monthKeysForRange(range: MarketRange) {
+  if (range === '1D' || range === '5D' || range === '1M') return [];
+
+  const today = new Date();
+  const months = range === '6M' ? 6 : range === '1Y' ? 12 : range === '5Y' ? 60 : 120;
+  const keys: { year: number; month: number }[] = [];
+
+  for (let index = 0; index <= months; index += 1) {
+    const cursor = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - index, 1));
+    keys.push({
+      year: cursor.getUTCFullYear(),
+      month: cursor.getUTCMonth() + 1,
+    });
+  }
+
+  return keys;
+}
+
+async function fetchGck99Rows(range: MarketRange = '1M') {
+  const currentRows = await fetchGck99CurrentRows();
+  const monthKeys = monthKeysForRange(range);
+
+  if (!monthKeys.length) return currentRows;
+
+  const historyRows = (await Promise.all(monthKeys.map((key) => fetchGck99HistoryRows(key.year, key.month)))).flat();
+  const seen = new Set<string>();
+
+  return [...currentRows, ...historyRows]
+    .filter((row) => {
+      if (seen.has(row.timestamp)) return false;
+      seen.add(row.timestamp);
+      return true;
+    })
+    .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
 }
 
 function metalItem(symbol: string) {
@@ -210,7 +280,7 @@ export async function fetchMetalTimeSeries(symbol: string, range: MarketRange = 
   const item = metalItem(symbol);
   if (!item) return [];
 
-  const rows = await fetchGck99Rows();
+  const rows = await fetchGck99Rows(range);
   const points = rows.map((row) => {
     const price = rowValue(row, item.symbol, mode);
     return {
