@@ -1015,6 +1015,100 @@ function rangePercent(quote: StockQuote) {
   return Math.max(2, Math.min(100, ((price - low) / (high - low)) * 100));
 }
 
+type PositionScore = {
+  score: number;
+  label: '偏低' | '略低' | '正常' | '略高' | '偏高';
+  className: string;
+  dotClassName: string;
+  barClassName: string;
+};
+
+function scoreLabel(score: number): PositionScore['label'] {
+  if (score < 20) return '偏低';
+  if (score < 40) return '略低';
+  if (score < 60) return '正常';
+  if (score < 80) return '略高';
+  return '偏高';
+}
+
+function scoreStyle(label: PositionScore['label']) {
+  if (label === '偏低') {
+    return {
+      className: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
+      dotClassName: 'bg-emerald-500',
+      barClassName: 'bg-emerald-500',
+    };
+  }
+
+  if (label === '略低') {
+    return {
+      className: 'bg-teal-50 text-teal-700 ring-teal-100',
+      dotClassName: 'bg-teal-500',
+      barClassName: 'bg-teal-500',
+    };
+  }
+
+  if (label === '正常') {
+    return {
+      className: 'bg-slate-100 text-slate-600 ring-slate-200',
+      dotClassName: 'bg-slate-400',
+      barClassName: 'bg-slate-400',
+    };
+  }
+
+  if (label === '略高') {
+    return {
+      className: 'bg-amber-50 text-amber-700 ring-amber-100',
+      dotClassName: 'bg-amber-500',
+      barClassName: 'bg-amber-500',
+    };
+  }
+
+  return {
+    className: 'bg-rose-50 text-rose-700 ring-rose-100',
+    dotClassName: 'bg-rose-500',
+    barClassName: 'bg-rose-500',
+  };
+}
+
+function positionScore(quote?: StockQuote): PositionScore | null {
+  if (!quote || !isFiniteNumber(quote.price)) return null;
+
+  const sparklineValues = (quote.sparkline || []).filter(isFiniteNumber);
+  const low = isFiniteNumber(quote.fiftyTwoWeekLow) ? quote.fiftyTwoWeekLow : Math.min(...sparklineValues, quote.price);
+  const high = isFiniteNumber(quote.fiftyTwoWeekHigh) ? quote.fiftyTwoWeekHigh : Math.max(...sparklineValues, quote.price);
+
+  if (!isFiniteNumber(low) || !isFiniteNumber(high) || high <= low) return null;
+
+  const score = Math.round(clamp(((quote.price - low) / (high - low)) * 100, 0, 100));
+  const label = scoreLabel(score);
+
+  return {
+    score,
+    label,
+    ...scoreStyle(label),
+  };
+}
+
+function PositionScoreBadge({ score, compact = false }: { score: PositionScore | null; compact?: boolean }) {
+  if (!score) {
+    return <span className="text-xs font-bold text-slate-300">-</span>;
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-black tabular-nums ring-1 ${score.className} ${
+        compact ? 'text-[11px]' : 'text-xs'
+      }`}
+      title={`位置分數 ${score.score}，${score.label}`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${score.dotClassName}`} />
+      <span>{score.score}</span>
+      <span>{score.label}</span>
+    </span>
+  );
+}
+
 function dragPlacement(event: DragEvent<HTMLElement>, axis: 'horizontal' | 'vertical' = 'horizontal'): 'before' | 'after' {
   const rect = event.currentTarget.getBoundingClientRect();
   const pastMiddle = axis === 'horizontal'
@@ -2645,6 +2739,7 @@ function StockCard({
   const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
   const accentBg = positive ? 'rgba(8,153,129,0.1)' : negative ? 'rgba(242,54,69,0.1)' : 'rgba(107,114,128,0.1)';
   const range = quote ? rangePercent(quote) : null;
+  const position = positionScore(quote);
 
   return (
     <article
@@ -2780,6 +2875,9 @@ function StockCard({
                   {formatChange(quote.change, quote.currency)}
                 </span>
               </div>
+              <div className="mt-2">
+                <PositionScoreBadge score={position} />
+              </div>
             </div>
             <div className="h-16 w-32 shrink-0">
               <Sparkline quote={quote} positive={positive} negative={negative} />
@@ -2901,6 +2999,7 @@ function WatchlistTable({
               <th className="px-4 py-3">標的</th>
               <th className="px-2 py-3 text-center">市場</th>
               <th className="px-4 py-3 text-right">價格</th>
+              <th className="px-3 py-3 text-center">位置</th>
               <th className="px-4 py-3 text-right">漲跌</th>
               <th className="px-4 py-3">走勢</th>
               <th className="px-4 py-3 text-right">操作</th>
@@ -2916,6 +3015,7 @@ function WatchlistTable({
               const itemKey = stockKey(item.symbol, item.market);
               const rowDropPlacement = dragTarget?.key === itemKey ? dragTarget.placement : null;
               const marketLabel = marketShortLabel(item.market);
+              const position = positionScore(quote);
 
               return (
                 <tr
@@ -3004,7 +3104,10 @@ function WatchlistTable({
                       </>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right align-middle max-sm:col-start-3 max-sm:row-start-2 max-sm:px-0 max-sm:py-0">
+                  <td className="px-3 py-3 text-center align-middle max-sm:col-start-3 max-sm:row-start-2 max-sm:px-0 max-sm:py-0 max-sm:text-right">
+                    <PositionScoreBadge score={position} compact />
+                  </td>
+                  <td className="px-4 py-3 text-right align-middle max-sm:col-span-3 max-sm:row-start-3 max-sm:flex max-sm:items-center max-sm:justify-end max-sm:gap-2 max-sm:px-0 max-sm:py-0">
                     <div className="font-bold tabular-nums" style={{ color: accent }}>
                       {formatPercent(quote?.changePercent)}
                     </div>
@@ -3012,12 +3115,12 @@ function WatchlistTable({
                       {formatChange(quote?.change, quote?.currency)}
                     </div>
                   </td>
-                  <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-3 max-sm:px-0 max-sm:py-0">
+                  <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-4 max-sm:px-0 max-sm:py-0">
                     <div className="h-14 w-40 max-sm:h-16 max-sm:w-full">
                       <Sparkline quote={quote} positive={positive} negative={negative} maxPoints={24} />
                     </div>
                   </td>
-                  <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-4 max-sm:px-0 max-sm:py-0">
+                  <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-5 max-sm:px-0 max-sm:py-0">
                     <div className="flex justify-end gap-1 max-sm:border-t max-sm:border-slate-100 max-sm:pt-2">
                       <button
                         type="button"
