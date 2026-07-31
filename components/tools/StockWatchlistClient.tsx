@@ -218,6 +218,9 @@ const MARKET_TABS = [
   { label: '貴金屬', value: '貴金屬' },
 ] as const;
 
+type MarketTabValue = typeof MARKET_TABS[number]['value'];
+type PriceColorConvention = 'tw' | 'us';
+
 const STORAGE_KEY = 'stock-watchlist:v1';
 const LIST_DEFS_KEY = 'stock-watchlist-list-defs:v1';
 const ALERTS_KEY = 'stock-watchlist-alerts:v1';
@@ -576,6 +579,58 @@ function formatPercent(value: number | null | undefined) {
   if (!isFiniteNumber(value)) return '-';
   const prefix = value >= 0 ? '+' : '';
   return `${prefix}${value.toFixed(2)}%`;
+}
+
+function priceColorConventionForMarket(market: MarketTabValue): PriceColorConvention {
+  return market === '美股' ? 'us' : 'tw';
+}
+
+function priceTone(changePercent: number | null | undefined, convention: PriceColorConvention) {
+  const positive = (changePercent || 0) > 0;
+  const negative = (changePercent || 0) < 0;
+  const riseColor = convention === 'tw' ? '#f23645' : '#089981';
+  const fallColor = convention === 'tw' ? '#089981' : '#f23645';
+  const riseBg = convention === 'tw' ? 'rgba(242,54,69,0.1)' : 'rgba(8,153,129,0.1)';
+  const fallBg = convention === 'tw' ? 'rgba(8,153,129,0.1)' : 'rgba(242,54,69,0.1)';
+
+  return {
+    positive,
+    negative,
+    accent: positive ? riseColor : negative ? fallColor : '#6b7280',
+    accentBg: positive ? riseBg : negative ? fallBg : 'rgba(107,114,128,0.1)',
+  };
+}
+
+function PriceColorConventionNote({
+  activeMarket,
+  mixed,
+}: {
+  activeMarket: MarketTabValue;
+  mixed: boolean;
+}) {
+  if (activeMarket === '外匯' || activeMarket === '貴金屬') return null;
+
+  const convention = priceColorConventionForMarket(activeMarket);
+  const isTaiwanConvention = convention === 'tw';
+  const label = activeMarket === '全部'
+    ? mixed
+      ? '全部混合：採台股顏色慣例'
+      : '全部：採台股顏色慣例'
+    : `${activeMarket}顏色慣例`;
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-bold text-slate-500">
+      <span className="font-black text-slate-600">{label}</span>
+      <span className={`inline-flex items-center gap-1 ${isTaiwanConvention ? 'text-rose-700' : 'text-emerald-700'}`}>
+        <span className={`h-2.5 w-2.5 rounded-full ${isTaiwanConvention ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+        上漲
+      </span>
+      <span className={`inline-flex items-center gap-1 ${isTaiwanConvention ? 'text-emerald-700' : 'text-rose-700'}`}>
+        <span className={`h-2.5 w-2.5 rounded-full ${isTaiwanConvention ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+        下跌
+      </span>
+    </div>
+  );
 }
 
 function formatDate(value?: string) {
@@ -1199,13 +1254,11 @@ function isUsDst(date: Date) {
 
 function Sparkline({
   quote,
-  positive,
-  negative,
+  colorConvention,
   maxPoints = 36,
 }: {
   quote?: StockQuote;
-  positive: boolean;
-  negative: boolean;
+  colorConvention: PriceColorConvention;
   maxPoints?: number;
 }) {
   const rawValues = quote?.sparkline || [];
@@ -1213,7 +1266,7 @@ function Sparkline({
   const staffChart = sparklineStaffPaths(values);
   const path = staffChart?.pricePath || linePath(values);
   const staffPaths = staffChart?.staffPaths || [];
-  const stroke = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
+  const stroke = priceTone(quote?.changePercent, colorConvention).accent;
 
   if (!path) {
     return <div className="h-full w-full rounded bg-gray-100" />;
@@ -2545,10 +2598,12 @@ function MetalDetailPanel({
 function StockDetailModal({
   item,
   quote,
+  colorConvention,
   onClose,
 }: {
   item: StockItem;
   quote?: StockQuote;
+  colorConvention: PriceColorConvention;
   onClose: () => void;
 }) {
   const [details, setDetails] = useState<StockDetails | null>(null);
@@ -2560,9 +2615,8 @@ function StockDetailModal({
   const activeQuote = details?.quote || quote;
   const isFx = item.market === '外匯';
   const isMetal = item.market === '貴金屬';
-  const positive = (activeQuote?.changePercent || 0) > 0;
-  const negative = (activeQuote?.changePercent || 0) < 0;
-  const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
+  const tone = priceTone(activeQuote?.changePercent, colorConvention);
+  const accent = tone.accent;
   const chartTabs = [
     { value: 'price', label: '股價走勢', short: '走勢', icon: LineChart },
     { value: 'staff', label: '樂活五線譜', short: '五線譜', icon: Activity },
@@ -2818,6 +2872,7 @@ function StockDetailModal({
 function StockCard({
   item,
   quote,
+  colorConvention,
   loading,
   alertCount,
   isDragging,
@@ -2833,6 +2888,7 @@ function StockCard({
 }: {
   item: StockItem;
   quote?: StockQuote;
+  colorConvention: PriceColorConvention;
   loading: boolean;
   alertCount: number;
   isDragging: boolean;
@@ -2846,10 +2902,8 @@ function StockCard({
   onDrop: (event: DragEvent<HTMLElement>, item: StockItem) => void;
   onDragEnd: () => void;
 }) {
-  const positive = (quote?.changePercent || 0) > 0;
-  const negative = (quote?.changePercent || 0) < 0;
-  const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
-  const accentBg = positive ? 'rgba(8,153,129,0.1)' : negative ? 'rgba(242,54,69,0.1)' : 'rgba(107,114,128,0.1)';
+  const tone = priceTone(quote?.changePercent, colorConvention);
+  const { positive, negative, accent, accentBg } = tone;
   const range = quote ? rangePercent(quote) : null;
   const position = positionScore(quote);
 
@@ -2995,7 +3049,7 @@ function StockCard({
               </div>
             </div>
             <div className="h-16 w-32 shrink-0">
-              <Sparkline quote={quote} positive={positive} negative={negative} />
+              <Sparkline quote={quote} colorConvention={colorConvention} />
             </div>
           </div>
 
@@ -3076,6 +3130,7 @@ function StockCard({
 function WatchlistTable({
   items,
   quotes,
+  colorConvention,
   quotesLoading,
   alertsByKey,
   draggedItemKey,
@@ -3091,6 +3146,7 @@ function WatchlistTable({
 }: {
   items: StockItem[];
   quotes: Record<string, StockQuote>;
+  colorConvention: PriceColorConvention;
   quotesLoading: boolean;
   alertsByKey: Record<string, LocalPriceAlert[]>;
   draggedItemKey: string | null;
@@ -3133,9 +3189,8 @@ function WatchlistTable({
           <tbody className="divide-y divide-slate-100 max-sm:block max-sm:space-y-3 max-sm:divide-y-0 max-sm:bg-slate-50 max-sm:p-2">
             {items.map((item) => {
               const quote = quotes[stockKey(item.symbol, item.market)];
-              const positive = (quote?.changePercent || 0) > 0;
-              const negative = (quote?.changePercent || 0) < 0;
-              const accent = positive ? '#089981' : negative ? '#f23645' : '#6b7280';
+              const tone = priceTone(quote?.changePercent, colorConvention);
+              const { accent } = tone;
               const alertCount = (alertsByKey[alertKey(item.symbol, item.market)] || []).length;
               const itemKey = stockKey(item.symbol, item.market);
               const rowDropPlacement = dragTarget?.key === itemKey ? dragTarget.placement : null;
@@ -3247,7 +3302,7 @@ function WatchlistTable({
                   </td>
                   <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-4 max-sm:px-0 max-sm:py-0">
                     <div className="h-14 w-40 max-sm:h-16 max-sm:w-full">
-                      <Sparkline quote={quote} positive={positive} negative={negative} maxPoints={24} />
+                      <Sparkline quote={quote} colorConvention={colorConvention} maxPoints={24} />
                     </div>
                   </td>
                   <td className="px-4 py-3 align-middle max-sm:col-span-3 max-sm:row-start-5 max-sm:px-0 max-sm:py-0">
@@ -3455,7 +3510,7 @@ export default function StockWatchlistClient() {
   const [watchlistDefs, setWatchlistDefs] = useState<WatchlistDef[]>(DEFAULT_LISTS);
   const [watchlists, setWatchlists] = useState<Watchlists>(() => createEmptyWatchlists());
   const [activeListId, setActiveListId] = useState(DEFAULT_LISTS[0].id);
-  const [activeMarket, setActiveMarket] = useState<(typeof MARKET_TABS)[number]['value']>('全部');
+  const [activeMarket, setActiveMarket] = useState<MarketTabValue>('全部');
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
   const [viewMode, setViewMode] = useState<WatchlistViewMode>('cards');
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
@@ -3561,6 +3616,8 @@ export default function StockWatchlistClient() {
     if (activeMarket === '全部') return activeItems;
     return activeItems.filter((item) => item.market === activeMarket);
   }, [activeItems, activeMarket]);
+  const colorConvention = priceColorConventionForMarket(activeMarket);
+  const hasMixedStockMarkets = activeMarket === '全部' && filteredItems.some((item) => item.market === '台股') && filteredItems.some((item) => item.market === '美股');
   const displayItems = useMemo(() => {
     const pinnedItems = filteredItems.filter((item) => item.pinned);
     const normalItems = filteredItems.filter((item) => !item.pinned);
@@ -4150,19 +4207,22 @@ export default function StockWatchlistClient() {
 
         {activeItems.length ? (
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 tabular-nums">
-              {MARKET_TABS.map((tab) => (
-                <button
-                  key={tab.value}
-                  type="button"
-                  onClick={() => setActiveMarket(tab.value)}
-                  className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                    activeMarket === tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 tabular-nums">
+                {MARKET_TABS.map((tab) => (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    onClick={() => setActiveMarket(tab.value)}
+                    className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+                      activeMarket === tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <PriceColorConventionNote activeMarket={activeMarket} mixed={hasMixedStockMarkets} />
             </div>
             <div className="flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1 tabular-nums">
               <button
@@ -4219,6 +4279,7 @@ export default function StockWatchlistClient() {
                     key={stockKey(item.symbol, item.market)}
                     item={item}
                     quote={quotes[stockKey(item.symbol, item.market)]}
+                    colorConvention={colorConvention}
                     loading={quotesLoading}
                     alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
                     isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
@@ -4238,6 +4299,7 @@ export default function StockWatchlistClient() {
               <WatchlistTable
                 items={displayItems}
                 quotes={quotes}
+                colorConvention={colorConvention}
                 quotesLoading={quotesLoading}
                 alertsByKey={alertsByKey}
                 draggedItemKey={draggedItemKey}
@@ -4265,6 +4327,7 @@ export default function StockWatchlistClient() {
         <StockDetailModal
           item={selectedStock}
           quote={quotes[stockKey(selectedStock.symbol, selectedStock.market)]}
+          colorConvention={colorConvention}
           onClose={() => setSelectedStock(null)}
         />
       ) : null}
