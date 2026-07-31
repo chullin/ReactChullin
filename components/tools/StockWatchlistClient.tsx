@@ -637,30 +637,61 @@ function PriceColorConventionNote({
 
 const NEWS_THEME_RULES = [
   {
+    label: '估值與獲利了結',
+    bullishReason: '新聞若提到估值仍具吸引力，市場可能把近期拉回視為重新布局機會。',
+    bearishReason: '新聞若提到估值偏高或建議獲利了結，通常代表短線賣壓可能來自評價修正。',
+    keywords: ['valuation', 'value stock', 'take profit', 'profit taking', 'overvalued', 'undervalued', '估值', '評價', '獲利了結', '本益比'],
+  },
+  {
     label: '財報與展望',
-    keywords: ['earnings', 'revenue', 'profit', 'quarter', 'guidance', 'outlook', 'eps', '財報', '營收', '獲利', '展望', '指引'],
+    bullishReason: '財報、營收或未來展望優於預期，通常會讓市場上修獲利預估。',
+    bearishReason: '財報、營收或未來展望低於預期，通常會讓市場下修短期評價。',
+    keywords: ['earnings', 'revenue', 'quarter', 'guidance', 'outlook', 'eps', '財報', '營收', '獲利', '展望', '指引'],
   },
   {
     label: 'AI 與雲端動能',
+    bullishReason: 'AI、雲端或資料中心需求被市場視為成長來源，容易帶動估值重新上修。',
+    bearishReason: 'AI、雲端或資料中心投資若被解讀為成本壓力，可能壓抑市場信心。',
     keywords: [' ai ', 'artificial intelligence', 'azure', 'cloud', 'copilot', 'data center', 'datacenter', 'chip', 'gpu', '人工智慧', '雲端', '資料中心'],
   },
   {
     label: '分析師觀點',
+    bullishReason: '分析師調升評等或目標價，常會強化市場對後續表現的期待。',
+    bearishReason: '分析師調降評等或目標價，常會讓市場重新評估短期風險。',
     keywords: ['analyst', 'rating', 'target', 'upgrade', 'downgrade', 'buy rating', '分析師', '目標價', '調升', '調降', '評等'],
   },
   {
     label: '股價反應',
-    keywords: ['stock', 'shares', 'soar', 'surge', 'jump', 'rally', 'gain', 'fall', 'drop', 'slump', 'plunge', '股價', '大漲', '上漲', '下跌', '重挫', '市值'],
+    bullishReason: '新聞直接提到股價走強，通常代表市場正在反映某個利多催化因素。',
+    bearishReason: '新聞直接提到股價走弱，通常代表市場正在反映某個利空或獲利了結壓力。',
+    keywords: ['soar', 'surge', 'jump', 'rally', 'gain', 'fall', 'drop', 'slump', 'plunge', '股價', '大漲', '上漲', '下跌', '重挫', '市值'],
   },
   {
     label: '產品與策略布局',
+    bullishReason: '新產品、合作、併購或投資布局，可能讓市場期待未來營收成長。',
+    bearishReason: '策略布局若伴隨高成本或整合疑慮，可能讓市場擔心獲利品質。',
     keywords: ['launch', 'product', 'partnership', 'deal', 'acquisition', 'merger', 'investment', '推出', '合作', '併購', '收購', '投資'],
   },
   {
     label: '法規與風險',
+    bullishReason: '法規或訴訟風險降溫時，市場可能重新給予較高評價。',
+    bearishReason: '監管、訴訟、關稅或政策風險升高，通常會壓低市場風險承受度。',
     keywords: ['lawsuit', 'probe', 'antitrust', 'regulator', 'regulation', 'risk', 'ban', 'tariff', '訴訟', '調查', '監管', '法規', '風險', '關稅'],
   },
 ] as const;
+
+const LOW_SIGNAL_NEWS_KEYWORDS = [
+  'sells shares',
+  'buys shares',
+  'stake',
+  'holdings',
+  'wealth management',
+  'capital management',
+  'asset management',
+  'institutional ownership',
+  '機構持股',
+  '持股異動',
+];
 
 function normalizeNewsTitle(title: string) {
   return ` ${title.toLowerCase().replace(/\s+/g, ' ')} `;
@@ -672,21 +703,34 @@ function compactText(value: string, maxLength = 88) {
   return `${trimmed.slice(0, maxLength - 1)}...`;
 }
 
+function isLowSignalNews(title: string) {
+  const normalized = normalizeNewsTitle(title);
+  return (
+    LOW_SIGNAL_NEWS_KEYWORDS.some((keyword) => normalized.includes(keyword)) ||
+    /\b(buys|sells|acquires|purchases|reduces|raises|trims)\b.+\bshares\b/.test(normalized) ||
+    /\bshares\b.+\b(bought|sold|acquired|purchased|reduced|trimmed)\b/.test(normalized)
+  );
+}
+
 function buildNewsDigest(news: StockNewsItem[], item: StockItem, quote?: StockQuote | null) {
   const recentNews = news.filter((entry) => entry.title?.trim()).slice(0, 8);
   if (!recentNews.length) return null;
 
   const titles = recentNews.map((entry) => entry.title.trim());
+  const highSignalTitles = titles.filter((title) => !isLowSignalNews(title));
+  const titlesForReasoning = highSignalTitles.length ? highSignalTitles : titles;
   const themeMatches = NEWS_THEME_RULES
     .map((rule) => {
-      const matchedTitles = titles.filter((title) => {
+      const matchedTitles = titlesForReasoning.filter((title) => {
         const normalized = normalizeNewsTitle(title);
         return rule.keywords.some((keyword) => normalized.includes(keyword.toLowerCase()));
       });
 
       return {
         label: rule.label,
+        reason: quote?.changePercent && quote.changePercent < 0 ? rule.bearishReason : rule.bullishReason,
         count: matchedTitles.length,
+        title: matchedTitles[0],
       };
     })
     .filter((match) => match.count > 0)
@@ -694,22 +738,32 @@ function buildNewsDigest(news: StockNewsItem[], item: StockItem, quote?: StockQu
     .slice(0, 3);
 
   const themeLabels = themeMatches.map((match) => match.label);
-  const primaryThemes = themeLabels.length ? themeLabels.join('、') : '近期營運與市場情緒';
-  const latest = recentNews[0];
+  const primaryThemes = themeLabels.length ? themeLabels.join('、') : '尚未出現明確催化因素';
+  const representativeTitle = themeMatches.find((match) => match.title)?.title || titlesForReasoning[0];
   const sourceNames = Array.from(new Set(recentNews.map((entry) => entry.source).filter(Boolean))).slice(0, 3);
-  const changeText = isFiniteNumber(quote?.changePercent)
-    ? `${quote.changePercent >= 0 ? '上漲' : '下跌'} ${formatPercent(quote.changePercent)}`
-    : null;
-  const bullets = [
-    `主軸集中在${primaryThemes}，可先看這些新聞是否解釋 ${displaySymbol(item.symbol)} 的短線評價變化。`,
-    `最新一則提到「${compactText(latest.title, 58)}」。`,
-    changeText
-      ? `目前股價${changeText}，新聞若同時出現財報、分析師或重大策略訊號，通常更值得優先追。`
-      : `目前尚未取得明確漲跌幅，可先用新聞主題判斷市場正在關注基本面、題材或風險。`,
-  ];
+  const changePercent = quote?.changePercent;
+  const hasChange = isFiniteNumber(changePercent);
+  const direction = hasChange ? (changePercent >= 0 ? '上漲' : '下跌') : '波動';
+  const changeText = hasChange ? `${direction} ${formatPercent(changePercent)}` : '近期有波動';
+  const reasonPrefix = hasChange
+    ? `${displaySymbol(item.symbol)} 目前${changeText}，從新聞標題看，較可能和「${primaryThemes}」有關。`
+    : `${displaySymbol(item.symbol)} 目前尚未取得明確漲跌幅，從新聞標題看，市場焦點落在「${primaryThemes}」。`;
+  const bullets = themeMatches.length
+    ? [
+        reasonPrefix,
+        ...themeMatches.slice(0, 2).map((match) => `${match.label}：${match.reason} 代表新聞：「${compactText(match.title || '', 64)}」。`),
+        `如果要判斷這波${direction}能不能延續，優先追後續新聞是否繼續出現財報展望、分析師調整或重大營運訊號。`,
+      ]
+    : [
+        `${displaySymbol(item.symbol)} 目前${changeText}，但最近新聞標題多半不是明確催化因素。`,
+        highSignalTitles.length
+          ? `較值得留意的標題是「${compactText(representativeTitle, 64)}」。`
+          : '目前新聞多偏機構持股異動或例行資訊，對短線漲跌的解釋力較弱。',
+        '若要找真正原因，建議優先看財報、公司展望、分析師調整或重大產業新聞是否在後續出現。',
+      ];
 
   return {
-    headline: `最近 ${recentNews.length} 則新聞大致在談 ${primaryThemes}。`,
+    headline: `為什麼最近${direction}：${primaryThemes}`,
     bullets,
     sources: sourceNames.length ? `來源包含 ${sourceNames.join('、')}` : null,
   };
@@ -2914,7 +2968,7 @@ function StockDetailModal({
                 <div className="rounded-2xl border border-orange-100 bg-orange-50/55 p-4">
                   <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-orange-700">
                     <Newspaper size={14} />
-                    新聞摘要
+                    漲跌原因摘要
                   </div>
                   <p className="mt-2 text-sm font-black leading-relaxed text-slate-900">{newsDigest.headline}</p>
                   <div className="mt-3 grid gap-2 text-xs font-bold leading-relaxed text-slate-600">
