@@ -184,6 +184,8 @@ type StockDetails = {
   history?: HistoryPoint[];
 };
 
+type StockNewsItem = NonNullable<StockDetails['news']>[number];
+
 type DetailsResponse = {
   success?: boolean;
   data?: StockDetails;
@@ -631,6 +633,86 @@ function PriceColorConventionNote({
       </span>
     </div>
   );
+}
+
+const NEWS_THEME_RULES = [
+  {
+    label: '財報與展望',
+    keywords: ['earnings', 'revenue', 'profit', 'quarter', 'guidance', 'outlook', 'eps', '財報', '營收', '獲利', '展望', '指引'],
+  },
+  {
+    label: 'AI 與雲端動能',
+    keywords: [' ai ', 'artificial intelligence', 'azure', 'cloud', 'copilot', 'data center', 'datacenter', 'chip', 'gpu', '人工智慧', '雲端', '資料中心'],
+  },
+  {
+    label: '分析師觀點',
+    keywords: ['analyst', 'rating', 'target', 'upgrade', 'downgrade', 'buy rating', '分析師', '目標價', '調升', '調降', '評等'],
+  },
+  {
+    label: '股價反應',
+    keywords: ['stock', 'shares', 'soar', 'surge', 'jump', 'rally', 'gain', 'fall', 'drop', 'slump', 'plunge', '股價', '大漲', '上漲', '下跌', '重挫', '市值'],
+  },
+  {
+    label: '產品與策略布局',
+    keywords: ['launch', 'product', 'partnership', 'deal', 'acquisition', 'merger', 'investment', '推出', '合作', '併購', '收購', '投資'],
+  },
+  {
+    label: '法規與風險',
+    keywords: ['lawsuit', 'probe', 'antitrust', 'regulator', 'regulation', 'risk', 'ban', 'tariff', '訴訟', '調查', '監管', '法規', '風險', '關稅'],
+  },
+] as const;
+
+function normalizeNewsTitle(title: string) {
+  return ` ${title.toLowerCase().replace(/\s+/g, ' ')} `;
+}
+
+function compactText(value: string, maxLength = 88) {
+  const trimmed = value.replace(/\s+/g, ' ').trim();
+  if (trimmed.length <= maxLength) return trimmed;
+  return `${trimmed.slice(0, maxLength - 1)}...`;
+}
+
+function buildNewsDigest(news: StockNewsItem[], item: StockItem, quote?: StockQuote | null) {
+  const recentNews = news.filter((entry) => entry.title?.trim()).slice(0, 8);
+  if (!recentNews.length) return null;
+
+  const titles = recentNews.map((entry) => entry.title.trim());
+  const themeMatches = NEWS_THEME_RULES
+    .map((rule) => {
+      const matchedTitles = titles.filter((title) => {
+        const normalized = normalizeNewsTitle(title);
+        return rule.keywords.some((keyword) => normalized.includes(keyword.toLowerCase()));
+      });
+
+      return {
+        label: rule.label,
+        count: matchedTitles.length,
+      };
+    })
+    .filter((match) => match.count > 0)
+    .sort((first, second) => second.count - first.count)
+    .slice(0, 3);
+
+  const themeLabels = themeMatches.map((match) => match.label);
+  const primaryThemes = themeLabels.length ? themeLabels.join('、') : '近期營運與市場情緒';
+  const latest = recentNews[0];
+  const sourceNames = Array.from(new Set(recentNews.map((entry) => entry.source).filter(Boolean))).slice(0, 3);
+  const changeText = isFiniteNumber(quote?.changePercent)
+    ? `${quote.changePercent >= 0 ? '上漲' : '下跌'} ${formatPercent(quote.changePercent)}`
+    : null;
+  const bullets = [
+    `主軸集中在${primaryThemes}，可先看這些新聞是否解釋 ${displaySymbol(item.symbol)} 的短線評價變化。`,
+    `最新一則提到「${compactText(latest.title, 58)}」。`,
+    changeText
+      ? `目前股價${changeText}，新聞若同時出現財報、分析師或重大策略訊號，通常更值得優先追。`
+      : `目前尚未取得明確漲跌幅，可先用新聞主題判斷市場正在關注基本面、題材或風險。`,
+  ];
+
+  return {
+    headline: `最近 ${recentNews.length} 則新聞大致在談 ${primaryThemes}。`,
+    bullets,
+    sources: sourceNames.length ? `來源包含 ${sourceNames.join('、')}` : null,
+  };
 }
 
 function formatDate(value?: string) {
@@ -2628,6 +2710,10 @@ function StockDetailModal({
     () => filterHistory(details?.history || [], activePeriod),
     [activePeriod, details?.history],
   );
+  const newsDigest = useMemo(
+    () => buildNewsDigest(details?.news || [], item, activeQuote),
+    [activeQuote, details?.news, item],
+  );
   const fxChartPoints = details?.history || [];
   const setActivePeriod = (period: typeof PRICE_PERIODS[number] | typeof STAFF_PERIODS[number] | typeof VRVP_PERIODS[number]) => {
     if (mode === 'staff') {
@@ -2823,6 +2909,30 @@ function StockDetailModal({
               <Newspaper size={16} className="text-orange-700" />
               最新相關新聞
             </div>
+            {newsDigest ? (
+              <div className="border-b border-slate-100 bg-white px-4 py-4">
+                <div className="rounded-2xl border border-orange-100 bg-orange-50/55 p-4">
+                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-orange-700">
+                    <Newspaper size={14} />
+                    新聞摘要
+                  </div>
+                  <p className="mt-2 text-sm font-black leading-relaxed text-slate-900">{newsDigest.headline}</p>
+                  <div className="mt-3 grid gap-2 text-xs font-bold leading-relaxed text-slate-600">
+                    {newsDigest.bullets.map((point) => (
+                      <div key={point} className="flex gap-2">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />
+                        <p>{point}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {newsDigest.sources ? (
+                    <p className="mt-3 text-[11px] font-bold text-slate-400">{newsDigest.sources}，摘要依新聞標題整理。</p>
+                  ) : (
+                    <p className="mt-3 text-[11px] font-bold text-slate-400">摘要依新聞標題整理。</p>
+                  )}
+                </div>
+              </div>
+            ) : null}
             <div className="divide-y divide-slate-100">
               {(details?.news || []).slice(0, 8).map((news) => (
                 <a
