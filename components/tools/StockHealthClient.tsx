@@ -78,6 +78,14 @@ type Signal = {
   tone: 'buy' | 'hold' | 'sell' | 'risk';
 };
 
+type Interpretation = {
+  title: string;
+  stance: string;
+  detail: string;
+  reasons: string[];
+  tone: 'positive' | 'neutral' | 'negative';
+};
+
 type TimelineOption = {
   label: string;
   months?: number;
@@ -302,6 +310,112 @@ function formatReferenceDistance(distance: number | null | undefined) {
   return `現價${distance > 0 ? '高於' : '低於'} ${Math.abs(distance).toFixed(2)}%`;
 }
 
+function createInterpretation({
+  timeline,
+  score,
+  pricePercentile,
+  currentDrawdown,
+  sma50Distance,
+  sma200Distance,
+  rsi,
+  annualPeriodVolatility,
+  volumeRatio,
+}: {
+  timeline: TimelineOption;
+  score: number;
+  pricePercentile: number | null;
+  currentDrawdown: number | null;
+  sma50Distance: number | null;
+  sma200Distance: number | null;
+  rsi: number | null;
+  annualPeriodVolatility: number | null;
+  volumeRatio: number | null;
+}): Interpretation {
+  const isHighPosition = isFiniteNumber(pricePercentile) && pricePercentile >= 75;
+  const isVeryHighPosition = isFiniteNumber(pricePercentile) && pricePercentile >= 90;
+  const isNearHigh = isFiniteNumber(currentDrawdown) && currentDrawdown > -6;
+  const isOverheated = (isFiniteNumber(rsi) && rsi >= 75) || (isFiniteNumber(sma50Distance) && sma50Distance >= 8);
+  const isExtendedFromLongTrend = isFiniteNumber(sma200Distance) && sma200Distance >= 20;
+  const isWeakTrend = isFiniteNumber(sma50Distance) && sma50Distance < 0;
+  const isDeepDrawdown = isFiniteNumber(currentDrawdown) && currentDrawdown <= -20;
+  const isHealthyMomentum = isFiniteNumber(rsi) && rsi >= 45 && rsi < 70;
+  const hasVolumeSupport = isFiniteNumber(volumeRatio) && volumeRatio >= 1;
+  const volatilityText = isFiniteNumber(annualPeriodVolatility) ? `${timeline.label} 年化波動約 ${annualPeriodVolatility.toFixed(1)}%` : `${timeline.label} 波動資料不足`;
+
+  if (isWeakTrend || isDeepDrawdown || score < 45) {
+    return {
+      title: '趨勢轉弱，先控制風險',
+      stance: '目前比較像是防守盤，不適合只因為跌深就急著加碼。',
+      detail: `價格已經低於關鍵均線或從區間高點回落較深，${timeline.label} 的健康分數偏低；更合理的做法是等價格重新站回中期均線、RSI 回到合理區間，再評估是否分批買回。`,
+      reasons: [
+        `目前距 50 日均線：${formatPercent(sma50Distance)}`,
+        `目前距區間高點：${formatPercent(currentDrawdown)}`,
+        `RSI：${formatNumber(rsi)}`,
+        volatilityText,
+      ],
+      tone: 'negative',
+    };
+  }
+
+  if ((isVeryHighPosition && isOverheated) || (isNearHigh && isExtendedFromLongTrend && isOverheated)) {
+    return {
+      title: '明顯偏熱，適合檢查是否分批獲利',
+      stance: '目前比較接近波段賣出或至少部分停利的訊號。',
+      detail: `價格位於 ${timeline.label} 偏高位置，且 RSI 或均線乖離已經偏熱；如果這是既有持股，可以考慮分批獲利，保留核心部位觀察是否能放量突破。`,
+      reasons: [
+        `價格區間百分位：${isFiniteNumber(pricePercentile) ? `${pricePercentile.toFixed(0)}%` : '-'}`,
+        `目前距 50 日均線：${formatPercent(sma50Distance)}`,
+        `目前距 200 日均線：${formatPercent(sma200Distance)}`,
+        `RSI：${formatNumber(rsi)}`,
+      ],
+      tone: 'negative',
+    };
+  }
+
+  if (isHighPosition || isNearHigh) {
+    return {
+      title: '接近高檔，值得提高警覺',
+      stance: '目前確實處於偏高位置，但還不到明顯過熱、很適合做波段賣出的程度。',
+      detail: `價格在 ${timeline.label} 區間的位置偏高，不適合用追價心態買進；但只要 RSI 仍在合理區間、50/200 日均線乖離沒有失控，訊號比較像是續抱並提高警覺，而不是立即判定該賣。`,
+      reasons: [
+        `價格區間百分位：${isFiniteNumber(pricePercentile) ? `${pricePercentile.toFixed(0)}%` : '-'}`,
+        `目前距區間高點：${formatPercent(currentDrawdown)}`,
+        `目前距 50 日均線：${formatPercent(sma50Distance)}`,
+        `RSI：${formatNumber(rsi)}${isHealthyMomentum ? '，仍在相對健康區間' : ''}`,
+      ],
+      tone: 'neutral',
+    };
+  }
+
+  if (score >= 60 && isHealthyMomentum) {
+    return {
+      title: '趨勢偏健康，可等待拉回切入',
+      stance: '目前比較適合列入買進觀察，而不是急著追高。',
+      detail: `健康分數與 RSI 都維持在可接受範圍，若價格回測 20/50/60 日均線附近仍守住，且新聞面沒有重大利空，可以考慮分批布局。`,
+      reasons: [
+        `健康分數：${score}/100`,
+        `目前距 50 日均線：${formatPercent(sma50Distance)}`,
+        `RSI：${formatNumber(rsi)}`,
+        hasVolumeSupport ? `成交量比：${volumeRatio?.toFixed(2)}x，量能尚可` : `成交量比：${isFiniteNumber(volumeRatio) ? `${volumeRatio.toFixed(2)}x` : '-'}，量能仍需觀察`,
+      ],
+      tone: 'positive',
+    };
+  }
+
+  return {
+    title: '訊號中性，等待更明確位置',
+    stance: '目前沒有強烈買進或賣出訊號。',
+    detail: `價格、動能與波動沒有形成明確方向；比較務實的做法是設定觀察價位，等接近均線支撐或突破區間高點後，再搭配量能與新聞確認。`,
+    reasons: [
+      `健康分數：${score}/100`,
+      `價格區間百分位：${isFiniteNumber(pricePercentile) ? `${pricePercentile.toFixed(0)}%` : '-'}`,
+      `目前距 50 日均線：${formatPercent(sma50Distance)}`,
+      `RSI：${formatNumber(rsi)}`,
+    ],
+    tone: 'neutral',
+  };
+}
+
 function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
   const fullHistory = (details?.history || []).filter((point) => isFiniteNumber(point.close));
   const history = filterHistoryByTimeline(fullHistory, timeline);
@@ -366,6 +480,17 @@ function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
   const riskScore = isFiniteNumber(annualVolatility) ? clamp(18 - annualVolatility / 4, 5, 18) : 10;
   const rangeScore = isFiniteNumber(distanceFromHigh) ? (distanceFromHigh > -12 ? 14 : distanceFromHigh > -28 ? 9 : 5) : 8;
   const score = Math.round(clamp(trendScore + longTrendScore + momentumScore + macdScore + riskScore + rangeScore, 0, 100));
+  const interpretation = createInterpretation({
+    timeline,
+    score,
+    pricePercentile,
+    currentDrawdown,
+    sma50Distance,
+    sma200Distance,
+    rsi,
+    annualPeriodVolatility,
+    volumeRatio,
+  });
 
   const indicators: Indicator[] = [
     {
@@ -538,6 +663,7 @@ function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
     score,
     status: statusFromScore(score),
     indicators,
+    interpretation,
     historyStats,
     valuationStats,
     signals,
@@ -786,6 +912,45 @@ export default function StockHealthClient() {
               </span>
             </div>
             <MiniChart history={displayHistory} />
+          </div>
+
+          <div className={`rounded-lg border p-5 shadow-sm ${
+            analysis.interpretation.tone === 'positive'
+              ? 'border-emerald-200 bg-emerald-50'
+              : analysis.interpretation.tone === 'negative'
+                ? 'border-rose-200 bg-rose-50'
+                : 'border-amber-200 bg-amber-50'
+          }`}>
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <BookOpenCheck
+                  size={22}
+                  className={
+                    analysis.interpretation.tone === 'positive'
+                      ? 'mt-0.5 shrink-0 text-emerald-700'
+                      : analysis.interpretation.tone === 'negative'
+                        ? 'mt-0.5 shrink-0 text-rose-700'
+                        : 'mt-0.5 shrink-0 text-amber-700'
+                  }
+                />
+                <div>
+                  <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-500">綜合判讀</p>
+                  <h3 className="mt-1 text-2xl font-black text-slate-950">{analysis.interpretation.title}</h3>
+                </div>
+              </div>
+              <span className="rounded-lg bg-white/70 px-3 py-1 text-sm font-black text-slate-700">
+                {selectedTimeline.label}
+              </span>
+            </div>
+            <p className="text-base font-black leading-8 text-slate-900">{analysis.interpretation.stance}</p>
+            <p className="mt-3 text-sm font-semibold leading-7 text-slate-700">{analysis.interpretation.detail}</p>
+            <div className="mt-4 grid gap-2 md:grid-cols-2">
+              {analysis.interpretation.reasons.map((reason) => (
+                <div key={reason} className="rounded-lg border border-white/70 bg-white/70 px-3 py-2 text-sm font-bold text-slate-700">
+                  {reason}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
