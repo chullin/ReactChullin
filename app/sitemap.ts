@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/projects',
     '/contact',
     '/flashcards',
+    '/stock-health',
     '/tetris-battle',
     '/snake',
     '/vocab-quiz',
