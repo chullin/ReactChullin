@@ -291,21 +291,35 @@ function formatDividendYield(value: number | null | undefined) {
   return value <= 1 ? formatPercent(value * 100) : formatPercent(value);
 }
 
+function distanceFromReference(price: number | null | undefined, reference: number | null | undefined) {
+  if (!isFiniteNumber(price) || !isFiniteNumber(reference) || reference === 0) return null;
+  return ((price - reference) / reference) * 100;
+}
+
+function formatReferenceDistance(distance: number | null | undefined) {
+  if (!isFiniteNumber(distance)) return '差距 -';
+  if (distance === 0) return '現價貼近均線';
+  return `現價${distance > 0 ? '高於' : '低於'} ${Math.abs(distance).toFixed(2)}%`;
+}
+
 function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
   const fullHistory = (details?.history || []).filter((point) => isFiniteNumber(point.close));
   const history = filterHistoryByTimeline(fullHistory, timeline);
   const closes = history.map((point) => point.close as number);
+  const technicalCloses = fullHistory.map((point) => point.close as number);
   const volumes = history.map((point) => point.volume).filter(isFiniteNumber);
   const price = details?.quote?.price ?? closes.at(-1) ?? null;
   const previousClose = details?.quote?.previousClose ?? closes.at(-2) ?? null;
   const changePercent = isFiniteNumber(price) && isFiniteNumber(previousClose) && previousClose !== 0
     ? ((price - previousClose) / previousClose) * 100
     : details?.quote?.changePercent ?? null;
-  const sma20 = movingAverage(closes, 20);
-  const sma60 = movingAverage(closes, 60);
-  const sma120 = movingAverage(closes, 120);
-  const rsi = calculateRsi(closes);
-  const macd = calculateMacd(closes);
+  const sma20 = movingAverage(technicalCloses, 20);
+  const sma50 = movingAverage(technicalCloses, 50);
+  const sma60 = movingAverage(technicalCloses, 60);
+  const sma120 = movingAverage(technicalCloses, 120);
+  const sma200 = movingAverage(technicalCloses, 200);
+  const rsi = calculateRsi(technicalCloses);
+  const macd = calculateMacd(technicalCloses);
   const low52 = details?.quote?.fiftyTwoWeekLow ?? (closes.length ? Math.min(...closes.slice(-252)) : null);
   const high52 = details?.quote?.fiftyTwoWeekHigh ?? (closes.length ? Math.max(...closes.slice(-252)) : null);
   const periodLow = closes.length ? Math.min(...closes) : null;
@@ -339,6 +353,11 @@ function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
   const forwardPE = details?.quote?.forwardPE ?? null;
   const priceToBook = details?.quote?.priceToBook ?? null;
   const dividendYield = details?.quote?.dividendYield ?? null;
+  const sma20Distance = distanceFromReference(price, sma20);
+  const sma50Distance = distanceFromReference(price, sma50);
+  const sma60Distance = distanceFromReference(price, sma60);
+  const sma120Distance = distanceFromReference(price, sma120);
+  const sma200Distance = distanceFromReference(price, sma200);
 
   const trendScore = isFiniteNumber(price) && isFiniteNumber(sma60) ? (price >= sma60 ? 18 : 7) : 10;
   const longTrendScore = isFiniteNumber(sma60) && isFiniteNumber(sma120) ? (sma60 >= sma120 ? 14 : 6) : 8;
@@ -351,15 +370,27 @@ function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
   const indicators: Indicator[] = [
     {
       label: '20 日均線',
-      value: formatNumber(sma20),
+      value: `${formatNumber(sma20)} · ${formatPercent(sma20Distance)}`,
       status: isFiniteNumber(price) && isFiniteNumber(sma20) ? (price >= sma20 ? 'positive' : 'negative') : 'neutral',
-      note: '短線價格是否仍站在近期成本之上。',
+      note: `${formatReferenceDistance(sma20Distance)}，用來看短線價格是否仍站在近期成本之上。`,
+    },
+    {
+      label: '50 日均線',
+      value: `${formatNumber(sma50)} · ${formatPercent(sma50Distance)}`,
+      status: isFiniteNumber(price) && isFiniteNumber(sma50) ? (price >= sma50 ? 'positive' : 'negative') : 'neutral',
+      note: `${formatReferenceDistance(sma50Distance)}，接近你提到的 QQQ 50 日線差距判斷方式。`,
     },
     {
       label: '60 / 120 日趨勢',
-      value: `${formatNumber(sma60)} / ${formatNumber(sma120)}`,
+      value: `${formatNumber(sma60)} (${formatPercent(sma60Distance)}) / ${formatNumber(sma120)} (${formatPercent(sma120Distance)})`,
       status: isFiniteNumber(sma60) && isFiniteNumber(sma120) ? (sma60 >= sma120 ? 'positive' : 'negative') : 'neutral',
-      note: '判斷中期趨勢是否仍偏多。',
+      note: `60 日線：${formatReferenceDistance(sma60Distance)}；120 日線：${formatReferenceDistance(sma120Distance)}。`,
+    },
+    {
+      label: '200 日均線',
+      value: `${formatNumber(sma200)} · ${formatPercent(sma200Distance)}`,
+      status: isFiniteNumber(price) && isFiniteNumber(sma200) ? (price >= sma200 ? 'positive' : 'negative') : 'neutral',
+      note: `${formatReferenceDistance(sma200Distance)}，用來判斷長期趨勢與過度偏離風險。`,
     },
     {
       label: 'RSI 14',
