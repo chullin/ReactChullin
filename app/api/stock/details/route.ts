@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
   const newsUrl = new URL(`/api/news/${encodeURIComponent(name)}`, JACKSU_BASE);
   newsUrl.searchParams.set('ticker', normalizedSymbol);
   newsUrl.searchParams.set('market', market);
-  newsUrl.searchParams.set('limit', '8');
+  newsUrl.searchParams.set('limit', '20');
 
   const historyUrl = new URL('/api/stock', JACKSU_BASE);
   historyUrl.searchParams.set('stockNo', normalizedSymbol);

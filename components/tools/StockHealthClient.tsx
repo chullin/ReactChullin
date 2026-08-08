@@ -86,6 +86,16 @@ type Interpretation = {
   tone: 'positive' | 'neutral' | 'negative';
 };
 
+type RallyReason = {
+  date: string;
+  changePercent: number;
+  close: number;
+  volumeRatio: number | null;
+  summary: string;
+  evidence: string[];
+  news: StockNewsItem[];
+};
+
 type TimelineOption = {
   label: string;
   months?: number;
@@ -149,6 +159,12 @@ function formatDate(value?: string) {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+}
+
+function formatShortDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString('zh-TW', { month: '2-digit', day: '2-digit' });
 }
 
 function average(values: number[]) {
@@ -308,6 +324,92 @@ function formatReferenceDistance(distance: number | null | undefined) {
   if (!isFiniteNumber(distance)) return '差距 -';
   if (distance === 0) return '現價貼近均線';
   return `現價${distance > 0 ? '高於' : '低於'} ${Math.abs(distance).toFixed(2)}%`;
+}
+
+function dateDistanceInDays(first: string, second: string) {
+  const firstDate = new Date(first);
+  const secondDate = new Date(second);
+  if (Number.isNaN(firstDate.getTime()) || Number.isNaN(secondDate.getTime())) return Number.POSITIVE_INFINITY;
+  return Math.abs(firstDate.getTime() - secondDate.getTime()) / 86_400_000;
+}
+
+function normalizeNewsDate(value?: string) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+function inferReasonFromNews(newsItems: StockNewsItem[]) {
+  const combinedTitle = newsItems.map((item) => item.title).join(' ').toLowerCase();
+
+  if (/(fed|rate|yield|jobs?|payroll|employment|cpi|inflation|pce|treasury|降息|升息|利率|就業|通膨)/i.test(combinedTitle)) {
+    return '相關新聞偏向宏觀利率或經濟數據，市場可能因 Fed 路徑、就業或通膨預期改變而重新評價風險資產。';
+  }
+
+  if (/(earnings|revenue|profit|guidance|eps|margin|財報|營收|獲利|展望|毛利)/i.test(combinedTitle)) {
+    return '相關新聞偏向財報、營收或展望，這波上漲可能有基本面或企業獲利預期支撐。';
+  }
+
+  if (/(ai|nvidia|semiconductor|chip|nasdaq|technology|mag seven|人工智慧|半導體|科技股|那斯達克)/i.test(combinedTitle)) {
+    return '相關新聞偏向科技股、AI、半導體或 Nasdaq 動能，這波上漲可能受到產業題材與風險偏好帶動。';
+  }
+
+  if (/(upgrade|target|buy rating|analyst|上調|目標價|評等)/i.test(combinedTitle)) {
+    return '相關新聞偏向分析師評等或目標價調整，短線上漲可能受到市場預期修正帶動。';
+  }
+
+  return '有找到同日或近日新聞，但標題不足以判斷單一主因，建議打開來源確認內容。';
+}
+
+function createRallyReasons(history: HistoryPoint[], news: StockNewsItem[] = []): RallyReason[] {
+  const cleanHistory = history.filter((point) => isFiniteNumber(point.close));
+  const newsWithDates = news
+    .map((item) => ({ ...item, normalizedDate: normalizeNewsDate(item.pubDate) }))
+    .filter((item): item is StockNewsItem & { normalizedDate: string } => typeof item.normalizedDate === 'string');
+
+  const rallies = cleanHistory.flatMap((point, index, list) => {
+    if (index === 0 || !isFiniteNumber(point.close) || !isFiniteNumber(list[index - 1].close)) return [];
+    const previous = list[index - 1].close as number;
+    if (previous === 0) return [];
+    const changePercent = ((point.close - previous) / previous) * 100;
+    if (changePercent < 1) return [];
+
+    const recentVolumes = list
+      .slice(Math.max(0, index - 20), index)
+      .map((item) => item.volume)
+      .filter(isFiniteNumber);
+    const avgVolume = average(recentVolumes);
+    const volumeRatio = isFiniteNumber(point.volume) && isFiniteNumber(avgVolume) && avgVolume > 0
+      ? point.volume / avgVolume
+      : null;
+    const matchedNews = newsWithDates
+      .filter((item) => dateDistanceInDays(point.date, item.normalizedDate) <= 1)
+      .slice(0, 3);
+    const summary = matchedNews.length
+      ? inferReasonFromNews(matchedNews)
+      : '目前新聞來源沒有配到同日或前後一天的明確事件，這次上漲可能需要回到新聞、財報或大盤資料進一步查證。';
+    const evidence = [
+      `當日收盤 ${formatNumber(point.close)}，單日上漲 ${formatPercent(changePercent)}`,
+      isFiniteNumber(volumeRatio) ? `成交量約為近 20 日均量 ${volumeRatio.toFixed(2)}x` : '成交量比較資料不足',
+      matchedNews.length ? `配對到 ${matchedNews.length} 則同日/近日新聞` : '未配對到同日/近日新聞',
+    ];
+
+    return [{
+      date: point.date,
+      changePercent,
+      close: point.close,
+      volumeRatio,
+      summary,
+      evidence,
+      news: matchedNews,
+    }];
+  });
+
+  return rallies
+    .sort((first, second) => second.changePercent - first.changePercent)
+    .slice(0, 6)
+    .sort((first, second) => Date.parse(second.date) - Date.parse(first.date));
 }
 
 function createInterpretation({
@@ -480,6 +582,7 @@ function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
   const riskScore = isFiniteNumber(annualVolatility) ? clamp(18 - annualVolatility / 4, 5, 18) : 10;
   const rangeScore = isFiniteNumber(distanceFromHigh) ? (distanceFromHigh > -12 ? 14 : distanceFromHigh > -28 ? 9 : 5) : 8;
   const score = Math.round(clamp(trendScore + longTrendScore + momentumScore + macdScore + riskScore + rangeScore, 0, 100));
+  const rallyReasons = createRallyReasons(history, details?.news || []);
   const interpretation = createInterpretation({
     timeline,
     score,
@@ -664,6 +767,7 @@ function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
     status: statusFromScore(score),
     indicators,
     interpretation,
+    rallyReasons,
     historyStats,
     valuationStats,
     signals,
@@ -986,6 +1090,80 @@ export default function StockHealthClient() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-start justify-between gap-4">
+              <div className="flex items-start gap-2">
+                <TrendingUp size={20} className="mt-0.5 text-orange-600" />
+                <div>
+                  <h3 className="text-lg font-black text-slate-950">上漲原因追蹤</h3>
+                  <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
+                    列出 {selectedTimeline.label} 內較明顯的上漲日，並用同日/近日新聞輔助判斷可能原因。
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-lg bg-slate-100 px-3 py-1 text-sm font-black text-slate-600">可能原因</span>
+            </div>
+            <div className="grid gap-3">
+              {analysis.rallyReasons.map((rally) => (
+                <div key={`${rally.date}-${rally.changePercent}`} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-black text-slate-500">{formatShortDate(rally.date)}</p>
+                      <h4 className="mt-1 text-lg font-black text-slate-950">
+                        上漲 {formatPercent(rally.changePercent)}，收盤 {formatNumber(rally.close)}
+                      </h4>
+                    </div>
+                    <span className={`rounded-lg px-3 py-1 text-sm font-black ${
+                      isFiniteNumber(rally.volumeRatio) && rally.volumeRatio >= 1.2
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-white text-slate-600'
+                    }`}>
+                      量比 {isFiniteNumber(rally.volumeRatio) ? `${rally.volumeRatio.toFixed(2)}x` : '-'}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm font-semibold leading-7 text-slate-700">{rally.summary}</p>
+                  <div className="mt-3 grid gap-2 md:grid-cols-3">
+                    {rally.evidence.map((item) => (
+                      <div key={item} className="rounded-lg bg-white px-3 py-2 text-xs font-bold leading-5 text-slate-600">
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 grid gap-2">
+                    {rally.news.map((item) => (
+                      <a
+                        key={`${rally.date}-${item.url}`}
+                        href={item.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+                      >
+                        <span>
+                          {item.title}
+                          <span className="ml-2 text-xs text-slate-400">{item.source || '新聞來源'} · {formatDate(item.pubDate)}</span>
+                        </span>
+                        <ExternalLink size={15} className="mt-0.5 shrink-0" />
+                      </a>
+                    ))}
+                    {!rally.news.length && (
+                      <div className="rounded-lg border border-dashed border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-500">
+                        這一天沒有配對到新聞，請使用下方新聞或 Google News 連結交叉查證。
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {!analysis.rallyReasons.length && (
+                <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm font-semibold text-slate-500">
+                  目前選定期間沒有找到單日漲幅超過 1% 的明顯上漲日，或歷史資料不足。
+                </div>
+              )}
+            </div>
+            <p className="mt-4 text-xs font-semibold leading-6 text-slate-500">
+              注意：這裡是把價格變動與新聞時間做關聯整理，屬於研究輔助；真正原因仍要打開新聞、財報或總經資料確認。
+            </p>
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
