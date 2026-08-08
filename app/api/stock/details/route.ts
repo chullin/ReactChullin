@@ -42,6 +42,12 @@ function plainSymbol(symbol: string) {
   return symbol.trim().toUpperCase().replace(/\.(TW|TWO)$/i, '');
 }
 
+function requestedYears(value: string | null) {
+  const years = Number(value);
+  if (!Number.isFinite(years)) return 5;
+  return Math.min(20, Math.max(1, Math.ceil(years)));
+}
+
 function parseHistory(payload: any) {
   const result = payload?.chart?.result?.[0];
   const timestamps: number[] = result?.timestamp || [];
@@ -64,6 +70,7 @@ export async function GET(request: NextRequest) {
   const symbol = request.nextUrl.searchParams.get('symbol')?.trim();
   const market = request.nextUrl.searchParams.get('market')?.trim() as Market | undefined;
   const name = request.nextUrl.searchParams.get('name')?.trim() || symbol || '';
+  const years = requestedYears(request.nextUrl.searchParams.get('years'));
 
   if (!symbol || !market) {
     return NextResponse.json(
@@ -82,7 +89,7 @@ export async function GET(request: NextRequest) {
   const normalizedSymbol = plainSymbol(symbol);
   const quoteSymbol = yahooSymbol(symbol, market);
   const now = Math.floor(Date.now() / 1000);
-  const from = now - 5 * 365 * 24 * 60 * 60;
+  const from = now - years * 365 * 24 * 60 * 60;
 
   const quoteUrl = new URL('/api/stock/quote', JACKSU_BASE);
   quoteUrl.searchParams.set('symbol', normalizedSymbol);
@@ -113,6 +120,7 @@ export async function GET(request: NextRequest) {
       quote: quote?.data || null,
       news: news?.data || [],
       history: parseHistory(history),
+      historyYears: years,
     },
   });
 }

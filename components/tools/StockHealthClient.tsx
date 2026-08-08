@@ -40,6 +40,10 @@ type StockQuote = {
   exchange?: string;
   fiftyTwoWeekHigh?: number | null;
   fiftyTwoWeekLow?: number | null;
+  trailingPE?: number | null;
+  forwardPE?: number | null;
+  priceToBook?: number | null;
+  dividendYield?: number | null;
 };
 
 type StockNewsItem = {
@@ -74,7 +78,22 @@ type Signal = {
   tone: 'buy' | 'hold' | 'sell' | 'risk';
 };
 
+type TimelineOption = {
+  label: string;
+  months?: number;
+  yearsForApi: number;
+};
+
 const MARKET_OPTIONS: Market[] = ['台股', '美股'];
+const TIMELINE_OPTIONS: TimelineOption[] = [
+  { label: '3M', months: 3, yearsForApi: 1 },
+  { label: '6M', months: 6, yearsForApi: 1 },
+  { label: '1Y', months: 12, yearsForApi: 1 },
+  { label: '3Y', months: 36, yearsForApi: 3 },
+  { label: '5Y', months: 60, yearsForApi: 5 },
+  { label: '10Y', months: 120, yearsForApi: 10 },
+  { label: '20Y', months: 240, yearsForApi: 20 },
+];
 
 const STATUS_CLASS: Record<Indicator['status'], string> = {
   positive: 'border-emerald-200 bg-emerald-50 text-emerald-800',
@@ -215,8 +234,66 @@ function createYahooUrl(symbol: string, market: Market) {
   return `https://finance.yahoo.com/quote/${value}`;
 }
 
-function analyzeStock(details: StockDetails | null) {
-  const history = (details?.history || []).filter((point) => isFiniteNumber(point.close));
+function filterHistoryByTimeline(history: HistoryPoint[], timeline: TimelineOption) {
+  const cleanHistory = history.filter((point) => isFiniteNumber(point.close));
+  if (!timeline.months || cleanHistory.length < 2) return cleanHistory;
+
+  const latestDate = new Date(cleanHistory.at(-1)?.date || '');
+  if (Number.isNaN(latestDate.getTime())) return cleanHistory;
+
+  const fromDate = new Date(latestDate);
+  fromDate.setMonth(fromDate.getMonth() - timeline.months);
+
+  return cleanHistory.filter((point) => {
+    const pointDate = new Date(point.date);
+    return !Number.isNaN(pointDate.getTime()) && pointDate >= fromDate;
+  });
+}
+
+function percentileRank(values: number[], current: number | null | undefined) {
+  if (!values.length || !isFiniteNumber(current)) return null;
+  const belowOrEqual = values.filter((value) => value <= current).length;
+  return (belowOrEqual / values.length) * 100;
+}
+
+function calculateDrawdownEvents(values: number[], thresholdPercent: number) {
+  if (values.length < 2) return 0;
+  let peak = values[0];
+  let inDrawdown = false;
+  let count = 0;
+
+  for (const value of values) {
+    if (value >= peak) {
+      peak = value;
+      inDrawdown = false;
+      continue;
+    }
+
+    const drawdown = ((value - peak) / peak) * 100;
+    if (drawdown <= thresholdPercent && !inDrawdown) {
+      count += 1;
+      inDrawdown = true;
+    }
+  }
+
+  return count;
+}
+
+function valueStatus(value: number | null, low: number, high: number): Indicator['status'] {
+  if (!isFiniteNumber(value)) return 'neutral';
+  if (value <= low) return 'positive';
+  if (value <= high) return 'neutral';
+  return 'negative';
+}
+
+function formatDividendYield(value: number | null | undefined) {
+  if (!isFiniteNumber(value)) return '-';
+  return value <= 1 ? formatPercent(value * 100) : formatPercent(value);
+}
+
+function analyzeStock(details: StockDetails | null, timeline: TimelineOption) {
+  const fullHistory = (details?.history || []).filter((point) => isFiniteNumber(point.close));
+  const history = filterHistoryByTimeline(fullHistory, timeline);
   const closes = history.map((point) => point.close as number);
   const volumes = history.map((point) => point.volume).filter(isFiniteNumber);
   const price = details?.quote?.price ?? closes.at(-1) ?? null;
@@ -231,13 +308,23 @@ function analyzeStock(details: StockDetails | null) {
   const macd = calculateMacd(closes);
   const low52 = details?.quote?.fiftyTwoWeekLow ?? (closes.length ? Math.min(...closes.slice(-252)) : null);
   const high52 = details?.quote?.fiftyTwoWeekHigh ?? (closes.length ? Math.max(...closes.slice(-252)) : null);
-  const drawdown = calculateMaxDrawdown(closes.slice(-252));
+  const periodLow = closes.length ? Math.min(...closes) : null;
+  const periodHigh = closes.length ? Math.max(...closes) : null;
+  const periodReturn = closes.length >= 2 ? ((closes.at(-1)! - closes[0]) / closes[0]) * 100 : null;
+  const drawdown = calculateMaxDrawdown(closes);
+  const currentDrawdown = isFiniteNumber(price) && isFiniteNumber(periodHigh) && periodHigh > 0 ? ((price - periodHigh) / periodHigh) * 100 : null;
   const recentReturns = closes.slice(-61).flatMap((value, index, list) => {
     if (index === 0) return [];
     return list[index - 1] ? [(value - list[index - 1]) / list[index - 1]] : [];
   });
+  const periodReturns = closes.flatMap((value, index, list) => {
+    if (index === 0) return [];
+    return list[index - 1] ? [(value - list[index - 1]) / list[index - 1]] : [];
+  });
   const volatility = standardDeviation(recentReturns);
+  const periodVolatility = standardDeviation(periodReturns);
   const annualVolatility = isFiniteNumber(volatility) ? volatility * Math.sqrt(252) * 100 : null;
+  const annualPeriodVolatility = isFiniteNumber(periodVolatility) ? periodVolatility * Math.sqrt(252) * 100 : null;
   const avgVolume20 = average(volumes.slice(-20));
   const latestVolume = volumes.at(-1) ?? null;
   const volumeRatio = isFiniteNumber(latestVolume) && isFiniteNumber(avgVolume20) && avgVolume20 > 0
@@ -245,6 +332,13 @@ function analyzeStock(details: StockDetails | null) {
     : null;
   const distanceFromHigh = isFiniteNumber(price) && isFiniteNumber(high52) && high52 > 0 ? ((price - high52) / high52) * 100 : null;
   const distanceFromLow = isFiniteNumber(price) && isFiniteNumber(low52) && low52 > 0 ? ((price - low52) / low52) * 100 : null;
+  const pricePercentile = percentileRank(closes, price);
+  const drawdown10Count = calculateDrawdownEvents(closes, -10);
+  const drawdown20Count = calculateDrawdownEvents(closes, -20);
+  const trailingPE = details?.quote?.trailingPE ?? null;
+  const forwardPE = details?.quote?.forwardPE ?? null;
+  const priceToBook = details?.quote?.priceToBook ?? null;
+  const dividendYield = details?.quote?.dividendYield ?? null;
 
   const trendScore = isFiniteNumber(price) && isFiniteNumber(sma60) ? (price >= sma60 ? 18 : 7) : 10;
   const longTrendScore = isFiniteNumber(sma60) && isFiniteNumber(sma120) ? (sma60 >= sma120 ? 14 : 6) : 8;
@@ -292,10 +386,10 @@ function analyzeStock(details: StockDetails | null) {
       note: '確認是否只是低檔反彈，或已脫離弱勢區。',
     },
     {
-      label: '近 1 年最大回撤',
+      label: `${timeline.label} 最大回撤`,
       value: formatPercent(drawdown),
       status: isFiniteNumber(drawdown) ? (drawdown > -20 ? 'positive' : drawdown > -35 ? 'neutral' : 'negative') : 'neutral',
-      note: '回撤越深，代表持有期間承受壓力越大。',
+      note: '依目前選定期間統計，回撤越深代表持有壓力越大。',
     },
     {
       label: '60 日年化波動',
@@ -315,8 +409,8 @@ function analyzeStock(details: StockDetails | null) {
     {
       title: score >= 60 ? '可以列入買進觀察' : '先等條件改善',
       detail: score >= 60
-        ? '健康分數達中上，若價格回測 20/60 日均線不破，且新聞面沒有重大利空，可以分批建立部位。'
-        : '目前趨勢或動能不足，適合等價格站回 60 日線、RSI 回到 45 以上，再評估進場。',
+        ? `${timeline.label} 分析分數達中上，若價格回測 20/60 日均線不破，且新聞面沒有重大利空，可以分批建立部位。`
+        : `${timeline.label} 趨勢或動能不足，適合等價格站回 60 日線、RSI 回到 45 以上，再評估進場。`,
       tone: score >= 60 ? 'buy' : 'hold',
     },
     {
@@ -335,14 +429,89 @@ function analyzeStock(details: StockDetails | null) {
     },
   ];
 
+  const historyStats: Indicator[] = [
+    {
+      label: `${timeline.label} 區間報酬`,
+      value: formatPercent(periodReturn),
+      status: isFiniteNumber(periodReturn) ? (periodReturn > 0 ? 'positive' : 'negative') : 'neutral',
+      note: '衡量這段期間買進並持有到現在的結果。',
+    },
+    {
+      label: `${timeline.label} 區間高低`,
+      value: `${formatNumber(periodLow)} - ${formatNumber(periodHigh)}`,
+      status: 'neutral',
+      note: '用來判斷目前價格在該期間的位置。',
+    },
+    {
+      label: '目前距區間高點',
+      value: formatPercent(currentDrawdown),
+      status: isFiniteNumber(currentDrawdown) ? (currentDrawdown > -10 ? 'positive' : currentDrawdown > -25 ? 'neutral' : 'negative') : 'neutral',
+      note: '越接近區間高點，越要搭配量能與估值判斷是否分批停利。',
+    },
+    {
+      label: '價格區間百分位',
+      value: isFiniteNumber(pricePercentile) ? `${pricePercentile.toFixed(0)}%` : '-',
+      status: isFiniteNumber(pricePercentile) ? (pricePercentile < 35 ? 'positive' : pricePercentile < 75 ? 'neutral' : 'negative') : 'neutral',
+      note: '這是價格位置統計，不等同 PE/PB 估值百分位。',
+    },
+    {
+      label: '回檔超過 10%',
+      value: `${drawdown10Count} 次`,
+      status: drawdown10Count <= 1 ? 'positive' : drawdown10Count <= 3 ? 'neutral' : 'negative',
+      note: '觀察選定期間內較明顯修正的頻率。',
+    },
+    {
+      label: '回檔超過 20%',
+      value: `${drawdown20Count} 次`,
+      status: drawdown20Count === 0 ? 'positive' : drawdown20Count <= 2 ? 'neutral' : 'negative',
+      note: '若常出現深度回檔，部位大小與停損要更保守。',
+    },
+    {
+      label: `${timeline.label} 年化波動`,
+      value: formatPercent(annualPeriodVolatility),
+      status: isFiniteNumber(annualPeriodVolatility) ? (annualPeriodVolatility < 30 ? 'positive' : annualPeriodVolatility < 50 ? 'neutral' : 'negative') : 'neutral',
+      note: '依選定期間日報酬換算，時間越短越容易受近期行情影響。',
+    },
+  ];
+
+  const valuationStats: Indicator[] = [
+    {
+      label: '本益比 PE',
+      value: formatNumber(trailingPE),
+      status: valueStatus(trailingPE, 18, 30),
+      note: '若資料源未提供，請回 Yahoo、公開資訊觀測站或 SEC 財報確認。',
+    },
+    {
+      label: 'Forward PE',
+      value: formatNumber(forwardPE),
+      status: valueStatus(forwardPE, 18, 30),
+      note: '美股較常見；台股資料源不一定提供預估本益比。',
+    },
+    {
+      label: '股價淨值比 PB',
+      value: formatNumber(priceToBook),
+      status: valueStatus(priceToBook, 2, 5),
+      note: '高成長股 PB 常偏高，需和同產業比較。',
+    },
+    {
+      label: '股息殖利率',
+      value: formatDividendYield(dividendYield),
+      status: isFiniteNumber(dividendYield) ? 'neutral' : 'neutral',
+      note: '殖利率需搭配配息穩定度、盈餘與現金流判斷。',
+    },
+  ];
+
   return {
     price,
     changePercent,
     score,
     status: statusFromScore(score),
     indicators,
+    historyStats,
+    valuationStats,
     signals,
     historyCount: history.length,
+    fullHistoryCount: fullHistory.length,
   };
 }
 
@@ -378,14 +547,23 @@ function MiniChart({ history }: { history: HistoryPoint[] }) {
 export default function StockHealthClient() {
   const [symbol, setSymbol] = useState('2330');
   const [market, setMarket] = useState<Market>('台股');
+  const [timelineLabel, setTimelineLabel] = useState('6M');
   const [details, setDetails] = useState<StockDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const analysis = useMemo(() => analyzeStock(details), [details]);
+  const selectedTimeline = useMemo(
+    () => TIMELINE_OPTIONS.find((option) => option.label === timelineLabel) || TIMELINE_OPTIONS[1],
+    [timelineLabel],
+  );
+  const analysis = useMemo(() => analyzeStock(details, selectedTimeline), [details, selectedTimeline]);
+  const displayHistory = useMemo(
+    () => filterHistoryByTimeline(details?.history || [], selectedTimeline),
+    [details, selectedTimeline],
+  );
   const quoteName = details?.quote?.longName || details?.quote?.name || symbol.toUpperCase();
 
-  const loadDetails = useCallback(async (nextSymbol = symbol, nextMarket = market) => {
+  const loadDetails = useCallback(async (nextSymbol = symbol, nextMarket = market, nextTimeline = selectedTimeline) => {
     const normalizedSymbol = nextSymbol.trim().toUpperCase();
     if (!normalizedSymbol) return;
 
@@ -397,6 +575,7 @@ export default function StockHealthClient() {
         symbol: normalizedSymbol,
         market: nextMarket,
         name: normalizedSymbol,
+        years: String(nextTimeline.yearsForApi),
       });
       const response = await fetch(`/api/stock/details?${params.toString()}`, { cache: 'no-store' });
       const payload = (await response.json()) as DetailsResponse;
@@ -411,11 +590,18 @@ export default function StockHealthClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [market, symbol]);
+  }, [market, selectedTimeline, symbol]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     void loadDetails();
+  };
+
+  const handleTimelineChange = (option: TimelineOption) => {
+    setTimelineLabel(option.label);
+    if (details) {
+      void loadDetails(symbol, market, option);
+    }
   };
 
   return (
@@ -432,39 +618,64 @@ export default function StockHealthClient() {
                 用指標、新聞與來源判斷買賣時機
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">
-                輸入台股或美股代號，頁面會用趨勢、動能、波動、52 週位置與新聞來源整理成健康分數，並給出分批買進、部分獲利與停損觀察條件。
+                輸入台股或美股代號，選擇 3M、6M 或更長時間線，頁面會用趨勢、動能、回檔、波動、區間位置與新聞來源整理成健康分數，並給出分批買進、部分獲利與停損觀察條件。
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 sm:grid-cols-[1fr_auto_auto]">
-              <label className="sr-only" htmlFor="stock-symbol">股票代號</label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input
-                  id="stock-symbol"
-                  value={symbol}
-                  onChange={(event) => setSymbol(event.target.value)}
-                  className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-base font-bold text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
-                  placeholder="例如 2330 或 AAPL"
-                />
+            <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto]">
+                <label className="sr-only" htmlFor="stock-symbol">股票代號</label>
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                  <input
+                    id="stock-symbol"
+                    value={symbol}
+                    onChange={(event) => setSymbol(event.target.value)}
+                    className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-base font-bold text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                    placeholder="例如 2330 或 AAPL"
+                  />
+                </div>
+                <select
+                  value={market}
+                  onChange={(event) => setMarket(event.target.value as Market)}
+                  className="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                >
+                  {MARKET_OPTIONS.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60"
+                >
+                  {isLoading ? <RefreshCw size={17} className="animate-spin" /> : <BarChart3 size={17} />}
+                  分析
+                </button>
               </div>
-              <select
-                value={market}
-                onChange={(event) => setMarket(event.target.value as Market)}
-                className="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
-              >
-                {MARKET_OPTIONS.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-wait disabled:opacity-60"
-              >
-                {isLoading ? <RefreshCw size={17} className="animate-spin" /> : <BarChart3 size={17} />}
-                分析
-              </button>
+
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-slate-500">分析時間線</p>
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+                  {TIMELINE_OPTIONS.map((option) => (
+                    <button
+                      key={option.label}
+                      type="button"
+                      onClick={() => handleTimelineChange(option)}
+                      className={`h-10 rounded-lg border text-sm font-black transition ${
+                        selectedTimeline.label === option.label
+                          ? 'border-slate-950 bg-slate-950 text-white'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300 hover:text-orange-700'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
+                  可以只看近 3 個月或近半年，也能拉長到 10-20 年觀察大週期回檔。資料不足時會以可取得日線計算。
+                </p>
+              </div>
             </form>
           </div>
         </div>
@@ -539,9 +750,11 @@ export default function StockHealthClient() {
                 <LineChart size={20} className="text-orange-600" />
                 <h3 className="text-lg font-black text-slate-950">價格趨勢</h3>
               </div>
-              <span className="text-sm font-bold text-slate-500">{analysis.historyCount ? `${analysis.historyCount} 筆日線` : '等待分析'}</span>
+              <span className="text-sm font-bold text-slate-500">
+                {analysis.historyCount ? `${selectedTimeline.label} / ${analysis.historyCount} 筆日線` : '等待分析'}
+              </span>
             </div>
-            <MiniChart history={details?.history || []} />
+            <MiniChart history={displayHistory} />
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
@@ -554,6 +767,29 @@ export default function StockHealthClient() {
                 <p className="text-sm font-semibold leading-7">{signal.detail}</p>
               </div>
             ))}
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <BarChart3 size={20} className="text-orange-600" />
+                <h3 className="text-lg font-black text-slate-950">歷史統計分析</h3>
+              </div>
+              <span className="text-sm font-bold text-slate-500">
+                已載入 {analysis.fullHistoryCount || 0} 筆，採用 {analysis.historyCount || 0} 筆
+              </span>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {analysis.historyStats.map((indicator) => (
+                <div key={indicator.label} className={`rounded-lg border p-4 ${STATUS_CLASS[indicator.status]}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-black">{indicator.label}</p>
+                    <p className="text-lg font-black">{indicator.value}</p>
+                  </div>
+                  <p className="mt-2 text-xs font-semibold leading-6 opacity-80">{indicator.note}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
@@ -572,6 +808,27 @@ export default function StockHealthClient() {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <BookOpenCheck size={20} className="text-orange-600" />
+              <h3 className="text-lg font-black text-slate-950">估值參考</h3>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {analysis.valuationStats.map((indicator) => (
+                <div key={indicator.label} className={`rounded-lg border p-4 ${STATUS_CLASS[indicator.status]}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-sm font-black">{indicator.label}</p>
+                    <p className="text-lg font-black">{indicator.value}</p>
+                  </div>
+                  <p className="mt-2 text-xs font-semibold leading-6 opacity-80">{indicator.note}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-xs font-semibold leading-6 text-slate-500">
+              目前歷史估值區間取決於資料源是否提供長期 PE/PB/殖利率。本頁不會用價格資料假裝成估值；若欄位為「-」，請用資料來源連結回到原始財報或估值頁確認。
+            </p>
           </div>
 
           <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
