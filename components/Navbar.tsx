@@ -26,6 +26,7 @@ export default function Navbar() {
     { name: t('nav.imageCompressor'), href: '/image-compressor' },
     { name: '市場觀察清單', href: '/market-watch' },
     { name: '股票健康度', href: '/stock-health' },
+    { name: '交易成本計算', href: '/trading-cost' },
     { name: t('nav.snake'), href: '/snake' },
     { name: t('nav.vocabQuiz'), href: '/vocab-quiz' },
     { name: t('nav.tetrisBattle'), href: '/tetris-battle', color: 'danger' as const },
