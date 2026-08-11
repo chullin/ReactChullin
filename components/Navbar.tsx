@@ -17,6 +17,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { t } = useI18n();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isWorkOpen, setIsWorkOpen] = useState(false);
   const [isToolkitOpen, setIsToolkitOpen] = useState(false);
   const [isStockOpen, setIsStockOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -52,26 +53,24 @@ export default function Navbar() {
 
   const dropdownLinks = [...toolkitLinks, ...playLinks];
   const stockPaths = stockLinks.map((link) => link.href);
-
-  const mainLinks = [
-    { name: t('nav.home'), href: '/' },
-    { name: t('nav.hub'), href: '/hub' },
-    { name: t('nav.blog'), href: '/blog' },
+  const workLinks: NavItem[] = [
     { name: t('nav.projects'), href: '/projects' },
     { name: t('nav.about'), href: '/about' },
   ];
+  const workPaths = workLinks.map((link) => link.href);
+
+  const mainLinks = [
+    { name: t('nav.home'), href: '/' },
+    { name: t('nav.blog'), href: '/blog' },
+  ];
   const compactLinks = [
     { name: t('nav.home'), href: '/' },
-    { name: t('nav.hub'), href: '/hub' },
     { name: t('nav.blog'), href: '/blog' },
   ];
   const compactMoreGroups = [
     {
       label: t('nav.siteInfo'),
-      links: [
-        { name: t('nav.projects'), href: '/projects' },
-        { name: t('nav.about'), href: '/about' },
-      ],
+      links: workLinks,
     },
     { label: t('nav.stockTools'), links: stockLinks },
     { label: t('nav.tools'), links: toolkitLinks },
@@ -91,6 +90,7 @@ export default function Navbar() {
 
   const closeMenus = () => {
     setIsMenuOpen(false);
+    setIsWorkOpen(false);
     setIsToolkitOpen(false);
     setIsStockOpen(false);
     setIsMoreOpen(false);
@@ -135,12 +135,12 @@ export default function Navbar() {
             className="shrink-0 whitespace-nowrap text-2xl font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80"
             onClick={() => handleNavClick('/')}
           >
-            <span className="min-[900px]:hidden">Joseph</span>
-            <span className="hidden min-[900px]:inline">Joseph Chen</span>
+            <span className="min-[1120px]:hidden">Joseph</span>
+            <span className="hidden min-[1120px]:inline">Joseph Chen</span>
           </Link>
         </div>
 
-        <div className="hidden min-w-0 items-center gap-1 sm:flex min-[900px]:!hidden">
+        <div className="hidden min-w-0 items-center gap-1 sm:flex min-[1120px]:!hidden">
           {compactLinks.map((link) => (
             <Link
               key={link.href}
@@ -202,7 +202,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="hidden items-center gap-2 min-[900px]:flex">
+        <div className="hidden items-center gap-2 min-[1120px]:flex">
           {mainLinks.map((link) => (
             <Link
               key={link.href}
@@ -216,6 +216,44 @@ export default function Navbar() {
               {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
             </Link>
           ))}
+
+          <div
+            className="relative"
+            onMouseEnter={() => setIsWorkOpen(true)}
+            onMouseLeave={() => setIsWorkOpen(false)}
+          >
+            <button
+              type="button"
+              className={`${navLinkClass(isGroupActive(workPaths))} inline-flex items-center gap-2`}
+              aria-haspopup="menu"
+              aria-expanded={isWorkOpen}
+              onClick={() => setIsWorkOpen((open) => !open)}
+            >
+              {t('nav.workAbout')}
+              <ChevronDown size={14} />
+            </button>
+
+            {isWorkOpen && (
+              <div className="absolute left-0 top-full w-48 pt-2">
+                <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-xl">
+                  {workLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      aria-busy={pendingHref === link.href}
+                      className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 ${
+                        isActive(link.href) || pendingHref === link.href ? 'text-[var(--theme-primary)]' : 'text-gray-600'
+                      }`}
+                      onClick={() => handleNavClick(link.href)}
+                    >
+                      <span>{link.name}</span>
+                      {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           <div
             className="relative"
@@ -301,30 +339,6 @@ export default function Navbar() {
             )}
           </div>
 
-          <Link
-            href="/contact"
-            aria-current={isActive('/contact') ? 'page' : undefined}
-            aria-busy={pendingHref === '/contact'}
-            className={`${navLinkClass(isActive('/contact'), pendingHref === '/contact')} inline-flex items-center gap-2`}
-            onClick={() => handleNavClick('/contact')}
-          >
-            {t('nav.contact')}
-            {pendingHref === '/contact' && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
-          </Link>
-
-          {utilityLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              aria-current={isActive(link.href) ? 'page' : undefined}
-              aria-busy={pendingHref === link.href}
-              className={`${navLinkClass(isActive(link.href), pendingHref === link.href)} inline-flex items-center gap-2`}
-              onClick={() => handleNavClick(link.href)}
-            >
-              {link.name}
-              {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
-            </Link>
-          ))}
         </div>
 
         <div className="flex items-center gap-2">
@@ -332,7 +346,7 @@ export default function Navbar() {
           <Link
             href="/contact"
             aria-busy={pendingHref === '/contact'}
-            className={`hidden h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 min-[900px]:inline-flex ${pendingHref === '/contact' ? 'cursor-wait ring-1 ring-orange-200' : ''}`}
+            className={`hidden h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 min-[1120px]:inline-flex ${pendingHref === '/contact' ? 'cursor-wait ring-1 ring-orange-200' : ''}`}
             onClick={() => handleNavClick('/contact')}
           >
             {t('nav.cta')}
@@ -362,6 +376,7 @@ export default function Navbar() {
             </div>
 
             {[
+              { label: t('nav.siteInfo'), links: workLinks },
               { label: t('nav.stockTools'), links: stockLinks },
               { label: t('nav.tools'), links: toolkitLinks },
               { label: t('nav.gamesPractice'), links: playLinks },
