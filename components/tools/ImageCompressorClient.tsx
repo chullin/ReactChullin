@@ -12,6 +12,7 @@ import {
   ImagePlus,
   Presentation,
   RefreshCcw,
+  ShieldCheck,
   Trash2,
   UploadCloud,
   XCircle,
@@ -481,195 +482,88 @@ export default function ImageCompressorClient() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.1 }}
-            className="rounded-[2rem] border border-white/80 bg-white/75 p-5 shadow-[0_24px_80px_rgba(194,65,12,0.09)]"
+            className="rounded-[2rem] border border-white/80 bg-white/80 p-6 shadow-[0_24px_80px_rgba(194,65,12,0.09)]"
           >
-            <div
-              role="button"
-              tabIndex={0}
-              className={`flex min-h-[300px] cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed p-8 text-center transition-all ${
-                isDragging
-                  ? 'border-orange-500 bg-orange-50 shadow-inner'
-                  : 'border-orange-100 bg-slate-50/70 hover:border-orange-300 hover:bg-orange-50/45'
-              }`}
-              onClick={() => fileInputRef.current?.click()}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') fileInputRef.current?.click();
-              }}
-              onDragEnter={(event) => {
-                event.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragOver={(event) => {
-                event.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(event) => {
-                event.preventDefault();
-                setIsDragging(false);
-                addFiles(event.dataTransfer.files);
-              }}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(event) => {
-                  if (event.target.files) addFiles(event.target.files);
-                  event.currentTarget.value = '';
-                }}
-              />
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-600 text-white shadow-lg shadow-orange-700/20">
-                <UploadCloud size={30} />
+            <div className="flex min-h-[300px] flex-col justify-between gap-7 rounded-[1.5rem] bg-slate-50/80 p-7 ring-1 ring-orange-100/70">
+              <div className="space-y-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-700/20">
+                  <ShieldCheck size={28} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700">Local Processing</p>
+                  <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">壓縮全程在你的瀏覽器完成</h2>
+                </div>
+                <p className="text-sm font-semibold leading-relaxed text-slate-500">
+                  圖片會透過瀏覽器原生解碼、Canvas 重新取樣與重新編碼；PPTX 則在前端解壓縮簡報封包，只替換內嵌圖片後重新打包。整個流程不會上傳檔案，也不會在伺服器保存使用者的圖片、簡報或壓縮結果。
+                </p>
               </div>
-              <p className="text-2xl font-black tracking-tight text-slate-950">拖曳圖片到這裡</p>
-              <p className="mt-3 max-w-md text-sm font-semibold leading-relaxed text-slate-500">
-                或點選下方按鈕選擇一張或多張圖片。
-              </p>
-              <Button
-                className="mt-7 h-12 rounded-xl bg-[var(--theme-primary)] px-6 font-bold text-white shadow-lg shadow-orange-700/20"
-                startContent={<ImagePlus size={18} />}
-                onPress={() => fileInputRef.current?.click()}
-              >
-                選擇圖片
-              </Button>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {['不上傳伺服器', '不保存資料', '關閉頁面即釋放'].map((label) => (
+                  <div key={label} className="rounded-2xl border border-emerald-100 bg-white p-4">
+                    <CheckCircle2 size={18} className="text-emerald-600" />
+                    <p className="mt-3 text-sm font-black text-slate-800">{label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
       <section className="px-6 pb-24">
-        <div className="mx-auto mb-10 max-w-7xl">
-          <div className="grid gap-6 rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm lg:grid-cols-[0.85fr_1.15fr] lg:p-6">
-            <div
-              role="button"
-              tabIndex={0}
-              className={`flex min-h-[260px] cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed p-7 text-center transition-all ${
-                isPptxDragging
-                  ? 'border-orange-500 bg-orange-50 shadow-inner'
-                  : 'border-orange-100 bg-slate-50/70 hover:border-orange-300 hover:bg-orange-50/45'
-              }`}
-              onClick={() => pptxInputRef.current?.click()}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') pptxInputRef.current?.click();
+        <div className="mx-auto mb-8 max-w-7xl">
+          <div
+            role="button"
+            tabIndex={0}
+            className={`flex min-h-[280px] cursor-pointer flex-col items-center justify-center rounded-[2rem] border-2 border-dashed p-8 text-center shadow-sm transition-all ${
+              isDragging
+                ? 'border-orange-500 bg-orange-50 shadow-inner'
+                : 'border-orange-100 bg-slate-50/70 hover:border-orange-300 hover:bg-orange-50/45'
+            }`}
+            onClick={() => fileInputRef.current?.click()}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') fileInputRef.current?.click();
+            }}
+            onDragEnter={(event) => {
+              event.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(event) => {
+              event.preventDefault();
+              setIsDragging(false);
+              addFiles(event.dataTransfer.files);
+            }}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(event) => {
+                if (event.target.files) addFiles(event.target.files);
+                event.currentTarget.value = '';
               }}
-              onDragEnter={(event) => {
-                event.preventDefault();
-                setIsPptxDragging(true);
-              }}
-              onDragOver={(event) => {
-                event.preventDefault();
-                setIsPptxDragging(true);
-              }}
-              onDragLeave={() => setIsPptxDragging(false)}
-              onDrop={(event) => {
-                event.preventDefault();
-                setIsPptxDragging(false);
-                addPptxFile(event.dataTransfer.files);
-              }}
+            />
+            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-600 text-white shadow-lg shadow-orange-700/20">
+              <UploadCloud size={30} />
+            </div>
+            <p className="text-2xl font-black tracking-tight text-slate-950">拖曳圖片到這裡</p>
+            <p className="mt-3 max-w-md text-sm font-semibold leading-relaxed text-slate-500">
+              或點選下方按鈕選擇一張或多張圖片。上傳、壓縮設定與圖片清單都集中在這個工作區。
+            </p>
+            <Button
+              className="mt-7 h-12 rounded-xl bg-[var(--theme-primary)] px-6 font-bold text-white shadow-lg shadow-orange-700/20"
+              startContent={<ImagePlus size={18} />}
+              onPress={() => fileInputRef.current?.click()}
             >
-              <input
-                ref={pptxInputRef}
-                type="file"
-                accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-                className="hidden"
-                onChange={(event) => {
-                  if (event.target.files) addPptxFile(event.target.files);
-                  event.currentTarget.value = '';
-                }}
-              />
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-900/15">
-                <Presentation size={28} />
-              </div>
-              <p className="text-2xl font-black tracking-tight text-slate-950">PPTX 圖片壓縮</p>
-              <p className="mt-3 max-w-md text-sm font-semibold leading-relaxed text-slate-500">
-                拖曳或選擇 .pptx，系統會壓縮簡報內的 JPG、PNG、WebP 圖片，並重新輸出可下載的簡報。
-              </p>
-              <Button
-                className="mt-6 h-12 rounded-xl bg-slate-950 px-6 font-bold text-white shadow-lg shadow-slate-900/15"
-                startContent={<FileArchive size={18} />}
-                onPress={() => pptxInputRef.current?.click()}
-              >
-                選擇 PPTX
-              </Button>
-            </div>
-
-            <div className="flex flex-col justify-between gap-6 rounded-[1.5rem] bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] p-6 ring-1 ring-orange-100/70">
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Chip variant="flat" color={pptxStatus === 'error' ? 'danger' : pptxStatus === 'done' ? 'success' : 'primary'} className="font-bold">
-                    {pptxStatus === 'idle' && 'No PPTX'}
-                    {pptxStatus === 'ready' && 'Ready'}
-                    {pptxStatus === 'processing' && 'Processing'}
-                    {pptxStatus === 'done' && 'Done'}
-                    {pptxStatus === 'error' && 'Failed'}
-                  </Chip>
-                  <p className="min-w-0 truncate text-xl font-black tracking-tight text-slate-950">
-                    {pptxFile ? pptxFile.name : '尚未選擇簡報'}
-                  </p>
-                </div>
-                <p className="text-sm font-semibold leading-relaxed text-slate-500">
-                  PPTX 模式會保留簡報內部路徑與關聯，只替換同一個媒體檔案內容。JPEG 會套用品質設定，PNG 主要透過尺寸比例縮小。
-                </p>
-              </div>
-
-              {pptxStatus === 'processing' && (
-                <Progress
-                  aria-label="PPTX 壓縮中"
-                  isIndeterminate
-                  classNames={{ indicator: 'bg-orange-600' }}
-                />
-              )}
-
-              {pptxStats && (
-                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                  {[
-                    ['圖片數', `${pptxStats.imageCount}`],
-                    ['已壓縮', `${pptxStats.compressedCount}`],
-                    ['圖片節省', `${Math.max(0, Math.round((1 - pptxStats.compressedMediaSize / Math.max(1, pptxStats.originalMediaSize)) * 100))}%`],
-                    ['輸出大小', formatFileSize(pptxStats.outputSize)],
-                  ].map(([label, value]) => (
-                    <div key={label} className="rounded-2xl border border-orange-100 bg-white/80 p-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-orange-500">{label}</p>
-                      <p className="mt-2 text-lg font-black text-slate-950">{value}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {pptxError && <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{pptxError}</p>}
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                <Button
-                  className="h-12 rounded-xl bg-[var(--theme-primary)] font-bold text-white shadow-lg shadow-orange-700/20 sm:col-span-1"
-                  startContent={pptxStatus === 'processing' ? <RefreshCcw className="animate-spin" size={18} /> : <ImageDown size={18} />}
-                  isDisabled={!pptxFile || pptxStatus === 'processing'}
-                  onPress={runPptxCompression}
-                >
-                  {pptxStatus === 'processing' ? '壓縮中' : '壓縮 PPTX'}
-                </Button>
-                <Button
-                  variant="flat"
-                  className="h-12 rounded-xl bg-emerald-50 font-bold text-emerald-700"
-                  startContent={<Download size={18} />}
-                  isDisabled={!pptxResultUrl}
-                  onPress={downloadPptx}
-                >
-                  下載簡報
-                </Button>
-                <Button
-                  variant="flat"
-                  className="h-12 rounded-xl bg-slate-100 font-bold text-slate-700"
-                  startContent={<Trash2 size={18} />}
-                  isDisabled={!pptxFile || pptxStatus === 'processing'}
-                  onPress={clearPptx}
-                >
-                  清除
-                </Button>
-              </div>
-            </div>
+              選擇圖片
+            </Button>
           </div>
         </div>
 
@@ -909,6 +803,142 @@ export default function ImageCompressorClient() {
                 })}
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="mx-auto mt-14 max-w-7xl">
+          <div className="mb-5">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-slate-500">PPTX Tool</p>
+            <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-950">PPTX 圖片壓縮</h2>
+          </div>
+          <div className="grid gap-6 rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm lg:grid-cols-[0.85fr_1.15fr] lg:p-6">
+            <div
+              role="button"
+              tabIndex={0}
+              className={`flex min-h-[260px] cursor-pointer flex-col items-center justify-center rounded-[1.5rem] border-2 border-dashed p-7 text-center transition-all ${
+                isPptxDragging
+                  ? 'border-orange-500 bg-orange-50 shadow-inner'
+                  : 'border-orange-100 bg-slate-50/70 hover:border-orange-300 hover:bg-orange-50/45'
+              }`}
+              onClick={() => pptxInputRef.current?.click()}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') pptxInputRef.current?.click();
+              }}
+              onDragEnter={(event) => {
+                event.preventDefault();
+                setIsPptxDragging(true);
+              }}
+              onDragOver={(event) => {
+                event.preventDefault();
+                setIsPptxDragging(true);
+              }}
+              onDragLeave={() => setIsPptxDragging(false)}
+              onDrop={(event) => {
+                event.preventDefault();
+                setIsPptxDragging(false);
+                addPptxFile(event.dataTransfer.files);
+              }}
+            >
+              <input
+                ref={pptxInputRef}
+                type="file"
+                accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                className="hidden"
+                onChange={(event) => {
+                  if (event.target.files) addPptxFile(event.target.files);
+                  event.currentTarget.value = '';
+                }}
+              />
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-white shadow-lg shadow-slate-900/15">
+                <Presentation size={28} />
+              </div>
+              <p className="text-2xl font-black tracking-tight text-slate-950">拖曳 PPTX 到這裡</p>
+              <p className="mt-3 max-w-md text-sm font-semibold leading-relaxed text-slate-500">
+                拖曳或選擇 .pptx，系統會壓縮簡報內的 JPG、PNG、WebP 圖片，並重新輸出可下載的簡報。
+              </p>
+              <Button
+                className="mt-6 h-12 rounded-xl bg-slate-950 px-6 font-bold text-white shadow-lg shadow-slate-900/15"
+                startContent={<FileArchive size={18} />}
+                onPress={() => pptxInputRef.current?.click()}
+              >
+                選擇 PPTX
+              </Button>
+            </div>
+
+            <div className="flex flex-col justify-between gap-6 rounded-[1.5rem] bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_100%)] p-6 ring-1 ring-orange-100/70">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Chip variant="flat" color={pptxStatus === 'error' ? 'danger' : pptxStatus === 'done' ? 'success' : 'primary'} className="font-bold">
+                    {pptxStatus === 'idle' && 'No PPTX'}
+                    {pptxStatus === 'ready' && 'Ready'}
+                    {pptxStatus === 'processing' && 'Processing'}
+                    {pptxStatus === 'done' && 'Done'}
+                    {pptxStatus === 'error' && 'Failed'}
+                  </Chip>
+                  <p className="min-w-0 truncate text-xl font-black tracking-tight text-slate-950">
+                    {pptxFile ? pptxFile.name : '尚未選擇簡報'}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold leading-relaxed text-slate-500">
+                  PPTX 模式會保留簡報內部路徑與關聯，只替換同一個媒體檔案內容。JPEG 會套用品質設定，PNG 主要透過尺寸比例縮小。
+                </p>
+              </div>
+
+              {pptxStatus === 'processing' && (
+                <Progress
+                  aria-label="PPTX 壓縮中"
+                  isIndeterminate
+                  classNames={{ indicator: 'bg-orange-600' }}
+                />
+              )}
+
+              {pptxStats && (
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                  {[
+                    ['圖片數', `${pptxStats.imageCount}`],
+                    ['已壓縮', `${pptxStats.compressedCount}`],
+                    ['圖片節省', `${Math.max(0, Math.round((1 - pptxStats.compressedMediaSize / Math.max(1, pptxStats.originalMediaSize)) * 100))}%`],
+                    ['輸出大小', formatFileSize(pptxStats.outputSize)],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-2xl border border-orange-100 bg-white/80 p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.18em] text-orange-500">{label}</p>
+                      <p className="mt-2 text-lg font-black text-slate-950">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {pptxError && <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{pptxError}</p>}
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Button
+                  className="h-12 rounded-xl bg-[var(--theme-primary)] font-bold text-white shadow-lg shadow-orange-700/20 sm:col-span-1"
+                  startContent={pptxStatus === 'processing' ? <RefreshCcw className="animate-spin" size={18} /> : <ImageDown size={18} />}
+                  isDisabled={!pptxFile || pptxStatus === 'processing'}
+                  onPress={runPptxCompression}
+                >
+                  {pptxStatus === 'processing' ? '壓縮中' : '壓縮 PPTX'}
+                </Button>
+                <Button
+                  variant="flat"
+                  className="h-12 rounded-xl bg-emerald-50 font-bold text-emerald-700"
+                  startContent={<Download size={18} />}
+                  isDisabled={!pptxResultUrl}
+                  onPress={downloadPptx}
+                >
+                  下載簡報
+                </Button>
+                <Button
+                  variant="flat"
+                  className="h-12 rounded-xl bg-slate-100 font-bold text-slate-700"
+                  startContent={<Trash2 size={18} />}
+                  isDisabled={!pptxFile || pptxStatus === 'processing'}
+                  onPress={clearPptx}
+                >
+                  清除
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
