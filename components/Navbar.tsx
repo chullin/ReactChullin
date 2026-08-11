@@ -7,11 +7,17 @@ import { ChevronDown, LoaderCircle, Menu, X } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useI18n } from '@/lib/i18n/I18nProvider';
 
+type NavItem = {
+  name: string;
+  href: string;
+  color?: 'danger';
+};
+
 export default function Navbar() {
   const pathname = usePathname();
   const { t } = useI18n();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPlaygroundOpen, setIsPlaygroundOpen] = useState(false);
+  const [isToolkitOpen, setIsToolkitOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
@@ -22,31 +28,40 @@ export default function Navbar() {
   const isActive = (path: string) => pathname === path;
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
-  const playgroundLinks = [
+  const toolkitLinks: NavItem[] = [
     { name: t('nav.imageCompressor'), href: '/image-compressor' },
-    { name: '市場觀察清單', href: '/market-watch' },
-    { name: '股票健康度', href: '/stock-health' },
-    { name: '交易成本計算', href: '/trading-cost' },
+    { name: t('nav.marketWatch'), href: '/market-watch' },
+    { name: t('nav.stockHealth'), href: '/stock-health' },
+    { name: t('nav.tradingCost'), href: '/trading-cost' },
+    { name: t('nav.stockWatchlist'), href: '/tool/stock/stock-watchlist' },
+  ];
+
+  const playLinks: NavItem[] = [
     { name: t('nav.snake'), href: '/snake' },
     { name: t('nav.vocabQuiz'), href: '/vocab-quiz' },
     { name: t('nav.tetrisBattle'), href: '/tetris-battle', color: 'danger' as const },
+    { name: t('nav.flashcards'), href: '/flashcards' },
     { name: t('nav.demoHub'), href: '/demo' },
   ];
 
+  const dropdownLinks = [...toolkitLinks, ...playLinks];
+
   const mainLinks = [
     { name: t('nav.home'), href: '/' },
-    { name: t('nav.about'), href: '/about' },
-    { name: t('nav.projects'), href: '/projects' },
+    { name: t('nav.hub'), href: '/hub' },
     { name: t('nav.blog'), href: '/blog' },
+    { name: t('nav.projects'), href: '/projects' },
+    { name: t('nav.about'), href: '/about' },
   ];
   const compactLinks = [
     { name: t('nav.home'), href: '/' },
-    { name: t('nav.about'), href: '/about' },
+    { name: t('nav.hub'), href: '/hub' },
     { name: t('nav.blog'), href: '/blog' },
   ];
   const compactMoreLinks = [
     { name: t('nav.projects'), href: '/projects' },
-    ...playgroundLinks,
+    { name: t('nav.about'), href: '/about' },
+    ...dropdownLinks,
     { name: t('nav.memory'), href: '/memory' },
     { name: t('nav.contact'), href: '/contact' },
   ];
@@ -56,7 +71,7 @@ export default function Navbar() {
 
   const closeMenus = () => {
     setIsMenuOpen(false);
-    setIsPlaygroundOpen(false);
+    setIsToolkitOpen(false);
     setIsMoreOpen(false);
   };
 
@@ -178,36 +193,44 @@ export default function Navbar() {
 
           <div
             className="relative"
-            onMouseEnter={() => setIsPlaygroundOpen(true)}
-            onMouseLeave={() => setIsPlaygroundOpen(false)}
+            onMouseEnter={() => setIsToolkitOpen(true)}
+            onMouseLeave={() => setIsToolkitOpen(false)}
           >
             <button
               type="button"
-              className={`${navLinkClass(isGroupActive(playgroundLinks.map((link) => link.href)))} inline-flex items-center gap-2`}
+              className={`${navLinkClass(isGroupActive(dropdownLinks.map((link) => link.href)))} inline-flex items-center gap-2`}
               aria-haspopup="menu"
-              aria-expanded={isPlaygroundOpen}
-              onClick={() => setIsPlaygroundOpen((open) => !open)}
+              aria-expanded={isToolkitOpen}
+              onClick={() => setIsToolkitOpen((open) => !open)}
             >
-              {t('nav.playground')}
+              {t('nav.toolsAndPlay')}
               <ChevronDown size={14} />
             </button>
 
-            {isPlaygroundOpen && (
-              <div className="absolute left-0 top-full w-52 pt-2">
+            {isToolkitOpen && (
+              <div className="absolute left-0 top-full w-64 pt-2">
                 <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-xl">
-                  {playgroundLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      aria-busy={pendingHref === link.href}
-                      className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 ${
-                        isActive(link.href) || pendingHref === link.href ? 'text-[var(--theme-primary)]' : 'text-gray-600'
-                      } ${link.color === 'danger' ? 'hover:text-rose-600' : ''}`}
-                      onClick={() => handleNavClick(link.href)}
-                    >
-                      <span>{link.name}</span>
-                      {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
-                    </Link>
+                  {[
+                    [t('nav.tools'), toolkitLinks],
+                    [t('nav.gamesPractice'), playLinks],
+                  ].map(([label, links]) => (
+                    <div key={label as string} className="py-1">
+                      <p className="px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">{label as string}</p>
+                      {(links as typeof dropdownLinks).map((link) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          aria-busy={pendingHref === link.href}
+                          className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-gray-50 ${
+                            isActive(link.href) || pendingHref === link.href ? 'text-[var(--theme-primary)]' : 'text-gray-600'
+                          } ${link.color === 'danger' ? 'hover:text-rose-600' : ''}`}
+                          onClick={() => handleNavClick(link.href)}
+                        >
+                          <span>{link.name}</span>
+                          {pendingHref === link.href && <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />}
+                        </Link>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>
@@ -258,7 +281,7 @@ export default function Navbar() {
         <div className="border-t border-gray-100 bg-white px-6 py-4 shadow-lg sm:hidden">
         {[
           ...mainLinks,
-          ...playgroundLinks,
+          ...dropdownLinks,
           ...utilityLinks,
           { name: t('nav.contact'), href: '/contact' },
         ].map((item, index) => (

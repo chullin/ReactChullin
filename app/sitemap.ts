@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // 靜態頁面
   const routes = [
     '',
+    '/hub',
     '/about',
     '/blog',
     '/projects',
