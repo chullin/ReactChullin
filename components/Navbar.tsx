@@ -135,12 +135,12 @@ export default function Navbar() {
             className="shrink-0 whitespace-nowrap text-2xl font-bold tracking-tight text-gray-900 transition-opacity hover:opacity-80"
             onClick={() => handleNavClick('/')}
           >
-            <span className="min-[1120px]:hidden">Joseph</span>
-            <span className="hidden min-[1120px]:inline">Joseph Chen</span>
+            <span className="sm:hidden">Joseph</span>
+            <span className="hidden sm:inline">Joseph Chen</span>
           </Link>
         </div>
 
-        <div className="hidden min-w-0 items-center gap-1 sm:flex min-[1120px]:!hidden">
+        <div className="hidden min-w-0 items-center gap-1 sm:flex min-[1040px]:!hidden">
           {compactLinks.map((link) => (
             <Link
               key={link.href}
@@ -202,7 +202,7 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="hidden items-center gap-2 min-[1120px]:flex">
+        <div className="hidden items-center gap-2 min-[1040px]:flex">
           {mainLinks.map((link) => (
             <Link
               key={link.href}
@@ -346,7 +346,7 @@ export default function Navbar() {
           <Link
             href="/contact"
             aria-busy={pendingHref === '/contact'}
-            className={`hidden h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 min-[1120px]:inline-flex ${pendingHref === '/contact' ? 'cursor-wait ring-1 ring-orange-200' : ''}`}
+            className={`hidden h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-orange-50 px-4 text-sm font-bold text-[var(--theme-primary)] transition-colors hover:bg-orange-100 min-[1040px]:inline-flex ${pendingHref === '/contact' ? 'cursor-wait ring-1 ring-orange-200' : ''}`}
             onClick={() => handleNavClick('/contact')}
           >
             {t('nav.cta')}
