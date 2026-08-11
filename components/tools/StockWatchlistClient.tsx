@@ -1,6 +1,6 @@
 'use client';
 
-import type { DragEvent, FormEvent, PointerEvent as ReactPointerEvent, TouchEvent, MouseEvent as ReactMouseEvent } from 'react';
+import type { ChangeEvent, DragEvent, FormEvent, PointerEvent as ReactPointerEvent, TouchEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity,
@@ -17,9 +17,11 @@ import {
   Pin,
   Plus,
   RefreshCw,
+  Search,
   Table2,
   TrendingDown,
   TrendingUp,
+  Upload,
   X,
 } from 'lucide-react';
 import type { FxRateMode, MarketRange } from '@/lib/market/types';
@@ -73,6 +75,8 @@ type StockQuote = {
   exchange?: string;
   fiftyTwoWeekHigh?: number | null;
   fiftyTwoWeekLow?: number | null;
+  updatedAt?: string;
+  fromCache?: boolean;
   bankRate?: {
     bankBuy: number | null;
     bankSell: number | null;
@@ -120,10 +124,31 @@ type MarketQuoteResponse = {
     changePercent?: number | null;
     currency?: string;
     exchange?: string;
+    updatedAt?: string;
     chartData?: { timestamp: string; price: number | null }[];
     bankRate?: StockQuote['bankRate'];
     metalRate?: StockQuote['metalRate'];
   }>;
+};
+
+type MarketSearchResult = {
+  assetId: string;
+  assetType: 'tw_stock' | 'us_stock' | 'fx' | 'metal';
+  symbol: string;
+  exchange: string;
+  displayName: string;
+  currency: string;
+  description?: string;
+};
+
+type MarketSearchResponse = {
+  success?: boolean;
+  data?: MarketSearchResult[];
+};
+
+type QuoteCache = {
+  savedAt: string;
+  quotes: Record<string, StockQuote>;
 };
 
 type MarketTimeseriesResponse = {
@@ -191,6 +216,31 @@ type DetailsResponse = {
   data?: StockDetails;
 };
 
+type EtfHolding = {
+  symbol: string;
+  name: string;
+  shares: number;
+  marketValue: number;
+  weight: number;
+  shareChange: number | null;
+  weightChange: number | null;
+};
+
+type EtfHoldingsResponse = {
+  success?: boolean;
+  supported?: boolean;
+  message?: string;
+  error?: string;
+  data?: {
+    updatedAt: string;
+    previousDate: string | null;
+    holdings: EtfHolding[];
+    sourceName: string;
+    sourceUrl: string;
+    disclosureNote: string;
+  } | null;
+};
+
 type PeriodOption = {
   label: string;
   months?: number;
@@ -228,9 +278,11 @@ const LIST_DEFS_KEY = 'stock-watchlist-list-defs:v1';
 const ALERTS_KEY = 'stock-watchlist-alerts:v1';
 const ACTIVE_LIST_KEY = 'stock-watchlist-active-list:v1';
 const ACTIVE_MARKET_KEY = 'stock-watchlist-active-market:v1';
+const QUOTES_CACHE_KEY = 'stock-watchlist-quotes:v1';
 const FX_TOP_MIGRATION_KEY = 'stock-watchlist-fx-top-migrated:v1';
 const DEFAULT_STOCK_MIGRATION_KEY = 'stock-watchlist-default-stock-migrated:v1';
 const REFRESH_INTERVAL_MS = 30_000;
+const QUOTE_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60_000;
 const PRICE_PERIODS: PeriodOption[] = [
   { label: '1M', months: 1 },
   { label: '3M', months: 3 },
@@ -390,6 +442,28 @@ function detectMarkets(symbol: string): Market[] {
   return /^\d+[A-Z]?$/.test(symbol) ? ['台股'] : ['美股'];
 }
 
+function parseMarketLabel(value: string): Market | null {
+  const normalized = value.trim().toUpperCase();
+  if (['台股', 'TW', 'TAIWAN', '台灣'].includes(normalized)) return '台股';
+  if (['美股', 'US', 'USA', '美國'].includes(normalized)) return '美股';
+  if (['外匯', 'FX', 'FOREX'].includes(normalized)) return '外匯';
+  if (['貴金屬', 'METAL', 'PM', '黃金', '白金'].includes(normalized)) return '貴金屬';
+  return null;
+}
+
+function parseBulkRows(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .flatMap((line) => {
+      const cells = line.split(/\t|,/).map((cell) => cell.trim().replace(/^['"]|['"]$/g, ''));
+      const query = cells[0];
+      if (!query || /^(代號|股票代號|symbol|ticker|名稱|股票名稱)$/i.test(query)) return [];
+      return [{ query, market: parseMarketLabel(cells[1] || '') }];
+    });
+}
+
 function stockKey(symbol: string, market: Market) {
   return `${symbol}|${market}`;
 }
@@ -453,9 +527,30 @@ function marketQuoteToStockQuote(quote: NonNullable<MarketQuoteResponse['data']>
     sparkline: alignSparkline((quote.chartData || []).map((point) => point.price).filter(isFiniteNumber), quote.currentPrice),
     quoteType: quote.exchange === 'GCK99' ? 'METAL' : 'FX',
     exchange: quote.exchange,
+    updatedAt: quote.updatedAt,
     bankRate: quote.bankRate,
     metalRate: quote.metalRate,
   };
+}
+
+function formatQuoteTimestamp(value?: string | null) {
+  if (!value) return '尚未更新';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleString('zh-TW', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function marketFromAssetType(assetType: MarketSearchResult['assetType']): Market {
+  if (assetType === 'tw_stock') return '台股';
+  if (assetType === 'us_stock') return '美股';
+  if (assetType === 'fx') return '外匯';
+  return '貴金屬';
 }
 
 function summarizeMarketSeries(points: NonNullable<MarketTimeseriesResponse['data']>, currentPrice: number | null | undefined): MarketSeriesSummary {
@@ -2731,6 +2826,70 @@ function MetalDetailPanel({
   );
 }
 
+function EtfHoldingsPanel({ symbol }: { symbol: string }) {
+  const [payload, setPayload] = useState<EtfHoldingsResponse['data']>(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    fetch(`/api/market/etf-holdings?symbol=${encodeURIComponent(symbol)}`, { signal: controller.signal })
+      .then(async (response) => {
+        const result = await response.json() as EtfHoldingsResponse;
+        if (!response.ok) throw new Error(result.error || '持股資料載入失敗');
+        return result;
+      })
+      .then((result) => {
+        if (controller.signal.aborted) return;
+        setPayload(result.data || null);
+        setMessage(result.data ? null : result.message || '目前尚未支援此 ETF 的官方持股資料');
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : '持股資料載入失敗');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [symbol]);
+
+  if (loading) return <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm font-bold text-slate-400">ETF 官方持股載入中...</div>;
+  if (!payload) return <div className="rounded-2xl border border-orange-100 bg-orange-50 p-8 text-center text-sm font-bold text-orange-700">{message}</div>;
+
+  const changed = payload.holdings.filter((holding) => holding.shareChange !== null && holding.shareChange !== 0);
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-orange-100 bg-orange-50/60 p-4 text-xs font-bold leading-relaxed text-slate-600">
+        <p>官方資料日：{payload.updatedAt}{payload.previousDate ? `（變化與 ${payload.previousDate} 比較）` : ''}</p>
+        <p className="mt-1 font-medium">{payload.disclosureNote}</p>
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 px-4 py-3 text-sm font-black">持股明細</div>
+          <div className="max-h-[28rem] overflow-auto divide-y divide-slate-100">
+            {payload.holdings.map((holding) => (
+              <div key={holding.symbol} className="flex items-center justify-between gap-4 px-4 py-3">
+                <div><p className="text-sm font-black">{holding.symbol} <span className="font-medium text-slate-400">{holding.name}</span></p><p className="mt-1 text-xs font-medium text-slate-400">{holding.shares.toLocaleString('zh-TW')} 股</p></div>
+                <span className="text-sm font-black text-orange-700">{holding.weight.toFixed(2)}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 px-4 py-3 text-sm font-black">兩次揭露間持股變化</div>
+          {changed.length ? <div className="max-h-[28rem] overflow-auto divide-y divide-slate-100">{changed.map((holding) => {
+            const increased = (holding.shareChange || 0) > 0;
+            return <div key={holding.symbol} className="flex items-center justify-between gap-3 px-4 py-3"><p className="text-sm font-black">{holding.symbol} <span className="font-medium text-slate-400">{holding.name}</span></p><span className={`shrink-0 rounded-lg px-2 py-1 text-xs font-black ${increased ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{increased ? '增加' : '減少'} {Math.abs(holding.shareChange || 0).toLocaleString('zh-TW')} 股</span></div>;
+          })}</div> : <div className="p-10 text-center text-sm font-bold text-slate-400">兩次揭露間沒有股票股數變化</div>}
+        </div>
+      </div>
+      <a href={payload.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-black text-orange-700">資料來源：{payload.sourceName}<ExternalLink size={12} /></a>
+    </div>
+  );
+}
+
 function StockDetailModal({
   item,
   quote,
@@ -2751,12 +2910,14 @@ function StockDetailModal({
   const activeQuote = details?.quote || quote;
   const isFx = item.market === '外匯';
   const isMetal = item.market === '貴金屬';
+  const isEtf = activeQuote?.quoteType === 'ETF';
   const tone = priceTone(activeQuote?.changePercent, colorConvention);
   const accent = tone.accent;
   const chartTabs = [
     { value: 'price', label: '股價走勢', short: '走勢', icon: LineChart },
     { value: 'staff', label: '樂活五線譜', short: '五線譜', icon: Activity },
     { value: 'vrvp', label: 'VRVP', short: 'VRVP', icon: BarChart3 },
+    ...(isEtf ? [{ value: 'holdings', label: '持股明細', short: '持股', icon: Table2 }] : []),
   ];
   const activePeriod = mode === 'staff' ? staffPeriod : mode === 'vrvp' ? vrvpPeriod : pricePeriod;
   const activePeriodOptions = mode === 'staff' ? STAFF_PERIODS : mode === 'vrvp' ? VRVP_PERIODS : PRICE_PERIODS;
@@ -2920,6 +3081,10 @@ function StockDetailModal({
             })}
           </div>
 
+          {mode === 'holdings' ? (
+            <EtfHoldingsPanel symbol={item.symbol} />
+          ) : (
+          <>
           <div className="mb-4 grid gap-2 rounded-2xl border border-orange-100 bg-orange-50/60 p-3 text-xs font-bold text-slate-600 sm:grid-cols-3">
             <div className="flex items-start gap-2">
               <LineChart size={14} className="mt-0.5 shrink-0 text-orange-700" />
@@ -3025,6 +3190,8 @@ function StockDetailModal({
               <p className="mt-1">結合 K 線、量價分佈與 POC、VAH、VAL 線標。</p>
             </div>
           </section>
+          </>
+          )}
             </>
           )}
         </div>
@@ -3275,6 +3442,10 @@ function StockCard({
               </span>
             </div>
           ) : null}
+          <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
+            <span>資料時間 {formatQuoteTimestamp(quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt)}</span>
+            {quote.fromCache ? <span className="rounded bg-amber-50 px-1.5 py-0.5 text-amber-700">暫用快取</span> : null}
+          </div>
           <button
             type="button"
             onClick={(event) => {
@@ -3678,10 +3849,18 @@ export default function StockWatchlistClient() {
   const [quotes, setQuotes] = useState<Record<string, StockQuote>>({});
   const [viewMode, setViewMode] = useState<WatchlistViewMode>('cards');
   const [isAddPanelOpen, setIsAddPanelOpen] = useState(false);
+  const [isBulkPanelOpen, setIsBulkPanelOpen] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<MarketSearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [selectedMarketHint, setSelectedMarketHint] = useState<Market | null>(null);
   const [alerts, setAlerts] = useState<LocalPriceAlert[]>([]);
   const [alertItem, setAlertItem] = useState<StockItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [quotesLoading, setQuotesLoading] = useState(false);
+  const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
+  const [lastRefreshFailed, setLastRefreshFailed] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [selectedStock, setSelectedStock] = useState<StockItem | null>(null);
   const [draggedItemKey, setDraggedItemKey] = useState<string | null>(null);
@@ -3689,6 +3868,7 @@ export default function StockWatchlistClient() {
   const draggedItemKeyRef = useRef<string | null>(null);
   const missingSymbolCache = useRef(new Map<string, number>());
   const previousQuotesRef = useRef<Record<string, StockQuote>>({});
+  const refreshRequestRef = useRef(0);
 
   useEffect(() => {
     setMounted(true);
@@ -3699,6 +3879,7 @@ export default function StockWatchlistClient() {
       const storedAlerts = localStorage.getItem(ALERTS_KEY);
       const storedList = localStorage.getItem(ACTIVE_LIST_KEY);
       const storedMarket = localStorage.getItem(ACTIVE_MARKET_KEY);
+      const storedQuotes = localStorage.getItem(QUOTES_CACHE_KEY);
       const fxTopMigrated = localStorage.getItem(FX_TOP_MIGRATION_KEY) === 'true';
       const defaultStockMigrated = localStorage.getItem(DEFAULT_STOCK_MIGRATION_KEY) === 'true';
       const nextListDefs = storedListDefs ? normalizeWatchlistDefs(JSON.parse(storedListDefs)) : DEFAULT_LISTS;
@@ -3736,6 +3917,19 @@ export default function StockWatchlistClient() {
 
       if (storedAlerts) {
         setAlerts(JSON.parse(storedAlerts));
+      }
+
+      if (storedQuotes) {
+        const cache = JSON.parse(storedQuotes) as QuoteCache;
+        const savedAt = Date.parse(cache.savedAt);
+        if (cache.quotes && !Number.isNaN(savedAt) && Date.now() - savedAt <= QUOTE_CACHE_MAX_AGE_MS) {
+          const cachedQuotes = Object.fromEntries(
+            Object.entries(cache.quotes).map(([key, quote]) => [key, { ...quote, fromCache: true }]),
+          );
+          previousQuotesRef.current = cachedQuotes;
+          setQuotes(cachedQuotes);
+          setLastRefreshAt(cache.savedAt);
+        }
       }
     } catch {
       setWatchlists(createEmptyWatchlists());
@@ -3775,6 +3969,42 @@ export default function StockWatchlistClient() {
     localStorage.setItem(ACTIVE_MARKET_KEY, activeMarket);
   }, [mounted, activeMarket]);
 
+  useEffect(() => {
+    const query = symbol.trim();
+
+    if (!isAddPanelOpen || !query || selectedMarketHint) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const id = window.setTimeout(async () => {
+      setSearchLoading(true);
+      try {
+        const assetType = activeMarket === '外匯'
+              ? 'fx'
+              : activeMarket === '貴金屬'
+                ? 'metal'
+                : '';
+        const params = new URLSearchParams({ query });
+        if (assetType) params.set('assetType', assetType);
+        const response = await fetch(`/api/market/search?${params}`, { signal: controller.signal });
+        const payload = await response.json() as MarketSearchResponse;
+        if (!controller.signal.aborted) setSearchResults(payload.success ? payload.data || [] : []);
+      } catch {
+        if (!controller.signal.aborted) setSearchResults([]);
+      } finally {
+        if (!controller.signal.aborted) setSearchLoading(false);
+      }
+    }, 280);
+
+    return () => {
+      window.clearTimeout(id);
+      controller.abort();
+    };
+  }, [activeMarket, isAddPanelOpen, selectedMarketHint, symbol]);
+
   const activeItems = watchlists[activeListId] || [];
   const filteredItems = useMemo(() => {
     if (activeMarket === '全部') return activeItems;
@@ -3805,10 +4035,11 @@ export default function StockWatchlistClient() {
 
   const refreshQuotes = useCallback(async () => {
     if (!activeItems.length) {
-      setQuotes({});
+      setQuotesLoading(false);
       return;
     }
 
+    const requestId = ++refreshRequestRef.current;
     setQuotesLoading(true);
 
     try {
@@ -3868,7 +4099,14 @@ export default function StockWatchlistClient() {
         if (quote) acc[stockKey(item.symbol, item.market)] = quote;
         return acc;
       }, {});
-      const nextQuotes = { ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes };
+      const fetchedAt = new Date().toISOString();
+      const nextQuotes = Object.fromEntries(
+        Object.entries({ ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes }).map(([key, quote]) => [
+          key,
+          { ...quote, updatedAt: quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt || fetchedAt, fromCache: false },
+        ]),
+      );
+      if (requestId !== refreshRequestRef.current) return;
       const previousQuotes = previousQuotesRef.current;
       const now = new Date();
       const triggeredAlertIds = new Set<string>();
@@ -3916,8 +4154,33 @@ export default function StockWatchlistClient() {
         setMessage({ text: `已觸發 ${triggeredCount} 筆到價通知`, type: 'success' });
       }
 
-      previousQuotesRef.current = nextQuotes;
-      setQuotes(nextQuotes);
+      const activeKeys = new Set(activeItems.map((item) => stockKey(item.symbol, item.market)));
+      const missingKeys = [...activeKeys].filter((key) => !nextQuotes[key]);
+      let mergedQuotes: Record<string, StockQuote> = {};
+      setQuotes((current) => {
+        const staleCurrent = { ...current };
+        missingKeys.forEach((key) => {
+          if (staleCurrent[key]) staleCurrent[key] = { ...staleCurrent[key], fromCache: true };
+        });
+        mergedQuotes = { ...staleCurrent, ...nextQuotes };
+        previousQuotesRef.current = mergedQuotes;
+        return mergedQuotes;
+      });
+      const hasAnyActiveQuote = [...activeKeys].some((key) => Boolean(nextQuotes[key] || previousQuotes[key]));
+      if (!hasAnyActiveQuote) throw new Error('No quote data');
+
+      if (!Object.keys(nextQuotes).length) {
+        setLastRefreshFailed(true);
+        setQuotesLoading(false);
+        return;
+      }
+
+      setLastRefreshAt(fetchedAt);
+      setLastRefreshFailed(missingKeys.length > 0);
+      window.setTimeout(() => {
+        const cacheQuotes = previousQuotesRef.current;
+        localStorage.setItem(QUOTES_CACHE_KEY, JSON.stringify({ savedAt: fetchedAt, quotes: cacheQuotes } satisfies QuoteCache));
+      }, 0);
       setQuotesLoading(false);
 
       marketSeriesPromise
@@ -3944,7 +4207,14 @@ export default function StockWatchlistClient() {
           // Keep the fast quote result even if historical context is temporarily unavailable.
         });
     } catch {
-      setMessage({ text: '報價更新失敗，請稍後再試', type: 'error' });
+      if (requestId !== refreshRequestRef.current) return;
+      setLastRefreshFailed(true);
+      setQuotes((current) => Object.fromEntries(
+        Object.entries(current).map(([key, quote]) => [key, { ...quote, fromCache: true }]),
+      ));
+      if (!Object.keys(previousQuotesRef.current).length) {
+        setMessage({ text: '報價更新失敗，請稍後再試', type: 'error' });
+      }
     } finally {
       setQuotesLoading(false);
     }
@@ -3973,23 +4243,40 @@ export default function StockWatchlistClient() {
   }, [message]);
 
   const addStock = useCallback(async () => {
-    const normalized = normalizeSymbol(symbol);
+    let normalized = normalizeSymbol(symbol);
+    let marketHint = selectedMarketHint;
 
     if (!normalized) return;
-
-    const cachedUntil = missingSymbolCache.current.get(normalized) || 0;
-
-    if (cachedUntil > Date.now()) {
-      setMessage({ text: '查無此代號，請重試', type: 'error' });
-      return;
-    }
-
-    const markets = detectMarkets(normalized);
     const existingKeys = new Set((watchlists[activeListId] || []).map((item) => stockKey(item.symbol, item.market)));
 
     setLoading(true);
 
     try {
+      const isDirectSymbol = /^\d{4,6}[A-Z]?$/.test(normalized)
+        || /^[A-Z][A-Z0-9.-]{0,9}$/.test(normalized)
+        || /^[A-Z]{3}[/-][A-Z]{3}$/.test(normalized)
+        || ['GOLD', 'AU', '黃金', 'PLATINUM', 'PT', '白金'].includes(normalized);
+
+      if (!isDirectSymbol) {
+        let candidate: MarketSearchResult | undefined = searchResults[0];
+        if (!candidate) {
+          const params = new URLSearchParams({ query: symbol.trim() });
+          const payload = await fetchJson<MarketSearchResponse>(`/api/market/search?${params}`);
+          candidate = payload.data?.[0];
+        }
+        if (candidate) {
+          normalized = normalizeSymbol(candidate.symbol);
+          marketHint = marketFromAssetType(candidate.assetType);
+        }
+      }
+
+      const cachedUntil = missingSymbolCache.current.get(normalized) || 0;
+      if (cachedUntil > Date.now()) {
+        setMessage({ text: '查無此代號，請重試', type: 'error' });
+        return;
+      }
+
+      const markets = marketHint ? [marketHint] : detectMarkets(normalized);
       const resolved = (
         await Promise.all(
           markets.map(async (market) => {
@@ -4040,9 +4327,15 @@ export default function StockWatchlistClient() {
       }));
       setQuotes((current) => ({
         ...current,
-        [stockKey(storedSymbolForMarket(normalized, target.market), target.market)]: target.quote,
+        [stockKey(storedSymbolForMarket(normalized, target.market), target.market)]: {
+          ...target.quote,
+          updatedAt: target.quote.updatedAt || new Date().toISOString(),
+          fromCache: false,
+        },
       }));
       setSymbol('');
+      setSelectedMarketHint(null);
+      setSearchResults([]);
       setIsAddPanelOpen(false);
       setMessage({ text: '新增成功', type: 'success' });
     } catch {
@@ -4050,12 +4343,102 @@ export default function StockWatchlistClient() {
     } finally {
       setLoading(false);
     }
-  }, [activeListId, symbol, watchlists]);
+  }, [activeListId, activeMarket, searchResults, selectedMarketHint, symbol, watchlists]);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     addStock();
   };
+
+  const handleImportFile = useCallback(async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setBulkLoading(true);
+    try {
+      if (/\.xlsx$/i.test(file.name)) {
+        const { readSheet } = await import('read-excel-file/browser');
+        const rows = await readSheet(file);
+        setBulkText(rows.map((row) => row.map((cell) => String(cell ?? '')).join('\t')).join('\n'));
+      } else {
+        setBulkText(await file.text());
+      }
+      setMessage({ text: `已讀取 ${file.name}，確認後即可批次加入`, type: 'success' });
+    } catch {
+      setMessage({ text: '檔案解析失敗，請確認格式後重試', type: 'error' });
+    } finally {
+      setBulkLoading(false);
+      event.target.value = '';
+    }
+  }, []);
+
+  const importAssets = useCallback(async () => {
+    const rows = parseBulkRows(bulkText);
+    if (!rows.length) {
+      setMessage({ text: '沒有可匯入的資料', type: 'error' });
+      return;
+    }
+
+    setBulkLoading(true);
+    try {
+      const resolved: StockItem[] = [];
+
+      for (let offset = 0; offset < rows.length; offset += 6) {
+        const chunk = rows.slice(offset, offset + 6);
+        const results = await Promise.all(chunk.map(async (row) => {
+          const normalized = normalizeSymbol(row.query);
+          const directMarkets = row.market ? [row.market] : detectMarkets(normalized);
+          const isDirectSymbol = /^\d{4,6}[A-Z]?$/.test(normalized)
+            || /^[A-Z][A-Z0-9.-]{0,9}$/.test(normalized)
+            || /^[A-Z]{3}[/-][A-Z]{3}$/.test(normalized)
+            || ['GOLD', 'AU', '黃金', 'PLATINUM', 'PT', '白金'].includes(normalized);
+
+          if (isDirectSymbol && directMarkets.length) {
+            const market = directMarkets[0];
+            return { symbol: storedSymbolForMarket(normalized, market), market } as StockItem;
+          }
+
+          const params = new URLSearchParams({ query: row.query });
+          if (row.market === '台股') params.set('assetType', 'tw_stock');
+          if (row.market === '美股') params.set('assetType', 'us_stock');
+          if (row.market === '外匯') params.set('assetType', 'fx');
+          if (row.market === '貴金屬') params.set('assetType', 'metal');
+          const payload = await fetchJson<MarketSearchResponse>(`/api/market/search?${params}`);
+          const match = payload.data?.[0];
+          if (!match) return null;
+          const market = marketFromAssetType(match.assetType);
+          return { symbol: storedSymbolForMarket(match.symbol, market), market } as StockItem;
+        }));
+        resolved.push(...results.filter((item): item is StockItem => Boolean(item)));
+      }
+
+      const existingKeys = new Set((watchlists[activeListId] || []).map((item) => stockKey(item.symbol, item.market)));
+      const unique = resolved.filter((item) => {
+        const key = stockKey(item.symbol, item.market);
+        if (existingKeys.has(key)) return false;
+        existingKeys.add(key);
+        return true;
+      });
+
+      if (!unique.length) {
+        setMessage({ text: '沒有新增項目；資料可能已存在或無法辨識', type: 'error' });
+        return;
+      }
+
+      setWatchlists((current) => ({
+        ...current,
+        [activeListId]: [...(current[activeListId] || []), ...unique],
+      }));
+      setBulkText('');
+      setIsBulkPanelOpen(false);
+      setIsAddPanelOpen(false);
+      setMessage({ text: `已批次加入 ${unique.length} 個標的`, type: 'success' });
+    } catch {
+      setMessage({ text: '批次匯入失敗，請檢查名稱、代號與市場欄位', type: 'error' });
+    } finally {
+      setBulkLoading(false);
+    }
+  }, [activeListId, bulkText, watchlists]);
 
   const removeStock = useCallback(
     (targetSymbol: string, targetMarket: Market) => {
@@ -4232,6 +4615,13 @@ export default function StockWatchlistClient() {
           </div>
 
           <div className="flex flex-wrap gap-2">
+            <a
+              href="/market-explorer"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-white px-4 text-sm font-black text-orange-700 shadow-sm transition hover:bg-orange-50"
+            >
+              <Search size={17} />
+              市場探索
+            </a>
             <button
               type="button"
               onClick={refreshQuotes}
@@ -4244,13 +4634,18 @@ export default function StockWatchlistClient() {
             <button
               type="button"
               onClick={() => setIsAddPanelOpen((open) => !open)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)]"
+              className="hidden h-11 items-center justify-center gap-2 rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)] sm:inline-flex"
             >
               <Plus size={17} />
               新增標的
             </button>
           </div>
         </header>
+
+        <div className={`mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl px-3.5 py-2.5 text-xs font-bold ring-1 ${lastRefreshFailed ? 'bg-amber-50 text-amber-700 ring-amber-100' : 'bg-white text-slate-500 ring-slate-100'}`}>
+          <span>{quotesLoading ? '正在背景更新報價，畫面保留現有資料' : `資料更新時間：${formatQuoteTimestamp(lastRefreshAt)}`}</span>
+          {lastRefreshFailed && !quotesLoading ? <span>部分資料源暫時無回應，已保留上次資料</span> : null}
+        </div>
 
         {isAddPanelOpen ? (
         <form onSubmit={onSubmit} className="relative rounded-2xl border border-slate-200 bg-white/90 p-5 pt-11 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6 sm:pt-11">
@@ -4265,19 +4660,42 @@ export default function StockWatchlistClient() {
           <div className="flex flex-col gap-4 sm:flex-row">
             <div className="flex-1">
               <label htmlFor="stockSymbol" className="block text-sm font-bold leading-6 text-slate-700">
-                標的代號
+                股票名稱或代號
               </label>
               <div className="relative mt-2 flex items-center">
                 <input
                   id="stockSymbol"
                   value={symbol}
-                  onChange={(event) => setSymbol(event.target.value.toUpperCase())}
+                  onChange={(event) => {
+                    setSymbol(event.target.value);
+                    setSelectedMarketHint(null);
+                  }}
                   className="block h-[3.25rem] w-full appearance-none rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-left font-medium text-slate-700 placeholder:text-slate-400 focus:border-orange-200 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-orange-500/40 focus:ring-4 focus:ring-orange-100"
-                  placeholder="AAPL、2330、USD/TWD、GOLD、白金"
+                  placeholder="台積電、TSMC、AAPL、2330、USD/TWD"
                 />
               </div>
+              {searchLoading ? <p className="mt-2 text-xs font-bold text-orange-600">搜尋名稱與代號中...</p> : null}
+              {searchResults.length ? (
+                <div className="mt-2 max-h-52 overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                  {searchResults.slice(0, 6).map((result) => (
+                    <button
+                      key={result.assetId}
+                      type="button"
+                      onClick={() => {
+                        setSymbol(result.symbol);
+                        setSelectedMarketHint(marketFromAssetType(result.assetType));
+                        setSearchResults([]);
+                      }}
+                      className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-orange-50"
+                    >
+                      <span className="min-w-0"><span className="block truncate text-sm font-black text-slate-800">{result.displayName}</span><span className="block truncate text-xs font-medium text-slate-400">{result.description}</span></span>
+                      <span className="shrink-0 text-xs font-black text-orange-700">{result.symbol} · {marketFromAssetType(result.assetType)}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               <p className="mt-2 text-xs font-medium leading-relaxed text-slate-400">
-                外匯可輸入 USD/TWD、HKD/TWD、CNY/TWD；黃金可輸入 GOLD、AU、黃金；白金可輸入 PLATINUM、PT、白金。
+                可輸入台積電、TSMC 等中文／英文名稱後選取建議，也支援股票代號、外匯與貴金屬。
               </p>
             </div>
 
@@ -4314,6 +4732,31 @@ export default function StockWatchlistClient() {
             >
               {loading ? '新增中...' : '新增'}
             </button>
+          </div>
+
+          <div className="mt-4 border-t border-slate-100 pt-4">
+            <button type="button" onClick={() => setIsBulkPanelOpen((open) => !open)} className="inline-flex items-center gap-2 text-sm font-black text-orange-700">
+              <Upload size={16} />
+              從 Excel／CSV 批次匯入
+            </button>
+            {isBulkPanelOpen ? (
+              <div className="mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-orange-200 bg-white px-4 text-center hover:bg-orange-50/40">
+                    <Upload size={20} className="text-orange-700" />
+                    <span className="mt-2 text-sm font-black text-slate-700">選擇 Excel、CSV 或 TSV</span>
+                    <span className="mt-1 text-xs font-medium text-slate-400">支援 .xlsx、.csv、.tsv、.txt</span>
+                    <input type="file" accept=".xlsx,.csv,.tsv,.txt,text/csv" className="sr-only" onChange={handleImportFile} />
+                  </label>
+                  <div>
+                    <label htmlFor="bulkAssets" className="text-xs font-black text-slate-600">或直接貼上 Excel 欄位</label>
+                    <textarea id="bulkAssets" value={bulkText} onChange={(event) => setBulkText(event.target.value)} placeholder={'代號或名稱,市場\n2330,台股\nApple,美股'} className="mt-2 min-h-28 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium outline-none focus:border-orange-300 focus:ring-4 focus:ring-orange-100" />
+                  </div>
+                </div>
+                <p className="mt-3 text-xs font-medium leading-relaxed text-slate-400">格式：第一欄為代號或名稱，第二欄市場可填台股、美股、外匯、貴金屬；欄名可省略。</p>
+                <button type="button" onClick={importAssets} disabled={bulkLoading || !bulkText.trim()} className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-black text-white disabled:opacity-50">{bulkLoading ? '解析中...' : '批次加入清單'}</button>
+              </div>
+            ) : null}
           </div>
         </form>
         ) : null}
@@ -4414,24 +4857,22 @@ export default function StockWatchlistClient() {
         ) : null}
 
         {mounted && activeItems.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-dashed border-orange-200 bg-white/70 px-4 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
-            <p>「{activeListId}」尚未新增任何標的，先試試 AAPL、2330、USD/TWD、GOLD 或白金</p>
+          <button type="button" onClick={() => setIsAddPanelOpen(true)} className="mt-8 w-full rounded-2xl border border-dashed border-orange-200 bg-white/70 px-4 py-16 text-center text-sm font-bold text-slate-400 shadow-sm transition hover:border-orange-300 hover:bg-orange-50/50 sm:py-20">
+            <Plus size={28} className="mx-auto mb-3 text-orange-500" />
+            <p className="text-slate-600">「{activeListId}」還是空的，點這裡新增標的</p>
+            <p className="mt-2 text-xs font-medium text-slate-400">可搜尋名稱／代號，或上傳 Excel、CSV 批次匯入</p>
             {activeListId !== DEFAULT_LISTS[0].id ? (
-              <button
-                type="button"
-                onClick={() => setActiveListId(DEFAULT_LISTS[0].id)}
-                className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100 transition hover:bg-orange-100"
-              >
-                回到庫存
-              </button>
+              <span className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100">開始新增</span>
             ) : null}
-          </div>
+          </button>
         ) : null}
 
         {mounted && activeItems.length > 0 && filteredItems.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm sm:py-20">
-            此分類沒有標的
-          </div>
+          <button type="button" onClick={() => setIsAddPanelOpen(true)} className="w-full rounded-2xl border border-dashed border-orange-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm transition hover:border-orange-300 hover:bg-orange-50/50 sm:py-20">
+            <Plus size={28} className="mx-auto mb-3 text-orange-500" />
+            <span className="text-slate-600">「{activeMarket}」還沒有標的，點這裡新增</span>
+            <span className="mt-2 block text-xs font-medium text-slate-400">也可以上傳 Excel／CSV 一次加入多檔</span>
+          </button>
         ) : null}
 
         {displayItems.length ? (
@@ -4444,7 +4885,7 @@ export default function StockWatchlistClient() {
                     item={item}
                     quote={quotes[stockKey(item.symbol, item.market)]}
                     colorConvention={colorConvention}
-                    loading={quotesLoading}
+                    loading={quotesLoading || !mounted}
                     alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
                     isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
                     dropPlacement={dragTarget?.key === stockKey(item.symbol, item.market) ? dragTarget.placement : null}
@@ -4458,13 +4899,22 @@ export default function StockWatchlistClient() {
                     onDragEnd={handleCardDragEnd}
                   />
                 ))}
+                <button
+                  type="button"
+                  onClick={() => setIsAddPanelOpen(true)}
+                  className="flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed border-orange-200 bg-white/60 p-5 text-center text-sm font-black text-orange-700 transition hover:-translate-y-1 hover:border-orange-300 hover:bg-orange-50/60"
+                >
+                  <Plus size={24} />
+                  <span className="mt-2">新增標的</span>
+                  <span className="mt-1 text-xs font-medium text-slate-400">搜尋或批次匯入</span>
+                </button>
               </div>
             ) : (
               <WatchlistTable
                 items={displayItems}
                 quotes={quotes}
                 colorConvention={colorConvention}
-                quotesLoading={quotesLoading}
+                quotesLoading={quotesLoading || !mounted}
                 alertsByKey={alertsByKey}
                 draggedItemKey={draggedItemKey}
                 dragTarget={dragTarget}

@@ -13,6 +13,8 @@ export const dynamic = 'force-dynamic';
 
 const supportedAssetTypes: MarketAssetType[] = ['tw_stock', 'us_stock', 'fx', 'metal'];
 const YAHOO_SEARCH_URL = 'https://query1.finance.yahoo.com/v1/finance/search';
+const TWSE_COMPANIES_URL = 'https://openapi.twse.com.tw/v1/opendata/t187ap03_L';
+const TPEX_COMPANIES_URL = 'https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap03_O';
 
 type YahooSearchQuote = {
   symbol?: string;
@@ -26,6 +28,74 @@ type YahooSearchQuote = {
 type YahooSearchResponse = {
   quotes?: YahooSearchQuote[];
 };
+
+type TwCompany = {
+  symbol: string;
+  name: string;
+  fullName: string;
+  englishName: string;
+  exchange: string;
+};
+
+function normalizedSearchText(value: string) {
+  return value.trim().toLocaleLowerCase('zh-TW').replace(/[\s._-]+/g, '');
+}
+
+async function fetchTaiwanCompanies() {
+  try {
+    const [listedResponse, otcResponse] = await Promise.all([
+      fetch(TWSE_COMPANIES_URL, { next: { revalidate: 86_400 } }),
+      fetch(TPEX_COMPANIES_URL, { next: { revalidate: 86_400 } }),
+    ]);
+    const [listed, otc] = await Promise.all([
+      listedResponse.ok ? listedResponse.json() as Promise<Record<string, string>[]> : Promise.resolve([]),
+      otcResponse.ok ? otcResponse.json() as Promise<Record<string, string>[]> : Promise.resolve([]),
+    ]);
+
+    return [
+      ...listed.map<TwCompany>((company) => ({
+        symbol: company['公司代號']?.trim(),
+        name: company['公司簡稱']?.trim(),
+        fullName: company['公司名稱']?.trim(),
+        englishName: company['英文簡稱']?.trim(),
+        exchange: '上市',
+      })),
+      ...otc.map<TwCompany>((company) => ({
+        symbol: company.SecuritiesCompanyCode?.trim(),
+        name: company.CompanyAbbreviation?.trim(),
+        fullName: company.CompanyName?.trim(),
+        englishName: company.Symbol?.trim(),
+        exchange: '上櫃',
+      })),
+    ].filter((company) => company.symbol && company.name);
+  } catch {
+    return [];
+  }
+}
+
+async function searchTaiwanCompanies(query: string) {
+  const needle = normalizedSearchText(query);
+  if (!needle) return [];
+  const companies = await fetchTaiwanCompanies();
+
+  return companies
+    .flatMap((company) => {
+      const fields = [company.symbol, company.name, company.fullName, company.englishName].map(normalizedSearchText);
+      const exactIndex = fields.findIndex((field) => field === needle);
+      const prefixIndex = fields.findIndex((field) => field.startsWith(needle));
+      const includesIndex = fields.findIndex((field) => field.includes(needle));
+      if (includesIndex < 0) return [];
+      const score = exactIndex >= 0 ? 0 : prefixIndex >= 0 ? 1 : 2;
+      return [{ company, score }];
+    })
+    .sort((first, second) => first.score - second.score || first.company.symbol.localeCompare(second.company.symbol))
+    .slice(0, 8)
+    .map(({ company }) => ({
+      ...stockSearchResult(company.symbol, '台股'),
+      displayName: company.name,
+      description: `${company.exchange} · ${company.fullName}${company.englishName ? ` · ${company.englishName}` : ''}`,
+    }));
+}
 
 function parseAssetType(value: string | null): MarketAssetType | undefined {
   if (!value) return undefined;
@@ -138,13 +208,17 @@ export async function GET(request: NextRequest) {
   }
 
   if (!assetType || assetType === 'tw_stock' || assetType === 'us_stock') {
+    if (!assetType || assetType === 'tw_stock') {
+      results.push(...await searchTaiwanCompanies(query));
+    }
     results.push(...await searchYahoo(query, assetType));
 
     const normalizedSymbol = normalizeStockSymbol(query);
-    const explicitMarket = assetType ? assetTypeToStockMarket(assetType) : null;
-    const markets = explicitMarket ? [explicitMarket] : detectStockMarkets(normalizedSymbol);
-
-    results.push(...markets.map((market) => stockSearchResult(normalizedSymbol, market)));
+    if (/^[A-Z0-9.-]+$/i.test(normalizedSymbol)) {
+      const explicitMarket = assetType ? assetTypeToStockMarket(assetType) : null;
+      const markets = explicitMarket ? [explicitMarket] : detectStockMarkets(normalizedSymbol);
+      results.push(...markets.map((market) => stockSearchResult(normalizedSymbol, market)));
+    }
   }
 
   return NextResponse.json({ success: true, data: uniqueResults(results) });

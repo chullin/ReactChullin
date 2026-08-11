@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchYahooStockQuote } from '@/lib/market/providers/yahooStockFallback';
 
 const STOCK_API_BASE = 'https://www.jacksu.tw/api/stock/quote';
 const STOCK_REFERER = 'https://www.jacksu.tw/tool/stock/stock-watchlist';
@@ -38,12 +39,19 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const payload = await upstream.json();
-    return NextResponse.json(payload, { status: upstream.status });
+    if (upstream.ok) {
+      const payload = await upstream.json();
+      if (payload?.success && payload?.data) return NextResponse.json(payload);
+    }
   } catch {
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch stock quote' },
-      { status: 502 },
-    );
+    // Fall back to Yahoo below.
   }
+
+  const fallback = await fetchYahooStockQuote(symbol, market as '美股' | '台股');
+  if (fallback) return NextResponse.json({ success: true, data: fallback });
+
+  return NextResponse.json(
+    { success: false, error: 'Failed to fetch stock quote' },
+    { status: 502 },
+  );
 }

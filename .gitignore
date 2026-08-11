@@ -9,6 +9,7 @@ debug_*.txt
 scratch/
 .vscode/
 .agents/
+.firecrawl/
 app/seg
 *.local
 .venv/
