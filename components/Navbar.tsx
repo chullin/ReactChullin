@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, LoaderCircle, Menu, X } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useI18n } from '@/lib/i18n/I18nProvider';
@@ -22,6 +23,7 @@ export default function Navbar() {
   const [isStockOpen, setIsStockOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setPendingHref(null);
@@ -30,16 +32,67 @@ export default function Navbar() {
   useEffect(() => {
     if (!isMenuOpen) return;
 
-    const { body, documentElement } = document;
-    const originalBodyOverflow = body.style.overflow;
-    const originalDocumentOverflow = documentElement.style.overflow;
+    let previousTouchY: number | null = null;
 
-    body.style.overflow = 'hidden';
-    documentElement.style.overflow = 'hidden';
+    const handleTouchStart = (event: TouchEvent) => {
+      previousTouchY = event.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      const menu = mobileMenuRef.current;
+      const currentTouchY = event.touches[0]?.clientY;
+
+      if (!menu || !(event.target instanceof Node) || !menu.contains(event.target)) {
+        event.preventDefault();
+        return;
+      }
+
+      if (currentTouchY === undefined || previousTouchY === null) return;
+
+      const movingDown = currentTouchY > previousTouchY;
+      const movingUp = currentTouchY < previousTouchY;
+      const atTop = menu.scrollTop <= 0;
+      const atBottom = menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 1;
+
+      previousTouchY = currentTouchY;
+
+      if ((atTop && movingDown) || (atBottom && movingUp)) {
+        event.preventDefault();
+      }
+    };
+
+    const clearTouchPosition = () => {
+      previousTouchY = null;
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      const menu = mobileMenuRef.current;
+
+      if (!menu || !(event.target instanceof Node) || !menu.contains(event.target)) {
+        event.preventDefault();
+        return;
+      }
+
+      const atTop = menu.scrollTop <= 0;
+      const atBottom = menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 1;
+
+      if ((atTop && event.deltaY < 0) || (atBottom && event.deltaY > 0)) {
+        event.preventDefault();
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', clearTouchPosition, { passive: true });
+    document.addEventListener('touchcancel', clearTouchPosition, { passive: true });
+    document.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
-      body.style.overflow = originalBodyOverflow;
-      documentElement.style.overflow = originalDocumentOverflow;
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', clearTouchPosition);
+      document.removeEventListener('touchcancel', clearTouchPosition);
+      document.removeEventListener('wheel', handleWheel);
     };
   }, [isMenuOpen]);
 
@@ -371,8 +424,11 @@ export default function Navbar() {
         </div>
       </div>
 
-      {isMenuOpen && (
-        <div className="absolute inset-x-0 top-full h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-gray-100 bg-white px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg [touch-action:pan-y] sm:hidden">
+      {isMenuOpen && createPortal(
+        <div
+          ref={mobileMenuRef}
+          className="fixed inset-x-0 bottom-0 top-16 z-30 overflow-y-auto overscroll-contain border-t border-gray-100 bg-white px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg [touch-action:pan-y] sm:hidden"
+        >
           <div className="space-y-3">
             <div>
               {mainLinks.map((item) => (
@@ -417,7 +473,8 @@ export default function Navbar() {
               </div>
             ))}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </nav>
   );
