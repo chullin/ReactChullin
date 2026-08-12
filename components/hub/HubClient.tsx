@@ -17,7 +17,6 @@ import {
   Puzzle,
   Search,
   Sparkles,
-  Star,
   WalletCards,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -60,7 +59,6 @@ const hubSections = [
     items: [
       { href: '/market-watch', icon: <LineChart size={18} /> },
       { href: '/stock-health', icon: <CandlestickChart size={18} /> },
-      { href: '/tool/stock/stock-watchlist', icon: <Star size={18} /> },
       { href: '/trading-cost', icon: <Calculator size={18} /> },
     ],
   },

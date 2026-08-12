@@ -92,9 +92,8 @@ export const translations = {
           title: '投資與市場',
           description: '把股市觀察、健康度分析與交易成本放在同一區。',
           items: [
-            { title: '市場觀察清單', description: '追蹤市場價格、新聞與相關分析。', meta: '看盤入口' },
+            { title: '市場觀察清單', description: '管理台股、美股與其他市場標的，追蹤價格、新聞與分析。', meta: '看盤與自選股' },
             { title: '股票健康度', description: '用多個指標快速看股票狀態。', meta: '個股分析' },
-            { title: '自選股看盤', description: '管理自己關注的台股與美股清單。', meta: 'Watchlist' },
             { title: '交易成本計算', description: '估算交易手續費、稅與損益平衡。', meta: '計算器' },
           ],
         },
@@ -436,9 +435,8 @@ export const translations = {
           title: 'Investing & Markets',
           description: 'Market tracking, stock health checks, watchlists, and trading cost tools.',
           items: [
-            { title: 'Market Watch', description: 'Track market prices, news, and related analysis.', meta: 'Market Entry' },
+            { title: 'Market Watch', description: 'Manage Taiwan, US, and other market symbols with prices, news, and analysis.', meta: 'Market & Watchlist' },
             { title: 'Stock Health', description: 'Read a stock through several quick health indicators.', meta: 'Stock Analysis' },
-            { title: 'Stock Watchlist', description: 'Manage Taiwan and US stocks you care about.', meta: 'Watchlist' },
             { title: 'Trading Cost Calculator', description: 'Estimate fees, tax, and break-even points.', meta: 'Calculator' },
           ],
         },

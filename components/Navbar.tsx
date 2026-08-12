@@ -110,7 +110,6 @@ export default function Navbar() {
   const stockLinks: NavItem[] = [
     { name: t('nav.marketWatch'), href: '/market-watch' },
     { name: t('nav.stockHealth'), href: '/stock-health' },
-    { name: t('nav.stockWatchlist'), href: '/tool/stock/stock-watchlist' },
     { name: t('nav.tradingCost'), href: '/trading-cost' },
   ];
 
