@@ -207,6 +207,7 @@ type StockDetails = {
   quote?: StockQuote | null;
   news?: { title: string; url: string; pubDate?: string; source?: string }[];
   history?: HistoryPoint[];
+  historyYears?: number;
 };
 
 type StockNewsItem = NonNullable<StockDetails['news']>[number];
@@ -907,8 +908,8 @@ function currencyDisplayName(code: string) {
   return names[code] || code;
 }
 
-function periodStart(period: { months?: number; ytd?: boolean }) {
-  const date = new Date();
+function periodStart(period: { months?: number; ytd?: boolean }, endDate = new Date()) {
+  const date = new Date(endDate);
 
   if (period.ytd) {
     return new Date(date.getFullYear(), 0, 1);
@@ -919,8 +920,17 @@ function periodStart(period: { months?: number; ytd?: boolean }) {
 }
 
 function filterHistory(points: HistoryPoint[] = [], period: { months?: number; ytd?: boolean }) {
-  const start = periodStart(period).getTime();
+  const latestTimestamp = points.reduce((latest, point) => {
+    const timestamp = Date.parse(point.date);
+    return Number.isNaN(timestamp) ? latest : Math.max(latest, timestamp);
+  }, 0);
+  const start = periodStart(period, latestTimestamp ? new Date(latestTimestamp) : new Date()).getTime();
   return points.filter((point) => Date.parse(point.date) >= start && isFiniteNumber(point.close));
+}
+
+function requestedHistoryYears(period: PeriodOption) {
+  if (period.ytd) return 1;
+  return Math.max(1, Math.ceil((period.months || 12) / 12));
 }
 
 function getCloseValues(points: HistoryPoint[]) {
@@ -2921,6 +2931,7 @@ function StockDetailModal({
   ];
   const activePeriod = mode === 'staff' ? staffPeriod : mode === 'vrvp' ? vrvpPeriod : pricePeriod;
   const activePeriodOptions = mode === 'staff' ? STAFF_PERIODS : mode === 'vrvp' ? VRVP_PERIODS : PRICE_PERIODS;
+  const historyYears = requestedHistoryYears(activePeriod);
   const chartPoints = useMemo(
     () => filterHistory(details?.history || [], activePeriod),
     [activePeriod, details?.history],
@@ -2973,7 +2984,7 @@ function StockDetailModal({
 
         const name = quote?.longName || quote?.name || item.symbol;
         const payload = await fetchJson<DetailsResponse>(
-          `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&name=${encodeURIComponent(name)}`,
+          `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&name=${encodeURIComponent(name)}&years=${historyYears}`,
         );
 
         if (!cancelled) {
@@ -2990,7 +3001,7 @@ function StockDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [item.market, item.symbol, quote, quote?.longName, quote?.name]);
+  }, [historyYears, item.market, item.symbol, quote, quote?.longName, quote?.name]);
 
   useEffect(() => {
     const { body, documentElement } = document;

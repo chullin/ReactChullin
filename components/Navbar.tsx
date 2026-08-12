@@ -27,6 +27,22 @@ export default function Navbar() {
     setPendingHref(null);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const { body, documentElement } = document;
+    const originalBodyOverflow = body.style.overflow;
+    const originalDocumentOverflow = documentElement.style.overflow;
+
+    body.style.overflow = 'hidden';
+    documentElement.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = originalBodyOverflow;
+      documentElement.style.overflow = originalDocumentOverflow;
+    };
+  }, [isMenuOpen]);
+
   const isActive = (path: string) => pathname === path;
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
@@ -356,7 +372,7 @@ export default function Navbar() {
       </div>
 
       {isMenuOpen && (
-        <div className="border-t border-gray-100 bg-white px-6 py-4 shadow-lg sm:hidden">
+        <div className="absolute inset-x-0 top-full h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-gray-100 bg-white px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg [touch-action:pan-y] sm:hidden">
           <div className="space-y-3">
             <div>
               {mainLinks.map((item) => (
