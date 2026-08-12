@@ -15,4 +15,3 @@ export function chunkUint8Array(bytes: Uint8Array, chunkSize: number): Uint8Arra
 
   return chunks;
 }
-

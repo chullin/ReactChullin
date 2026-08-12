@@ -47,4 +47,3 @@ export function idbTransactionDone(transaction: IDBTransaction): Promise<void> {
     transaction.onabort = () => reject(transaction.error);
   });
 }
-

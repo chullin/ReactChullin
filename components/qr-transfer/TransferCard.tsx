@@ -44,4 +44,3 @@ export default function TransferCard({ transfer, onDelete }: TransferCardProps) 
     </article>
   );
 }
-

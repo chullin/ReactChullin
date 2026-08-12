@@ -60,4 +60,3 @@ export async function getStoredBytes(transferId: string): Promise<number> {
   const chunks = await getChunksForTransfer(transferId);
   return chunks.reduce((total, chunk) => total + chunk.data.byteLength, 0);
 }
-

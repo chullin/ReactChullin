@@ -12,4 +12,3 @@ export async function createQrDataUrl(payload: string): Promise<string> {
     },
   });
 }
-

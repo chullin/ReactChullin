@@ -53,4 +53,3 @@ export default function FileDropZone({ accept, label = 'Drag a file here or clic
     </button>
   );
 }
-

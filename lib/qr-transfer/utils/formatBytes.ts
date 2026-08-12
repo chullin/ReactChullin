@@ -21,4 +21,3 @@ export function formatDuration(seconds: number): string {
 
   return minutes > 0 ? `${minutes}m ${remainingSeconds}s` : `${remainingSeconds}s`;
 }
-

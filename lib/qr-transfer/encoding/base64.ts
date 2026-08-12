@@ -25,4 +25,3 @@ export const base64UrlEncoder: ChunkEncoder = {
     return bytes;
   },
 };
-

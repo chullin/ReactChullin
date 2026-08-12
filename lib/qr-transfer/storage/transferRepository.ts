@@ -75,4 +75,3 @@ export async function deleteTransfer(id: string): Promise<void> {
 
   await idbTransactionDone(transaction);
 }
-

@@ -3,4 +3,3 @@ export interface ChunkEncoder {
   encode(data: Uint8Array): string;
   decode(payload: string): Uint8Array;
 }
-

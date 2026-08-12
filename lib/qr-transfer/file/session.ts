@@ -30,4 +30,3 @@ export async function readTransferSession(file: File): Promise<TransferSession> 
     ...parsed,
   } as TransferSession;
 }
-

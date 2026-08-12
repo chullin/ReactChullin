@@ -7,4 +7,3 @@ export function rebuildBlobFromChunks(chunks: StoredChunk[], mimeType: string): 
     { type: mimeType || 'application/octet-stream' },
   );
 }
-

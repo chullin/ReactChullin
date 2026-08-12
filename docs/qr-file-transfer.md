@@ -53,4 +53,3 @@ The Sender can export a small `.qrtransfer.json` file. This file does not contai
 ## Integrity
 
 The Sender calculates SHA-256 using Web Crypto. The Receiver recalculates SHA-256 after rebuilding the Blob. The file is offered for download only after verification succeeds.
-

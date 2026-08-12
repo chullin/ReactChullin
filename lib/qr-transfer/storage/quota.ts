@@ -24,4 +24,3 @@ export async function requestPersistentStorage(): Promise<boolean | undefined> {
 
   return navigator.storage.persist();
 }
-

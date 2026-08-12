@@ -7,4 +7,3 @@ export const QR_CONFIG = {
 };
 
 export const QR_PROTOCOL_VERSION = 1;
-

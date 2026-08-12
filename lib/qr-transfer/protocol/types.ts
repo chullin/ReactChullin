@@ -58,4 +58,3 @@ export interface StorageEstimateInfo {
   quota?: number;
   persisted?: boolean;
 }
-

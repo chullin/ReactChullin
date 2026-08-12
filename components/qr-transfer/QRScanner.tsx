@@ -172,4 +172,3 @@ export default function QRScanner({ active, onScan, onStatus }: QRScannerProps) 
     </div>
   );
 }
-

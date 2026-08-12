@@ -12,4 +12,3 @@ export const metadata: Metadata = {
 export default function QrTransferPage() {
   return <QrTransferHomeClient />;
 }
-

@@ -34,4 +34,3 @@ export default function TransferProgress({ receivedChunks, totalChunks, storedBy
     </div>
   );
 }
-

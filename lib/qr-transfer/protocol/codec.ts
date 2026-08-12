@@ -49,4 +49,3 @@ export function decodeQrTransferMessage(raw: string): QrTransferMessage | null {
     return null;
   }
 }
-
