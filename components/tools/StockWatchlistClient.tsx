@@ -2864,13 +2864,20 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
     return () => controller.abort();
   }, [symbol]);
 
-  if (loading) return <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm font-bold text-slate-400">ETF 官方持股載入中...</div>;
-  if (!payload) return <div className="rounded-2xl border border-orange-100 bg-orange-50 p-8 text-center text-sm font-bold text-orange-700">{message}</div>;
-
-  const changed = payload.holdings.filter((holding) => holding.shareChange !== null && holding.shareChange !== 0);
+  const changed = payload?.holdings.filter((holding) => holding.shareChange !== null && holding.shareChange !== 0) || [];
 
   return (
-    <div className="space-y-4">
+    <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <div className="flex items-center gap-2 border-b border-slate-100 bg-orange-50/60 px-4 py-3 text-sm font-black text-slate-700">
+        <Table2 size={16} className="text-orange-700" />
+        ETF 持股明細
+      </div>
+      {loading ? (
+        <div className="p-8 text-center text-sm font-bold text-slate-400">ETF 官方持股載入中...</div>
+      ) : !payload ? (
+        <div className="bg-orange-50/50 p-8 text-center text-sm font-bold text-orange-700">{message}</div>
+      ) : (
+      <div className="space-y-4 p-4">
       <div className="rounded-2xl border border-orange-100 bg-orange-50/60 p-4 text-xs font-bold leading-relaxed text-slate-600">
         <p>官方資料日：{payload.updatedAt}{payload.previousDate ? `（變化與 ${payload.previousDate} 比較）` : ''}</p>
         <p className="mt-1 font-medium">{payload.disclosureNote}</p>
@@ -2896,7 +2903,9 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
         </div>
       </div>
       <a href={payload.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-black text-orange-700">資料來源：{payload.sourceName}<ExternalLink size={12} /></a>
-    </div>
+      </div>
+      )}
+    </section>
   );
 }
 
@@ -2927,7 +2936,6 @@ function StockDetailModal({
     { value: 'price', label: '股價走勢', short: '走勢', icon: LineChart },
     { value: 'staff', label: '樂活五線譜', short: '五線譜', icon: Activity },
     { value: 'vrvp', label: 'VRVP', short: 'VRVP', icon: BarChart3 },
-    ...(isEtf ? [{ value: 'holdings', label: '持股明細', short: '持股', icon: Table2 }] : []),
   ];
   const activePeriod = mode === 'staff' ? staffPeriod : mode === 'vrvp' ? vrvpPeriod : pricePeriod;
   const activePeriodOptions = mode === 'staff' ? STAFF_PERIODS : mode === 'vrvp' ? VRVP_PERIODS : PRICE_PERIODS;
@@ -3092,10 +3100,6 @@ function StockDetailModal({
             })}
           </div>
 
-          {mode === 'holdings' ? (
-            <EtfHoldingsPanel symbol={item.symbol} />
-          ) : (
-          <>
           <div className="mb-4 grid gap-2 rounded-2xl border border-orange-100 bg-orange-50/60 p-3 text-xs font-bold text-slate-600 sm:grid-cols-3">
             <div className="flex items-start gap-2">
               <LineChart size={14} className="mt-0.5 shrink-0 text-orange-700" />
@@ -3187,6 +3191,8 @@ function StockDetailModal({
             </div>
           </section>
 
+          {isEtf ? <EtfHoldingsPanel symbol={item.symbol} /> : null}
+
           <section className="mt-5 grid gap-3 rounded-2xl border border-orange-100 bg-orange-50/50 p-4 text-xs font-bold leading-relaxed text-slate-500 sm:grid-cols-3">
             <div>
               <p className="text-orange-700">股價走勢</p>
@@ -3201,8 +3207,6 @@ function StockDetailModal({
               <p className="mt-1">結合 K 線、量價分佈與 POC、VAH、VAL 線標。</p>
             </div>
           </section>
-          </>
-          )}
             </>
           )}
         </div>
@@ -3880,6 +3884,27 @@ export default function StockWatchlistClient() {
   const missingSymbolCache = useRef(new Map<string, number>());
   const previousQuotesRef = useRef<Record<string, StockQuote>>({});
   const refreshRequestRef = useRef(0);
+  const addPanelRef = useRef<HTMLFormElement>(null);
+  const addSymbolInputRef = useRef<HTMLInputElement>(null);
+
+  const openAddPanel = useCallback(() => {
+    setIsAddPanelOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isAddPanelOpen) return;
+
+    let focusTimer: number | undefined;
+    const frame = window.requestAnimationFrame(() => {
+      addPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      focusTimer = window.setTimeout(() => addSymbolInputRef.current?.focus({ preventScroll: true }), 350);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      if (focusTimer) window.clearTimeout(focusTimer);
+    };
+  }, [isAddPanelOpen]);
 
   useEffect(() => {
     setMounted(true);
@@ -4644,7 +4669,7 @@ export default function StockWatchlistClient() {
             </button>
             <button
               type="button"
-              onClick={() => setIsAddPanelOpen((open) => !open)}
+              onClick={() => (isAddPanelOpen ? setIsAddPanelOpen(false) : openAddPanel())}
               className="hidden h-11 items-center justify-center gap-2 rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)] sm:inline-flex"
             >
               <Plus size={17} />
@@ -4659,7 +4684,7 @@ export default function StockWatchlistClient() {
         </div>
 
         {isAddPanelOpen ? (
-        <form onSubmit={onSubmit} className="relative rounded-2xl border border-slate-200 bg-white/90 p-5 pt-11 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6 sm:pt-11">
+        <form ref={addPanelRef} onSubmit={onSubmit} className="relative scroll-mt-24 rounded-2xl border border-slate-200 bg-white/90 p-5 pt-11 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6 sm:pt-11">
           <button
             type="button"
             onClick={() => setIsAddPanelOpen(false)}
@@ -4675,6 +4700,7 @@ export default function StockWatchlistClient() {
               </label>
               <div className="relative mt-2 flex items-center">
                 <input
+                  ref={addSymbolInputRef}
                   id="stockSymbol"
                   value={symbol}
                   onChange={(event) => {
@@ -4868,7 +4894,7 @@ export default function StockWatchlistClient() {
         ) : null}
 
         {mounted && activeItems.length === 0 ? (
-          <button type="button" onClick={() => setIsAddPanelOpen(true)} className="mt-8 w-full rounded-2xl border border-dashed border-orange-200 bg-white/70 px-4 py-16 text-center text-sm font-bold text-slate-400 shadow-sm transition hover:border-orange-300 hover:bg-orange-50/50 sm:py-20">
+          <button type="button" onClick={openAddPanel} className="mt-8 w-full rounded-2xl border border-dashed border-orange-200 bg-white/70 px-4 py-16 text-center text-sm font-bold text-slate-400 shadow-sm transition hover:border-orange-300 hover:bg-orange-50/50 sm:py-20">
             <Plus size={28} className="mx-auto mb-3 text-orange-500" />
             <p className="text-slate-600">「{activeListId}」還是空的，點這裡新增標的</p>
             <p className="mt-2 text-xs font-medium text-slate-400">可搜尋名稱／代號，或上傳 Excel、CSV 批次匯入</p>
@@ -4879,7 +4905,7 @@ export default function StockWatchlistClient() {
         ) : null}
 
         {mounted && activeItems.length > 0 && filteredItems.length === 0 ? (
-          <button type="button" onClick={() => setIsAddPanelOpen(true)} className="w-full rounded-2xl border border-dashed border-orange-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm transition hover:border-orange-300 hover:bg-orange-50/50 sm:py-20">
+          <button type="button" onClick={openAddPanel} className="w-full rounded-2xl border border-dashed border-orange-200 bg-white/70 py-16 text-center text-sm font-bold text-slate-400 shadow-sm transition hover:border-orange-300 hover:bg-orange-50/50 sm:py-20">
             <Plus size={28} className="mx-auto mb-3 text-orange-500" />
             <span className="text-slate-600">「{activeMarket}」還沒有標的，點這裡新增</span>
             <span className="mt-2 block text-xs font-medium text-slate-400">也可以上傳 Excel／CSV 一次加入多檔</span>
@@ -4912,7 +4938,7 @@ export default function StockWatchlistClient() {
                 ))}
                 <button
                   type="button"
-                  onClick={() => setIsAddPanelOpen(true)}
+                  onClick={openAddPanel}
                   className="flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed border-orange-200 bg-white/60 p-5 text-center text-sm font-black text-orange-700 transition hover:-translate-y-1 hover:border-orange-300 hover:bg-orange-50/60"
                 >
                   <Plus size={24} />

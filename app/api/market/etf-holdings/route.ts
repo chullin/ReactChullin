@@ -60,24 +60,15 @@ function parseHoldings(html: string) {
   });
 }
 
-async function fetchHtml(url: URL) {
+async function fetchHtml(url: URL, timeout = 8_000) {
   const response = await fetch(url, {
-    cache: 'no-store',
     headers: REQUEST_HEADERS,
-    signal: AbortSignal.timeout(12_000),
+    next: { revalidate: 60 * 60 },
+    signal: AbortSignal.timeout(timeout),
   });
 
   if (!response.ok) throw new Error(`Upstream HTTP ${response.status}`);
   return response.text();
-}
-
-async function currentAssetDate(symbol: string) {
-  const url = new URL(`${FUBON_BASE}/Pcf.aspx`);
-  url.searchParams.set('stkId', symbol);
-  url.searchParams.set('lan', 'TW');
-  const html = await fetchHtml(url);
-  const dateMatch = html.match(/Assets\.aspx\?stkId=[^"']+?ddate=(\d{4}(?:%2[fF]|\/)\d{2}(?:%2[fF]|\/)\d{2})/i);
-  return dateMatch?.[1]?.replace(/%2f/gi, '-').replaceAll('/', '-') || null;
 }
 
 async function holdingsOn(symbol: string, date: string) {
@@ -85,16 +76,26 @@ async function holdingsOn(symbol: string, date: string) {
   url.searchParams.set('stkId', symbol);
   url.searchParams.set('ddate', date.replaceAll('-', '/'));
   url.searchParams.set('lan', 'TW');
-  const html = await fetchHtml(url);
+  const html = await fetchHtml(url, 4_000);
   const actualDate = parseAssetDate(html);
   const holdings = parseHoldings(html);
   return actualDate === date && holdings.length ? { date, holdings } : null;
 }
 
+async function latestHoldings(symbol: string) {
+  const url = new URL(`${FUBON_BASE}/Assets.aspx`);
+  url.searchParams.set('stkId', symbol);
+  url.searchParams.set('lan', 'TW');
+  const html = await fetchHtml(url);
+  const date = parseAssetDate(html);
+  const holdings = parseHoldings(html);
+  return date && holdings.length ? { date, holdings } : null;
+}
+
 async function previousHoldings(symbol: string, currentDate: string) {
   const cursor = new Date(`${currentDate}T12:00:00+08:00`);
   const dates: string[] = [];
-  for (let daysBack = 1; daysBack <= 7; daysBack += 1) {
+  for (let daysBack = 1; daysBack <= 5; daysBack += 1) {
     cursor.setDate(cursor.getDate() - 1);
     dates.push(cursor.toISOString().slice(0, 10));
   }
@@ -125,13 +126,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const date = await currentAssetDate(symbol);
-    if (!date) throw new Error('Missing official asset date');
-
-    const current = await holdingsOn(symbol, date);
+    const current = await latestHoldings(symbol);
     if (!current) throw new Error('Missing official holdings');
 
-    const previous = await previousHoldings(symbol, date);
+    const previous = await previousHoldings(symbol, current.date);
     const previousBySymbol = new Map(previous?.holdings.map((holding) => [holding.symbol, holding]) || []);
     const holdings = current.holdings.map((holding) => ({
       ...holding,
