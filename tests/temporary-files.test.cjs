@@ -11,7 +11,7 @@ require.extensions['.ts'] = (module, filename) => {
 };
 process.env.TEMP_UPLOAD_SECRET = 'test-only-secret-not-for-production-123456';
 process.env.TEMP_UPLOAD_PASSWORD = 'test-only-password-123456';
-process.env.GOOGLE_DRIVE_FOLDER_ID = 'test-folder';
+process.env.GOOGLE_DRIVE_FOLDER_ID = '1auq7r82jwMMAlK3XuLonQtZJY1zKl_3w';
 process.env.GOOGLE_DRIVE_CLIENT_ID = 'test-client';
 process.env.GOOGLE_DRIVE_CLIENT_SECRET = 'test-client-secret';
 process.env.GOOGLE_DRIVE_REFRESH_TOKEN = 'test-refresh';
@@ -174,9 +174,9 @@ test('proxy upload binds folder and size; resume uses Google confirmed offset', 
   const calls = [];
   global.fetch = async (url, options) => {
     calls.push({ url, options });
-    if (String(url).includes('oauth2')) return Response.json({ access_token: 'private-access-token' });
+    if (String(url).includes('oauth2')) return Response.json({ access_token: 'private-access-token', scope: 'https://www.googleapis.com/auth/drive.file' });
     if (options.method === 'POST') {
-      assert.deepEqual(JSON.parse(options.body).parents, ['test-folder']);
+      assert.deepEqual(JSON.parse(options.body).parents, ['1auq7r82jwMMAlK3XuLonQtZJY1zKl_3w']);
       return new Response(null, { status: 200, headers: { Location: googleSession } });
     }
     const range = options.headers['Content-Range'];
@@ -211,4 +211,35 @@ test('expired Google sessions and upstream failures are explicit; malicious dest
     await assert.rejects(core.transfer(ticket), e => e.status === 503);
     assert.throws(() => core.uploadTicket(core.seal({ url: 'https://evil.test/upload', size: 1 }, 'upload', 100)));
   } finally { global.fetch = original; }
+});
+
+test('full Drive, extra or missing scopes cannot start uploads; destination is pinned', async () => {
+  const original = global.fetch;
+  const folder = process.env.GOOGLE_DRIVE_FOLDER_ID;
+  try {
+    for (const scope of [undefined, 'https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly']) {
+      let calls = 0;
+      global.fetch = async url => {
+        calls++;
+        assert.equal(String(url), 'https://oauth2.googleapis.com/token');
+        return Response.json({ access_token: 'secret', scope });
+      };
+      await assert.rejects(core.startUpload({ name: 'test.txt', size: 1 }), e => e.code === 'DRIVE_SCOPE_MISMATCH');
+      assert.equal(calls, 1);
+    }
+    process.env.GOOGLE_DRIVE_FOLDER_ID = 'different-folder';
+    global.fetch = async () => { throw new Error('must reject before contacting Google'); };
+    await assert.rejects(core.startUpload({ name: 'test.txt', size: 1 }), e => e.status === 503);
+  } finally { global.fetch = original; process.env.GOOGLE_DRIVE_FOLDER_ID = folder; }
+});
+
+test('replacing the Google grant revokes both login cookies and upload capabilities', () => {
+  const previous = process.env.GOOGLE_DRIVE_REFRESH_TOKEN;
+  const login = core.seal({ authenticated: true }, 'session', 100);
+  const upload = core.seal({ url: googleSession, size: 1 }, 'upload', 100);
+  try {
+    process.env.GOOGLE_DRIVE_REFRESH_TOKEN = 'replacement-narrow-grant';
+    assert.throws(() => core.unseal(login, 'session'));
+    assert.throws(() => core.uploadTicket(upload));
+  } finally { process.env.GOOGLE_DRIVE_REFRESH_TOKEN = previous; }
 });

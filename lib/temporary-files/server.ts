@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes, timingSafeEqual } from 'node:crypto';
-import { CHUNK_BYTES, MAX_FILE_BYTES } from './constants';
+import { CHUNK_BYTES, MAX_FILE_BYTES, DRIVE_FILE_SCOPE, TEMPORARY_FOLDER_ID } from './constants';
 
 export class UploadError extends Error {
   status: number;
@@ -34,8 +34,10 @@ export function setting(name: string) {
 function key() {
   const secret = setting('TEMP_UPLOAD_SECRET');
   if (secret.length < 32) throw new UploadError('網站金鑰設定不完整。', 503);
-  // A new opening window revokes sessions and upload tickets from previous windows.
-  return createHash('sha256').update(secret + '\0' + setting('TEMP_UPLOAD_PASSWORD') + '\0' + (process.env.TEMP_UPLOAD_EXPIRES_AT ?? '')).digest();
+  // Changing the grant, destination or opening window revokes previous sessions/tickets.
+  return createHash('sha256').update([DRIVE_FILE_SCOPE, TEMPORARY_FOLDER_ID, secret,
+    setting('TEMP_UPLOAD_PASSWORD'), process.env.TEMP_UPLOAD_EXPIRES_AT ?? '',
+    process.env.GOOGLE_DRIVE_REFRESH_TOKEN ?? ''].join('\0')).digest();
 }
 export function seal(value: object, purpose: string, seconds: number) {
   const iv = randomBytes(12);
@@ -129,6 +131,9 @@ export async function accessToken() {
   if (!response.ok) throw new UploadError('Google Drive 授權失效或暫時無法使用，請管理者檢查授權。', 503);
   const body = await response.json();
   if (typeof body.access_token !== 'string') throw new UploadError('無法取得儲存空間授權。', 503);
+  // Do not silently keep using a previous full-Drive grant after migration.
+  if (typeof body.scope !== 'string' || body.scope.trim() !== DRIVE_FILE_SCOPE)
+    throw new UploadError('Google 授權範圍不符，請管理者重新完成 drive.file 與資料夾選取設定。', 503, 'DRIVE_SCOPE_MISMATCH');
   return body.access_token as string;
 }
 export type Ticket = { url: string; size: number };
@@ -140,7 +145,7 @@ function safeSession(url: string) {
 export async function startUpload(input: { name?: unknown; size?: unknown }) {
   const file = metadata(input);
   const folder = setting('GOOGLE_DRIVE_FOLDER_ID');
-  if (!/^[\w-]+$/.test(folder)) throw new UploadError('儲存資料夾設定錯誤。', 503);
+  if (folder !== TEMPORARY_FOLDER_ID) throw new UploadError('儲存資料夾必須是指定的暫存資料夾。', 503);
   const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size', {
     method: 'POST', headers: {
       Authorization: 'Bearer ' + await accessToken(), 'Content-Type': 'application/json',

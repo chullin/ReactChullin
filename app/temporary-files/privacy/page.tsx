@@ -22,7 +22,7 @@ export default function TemporaryFilesPrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold">Google Drive 授權</h2>
-          <p>Google 授權由管理者設定；一般上傳者使用網站專用密碼。此版本的管理者授權使用 Drive 完整存取範圍。網站程式只實作向指定資料夾建立檔案的操作，沒有瀏覽其他資料夾、公開分享或刪除 Drive 檔案的介面。OAuth 密鑰與更新權杖保存在伺服器的私密環境設定中，不提供給上傳頁面的瀏覽器。</p>
+          <p>Google 授權由管理者設定；一般上傳者使用網站專用密碼。此版本只接受 drive.file 授權，由管理者在本機透過 Google Picker 選取指定暫存資料夾。這是對選取項目及應用程式建立檔案的授權，並不是整個 Drive 或資料夾內所有既有檔案的存取權。後端固定只向指定暫存資料夾新增檔案，沒有瀏覽其他資料夾、公開分享或刪除 Drive 檔案的介面。一般上傳者不會取得 Google Drive 的分享權限或 OAuth 憑證。OAuth 密鑰與更新權杖保存在伺服器的私密環境設定中，不提供給上傳頁面的瀏覽器。</p>
           <p>管理者可在 <a className="text-teal-700 underline" href="https://myaccount.google.com/connections">Google 帳戶的第三方連線設定</a>撤銷應用程式授權。撤銷後網站無法繼續取得 Drive 存取權杖，已上傳的檔案仍需在 Drive 中自行管理。</p>
         </section>
         <section>
