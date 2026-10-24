@@ -15,6 +15,8 @@ process.env.GOOGLE_DRIVE_FOLDER_ID = 'test-folder';
 process.env.GOOGLE_DRIVE_CLIENT_ID = 'test-client';
 process.env.GOOGLE_DRIVE_CLIENT_SECRET = 'test-client-secret';
 process.env.GOOGLE_DRIVE_REFRESH_TOKEN = 'test-refresh';
+process.env.TEMP_UPLOAD_ENABLED = 'true';
+process.env.TEMP_UPLOAD_EXPIRES_AT = new Date(Date.now() + 3600000).toISOString();
 const core = require('../lib/temporary-files/server.ts');
 const { CHUNK_BYTES, MAX_FILE_BYTES } = require('../lib/temporary-files/constants.ts');
 const { NextRequest } = require('next/server');
@@ -29,6 +31,58 @@ function request(method, body, extra = {}, loggedIn = true) {
   }, ...(body !== undefined ? { body: typeof body === 'string' || body instanceof Uint8Array ? body : JSON.stringify(body) } : {}) });
 }
 const googleSession = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&upload_id=test';
+test('uploads fail closed unless explicitly enabled with a valid future deadline', () => {
+  const enabled = process.env.TEMP_UPLOAD_ENABLED, deadline = process.env.TEMP_UPLOAD_EXPIRES_AT;
+  try {
+    for (const flag of [undefined, '', 'false', 'TRUE', '1']) {
+      if (flag === undefined) delete process.env.TEMP_UPLOAD_ENABLED; else process.env.TEMP_UPLOAD_ENABLED = flag;
+      assert.throws(() => core.requireUploadsEnabled(), e => e.code === 'UPLOAD_DISABLED');
+    }
+    process.env.TEMP_UPLOAD_ENABLED = 'true';
+    for (const value of ['', 'invalid', '2099-02-30T12:00:00Z', '2099-01-01T24:00:00Z', '2099-01-01T12:00:00', new Date(Date.now() - 1000).toISOString()]) {
+      process.env.TEMP_UPLOAD_EXPIRES_AT = value;
+      assert.throws(() => core.requireUploadsEnabled(), e => e.code === 'UPLOAD_DISABLED');
+    }
+    process.env.TEMP_UPLOAD_EXPIRES_AT = '2099-01-01T12:00:00+08:00';
+    core.requireUploadsEnabled(Date.parse('2099-01-01T11:59:59+08:00'));
+    assert.throws(() => core.requireUploadsEnabled(Date.parse('2099-01-01T12:00:00+08:00')), e => e.code === 'UPLOAD_DISABLED');
+  } finally { process.env.TEMP_UPLOAD_ENABLED = enabled; process.env.TEMP_UPLOAD_EXPIRES_AT = deadline; }
+});
+test('disabled or expired API rejects every operation before reading bodies or reaching Google/Redis', async () => {
+  const enabled = process.env.TEMP_UPLOAD_ENABLED, deadline = process.env.TEMP_UPLOAD_EXPIRES_AT, original = global.fetch;
+  const existingCookie = 'temporary-files-session=' + session();
+  global.fetch = () => { throw new Error('Disabled feature must not call external services'); };
+  try {
+    for (const expired of [false, true]) {
+      process.env.TEMP_UPLOAD_ENABLED = expired ? 'true' : 'false';
+      process.env.TEMP_UPLOAD_EXPIRES_AT = expired ? new Date(Date.now() - 1000).toISOString() : deadline;
+      const operations = [
+        route.GET(request('GET', undefined, { cookie: existingCookie })),
+        route.POST(request('POST', { action: 'login', password: process.env.TEMP_UPLOAD_PASSWORD })),
+        route.POST(request('POST', { action: 'start', name: 'x', size: 1 })),
+        route.POST(request('POST', { action: 'status', ticket: 'old-ticket' })),
+        route.POST(request('POST', 'not valid JSON')),
+        route.PUT(request('PUT', new Uint8Array(1), { cookie: existingCookie, 'x-upload-ticket': 'old-ticket', 'x-upload-offset': '0' })),
+      ];
+      for (const response of await Promise.all(operations)) {
+        assert.equal(response.status, 503);
+        assert.equal((await response.json()).code, 'UPLOAD_DISABLED');
+        assert.equal(response.headers.get('cache-control'), 'no-store');
+      }
+    }
+  } finally {
+    process.env.TEMP_UPLOAD_ENABLED = enabled; process.env.TEMP_UPLOAD_EXPIRES_AT = deadline; global.fetch = original;
+  }
+});
+test('new opening windows invalidate previously issued cookies and upload tickets', () => {
+  const deadline = process.env.TEMP_UPLOAD_EXPIRES_AT;
+  const cookie = session(), ticket = core.seal({ url: googleSession, size: 1 }, 'upload', 3600);
+  try {
+    process.env.TEMP_UPLOAD_EXPIRES_AT = new Date(Date.parse(deadline) + 1000).toISOString();
+    assert.throws(() => core.unseal(cookie, 'session'));
+    assert.throws(() => core.uploadTicket(ticket));
+  } finally { process.env.TEMP_UPLOAD_EXPIRES_AT = deadline; }
+});
 test('tokens reject tampering, purpose confusion, expiry and password rotation', () => {
   const token = session();
   assert.equal(core.unseal(token, 'session').authenticated, true);

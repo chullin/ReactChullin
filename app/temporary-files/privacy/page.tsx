@@ -31,7 +31,8 @@ export default function TemporaryFilesPrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold">登入與連線紀錄</h2>
-          <p>網站使用有效期 24 小時的 HttpOnly 登入 Cookie，並以 IP 位址的雜湊值計算短期登入嘗試次數，計數資料於 15 分鐘後到期。Cookie 用於驗證上傳權限；Google 密鑰不會放入 Cookie。上傳頁面的進度保存在目前分頁的記憶體中，關閉或重新整理頁面後不保留。</p>
+          <p>網站使用最長有效期 24 小時的 HttpOnly 登入 Cookie，並以 IP 位址的雜湊值計算短期登入嘗試次數，計數資料於 15 分鐘後到期。Cookie 用於驗證上傳權限；Google 密鑰不會放入 Cookie。上傳頁面的進度保存在目前分頁的記憶體中，關閉或重新整理頁面後不保留。</p>
+          <p>暫存功能預設關閉，只在管理者設定的時段開放。開放時間結束後，即使登入尚未到期，後端也會拒絕後續登入與上傳請求。功能關閉不會自動刪除已儲存的檔案。</p>
         </section>
         <section>
           <h2 className="text-xl font-bold">服務提供者</h2>

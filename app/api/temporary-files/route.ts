@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CHUNK_BYTES, SESSION_SECONDS } from '../../../lib/temporary-files/constants';
-import { UploadError, limitLogin, metadata, passwordMatches, readBody, seal, startUpload, transfer, unseal, uploadTicket, validateChunk } from '../../../lib/temporary-files/server';
+import { UploadError, limitLogin, metadata, passwordMatches, readBody, requireUploadsEnabled, seal, startUpload, transfer, unseal, uploadTicket, validateChunk } from '../../../lib/temporary-files/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,7 +10,7 @@ function json(value: object, status = 200) {
   return NextResponse.json(value, { status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
 }
 function failure(error: unknown) {
-  return json({ error: error instanceof UploadError ? error.message : '服務暫時無法使用，請稍後重試。' }, error instanceof UploadError ? error.status : 503);
+  return json({ error: error instanceof UploadError ? error.message : '服務暫時無法使用，請稍後重試。', ...(error instanceof UploadError && error.code ? { code: error.code } : {}) }, error instanceof UploadError ? error.status : 503);
 }
 function origin(request: NextRequest) {
   if (request.headers.get('origin') !== new URL(request.url).origin) throw new UploadError('請從本站頁面操作。', 403);
@@ -25,11 +25,12 @@ function cookie(response: NextResponse, value: string, maxAge: number) {
   return response;
 }
 export async function GET(request: NextRequest) {
-  try { authenticated(request); return json({ authenticated: true }); }
+  try { requireUploadsEnabled(); authenticated(request); return json({ authenticated: true }); }
   catch (error) { return failure(error); }
 }
 export async function POST(request: NextRequest) {
   try {
+    requireUploadsEnabled();
     origin(request);
     let input;
     try { input = JSON.parse(new TextDecoder().decode(await readBody(request, 8192))); }
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
 }
 export async function PUT(request: NextRequest) {
   try {
+    requireUploadsEnabled();
     origin(request); authenticated(request);
     const ticket = uploadTicket(request.headers.get('x-upload-ticket') || '');
     const rawOffset = request.headers.get('x-upload-offset');

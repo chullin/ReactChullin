@@ -5,7 +5,23 @@
 頁面：/temporary-files。使用網站專用密碼登入後，將檔案或文字存入指定 Google Drive 資料夾。
 單檔上限 **2,000,000,000 bytes（2 GB）**，每段 **2 MiB**。所有檔案傳輸都走同源 /api/temporary-files；使用端不需要連 Google。
 第一版只有上傳，沒有網站內檔案列表、下載或自動刪除。請在可以使用 Google 的環境管理 Drive 檔案。
-中斷或暫停後，保持原分頁與檔案即可繼續；刷新、關閉頁面或更換裝置後不保留續傳狀態。登入有效 24 小時。
+中斷或暫停後，保持原分頁與檔案即可繼續；刷新、關閉頁面或更換裝置後不保留續傳狀態。登入最長有效 24 小時，但開放時間到期後立即禁止新的 API 請求。
+
+## 只在需要時開放
+
+功能預設關閉。每個 API 請求都必須同時滿足以下條件，否則回傳 `503 UPLOAD_DISABLED`，不呼叫 Google 或 Redis，也不接受已有 Cookie／上傳票證繼續傳輸：
+
+1. `TEMP_UPLOAD_ENABLED` 精確設為 `true`。
+2. `TEMP_UPLOAD_EXPIRES_AT` 是有效、包含時區、尚未到期的 ISO 8601 時間。
+
+開放時，在 Vercel 正式環境填入這兩個值並重新部署。例如希望在某天晚上 11 點關閉，填入該日期的 `YYYY-MM-DDT23:00:00+08:00`（必須換成實際日期），建議只開放需要的 1–2 小時。
+使用完畢後可將 `TEMP_UPLOAD_ENABLED` 改成 `false` 並重新部署；即使忘記手動關閉，到期後目前這個部署也會自行拒絕後續請求。不要使用註解程式碼或只隱藏上傳按鈕作為開關。
+
+**Vercel 修改環境變數只會影響新部署，並不是即時急停。** 等新部署生效前，舊部署仍使用原設定；舊部署網址也保留原設定直到其到期時間。到期檢查發生在請求開始時，已接受的一段傳輸可能完成，之後的段落會被拒絕。
+
+每次開放請設定新的截止時間；更改截止時間會使前一個開放時段發出的登入 Cookie 與上傳票證失效，需要重新登入並上傳。
+
+這個開關縮短公開 API 可用的時間，但不會撤銷 Google 授權、刪除 Drive 檔案或消除伺服器憑證外洩風險。目前 Google token 仍是完整 Drive scope；若要在 Google 層級限制存取，應改做 Google Picker + `drive.file` 的授權流程，或使用只存放暫存資料的獨立 Google 帳號。尚未實作此縮限流程。
 
 ## Vercel 環境變數
 
@@ -13,6 +29,8 @@
 
 | 名稱 | 用途 |
 | --- | --- |
+| TEMP_UPLOAD_ENABLED | 預設關閉；只有 `true` 才可能啟用 |
+| TEMP_UPLOAD_EXPIRES_AT | 啟用時必填的截止時間，包含時區；未設定、格式錯誤或到期都關閉 |
 | TEMP_UPLOAD_PASSWORD | 網站登入密碼，至少 16 字元，建議密碼管理器產生的隨機密碼 |
 | TEMP_UPLOAD_SECRET | 至少 32 字元的獨立隨機金鑰；加密登入與上傳工作 |
 | GOOGLE_DRIVE_FOLDER_ID | 1auq7r82jwMMAlK3XuLonQtZJY1zKl_3w |
@@ -23,7 +41,7 @@
 | UPSTASH_REDIS_REST_TOKEN | 相同 Redis 的 REST token |
 
 Preview 建議使用獨立測試資料夾、密碼與金鑰；Production 才指向正式資料夾。
-變更密碼或金鑰會使既有登入及上傳工作失效。所有 API 都不快取；頁面設定 noindex。
+變更密碼、金鑰或開放截止時間會使既有登入及上傳工作失效。所有 API 都不快取；頁面設定 noindex。
 
 ## Google 授權：在能使用 Google 的環境設定
 
@@ -80,5 +98,6 @@ Redis 只保存雜湊後 IP 的短期嘗試計數，不儲存檔案、密碼或 
 - https://developers.google.com/identity/protocols/oauth2#expiration
 - https://developers.google.com/workspace/drive/api/guides/api-specific-auth
 - https://vercel.com/docs/functions/limitations
+- https://vercel.com/docs/environment-variables/managing-environment-variables
 - https://vercel.com/docs/headers/request-headers
 - https://upstash.com/docs/redis/features/restapi

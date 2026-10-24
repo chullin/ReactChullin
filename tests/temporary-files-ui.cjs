@@ -7,7 +7,7 @@ const fs = require('node:fs');
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
-    let loggedIn = false, confirmed = 0, total = 0, interrupted = false;
+    let loggedIn = false, confirmed = 0, total = 0, interrupted = false, closed = false;
     await page.route('**/*', route => {
       const url = new URL(route.request().url());
       if (url.hostname !== 'localhost' && url.hostname !== '127.0.0.1') return route.abort();
@@ -16,6 +16,7 @@ const fs = require('node:fs');
     await page.route('**/api/temporary-files', async route => {
       const request = route.request();
       const reply = (status, data) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(data) });
+      if (closed) return reply(503, { code: 'UPLOAD_DISABLED', error: '暫存空間目前未開放。' });
       if (request.method() === 'GET') return reply(loggedIn ? 200 : 401, { authenticated: loggedIn });
       if (request.method() === 'PUT') {
         const offset = Number(request.headers()['x-upload-offset']);
@@ -56,9 +57,21 @@ const fs = require('node:fs');
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
     await page.screenshot({ path: 'scratch/temporary-files/mobile.png', fullPage: true });
+    closed = true;
+    await page.locator('#storage-file').setInputFiles({ name: 'after-close.txt', mimeType: 'text/plain', buffer: Buffer.from('blocked') });
+    await page.getByRole('button', { name: '開始上傳', exact: true }).click();
+    await page.getByRole('heading', { name: '暫存空間目前未開放', exact: true }).waitFor();
+    assert.equal(await page.getByLabel('本頁文字（重新整理前請先保留）').inputValue(), '測試文字與連結 https://example.com');
+    assert.equal(await page.getByLabel('網站密碼').count(), 0);
+    assert.equal(await page.locator('#storage-file').count(), 0);
+    await page.reload();
+    await page.getByRole('heading', { name: '暫存空間目前未開放', exact: true }).waitFor();
+    await page.screenshot({ path: 'scratch/temporary-files/closed.png', fullPage: true });
+    closed = false;
+    await page.reload();
     await page.getByRole('button', { name: '登出', exact: true }).click();
     await page.getByLabel('網站密碼').waitFor();
     assert.deepEqual(errors, []);
-    console.log('PASS: login errors, chunk upload, ambiguous-success resume, text upload, logout, mobile layout; all external browser requests blocked.');
+    console.log('PASS: login, chunk resume, text upload, expiry while signed in, closed-on-load state, logout, mobile layout; external requests blocked.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

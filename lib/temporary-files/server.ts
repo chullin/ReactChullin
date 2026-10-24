@@ -3,7 +3,21 @@ import { CHUNK_BYTES, MAX_FILE_BYTES } from './constants';
 
 export class UploadError extends Error {
   status: number;
-  constructor(message: string, status = 400) { super(message); this.status = status; }
+  code?: string;
+  constructor(message: string, status = 400, code?: string) { super(message); this.status = status; this.code = code; }
+}
+export function requireUploadsEnabled(now = Date.now()) {
+  const deadline = process.env.TEMP_UPLOAD_EXPIRES_AT ?? '';
+  // A timezone is required so the administrator's intended deadline is unambiguous.
+  const parts = /^(\d{4})-(\d{2})-(\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(deadline);
+  const month = Number(parts?.[2]);
+  const day = Number(parts?.[3]);
+  const validDate = parts && month >= 1 && month <= 12 && day >= 1 &&
+    day <= new Date(Date.UTC(Number(parts[1]), month, 0)).getUTCDate();
+  const expiresAt = validDate ? Date.parse(deadline) : NaN;
+  if (process.env.TEMP_UPLOAD_ENABLED !== 'true' || !Number.isFinite(expiresAt) || expiresAt <= now) {
+    throw new UploadError('暫存空間目前未開放，請在需要使用時由管理者啟用。', 503, 'UPLOAD_DISABLED');
+  }
 }
 function configuredValue(name: string) {
   const aliases: Record<string, string[]> = {
@@ -20,8 +34,8 @@ export function setting(name: string) {
 function key() {
   const secret = setting('TEMP_UPLOAD_SECRET');
   if (secret.length < 32) throw new UploadError('網站金鑰設定不完整。', 503);
-  // Password changes also revoke existing sessions and upload tickets.
-  return createHash('sha256').update(secret + '\0' + setting('TEMP_UPLOAD_PASSWORD')).digest();
+  // A new opening window revokes sessions and upload tickets from previous windows.
+  return createHash('sha256').update(secret + '\0' + setting('TEMP_UPLOAD_PASSWORD') + '\0' + (process.env.TEMP_UPLOAD_EXPIRES_AT ?? '')).digest();
 }
 export function seal(value: object, purpose: string, seconds: number) {
   const iv = randomBytes(12);

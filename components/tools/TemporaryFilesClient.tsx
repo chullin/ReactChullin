@@ -7,11 +7,11 @@ import { CHUNK_BYTES, MAX_FILE_BYTES } from '@/lib/temporary-files/constants';
 
 type Progress = { complete: boolean; offset: number; ticket?: string };
 const endpoint = '/api/temporary-files';
-class ApiError extends Error { constructor(message: string, public status: number) { super(message); } }
+class ApiError extends Error { constructor(message: string, public status: number, public code?: string) { super(message); } }
 async function api(body: object): Promise<Progress> {
   const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(55000) });
   const data = await response.json();
-  if (!response.ok) throw new ApiError(data.error || '操作失敗，請稍後重試。', response.status);
+  if (!response.ok) throw new ApiError(data.error || '操作失敗，請稍後重試。', response.status, data.code);
   return data;
 }
 const field = 'w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500';
@@ -19,6 +19,7 @@ const button = 'rounded-xl bg-teal-700 px-5 py-3 font-semibold text-white hover:
 export default function TemporaryFilesClient() {
   const [authenticated, setAuthenticated] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [availability, setAvailability] = useState<'available' | 'disabled' | 'unreachable'>('unreachable');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -34,7 +35,25 @@ export default function TemporaryFilesClient() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch(endpoint, { cache: 'no-store' }).then(r => setAuthenticated(r.ok)).catch(() => {}).finally(() => setChecking(false));
+    let active = true;
+    async function check() {
+      try {
+        const response = await fetch(endpoint, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+        const data = await response.json();
+        if (!active) return;
+        if (data.code === 'UPLOAD_DISABLED') {
+          setAvailability('disabled');
+        } else if (response.ok || response.status === 401) {
+          setAvailability('available');
+          setAuthenticated(response.ok);
+        } else {
+          setAvailability('unreachable');
+        }
+      } catch { if (active) setAvailability('unreachable'); }
+      finally { if (active) setChecking(false); }
+    }
+    void check();
+    return () => { active = false; };
   }, []);
   useEffect(() => {
     if (!uploading) return;
@@ -49,10 +68,17 @@ export default function TemporaryFilesClient() {
     }
     setFile(next);
   }
+  function handleClosure(e: unknown) {
+    if (!(e instanceof ApiError) || e.code !== 'UPLOAD_DISABLED') return false;
+    setAvailability('disabled'); setAuthenticated(false); setPassword('');
+    ticket.current = null; setMessage(''); setError('');
+    setOffset(0); setComplete(false);
+    return true;
+  }
   async function login(event: React.FormEvent) {
     event.preventDefault(); setBusy(true); setError('');
     try { await api({ action: 'login', password }); setPassword(''); setAuthenticated(true); }
-    catch (e) { setError(e instanceof Error ? e.message : '登入失敗。'); }
+    catch (e) { if (!handleClosure(e)) setError(e instanceof Error ? e.message : '登入失敗。'); }
     finally { setBusy(false); }
   }
   async function logout() {
@@ -60,7 +86,7 @@ export default function TemporaryFilesClient() {
     try {
       await api({ action: 'logout' }); setAuthenticated(false); setFile(null); setText(''); ticket.current = null;
       setMessage(''); setOffset(0); setComplete(false);
-    } catch { setError('登出失敗，請重試。'); }
+    } catch (e) { if (!handleClosure(e)) setError('登出失敗，請重試。'); }
     finally { setBusy(false); }
   }
   async function upload() {
@@ -84,13 +110,14 @@ export default function TemporaryFilesClient() {
           body: file.slice(start, Math.min(start + CHUNK_BYTES, file.size)), signal: AbortSignal.timeout(55000),
         });
         const result = await response.json();
-        if (!response.ok) throw new ApiError(result.error || '傳輸中斷，請按繼續上傳。', response.status);
+        if (!response.ok) throw new ApiError(result.error || '傳輸中斷，請按繼續上傳。', response.status, result.code);
         progress = result;
         if (!progress.complete && progress.offset <= start) throw new Error('傳輸尚未前進，請按繼續上傳重新確認進度。');
         setMessage('正在上傳，請保持此頁開啟。');
       }
       setOffset(file.size); setComplete(true); setMessage('已成功儲存到你的 Google Drive 暫存資料夾。');
     } catch (e) {
+      if (handleClosure(e)) return;
       setMessage('');
       if (e instanceof ApiError && e.status === 401) setAuthenticated(false);
       if (e instanceof ApiError && e.status === 410) { ticket.current = null; setOffset(0); }
@@ -106,7 +133,19 @@ export default function TemporaryFilesClient() {
         <p className="mt-4 text-slate-600">把檔案或文字先放在這裡，稍後再到 Google Drive 整理。</p>
         <Link className="mt-3 inline-block text-sm text-teal-700 underline" href="/temporary-files/privacy">資料使用說明</Link>
         <div role="alert" className={error ? 'mt-6 rounded-xl bg-red-50 p-4 text-red-800' : ''}>{error}</div>
-        {checking ? <p className="mt-8" role="status">正在確認登入狀態…</p> : !authenticated ? (
+        {checking ? <p className="mt-8" role="status">正在確認空間狀態…</p> : availability !== 'available' ? (
+          <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <LockKeyhole className="mb-4 text-teal-700" aria-hidden="true" />
+            <h2 className="text-xl font-bold">{availability === 'disabled' ? '暫存空間目前未開放' : '暫時無法連線'}</h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">{availability === 'disabled' ? '這個空間只在需要時開放。開放時間結束後，登入與上傳會自動停止。' : '目前無法確認空間狀態，請稍後再試。'}</p>
+            {text ? <div className="mt-4">
+              <label htmlFor="unsaved-note" className="mb-2 block text-sm font-semibold">本頁文字（重新整理前請先保留）</label>
+              <textarea id="unsaved-note" className={field + ' min-h-32'} readOnly value={text} />
+              <p className="mt-2 text-xs text-slate-500">重新確認會重載頁面，這份文字不會保留。</p>
+            </div> : null}
+            <button className={button + ' mt-5'} onClick={() => window.location.reload()}>重新確認</button>
+          </section>
+        ) : !authenticated ? (
           <form onSubmit={login} className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <LockKeyhole className="mb-4 text-teal-700" aria-hidden="true" />
             <h2 className="text-xl font-bold">輸入密碼以開啟空間</h2>
