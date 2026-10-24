@@ -16,3 +16,7 @@ app/seg
 __pycache__/
 *.pyc
 app/blog/改動頁面/
+
+# Server credentials
+.env
+.env.*

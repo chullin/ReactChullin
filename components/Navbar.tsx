@@ -100,6 +100,7 @@ export default function Navbar() {
   const isGroupActive = (paths: string[]) => paths.includes(pathname);
 
   const toolkitLinks: NavItem[] = [
+    { name: '檔案暫存空間', href: '/temporary-files' },
     { name: 'QR File Transfer', href: '/qr-transfer' },
     { name: t('nav.imageCompressor'), href: '/image-compressor' },
     { name: t('nav.demoHub'), href: '/demo' },
