@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { LockKeyhole, UploadCloud, FileText, LogOut } from 'lucide-react';
 import { CHUNK_BYTES, MAX_FILE_BYTES } from '@/lib/temporary-files/constants';
 
@@ -103,6 +104,7 @@ export default function TemporaryFilesClient() {
         <p className="mb-3 text-sm font-bold tracking-widest text-teal-700">PERSONAL STORAGE</p>
         <h1 className="text-4xl font-bold">檔案暫存空間</h1>
         <p className="mt-4 text-slate-600">把檔案或文字先放在這裡，稍後再到 Google Drive 整理。</p>
+        <Link className="mt-3 inline-block text-sm text-teal-700 underline" href="/temporary-files/privacy">資料使用說明</Link>
         <div role="alert" className={error ? 'mt-6 rounded-xl bg-red-50 p-4 text-red-800' : ''}>{error}</div>
         {checking ? <p className="mt-8" role="status">正在確認登入狀態…</p> : !authenticated ? (
           <form onSubmit={login} className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

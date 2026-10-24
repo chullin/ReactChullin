@@ -92,6 +92,29 @@ test('production login rate limiting is shared and fails closed', async () => {
     delete process.env.UPSTASH_REDIS_REST_URL; delete process.env.UPSTASH_REDIS_REST_TOKEN; global.fetch = original;
   }
 });
+test('Marketplace Redis variables work without copying managed secrets', async () => {
+  const original = global.fetch;
+  process.env.UPSTASH_REDIS_KV_REST_API_URL = 'https://marketplace.example.test';
+  process.env.UPSTASH_REDIS_KV_REST_API_TOKEN = 'marketplace-test-token';
+  let calls = 0;
+  global.fetch = async (url, options) => {
+    calls++;
+    assert.equal(url, 'https://marketplace.example.test');
+    assert.equal(options.headers.Authorization, 'Bearer marketplace-test-token');
+    return Response.json({ result: 1 });
+  };
+  try {
+    await core.limitLogin('marketplace-client');
+    assert.equal(calls, 1);
+    process.env.UPSTASH_REDIS_REST_URL = 'https://explicit.example.test';
+    assert.equal(core.setting('UPSTASH_REDIS_REST_URL'), 'https://explicit.example.test');
+  } finally {
+    delete process.env.UPSTASH_REDIS_REST_URL;
+    delete process.env.UPSTASH_REDIS_KV_REST_API_URL;
+    delete process.env.UPSTASH_REDIS_KV_REST_API_TOKEN;
+    global.fetch = original;
+  }
+});
 test('proxy upload binds folder and size; resume uses Google confirmed offset', async () => {
   const original = global.fetch;
   const calls = [];

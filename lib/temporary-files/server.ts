@@ -5,8 +5,15 @@ export class UploadError extends Error {
   status: number;
   constructor(message: string, status = 400) { super(message); this.status = status; }
 }
+function configuredValue(name: string) {
+  const aliases: Record<string, string[]> = {
+    UPSTASH_REDIS_REST_URL: ['UPSTASH_REDIS_KV_REST_API_URL', 'KV_REST_API_URL'],
+    UPSTASH_REDIS_REST_TOKEN: ['UPSTASH_REDIS_KV_REST_API_TOKEN', 'KV_REST_API_TOKEN'],
+  };
+  return [name, ...(aliases[name] ?? [])].map(key => process.env[key]).find(Boolean);
+}
 export function setting(name: string) {
-  const value = process.env[name];
+  const value = configuredValue(name);
   if (!value) throw new UploadError('暫存空間尚未設定完成，請聯絡網站管理者。', 503);
   return value;
 }
@@ -73,7 +80,7 @@ export async function readBody(request: Request, limit: number) {
 const localAttempts = new Map<string, { count: number; until: number }>();
 export async function limitLogin(ip: string) {
   const bucket = createHash('sha256').update(ip).digest('hex');
-  if (process.env.NODE_ENV !== 'production' && !process.env.UPSTASH_REDIS_REST_URL) {
+  if (process.env.NODE_ENV !== 'production' && !configuredValue('UPSTASH_REDIS_REST_URL')) {
     const now = Date.now();
     for (const [k, v] of localAttempts) if (v.until < now) localAttempts.delete(k);
     const value = localAttempts.get(bucket) ?? { count: 0, until: now + 900000 };

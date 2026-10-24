@@ -44,6 +44,7 @@ Google 的 OAuth 授權可被撤銷或過期；失效時需重新設定 refresh 
 ## 登入嘗試限制
 
 建立並連接 Upstash Redis，將 REST URL 與 token 放入上表的兩個環境變數。
+透過 Vercel Marketplace 連接且使用 `UPSTASH_REDIS` 前綴時，程式也會直接讀取 `UPSTASH_REDIS_KV_REST_API_URL` 與 `UPSTASH_REDIS_KV_REST_API_TOKEN`；不必複製或改名整合服務管理的密鑰。未使用自訂前綴的 `KV_REST_API_URL` / `KV_REST_API_TOKEN` 也支援。手動設定的標準名稱優先。
 Redis 只保存雜湊後 IP 的短期嘗試計數，不儲存檔案、密碼或 Google token。
 每個 IP 在 15 分鐘內最多 10 次登入嘗試（成功也計入），跨 Vercel instances 共用。
 正式環境缺少 Redis 或 Redis 無法連線時拒絕登入。開發環境未設定 Redis 時才使用程序內計數。
