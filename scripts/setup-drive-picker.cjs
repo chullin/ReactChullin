@@ -10,13 +10,13 @@ function createSetupServer(fetchGoogle = fetch) {
   const csrf = randomBytes(32).toString('hex');
   let credentials, pending, tokens, selected = false;
   const expires = Date.now() + 30 * 60 * 1000;
-  const page = content => `<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="referrer" content="no-referrer"><title>Drive 管理者設定</title><style>body{font:18px system-ui;max-width:760px;margin:40px auto;padding:20px}label{display:block;margin:20px 0}input,textarea{display:block;width:100%;font:inherit}button{padding:12px}p{line-height:1.7}</style><h1>Drive 管理者設定</h1>${content}</html>`;
+  const page = content => `<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Drive 管理者設定</title><style>body{font:18px system-ui;max-width:760px;margin:40px auto;padding:20px}label{display:block;margin:20px 0}input,textarea{display:block;width:100%;font:inherit}button{padding:12px}p{line-height:1.7}</style><h1>Drive 管理者設定</h1>${content}</html>`;
   const server = http.createServer(async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     // Picker uses a Google iframe; allow only this administrator tool to embed it.
-    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src https://*.google.com; connect-src 'self' https://*.google.com https://*.googleapis.com; img-src 'self' data: https://*.google.com https://*.gstatic.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' https://apis.google.com https://*.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; frame-src https://*.google.com; connect-src 'self' https://*.google.com https://*.googleapis.com; img-src 'self' data: https://*.google.com https://*.gstatic.com; frame-ancestors 'none'; base-uri 'none'; form-action 'self' https://accounts.google.com");
     const send = (status, body) => { res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(page(body)); };
     try {
       if (req.headers.host !== 'localhost:17865' || Date.now() >= expires) return send(403, '<p>設定工作已到期或網址不符，請重新啟動工具。</p>');
@@ -48,6 +48,7 @@ function createSetupServer(fetchGoogle = fetch) {
         res.writeHead(303, { Location: auth.href }); return res.end();
       }
       if (req.method === 'GET' && url.pathname === '/oauth/callback') {
+        res.setHeader('Referrer-Policy', 'no-referrer');
         if (!pending || pending.expires <= Date.now() || url.searchParams.get('state') !== pending.state) return send(403, 'OAuth state 不符或已到期。');
         const verifier = pending.verifier; pending = undefined;
         if (!url.searchParams.get('code') || url.searchParams.has('error')) return send(400, '授權未完成。');

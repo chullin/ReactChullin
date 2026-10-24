@@ -31,6 +31,8 @@ test('local setup rejects foreign hosts, CSRF, invalid callbacks and broad OAuth
   try {
     assert.equal((await fetch(target)).status, 403);
     const page = await request('/');
+    assert.equal(page.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+    assert.ok(page.headers.get('content-security-policy').includes("form-action 'self' https://accounts.google.com"));
     const html = await page.text();
     const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(html)[1];
     const form = { csrf, client: '123-client.apps.googleusercontent.com', secret: 'local-secret', apiKey: 'key', project: '123' };
@@ -46,6 +48,7 @@ test('local setup rejects foreign hosts, CSRF, invalid callbacks and broad OAuth
       assert.equal(location.searchParams.get('code_challenge_method'), 'S256');
       const callback = '/oauth/callback?state=' + location.searchParams.get('state') + '&code=code';
       const result = await request(callback);
+      assert.equal(result.headers.get('referrer-policy'), 'no-referrer', 'authorization code is not forwarded as a referrer');
       assert.equal(result.status, scope.endsWith('/drive') ? 400 : 303);
       assert.ok(!(await result.text()).includes('never-print'));
       assert.equal((await request(callback)).status, 403, 'code cannot replay');
