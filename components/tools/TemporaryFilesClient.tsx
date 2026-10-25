@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { LockKeyhole, UploadCloud, FileText, LogOut } from 'lucide-react';
+import { LockKeyhole, UploadCloud, FileText, LogOut, Eye, EyeOff } from 'lucide-react';
 import { CHUNK_BYTES, MAX_FILE_BYTES } from '@/lib/temporary-files/constants';
 
 type Progress = { complete: boolean; offset: number; ticket?: string };
@@ -21,6 +21,7 @@ export default function TemporaryFilesClient() {
   const [checking, setChecking] = useState(true);
   const [availability, setAvailability] = useState<'available' | 'disabled' | 'unreachable'>('unreachable');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
@@ -151,7 +152,18 @@ export default function TemporaryFilesClient() {
             <h2 className="text-xl font-bold">輸入密碼以開啟空間</h2>
             <p className="mb-6 mt-2 text-sm text-slate-500">使用網站專用密碼，無需在這裡登入 Google。</p>
             <label htmlFor="storage-password" className="mb-2 block text-sm font-semibold">網站密碼</label>
-            <input id="storage-password" type="password" autoComplete="current-password" required maxLength={1024} className={field} value={password} onChange={e => setPassword(e.target.value)} />
+            <div className="relative">
+              <input id="storage-password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required maxLength={1024} placeholder="英文生日姓年" className={field + ' pr-12'} value={password} onChange={e => setPassword(e.target.value)} />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600"
+                aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword(value => !value)}
+              >
+                {showPassword ? <EyeOff size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+              </button>
+            </div>
             <button className={button + ' mt-4'} disabled={busy}>{busy ? '驗證中…' : '解鎖空間'}</button>
           </form>
         ) : (
