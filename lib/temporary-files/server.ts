@@ -8,13 +8,17 @@ export class UploadError extends Error {
 }
 export function requireUploadsEnabled(now = Date.now()) {
   const deadline = process.env.TEMP_UPLOAD_EXPIRES_AT ?? '';
-  // A timezone is required so the administrator's intended deadline is unambiguous.
-  const parts = /^(\d{4})-(\d{2})-(\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(deadline);
+  // The short administrator format is local Taiwan time; the full ISO format remains supported.
+  const short = /^(\d{4})-(\d{2})-(\d{2})-([01]\d|2[0-3]):([0-5]\d)$/.exec(deadline);
+  const parts = short ?? /^(\d{4})-(\d{2})-(\d{2})T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,3})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/.exec(deadline);
   const month = Number(parts?.[2]);
   const day = Number(parts?.[3]);
+  const hour = short ? Number(short[4]) : 0;
+  const minute = short ? Number(short[5]) : 0;
   const validDate = parts && month >= 1 && month <= 12 && day >= 1 &&
-    day <= new Date(Date.UTC(Number(parts[1]), month, 0)).getUTCDate();
-  const expiresAt = validDate ? Date.parse(deadline) : NaN;
+    day <= new Date(Date.UTC(Number(parts[1]), month, 0)).getUTCDate() && hour <= 23 && minute <= 59;
+  const timestamp = short ? `${short[1]}-${short[2]}-${short[3]}T${short[4]}:${short[5]}:00+08:00` : deadline;
+  const expiresAt = validDate ? Date.parse(timestamp) : NaN;
   if (process.env.TEMP_UPLOAD_ENABLED !== 'true' || !Number.isFinite(expiresAt) || expiresAt <= now) {
     throw new UploadError('暫存空間目前未開放，請在需要使用時由管理者啟用。', 503, 'UPLOAD_DISABLED');
   }
