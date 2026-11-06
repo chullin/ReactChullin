@@ -3256,6 +3256,7 @@ function StockCard({
       draggable
       onClick={() => onOpen(item)}
       onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) return;
         if (event.key === 'Enter' || event.key === ' ') {
           event.preventDefault();
           onOpen(item);
@@ -3290,51 +3291,12 @@ function StockCard({
         </div>
       ) : null}
       <div
-        className="absolute left-2 top-2 z-10 rounded-lg p-1 text-slate-300 transition-colors group-hover:bg-slate-50 group-hover:text-slate-500"
+        className="absolute left-2 top-2 z-10 hidden rounded-lg p-1 text-slate-300 transition-colors group-hover:bg-slate-50 group-hover:text-slate-500 sm:block"
         aria-hidden="true"
       >
         <GripVertical size={14} />
       </div>
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onRemove(item.symbol, item.market);
-        }}
-        className="absolute right-2 top-2 z-10 rounded-lg p-1 text-slate-300 transition-colors hover:bg-orange-50 hover:text-orange-700"
-        aria-label="移除"
-      >
-        <X size={14} />
-      </button>
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onTogglePinned(item);
-        }}
-        className={`absolute right-8 top-2 z-10 rounded-lg p-1 transition-colors ${
-          item.pinned ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-300 hover:bg-orange-50 hover:text-orange-700'
-        }`}
-        aria-label={item.pinned ? '取消置頂' : '置頂'}
-      >
-        <Pin size={13} />
-      </button>
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onOpenAlerts(item);
-        }}
-        className={`absolute right-14 top-2 z-10 inline-flex h-6 items-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition-colors ${
-          alertCount ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-300 hover:bg-orange-50 hover:text-orange-700'
-        }`}
-        aria-label="設定通知"
-      >
-        <Bell size={12} />
-        {alertCount || ''}
-      </button>
-
-      <div className="mb-1 flex items-center gap-2 pl-5 pr-24 sm:pr-16">
+      <div className="mb-1 flex min-w-0 flex-wrap items-center gap-2 sm:pl-5">
         <span className="flex h-5 min-w-7 shrink-0 items-center justify-center rounded-md bg-orange-50 px-1.5 text-[10px] font-black text-orange-700 ring-1 ring-orange-100">
           {item.market === '美股' ? 'US' : item.market === '台股' ? 'TW' : item.market === '外匯' ? 'FX' : 'PM'}
         </span>
@@ -3343,7 +3305,7 @@ function StockCard({
             置頂
           </span>
         ) : null}
-        <span className="min-w-0 text-lg font-black tracking-tight text-slate-900 sm:text-lg">
+        <span className="min-w-0 break-all text-lg font-black tracking-tight text-slate-900 sm:text-lg">
           {displaySymbol(item.symbol)}
         </span>
       </div>
@@ -3365,7 +3327,7 @@ function StockCard({
         <>
           <div className="flex items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="whitespace-nowrap text-2xl font-semibold tabular-nums" style={{ color: accent }}>
+              <div className="flex flex-wrap items-baseline gap-x-1 text-2xl font-semibold tabular-nums" style={{ color: accent }}>
                 {formatPrice(quote.price, quote.currency)}
                 {quote.currency ? (
                   <span className="ml-1 text-xs font-normal">{quote.currency}</span>
@@ -3390,7 +3352,7 @@ function StockCard({
                 </span>
               </div>
             </div>
-            <div className="h-16 w-32 shrink-0">
+            <div className="h-16 w-20 shrink-0 min-[375px]:w-28 sm:w-20">
               <Sparkline quote={quote} colorConvention={colorConvention} />
             </div>
           </div>
@@ -3457,18 +3419,19 @@ function StockCard({
             <span>資料時間 {formatQuoteTimestamp(quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt)}</span>
             {quote.fromCache ? <span className="rounded bg-amber-50 px-1.5 py-0.5 text-amber-700">{quote.dataSource === 'TWSE OpenAPI fallback' ? '收盤備援' : '暫用快取'}</span> : null}
           </div>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onOpenAlerts(item);
-            }}
-            className="mt-3 text-[11px] font-bold text-slate-400 transition hover:text-orange-700"
-          >
-            通知：{alertCount ? `${alertCount} 筆` : '未設定'}
-          </button>
         </>
       ) : null}
+      <div className="mt-3 grid grid-cols-3 gap-1 border-t border-slate-100 pt-2 sm:pt-3">
+        <button type="button" onClick={(event) => { event.stopPropagation(); onOpenAlerts(item); }} className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold transition-colors sm:min-h-8 ${alertCount ? 'bg-orange-50 text-orange-700' : 'text-slate-500 hover:bg-orange-50 hover:text-orange-700'}`} aria-label="設定通知">
+          <Bell size={15} />通知{alertCount ? ` ${alertCount}` : ''}
+        </button>
+        <button type="button" onClick={(event) => { event.stopPropagation(); onTogglePinned(item); }} className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold transition-colors sm:min-h-8 ${item.pinned ? 'bg-orange-50 text-orange-700' : 'text-slate-500 hover:bg-orange-50 hover:text-orange-700'}`} aria-label={item.pinned ? '取消置頂' : '置頂'} aria-pressed={Boolean(item.pinned)}>
+          <Pin size={15} />{item.pinned ? '已置頂' : '置頂'}
+        </button>
+        <button type="button" onClick={(event) => { event.stopPropagation(); onRemove(item.symbol, item.market); }} className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-700 sm:min-h-8" aria-label="移除">
+          <X size={15} />移除
+        </button>
+      </div>
     </article>
   );
 }
@@ -3549,6 +3512,7 @@ function WatchlistTable({
                   tabIndex={0}
                   onClick={() => onOpen(item)}
                   onKeyDown={(event) => {
+                    if (event.target !== event.currentTarget) return;
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
                       onOpen(item);
@@ -3659,7 +3623,7 @@ function WatchlistTable({
                           event.stopPropagation();
                           onOpenAlerts(item);
                         }}
-                        className={`inline-flex h-8 min-w-8 items-center justify-center gap-1 rounded-lg px-2 text-xs font-black transition-colors ${
+                        className={`inline-flex h-8 min-w-8 items-center justify-center gap-1 rounded-lg px-2 text-xs font-black transition-colors max-sm:h-11 max-sm:min-w-11 ${
                           alertCount ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-400 hover:bg-orange-50 hover:text-orange-700'
                         }`}
                         aria-label="設定通知"
@@ -3673,7 +3637,7 @@ function WatchlistTable({
                           event.stopPropagation();
                           onTogglePinned(item);
                         }}
-                        className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                        className={`inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors max-sm:h-11 max-sm:w-11 ${
                           item.pinned ? 'bg-orange-50 text-orange-700 ring-1 ring-orange-100' : 'text-slate-400 hover:bg-orange-50 hover:text-orange-700'
                         }`}
                         aria-label={item.pinned ? '取消置頂' : '置頂'}
@@ -3686,7 +3650,7 @@ function WatchlistTable({
                           event.stopPropagation();
                           onRemove(item.symbol, item.market);
                         }}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700 max-sm:h-11 max-sm:w-11"
                         aria-label="移除"
                       >
                         <X size={14} />
@@ -4705,63 +4669,60 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   }, [watchlistDefs]);
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_48%,#fafafa_100%)] px-6 pb-16 pt-12 text-slate-900">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_48%,#fafafa_100%)] px-4 pb-12 pt-6 text-slate-900 sm:px-6 sm:pb-16 sm:pt-12">
       <div className="mx-auto w-full max-w-6xl">
+        <header className="mb-5 sm:mb-7">
+          <p className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-orange-700 sm:mb-3">Market Watch</p>
+          <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-5xl">
+            市場<span className="text-gradient">觀察清單</span>
+          </h1>
+          <p className="mt-2 text-xs font-medium leading-relaxed text-slate-500 sm:mt-3 sm:text-sm">
+            台股、美股、匯率與貴金屬，一處追蹤。
+          </p>
+        </header>
         <MarketWatchAccountSync configured={accountConfigured} mounted={mounted} snapshot={accountSnapshot} onRestore={restoreAccount} onBlocked={setAccountBlocked} />
       </div>
       <main inert={accountBlocked} aria-busy={accountBlocked} className={`mx-auto w-full max-w-6xl ${accountBlocked ? 'opacity-50' : ''}`}>
-        <header className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="mb-5 inline-flex h-6 items-center rounded-full bg-orange-50 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">
-              Market Watch
-            </div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-              市場<span className="text-gradient">觀察清單</span>
-            </h1>
-            <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-slate-500 sm:text-base">
-              建立自己的台股、美股、匯率與貴金屬觀察清單，保留股價走勢、五線譜、VRVP 與新聞等完整分析內容。
-            </p>
-          </div>
+        <div role="group" aria-label="清單操作" className="mb-3 grid grid-cols-3 gap-2 sm:flex sm:gap-3">
+          <button
+            type="button"
+            onClick={() => (isAddPanelOpen ? setIsAddPanelOpen(false) : openAddPanel())}
+            aria-expanded={isAddPanelOpen}
+            aria-controls="add-asset-panel"
+            className="inline-flex h-12 items-center justify-center gap-1.5 rounded-xl bg-[var(--theme-primary)] px-2 text-xs font-black text-white shadow-sm shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)] sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
+          >
+            <Plus size={17} />
+            新增標的
+          </button>
+          <a
+            href="/market-explorer"
+            className="inline-flex h-12 items-center justify-center gap-1.5 rounded-xl border border-orange-100 bg-white px-2 text-xs font-black text-orange-700 shadow-sm transition hover:bg-orange-50 sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
+          >
+            <Search size={17} />
+            市場探索
+          </a>
+          <button
+            type="button"
+            onClick={refreshQuotes}
+            disabled={quotesLoading}
+            className="inline-flex h-12 items-center justify-center gap-1.5 rounded-xl border border-orange-100 bg-white px-2 text-xs font-black text-orange-700 shadow-sm transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60 sm:ml-auto sm:h-11 sm:gap-2 sm:px-4 sm:text-sm"
+          >
+            <RefreshCw size={17} className={quotesLoading ? 'animate-spin' : ''} />
+            重新整理
+          </button>
+        </div>
 
-          <div className="flex flex-wrap gap-2">
-            <a
-              href="/market-explorer"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-white px-4 text-sm font-black text-orange-700 shadow-sm transition hover:bg-orange-50"
-            >
-              <Search size={17} />
-              市場探索
-            </a>
-            <button
-              type="button"
-              onClick={refreshQuotes}
-              disabled={quotesLoading}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-orange-100 bg-white px-4 text-sm font-black text-orange-700 shadow-sm transition hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <RefreshCw size={17} className={quotesLoading ? 'animate-spin' : ''} />
-              重新整理
-            </button>
-            <button
-              type="button"
-              onClick={() => (isAddPanelOpen ? setIsAddPanelOpen(false) : openAddPanel())}
-              className="hidden h-11 items-center justify-center gap-2 rounded-xl bg-[var(--theme-primary)] px-4 text-sm font-black text-white shadow-lg shadow-orange-700/20 transition hover:bg-[var(--theme-primary-hover)] sm:inline-flex"
-            >
-              <Plus size={17} />
-              新增標的
-            </button>
-          </div>
-        </header>
-
-        <div className={`mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl px-3.5 py-2.5 text-xs font-bold ring-1 ${lastRefreshFailed ? 'bg-amber-50 text-amber-700 ring-amber-100' : 'bg-white text-slate-500 ring-slate-100'}`}>
-          <span>{quotesLoading ? '正在背景更新報價，畫面保留現有資料' : `資料更新時間：${formatQuoteTimestamp(lastRefreshAt)}`}</span>
+        <div role="status" className={`mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium sm:text-xs ${lastRefreshFailed ? 'rounded-xl bg-amber-50 px-3 py-2 text-amber-700 ring-1 ring-amber-100' : 'text-slate-400'}`}>
+          <span>{quotesLoading ? '報價更新中，保留現有資料…' : `更新時間：${formatQuoteTimestamp(lastRefreshAt)}`}</span>
           {lastRefreshFailed && !quotesLoading ? <span>部分資料源暫時無回應，已保留上次資料</span> : null}
         </div>
 
         {isAddPanelOpen ? (
-        <form ref={addPanelRef} onSubmit={onSubmit} className="relative scroll-mt-24 rounded-2xl border border-slate-200 bg-white/90 p-5 pt-11 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6 sm:pt-11">
+        <form id="add-asset-panel" ref={addPanelRef} onSubmit={onSubmit} className="relative mb-5 scroll-mt-24 rounded-2xl border border-slate-200 bg-white/90 p-4 pt-14 shadow-xl shadow-orange-700/5 backdrop-blur-md tabular-nums sm:p-6 sm:pt-11">
           <button
             type="button"
             onClick={() => setIsAddPanelOpen(false)}
-            className="absolute right-3 top-3 rounded-xl p-2 text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
+            className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-700"
             aria-label="關閉新增標的"
           >
             <X size={18} />
@@ -4775,6 +4736,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
                 <input
                   ref={addSymbolInputRef}
                   id="stockSymbol"
+                  autoComplete="off"
                   value={symbol}
                   onChange={(event) => {
                     setSymbol(event.target.value);
@@ -4881,31 +4843,27 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
           </div>
         ) : null}
 
-        <section className="mt-5 rounded-2xl border border-orange-100 bg-white/85 p-4 shadow-sm shadow-orange-700/5 sm:flex sm:items-center sm:justify-between sm:gap-5">
-          <div>
-            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Tribute</p>
-            <p className="mt-1 text-sm font-bold leading-relaxed text-slate-700">
-              這個自選股看盤頁面以 Jack Su 的工具為基礎重新製作，在此向他的優秀作品致敬。如果你喜歡這類實用工具，也推薦前往他的網站，體驗更多功能。
-            </p>
+        <div className="mb-4 flex items-end gap-2 sm:hidden">
+          <div className="min-w-0 flex-1">
+            <label htmlFor="mobile-watchlist" className="mb-1.5 block text-xs font-bold text-slate-500">我的清單</label>
+            <div className="relative">
+              <select id="mobile-watchlist" value={activeListId} onChange={(event) => setActiveListId(event.target.value)} className="h-12 w-full min-w-0 appearance-none truncate rounded-xl border border-orange-100 bg-white pl-3 pr-10 text-base font-bold text-slate-800 shadow-sm outline-none focus:border-orange-300 focus:ring-4 focus:ring-orange-100">
+                {watchlistDefs.map((list) => <option key={list.id} value={list.id}>{list.name}</option>)}
+              </select>
+              <ChevronDown aria-hidden="true" size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-orange-600" />
+            </div>
           </div>
-          <a
-            href="https://www.jacksu.tw/tool"
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-flex h-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100 transition-colors hover:bg-orange-100 sm:mt-0"
-          >
-            前往 Jack Su 工具頁
-            <ExternalLink size={15} className="ml-1.5" />
-          </a>
-        </section>
+          <button type="button" onClick={createWatchlist} aria-label="新增清單" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-orange-100 bg-white text-orange-700 shadow-sm transition hover:bg-orange-50"><Plus size={20} /></button>
+        </div>
 
-        <div className="mt-7 mb-4 flex gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100">
+        <div role="group" aria-label="我的清單" className="mb-4 hidden gap-1 overflow-x-auto rounded-xl bg-orange-50/80 p-1 tabular-nums ring-1 ring-orange-100 sm:flex">
           {watchlistDefs.map((list) => (
             <button
               key={list.id}
               type="button"
               onClick={() => setActiveListId(list.id)}
-              className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
+              aria-pressed={activeListId === list.id}
+              className={`min-h-11 whitespace-nowrap rounded-lg px-3 py-2 text-xs font-bold transition-colors ${
                 activeListId === list.id ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -4923,47 +4881,31 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
         </div>
 
         {activeItems.length ? (
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-col gap-2">
-              <div className="flex gap-1 overflow-x-auto rounded-xl bg-slate-100 p-1 tabular-nums">
-                {MARKET_TABS.map((tab) => (
-                  <button
-                    key={tab.value}
-                    type="button"
-                    onClick={() => setActiveMarket(tab.value)}
-                    className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                      activeMarket === tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+          <section aria-label="清單顯示設定" className="mb-4 space-y-3">
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <p className="min-w-0 truncate text-sm font-black text-slate-800">
+                <span className="sm:hidden">觀察標的</span>
+                <span className="hidden sm:inline">{watchlistDefs.find((list) => list.id === activeListId)?.name || activeListId}</span>
+                <span className="ml-2 text-xs font-medium text-slate-400">{filteredItems.length} 檔</span>
+              </p>
+              <div role="group" aria-label="顯示模式" className="flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1">
+                <button type="button" onClick={() => setViewMode('cards')} aria-pressed={viewMode === 'cards'} className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-colors ${viewMode === 'cards' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}>
+                  <LayoutGrid size={15} />卡片
+                </button>
+                <button type="button" onClick={() => setViewMode('table')} aria-pressed={viewMode === 'table'} className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-colors ${viewMode === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}>
+                  <Table2 size={15} />表格
+                </button>
               </div>
-              <PriceColorConventionNote activeMarket={activeMarket} mixed={hasMixedStockMarkets} />
             </div>
-            <div className="flex shrink-0 gap-1 rounded-xl bg-slate-100 p-1 tabular-nums">
-              <button
-                type="button"
-                onClick={() => setViewMode('cards')}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                  viewMode === 'cards' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <LayoutGrid size={13} />
-                卡片
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('table')}
-                className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
-                  viewMode === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                <Table2 size={13} />
-                表格
-              </button>
+            <div role="group" aria-label="市場篩選" className="grid grid-cols-5 gap-1 rounded-xl bg-slate-100 p-1 sm:flex">
+              {MARKET_TABS.map((tab) => (
+                <button key={tab.value} type="button" onClick={() => setActiveMarket(tab.value)} aria-pressed={activeMarket === tab.value} className={`min-h-11 whitespace-nowrap rounded-lg px-1 text-xs font-bold transition-colors sm:px-4 ${activeMarket === tab.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}>
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          </div>
+            <PriceColorConventionNote activeMarket={activeMarket} mixed={hasMixedStockMarkets} />
+          </section>
         ) : null}
 
         {mounted && activeItems.length === 0 ? (
@@ -5012,7 +4954,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
                 <button
                   type="button"
                   onClick={openAddPanel}
-                  className="flex min-h-44 flex-col items-center justify-center rounded-2xl border border-dashed border-orange-200 bg-white/60 p-5 text-center text-sm font-black text-orange-700 transition hover:-translate-y-1 hover:border-orange-300 hover:bg-orange-50/60"
+                  className="flex min-h-24 flex-col items-center justify-center rounded-2xl border border-dashed border-orange-200 bg-white/60 p-5 text-center text-sm font-black text-orange-700 transition hover:-translate-y-1 hover:border-orange-300 hover:bg-orange-50/60 sm:min-h-44"
                 >
                   <Plus size={24} />
                   <span className="mt-2">新增標的</span>
@@ -5039,12 +4981,29 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
               />
             )}
 
-            <div className="mt-5 inline-flex items-center rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-100">
+            <div className="mt-5 hidden items-center rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-slate-500 shadow-sm ring-1 ring-slate-100 sm:inline-flex">
               <Info size={14} className="text-orange-600" />
               <span className="ml-1.5 font-medium">卡片與表格都可拖曳調整順序；表格模式適合快速掃描多筆標的</span>
             </div>
           </>
         ) : null}
+        <section aria-label="Tribute 致敬" className="mt-10 rounded-2xl border border-orange-100 bg-white/85 p-4 shadow-sm shadow-orange-700/5 sm:flex sm:items-center sm:justify-between sm:gap-5">
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest text-orange-700">Tribute</p>
+            <p className="mt-1 text-xs font-medium leading-relaxed text-slate-500 sm:text-sm">
+              這個自選股看盤頁面以 Jack Su 的工具為基礎重新製作，在此向他的優秀作品致敬。如果你喜歡這類實用工具，也推薦前往他的網站，體驗更多功能。
+            </p>
+          </div>
+          <a
+            href="https://www.jacksu.tw/tool"
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex h-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100 transition-colors hover:bg-orange-100 sm:mt-0"
+          >
+            前往 Jack Su 工具頁
+            <ExternalLink size={15} className="ml-1.5" />
+          </a>
+        </section>
       </main>
 
       {selectedStock ? (

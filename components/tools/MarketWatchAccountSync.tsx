@@ -157,21 +157,23 @@ export default function MarketWatchAccountSync({ configured, mounted, snapshot, 
 
   const dirty = serialized !== saved.current;
   const pending = phase === 'loading' || phase === 'saving';
-  const button = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50';
+  const button = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition sm:text-sm disabled:cursor-not-allowed disabled:opacity-50';
 
   return (
-    <section aria-label="Google 帳號與清單同步" className="mb-8 rounded-2xl border border-orange-100 bg-white/95 p-5 shadow-sm sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-orange-700"><Cloud size={23} /></div>
-          <div>
-            <h2 className="text-base font-black text-slate-900">{userId ? `${session.user?.name || '我的'}的雲端清單` : '你的市場清單，隨身帶著走'}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-500">{userId ? session.user?.email : '使用同一個 Google 帳號登入，在手機與電腦追蹤同一份 2330 自選清單。'}</p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">同步自選標的、清單分類、排序、置頂及通知條件；未登入時只儲存在此裝置。</p>
+    <section aria-label="Google 帳號與清單同步" className="mb-4 rounded-2xl border border-orange-100 bg-white/95 p-3 shadow-sm sm:mb-6 sm:p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
+          <div className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-700 sm:flex"><Cloud size={20} /></div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-2">
+              <h2 className="text-sm font-black text-slate-900">{userId ? '雲端清單' : '跨裝置同步'}</h2>
+              <a href="/market-watch/privacy" className="inline-flex min-h-6 items-center text-[11px] text-slate-400 underline underline-offset-4">隱私說明</a>
+            </div>
+            <p className="mt-0.5 break-words text-xs leading-relaxed text-slate-500">{userId ? session.user?.email : configured ? '未登入時，清單存於此裝置。' : 'Google 登入準備中，先用本機清單。'}</p>
           </div>
         </div>
         {userId ? (
-          <div className="flex shrink-0 flex-wrap gap-2">
+          <div className="flex shrink-0 flex-wrap gap-1.5">
             <button type="button" disabled={pending || phase === 'conflict'} onClick={() => hydrated.current && dirty ? save(current.current) : load()} className={`${button} bg-orange-50 text-orange-700 hover:bg-orange-100`}><RefreshCw size={15} className={pending ? 'animate-spin' : ''} />立即同步</button>
             <button type="button" disabled={pending || phase === 'conflict'} onClick={async () => {
               if (hydrated.current && dirty && !(await save(current.current))) return;
@@ -190,15 +192,14 @@ export default function MarketWatchAccountSync({ configured, mounted, snapshot, 
           }} className={`${button} shrink-0 border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-orange-200 hover:bg-orange-50`}><span aria-hidden="true" className="text-lg font-black text-blue-600">G</span>使用 Google 登入</button>
         )}
       </div>
-      <div aria-live="polite" className="mt-4 text-xs leading-relaxed">
-        {!configured ? <p className="text-slate-500">Google 登入功能準備中，目前仍可使用本機觀察清單。</p> : !userId ? <p className={problem ? 'text-amber-700' : 'text-slate-400'}>{problem || '首次登入會自動保存目前頁面的清單；已有雲端清單的帳號會載入帳號資料。Google 只提供基本帳號資料。'}</p> : problem ? (
-          <div className="rounded-xl bg-amber-50 p-3 text-amber-800">
+      <div aria-live="polite" className="text-xs leading-relaxed">
+        {!userId ? (problem ? <p className="mt-2 text-amber-700">{problem}</p> : null) : problem ? (
+          <div className="mt-3 rounded-xl bg-amber-50 p-3 text-amber-800">
             <p>{problem}</p>
             {phase === 'conflict' ? <button type="button" onClick={() => load(true)} className="mt-2 font-black underline underline-offset-4">載入雲端版本（放棄此頁未儲存變更）</button> : <button type="button" onClick={() => hydrated.current ? save(current.current) : load(true)} className="mt-2 font-black underline underline-offset-4">重試同步</button>}
           </div>
-        ) : <p className="inline-flex items-center gap-1.5 text-emerald-700"><CloudCheck size={14} />{phase === 'loading' ? '正在載入你的清單…' : phase === 'saving' || dirty ? '正在儲存變更…' : `已同步${updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}` : ''}`}</p>}
+        ) : <p className="mt-2 inline-flex items-center gap-1.5 text-emerald-700"><CloudCheck size={14} />{phase === 'loading' ? '正在載入你的清單…' : phase === 'saving' || dirty ? '正在儲存變更…' : `已同步${updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })}` : ''}`}</p>}
         {authError && !userId ? <p className="mt-2 text-amber-700">Google 登入未完成，請重試；若持續發生，請聯絡網站管理者檢查登入設定。</p> : null}
-        <a href="/market-watch/privacy" className="mt-2 inline-block text-slate-400 underline underline-offset-4">帳號與同步資料說明</a>
       </div>
     </section>
   );
