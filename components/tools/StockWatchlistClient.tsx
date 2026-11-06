@@ -1642,7 +1642,7 @@ function DetailChart({
     setIsDraggingChart(false);
     pinchRef.current = null;
     dragRef.current = null;
-  }, [mode, periodLabel, points]);
+  }, [mode, periodLabel]);
 
   useLayoutEffect(() => {
     const element = chartRef.current;
@@ -1683,16 +1683,21 @@ function DetailChart({
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
   };
-  // Fit and scale the staff from the selected period only. Zooming changes the
-  // visible candles, but must not change the five-line model or its price axis.
+  // Fit the full selected period. Project that same model onto the candle
+  // indices in the viewport so zoom/pan cannot change their price relationship.
   const periodStaff = useMemo(() => calculateStaff(points), [points]);
-  const staff = mode === 'staff' ? periodStaff : null;
+  const staff = useMemo(() => periodStaff?.map((line) => {
+    const valueAt = (index: number) => line.startValue +
+      (line.endValue - line.startValue) * index / Math.max(1, points.length - 1);
+    return {
+      ...line,
+      startValue: valueAt(visibleRange.startIndex),
+      midValue: valueAt((visibleRange.startIndex + visibleRange.endIndex) / 2),
+      endValue: valueAt(visibleRange.endIndex),
+    };
+  }) ?? null, [periodStaff, points.length, visibleRange]);
   const vrvpProfile = calculateVrvp(visiblePoints);
-  const rawPriceDomain = mode === 'staff'
-    ? getPriceDomain(points)
-    : isCandlestickMode
-      ? getPriceDomain(visiblePoints)
-      : closeDomain;
+  const rawPriceDomain = isCandlestickMode ? getPriceDomain(visiblePoints) : closeDomain;
   const staffValues = mode === 'staff' && staff ? staff.flatMap((line) => [line.startValue, line.midValue, line.endValue]) : [];
   const vrvpValues = mode === 'vrvp'
     ? [
@@ -2911,6 +2916,10 @@ function StockDetailModal({
   const [pricePeriod, setPricePeriod] = useState(PRICE_PERIODS[4]);
   const [staffPeriod, setStaffPeriod] = useState(STAFF_PERIODS[3]);
   const [vrvpPeriod, setVrvpPeriod] = useState(VRVP_PERIODS[2]);
+  const quoteRef = useRef(quote);
+  useEffect(() => {
+    quoteRef.current = quote;
+  }, [quote]);
   const activeQuote = details?.quote || quote;
   const isFx = item.market === '外匯';
   const isMetal = item.market === '貴金屬';
@@ -2950,6 +2959,9 @@ function StockDetailModal({
 
   useEffect(() => {
     let cancelled = false;
+    // A live card quote must not reload the historical analysis every 30s.
+    // Capture the current quote only when the asset or requested period changes.
+    const quote = quoteRef.current;
 
     async function loadDetails() {
       setLoading(true);
@@ -2994,7 +3006,7 @@ function StockDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [historyYears, item.market, item.symbol, quote, quote?.longName, quote?.name]);
+  }, [historyYears, item.market, item.symbol]);
 
   useEffect(() => {
     const { body, documentElement } = document;
@@ -4991,6 +5003,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
 
       {selectedStock ? (
         <StockDetailModal
+          key={stockKey(selectedStock.symbol, selectedStock.market)}
           item={selectedStock}
           quote={quotes[stockKey(selectedStock.symbol, selectedStock.market)]}
           colorConvention={colorConvention}
