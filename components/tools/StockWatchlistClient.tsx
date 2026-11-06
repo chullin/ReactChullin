@@ -553,14 +553,75 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+async function fetchJson<T>(url: string, signal?: AbortSignal): Promise<T> {
+  const response = await fetch(url, { signal });
 
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
 
   return response.json() as Promise<T>;
+}
+
+// Public market history is shared by cards and the modal, including in-flight
+// requests. A longer response can satisfy every shorter chart period.
+const stockHistoryRequests = new Map<string, {
+  asset: string;
+  years: number;
+  expiresAt: number;
+  promise: Promise<StockDetails>;
+}>();
+
+function loadStockHistory(item: StockItem, years: number): Promise<StockDetails> {
+  const asset = stockKey(item.symbol, item.market);
+  for (const [key, cached] of stockHistoryRequests) {
+    if (cached.expiresAt <= Date.now()) stockHistoryRequests.delete(key);
+    else if (cached.asset === asset && cached.years >= years) return cached.promise;
+  }
+  const key = `${asset}|${years}`;
+  const promise = fetchJson<DetailsResponse>(
+    `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&years=${years}&historyOnly=1`,
+    AbortSignal.timeout(60_000),
+  ).then((payload) => {
+    if (!payload.success || !payload.data?.history?.length) throw new Error('History unavailable');
+    return { history: payload.data.history, historyYears: years };
+  }).catch((error) => {
+    stockHistoryRequests.delete(key);
+    throw error;
+  });
+  if (stockHistoryRequests.size >= 80) stockHistoryRequests.delete(stockHistoryRequests.keys().next().value!);
+  stockHistoryRequests.set(key, { asset, years, promise, expiresAt: Date.now() + 15 * 60_000 });
+  return promise;
+}
+
+const stockMetadataRequests = new Map<string, { expiresAt: number; promise: Promise<StockDetails> }>();
+
+function loadStockMetadata(item: StockItem, name: string): Promise<StockDetails> {
+  const key = stockKey(item.symbol, item.market);
+  const cached = stockMetadataRequests.get(key);
+  if (cached && cached.expiresAt > Date.now()) return cached.promise;
+  const promise = fetchJson<DetailsResponse>(
+    `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&name=${encodeURIComponent(name)}&metadataOnly=1`,
+    AbortSignal.timeout(60_000),
+  ).then((payload) => {
+    if (!payload.success || !payload.data) throw new Error('Metadata unavailable');
+    return payload.data;
+  }).catch((error) => {
+    stockMetadataRequests.delete(key);
+    throw error;
+  });
+  if (stockMetadataRequests.size >= 80) stockMetadataRequests.delete(stockMetadataRequests.keys().next().value!);
+  stockMetadataRequests.set(key, { expiresAt: Date.now() + 60_000, promise });
+  return promise;
+}
+
+function LoadingStatus({ children }: { children: React.ReactNode }) {
+  return (
+    <span role="status" className="inline-flex items-center gap-2 text-xs font-bold text-orange-700">
+      <RefreshCw aria-hidden="true" size={14} className="shrink-0 animate-spin motion-reduce:animate-none" />
+      {children}
+    </span>
+  );
 }
 
 function formatPrice(value: number | null | undefined, currency?: string) {
@@ -2620,6 +2681,7 @@ function FxDetailPanel({
               <button
                 key={period.label}
                 type="button"
+                aria-pressed={activePeriod.label === period.label}
                 onClick={() => setActivePeriod(period)}
                 className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors ${
                   activePeriod.label === period.label ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
@@ -2788,6 +2850,7 @@ function MetalDetailPanel({
               <button
                 key={period.label}
                 type="button"
+                aria-pressed={activePeriod.label === period.label}
                 onClick={() => setActivePeriod(period)}
                 className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors ${
                   activePeriod.label === period.label ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
@@ -2911,6 +2974,9 @@ function StockDetailModal({
 }) {
   const [details, setDetails] = useState<StockDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [newsLoading, setNewsLoading] = useState(true);
+  const [historyError, setHistoryError] = useState<number | null>(null);
+  const [retry, setRetry] = useState(0);
   const [mode, setMode] = useState('price');
   const [pricePeriod, setPricePeriod] = useState(PRICE_PERIODS[4]);
   const [staffPeriod, setStaffPeriod] = useState(STAFF_PERIODS[3]);
@@ -2933,6 +2999,8 @@ function StockDetailModal({
   const activePeriod = mode === 'staff' ? staffPeriod : mode === 'vrvp' ? vrvpPeriod : pricePeriod;
   const activePeriodOptions = mode === 'staff' ? STAFF_PERIODS : mode === 'vrvp' ? VRVP_PERIODS : PRICE_PERIODS;
   const historyYears = requestedHistoryYears(activePeriod);
+  const historyReady = (details?.historyYears || 0) >= historyYears;
+  const chartLoading = !historyReady && (loading || historyError !== historyYears);
   const chartPoints = useMemo(
     () => filterHistory(details?.history || [], activePeriod),
     [activePeriod, details?.history],
@@ -2958,12 +3026,18 @@ function StockDetailModal({
 
   useEffect(() => {
     let cancelled = false;
+    if (isStockMarket(item.market) && historyReady) {
+      setLoading(false);
+      setHistoryError(null);
+      return;
+    }
     // A live card quote must not reload the historical analysis every 30s.
     // Capture the current quote only when the asset or requested period changes.
     const quote = quoteRef.current;
 
     async function loadDetails() {
       setLoading(true);
+      setHistoryError(null);
       try {
         if (item.market === '外匯' || item.market === '貴金屬') {
           const values = quote?.sparkline || [];
@@ -2986,16 +3060,12 @@ function StockDetailModal({
           return;
         }
 
-        const name = quote?.longName || quote?.name || item.symbol;
-        const payload = await fetchJson<DetailsResponse>(
-          `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&name=${encodeURIComponent(name)}&years=${historyYears}`,
-        );
-
+        const history = await loadStockHistory(item, historyYears);
         if (!cancelled) {
-          setDetails(payload.success && payload.data ? payload.data : null);
+          setDetails((current) => ({ ...current, ...history }));
         }
       } catch {
-        if (!cancelled) setDetails(null);
+        if (!cancelled) setHistoryError(historyYears);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -3005,7 +3075,30 @@ function StockDetailModal({
     return () => {
       cancelled = true;
     };
-  }, [historyYears, item.market, item.symbol]);
+  }, [historyReady, historyYears, item.market, item.symbol, retry]);
+
+  // Quote/news latency must never hold the historical chart back, and period
+  // changes must not fetch news again.
+  useEffect(() => {
+    if (isFx || isMetal) {
+      setNewsLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setNewsLoading(true);
+    const currentQuote = quoteRef.current;
+    const name = currentQuote?.longName || currentQuote?.name || item.symbol;
+    loadStockMetadata(item, name).then((metadata) => {
+      if (!cancelled) {
+        setDetails((current) => ({ ...current, quote: metadata.quote, news: metadata.news }));
+      }
+    }).catch(() => {
+      // Keep the card quote if metadata is temporarily unavailable.
+    }).finally(() => {
+      if (!cancelled) setNewsLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [isFx, isMetal, item.market, item.symbol]);
 
   useEffect(() => {
     const { body, documentElement } = document;
@@ -3029,6 +3122,9 @@ function StockDetailModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-sm sm:p-6" onClick={onClose}>
       <div
         className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${displaySymbol(item.symbol)} 詳細資料`}
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -3116,6 +3212,7 @@ function StockDetailModal({
               <button
                 key={period.label}
                 type="button"
+                aria-pressed={activePeriod.label === period.label}
                 onClick={() => setActivePeriod(period)}
                 className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-black transition-colors ${
                   activePeriod.label === period.label ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
@@ -3126,13 +3223,20 @@ function StockDetailModal({
             ))}
           </div>
 
-          <DetailChart mode={mode} points={chartPoints} periodLabel={activePeriod.label} />
-
-          {loading ? (
-            <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 text-sm font-bold text-slate-400">
-              詳細資料載入中...
-            </div>
-          ) : null}
+          <div aria-busy={chartLoading} aria-label="歷史走勢圖">
+            {chartLoading ? (
+              <div className="flex min-h-80 flex-col items-center justify-center gap-3 rounded-2xl border border-orange-100 bg-orange-50/40 p-6 text-center">
+                <LoadingStatus>正在載入 {activePeriod.label} 歷史走勢…</LoadingStatus>
+                <p className="text-xs font-medium text-slate-500">首次載入可能需要幾秒，資料就緒後會自動顯示。</p>
+                <div aria-hidden="true" className="mt-3 h-24 w-full max-w-md animate-pulse rounded-xl bg-orange-100/50 motion-reduce:animate-none" />
+              </div>
+            ) : !historyReady ? (
+              <div role="status" className="flex min-h-80 flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 p-6 text-sm font-bold text-slate-500">
+                <p>暫時無法取得 {activePeriod.label} 歷史走勢，請稍後重試。</p>
+                <button type="button" onClick={() => { setLoading(true); setRetry((value) => value + 1); }} className="rounded-xl bg-orange-50 px-4 py-2 text-orange-700">重新載入走勢</button>
+              </div>
+            ) : <DetailChart mode={mode} points={chartPoints} periodLabel={activePeriod.label} />}
+          </div>
 
           <section className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-white">
             <div className="flex items-center gap-2 border-b border-slate-100 bg-orange-50/60 px-4 py-3 text-sm font-black text-slate-700">
@@ -3181,7 +3285,8 @@ function StockDetailModal({
                   </p>
                 </a>
               ))}
-              {!details?.news?.length && !loading ? (
+              {newsLoading ? <div className="px-4 py-6"><LoadingStatus>相關新聞載入中…</LoadingStatus></div> : null}
+              {!details?.news?.length && !newsLoading ? (
                 <div className="px-4 py-8 text-center text-sm font-bold text-slate-400">暫無新聞資料</div>
               ) : null}
             </div>
@@ -3216,6 +3321,7 @@ function StockCard({
   quote,
   colorConvention,
   loading,
+  historyLoading,
   alertCount,
   isDragging,
   dropPlacement,
@@ -3232,6 +3338,7 @@ function StockCard({
   quote?: StockQuote;
   colorConvention: PriceColorConvention;
   loading: boolean;
+  historyLoading: boolean;
   alertCount: number;
   isDragging: boolean;
   dropPlacement: 'before' | 'after' | null;
@@ -3254,6 +3361,7 @@ function StockCard({
       role="button"
       tabIndex={0}
       draggable
+      aria-busy={loading || historyLoading}
       onClick={() => onOpen(item)}
       onKeyDown={(event) => {
         if (event.target !== event.currentTarget) return;
@@ -3310,8 +3418,8 @@ function StockCard({
         </span>
       </div>
 
-      {quote?.longName ? (
-        <div className="mb-3 truncate text-xs font-medium text-slate-500">{quote.longName}</div>
+      {quote?.longName || quote?.name ? (
+        <div className="mb-3 truncate text-xs font-medium text-slate-500">{quote.longName || quote.name}</div>
       ) : loading ? (
         <div className="mb-3 h-4 w-24 animate-pulse rounded bg-orange-50" />
       ) : (
@@ -3320,6 +3428,7 @@ function StockCard({
 
       {loading && !quote ? (
         <div className="space-y-2">
+          <LoadingStatus>報價載入中…</LoadingStatus>
           <div className="h-7 w-24 animate-pulse rounded bg-orange-50" />
           <div className="h-6 w-20 animate-pulse rounded bg-orange-50" />
         </div>
@@ -3353,7 +3462,9 @@ function StockCard({
               </div>
             </div>
             <div className="h-16 w-20 shrink-0 min-[375px]:w-28 sm:w-20">
-              <Sparkline quote={quote} colorConvention={colorConvention} />
+              {historyLoading && (quote.sparkline?.length || 0) < 5 ? (
+                <div className="flex h-full items-center justify-center rounded-lg bg-orange-50/60 px-1 text-center"><LoadingStatus>走勢載入中…</LoadingStatus></div>
+              ) : <Sparkline quote={quote} colorConvention={colorConvention} />}
             </div>
           </div>
 
@@ -3421,6 +3532,7 @@ function StockCard({
           </div>
         </>
       ) : null}
+      {loading && quote ? <div className="mt-3"><LoadingStatus>報價更新中…</LoadingStatus></div> : null}
       <div className="mt-3 grid grid-cols-3 gap-1 border-t border-slate-100 pt-2 sm:pt-3">
         <button type="button" onClick={(event) => { event.stopPropagation(); onOpenAlerts(item); }} className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-bold transition-colors sm:min-h-8 ${alertCount ? 'bg-orange-50 text-orange-700' : 'text-slate-500 hover:bg-orange-50 hover:text-orange-700'}`} aria-label="設定通知">
           <Bell size={15} />通知{alertCount ? ` ${alertCount}` : ''}
@@ -3837,6 +3949,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   const [alertItem, setAlertItem] = useState<StockItem | null>(null);
   const [loading, setLoading] = useState(false);
   const [quotesLoading, setQuotesLoading] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [lastRefreshAt, setLastRefreshAt] = useState<string | null>(null);
   const [lastRefreshFailed, setLastRefreshFailed] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
@@ -4055,13 +4168,15 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   }, [activeItems]);
 
   const refreshQuotes = useCallback(async () => {
+    const requestId = ++refreshRequestRef.current;
     if (!activeItems.length) {
       setQuotesLoading(false);
+      setHistoryLoading(false);
       return;
     }
 
-    const requestId = ++refreshRequestRef.current;
     setQuotesLoading(true);
+    setHistoryLoading(true);
 
     try {
       const marketQuoteItems = activeItems.filter((item) => item.market === '外匯' || item.market === '貴金屬');
@@ -4119,10 +4234,8 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
         const key = stockKey(item.symbol, item.market);
         let cached = stockHistoryCache.current.get(key);
         if (!cached || cached.expiresAt <= Date.now()) {
-          const summary = fetchJson<DetailsResponse>(
-            `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&years=1&historyOnly=1`,
-          ).then((payload): MarketSeriesSummary => {
-            const history = filterHistory(payload.success ? payload.data?.history || [] : [], { months: 12 });
+          const summary = loadStockHistory(item, 1).then((details): MarketSeriesSummary => {
+            const history = filterHistory(details.history || [], { months: 12 });
             const sparkline = getCloseValues(filterHistory(history, { months: 1 }));
             if (sparkline.length < 5) throw new Error('Insufficient stock history');
             const domain = getPriceDomain(history);
@@ -4142,6 +4255,11 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
         }
         return [key, await cached.summary] as const;
       })).then((entries) => Object.fromEntries(entries));
+      const seriesPromise = Promise.all([marketSeriesPromise, stockSeriesPromise]);
+      // Historical context can outlast fast quotes, including a failed quote request.
+      void seriesPromise.catch(() => {}).finally(() => {
+        if (requestId === refreshRequestRef.current) setHistoryLoading(false);
+      });
       const [marketQuotes, stockQuotes] = await Promise.all([marketQuotesPromise, stockQuotesPromise]);
       const fallbackFxQuotes = activeItems.filter((item) => item.market === '外匯').reduce<Record<string, StockQuote>>((acc, item) => {
         if (marketQuotes[stockKey(item.symbol, item.market)]) return acc;
@@ -4243,7 +4361,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
       }, 0);
       setQuotesLoading(false);
 
-      Promise.all([marketSeriesPromise, stockSeriesPromise])
+      seriesPromise
         .then(([marketSummaries, stockSummaries]) => {
           if (requestId !== refreshRequestRef.current) return;
           const summaries = { ...marketSummaries, ...stockSummaries };
@@ -4286,7 +4404,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
         setMessage({ text: '報價更新失敗，請稍後再試', type: 'error' });
       }
     } finally {
-      setQuotesLoading(false);
+      if (requestId === refreshRequestRef.current) setQuotesLoading(false);
     }
   }, [activeItems, alerts, stocksParam, guestPersistence, session?.user]);
 
@@ -4713,7 +4831,8 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
         </div>
 
         <div role="status" className={`mb-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium sm:text-xs ${lastRefreshFailed ? 'rounded-xl bg-amber-50 px-3 py-2 text-amber-700 ring-1 ring-amber-100' : 'text-slate-400'}`}>
-          <span>{quotesLoading ? '報價更新中，保留現有資料…' : `更新時間：${formatQuoteTimestamp(lastRefreshAt)}`}</span>
+          {quotesLoading ? <LoadingStatus>{Object.keys(quotes).length ? '報價更新中，保留現有資料…' : '正在載入報價…'}</LoadingStatus> : <span>更新時間：{formatQuoteTimestamp(lastRefreshAt)}</span>}
+          {historyLoading && !quotesLoading ? <LoadingStatus>歷史走勢載入中，完成後自動更新…</LoadingStatus> : null}
           {lastRefreshFailed && !quotesLoading ? <span>部分資料源暫時無回應，已保留上次資料</span> : null}
         </div>
 
@@ -4938,6 +5057,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
                     quote={quotes[stockKey(item.symbol, item.market)]}
                     colorConvention={colorConvention}
                     loading={quotesLoading || !mounted}
+                    historyLoading={historyLoading}
                     alertCount={(alertsByKey[alertKey(item.symbol, item.market)] || []).length}
                     isDragging={draggedItemKey === stockKey(item.symbol, item.market)}
                     dropPlacement={dragTarget?.key === stockKey(item.symbol, item.market) ? dragTarget.placement : null}

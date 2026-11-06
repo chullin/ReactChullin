@@ -244,6 +244,7 @@ export async function GET(request: NextRequest) {
   const name = request.nextUrl.searchParams.get('name')?.trim() || symbol || '';
   const years = requestedYears(request.nextUrl.searchParams.get('years'));
   const historyOnly = request.nextUrl.searchParams.get('historyOnly') === '1';
+  const metadataOnly = request.nextUrl.searchParams.get('metadataOnly') === '1';
 
   if (!symbol || !market) {
     return NextResponse.json(
@@ -284,12 +285,12 @@ export async function GET(request: NextRequest) {
       ? fetchYahooStockQuote(normalizedSymbol, market).then((data) => ({ data }))
       : fetchJson<any>(quoteUrl),
     historyOnly ? Promise.resolve(null) : fetchJson<any>(newsUrl),
-    fetchJson<any>(historyUrl),
+    metadataOnly ? Promise.resolve(null) : fetchJson<any>(historyUrl),
   ]);
   const parsedHistory = parseHistory(history);
   const [fallbackQuote, fallbackHistory] = await Promise.all([
     historyOnly ? Promise.resolve(null) : quote?.data ? Promise.resolve(quote.data) : fetchYahooStockQuote(normalizedSymbol, market),
-    parsedHistory.length
+    metadataOnly || parsedHistory.length
       ? Promise.resolve(parsedHistory)
       : market === '台股'
         ? fetchTwseHistory(normalizedSymbol, years)
