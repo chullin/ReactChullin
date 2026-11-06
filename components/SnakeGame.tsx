@@ -1,5 +1,7 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
+import SitePageHeading from '@/components/SitePageHeading';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { 
   Card, 
@@ -333,21 +335,17 @@ export default function SnakeGame() {
   };
 
   return (
-    <div className="bg-gray-50/30 min-h-screen py-12 px-6 flex flex-col justify-center items-center">
-      <div className="max-w-5xl w-full mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-5xl font-black tracking-tight text-gradient mb-2">貪吃蛇</h1>
-            <p className="text-gray-500 font-medium">經典遊戲，全新體驗</p>
-          </motion.div>
-        </div>
+    <div className="site-page">
+      <div className="site-container space-y-10">
+        <SitePageHeading
+          eyebrow="Play & Explore"
+          title="貪吃蛇"
+          description="經典遊戲，全新體驗"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 items-start">
           {/* Game Canvas */}
-          <Card className="border-none shadow-2xl bg-white p-2 sm:p-4 overflow-hidden">
+          <SiteCard className="p-2 sm:p-4 overflow-hidden">
             <CardBody className="p-0 flex items-center justify-center relative bg-gray-50 rounded-xl overflow-hidden aspect-square border-4 border-gray-100 max-h-[60vh] md:max-h-none">
                <canvas
                 ref={canvasRef}
@@ -379,7 +377,7 @@ export default function SnakeGame() {
                 </div>
               )}
             </CardBody>
-          </Card>
+          </SiteCard>
 
           {/* Stats & Controls */}
           <div className="space-y-6">

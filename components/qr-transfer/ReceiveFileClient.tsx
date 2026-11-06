@@ -1,5 +1,6 @@
 'use client';
 
+import SitePageHeading from '@/components/SitePageHeading';
 import { Download, Pause, Play, Share2, ShieldCheck, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -247,19 +248,21 @@ export default function ReceiveFileClient() {
   }, [storageEstimate]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="site-page">
+      <section className="site-container">
         <div className="mb-8 grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-emerald-700">Receive File</p>
-            <h1 className="mt-3 text-4xl font-black tracking-tight text-slate-950">Scan QR stream and rebuild locally</h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
-              Chunk 會立即寫入 IndexedDB，不只存在 React State。關閉相機、重新整理、甚至稍後再回來，都可以依 Transfer ID 繼續。
-            </p>
+            <SitePageHeading
+              eyebrow="Receive File"
+              title="Scan QR stream and rebuild locally"
+              description={<>
+                Chunk 會立即寫入 IndexedDB，不只存在 React State。關閉相機、重新整理、甚至稍後再回來，都可以依 Transfer ID 繼續。
+              </>}
+            />
           </div>
           <button
             type="button"
-            className="rounded-lg border border-emerald-300 bg-white px-4 py-3 text-sm font-black text-emerald-800 hover:bg-emerald-50"
+            className="rounded-2xl border border-orange-200 bg-white px-4 py-3 text-sm font-black text-orange-700 hover:bg-orange-50"
             onClick={async () => {
               const persisted = await requestPersistentStorage();
               setStorageEstimate((value) => ({ ...value, persisted }));
@@ -270,8 +273,8 @@ export default function ReceiveFileClient() {
         </div>
 
         {unfinishedTransfers.length > 0 && !currentTransfer && (
-          <div className="mb-8 rounded-lg border border-emerald-200 bg-emerald-50 p-5">
-            <p className="text-sm font-black uppercase tracking-[0.16em] text-emerald-700">Continue Transfer</p>
+          <div className="mb-8 rounded-2xl border border-orange-100 bg-orange-50 p-5">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-orange-700">Continue Transfer</p>
             <div className="mt-4 grid gap-4">
               {unfinishedTransfers.slice(0, 2).map((transfer) => (
                 <TransferCard key={transfer.id} transfer={transfer} />
@@ -284,23 +287,23 @@ export default function ReceiveFileClient() {
           <div className="space-y-5">
             <QRScanner active={scannerActive} onScan={handleScan} onStatus={setStatus} />
             <div className="flex flex-wrap gap-3">
-              <button className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-black text-white hover:bg-slate-800" onClick={() => setScannerActive(true)}>
+              <button className="site-button-primary" onClick={() => setScannerActive(true)}>
                 <Play className="mr-2 inline" size={16} /> Start Camera
               </button>
-              <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-black text-slate-800 hover:bg-white" onClick={pauseTransfer}>
+              <button className="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-black text-slate-800 hover:bg-white" onClick={pauseTransfer}>
                 <Pause className="mr-2 inline" size={16} /> Pause Transfer
               </button>
             </div>
-            {status && <p className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700">{status}</p>}
+            {status && <p className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700">{status}</p>}
             {wrongTransfer && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
                 <p className="font-black text-amber-900">Different transfer detected.</p>
                 <p className="mt-1 text-sm font-semibold text-amber-800">
                   Current: {currentTransfer?.fileName ?? 'None'} · Detected: {wrongTransfer.name} ({wrongTransfer.id})
                 </p>
                 <div className="mt-3 flex gap-2">
                   <button
-                    className="rounded-lg bg-amber-900 px-3 py-2 text-sm font-black text-white"
+                    className="rounded-2xl bg-amber-900 px-3 py-2 text-sm font-black text-white"
                     onClick={async () => {
                       const transfer = await upsertTransferFromMetadata(wrongTransfer);
                       setCurrentTransfer(transfer);
@@ -309,7 +312,7 @@ export default function ReceiveFileClient() {
                   >
                     Switch Transfer
                   </button>
-                  <button className="rounded-lg border border-amber-300 px-3 py-2 text-sm font-black text-amber-900" onClick={() => setWrongTransfer(null)}>
+                  <button className="rounded-2xl border border-amber-300 px-3 py-2 text-sm font-black text-amber-900" onClick={() => setWrongTransfer(null)}>
                     Keep Current
                   </button>
                 </div>
@@ -319,7 +322,7 @@ export default function ReceiveFileClient() {
 
           <div className="space-y-5">
             {currentTransfer ? (
-              <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0">
                     <p className="truncate text-2xl font-black text-slate-950">{currentTransfer.fileName}</p>
@@ -346,7 +349,7 @@ export default function ReceiveFileClient() {
                   <Metric label="Missing" value={(currentTransfer.totalChunks - currentTransfer.receivedChunks).toLocaleString()} />
                 </div>
                 {missing.length > 0 && (
-                  <div className="mt-5 rounded-lg bg-slate-50 p-4">
+                  <div className="mt-5 rounded-2xl bg-slate-50 p-4">
                     <p className="text-sm font-black text-slate-700">View Missing Chunks</p>
                     <p className="mt-2 max-h-24 overflow-auto text-sm font-semibold leading-6 text-slate-600">
                       {missing.join(', ')}
@@ -355,21 +358,21 @@ export default function ReceiveFileClient() {
                   </div>
                 )}
                 {completedFile && completedFile.verified && (
-                  <div className="mt-5 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                  <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                     <p className="font-black text-emerald-900">Transfer Complete · SHA-256 Verified</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <a
                         href={completedFile.url}
                         download={currentTransfer.fileName}
-                        className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-black text-white hover:bg-emerald-800"
+                        className="rounded-2xl bg-emerald-700 px-4 py-2 text-sm font-black text-white hover:bg-emerald-800"
                       >
                         <Download className="mr-2 inline" size={16} /> Download File
                       </a>
-                      <button className="rounded-lg border border-emerald-300 px-4 py-2 text-sm font-black text-emerald-800" onClick={shareFile}>
+                      <button className="rounded-2xl border border-orange-200 px-4 py-2 text-sm font-black text-orange-700" onClick={shareFile}>
                         <Share2 className="mr-2 inline" size={16} /> Share
                       </button>
                       <button
-                        className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-black text-rose-700"
+                        className="rounded-2xl border border-rose-200 px-4 py-2 text-sm font-black text-rose-700"
                         onClick={async () => {
                           await deleteTransfer(currentTransfer.id);
                           setCurrentTransfer(null);
@@ -384,13 +387,13 @@ export default function ReceiveFileClient() {
                 )}
               </div>
             ) : (
-              <div className="rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm">
+              <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
                 <p className="text-lg font-black text-slate-950">Start camera and scan the Sender metadata QR.</p>
                 <p className="mt-2 text-sm font-semibold text-slate-500">Receiver will automatically resume an existing Transfer ID from IndexedDB.</p>
               </div>
             )}
 
-            <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <p className="text-sm font-black uppercase tracking-[0.14em] text-slate-500">Browser Storage</p>
               <div className="mt-4 grid gap-3 sm:grid-cols-3">
                 <Metric label="Used" value={storageEstimate.usage !== undefined ? formatBytes(storageEstimate.usage) : 'Unknown'} />
@@ -407,7 +410,7 @@ export default function ReceiveFileClient() {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg bg-slate-50 p-3">
+    <div className="rounded-2xl bg-slate-50 p-3">
       <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">{label}</p>
       <p className="mt-1 text-base font-black text-slate-950">{value}</p>
     </div>

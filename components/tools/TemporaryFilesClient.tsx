@@ -1,5 +1,6 @@
 'use client';
 
+import SitePageHeading from '@/components/SitePageHeading';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { LockKeyhole, UploadCloud, FileText, LogOut, Eye, EyeOff } from 'lucide-react';
@@ -14,8 +15,8 @@ async function api(body: object): Promise<Progress> {
   if (!response.ok) throw new ApiError(data.error || '操作失敗，請稍後重試。', response.status, data.code);
   return data;
 }
-const field = 'w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500';
-const button = 'rounded-xl bg-teal-700 px-5 py-3 font-semibold text-white hover:bg-teal-800 disabled:opacity-50 disabled:cursor-not-allowed';
+const field = 'w-full rounded-xl border border-slate-200 bg-white p-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500';
+const button = 'rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white hover:bg-orange-800 disabled:opacity-50 disabled:cursor-not-allowed';
 export default function TemporaryFilesClient() {
   const [authenticated, setAuthenticated] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -127,16 +128,14 @@ export default function TemporaryFilesClient() {
   }
   const percent = file ? Math.min(100, Math.floor(offset / file.size * 100)) : 0;
   return (
-    <main className="min-h-screen bg-slate-50 px-4 pb-24 pt-32 text-slate-900">
-      <div className="mx-auto max-w-3xl">
-        <p className="mb-3 text-sm font-bold tracking-widest text-teal-700">PERSONAL STORAGE</p>
-        <h1 className="text-4xl font-bold">檔案暫存空間</h1>
-        <p className="mt-4 text-slate-600">把檔案或文字先放在這裡，稍後再到 Google Drive 整理。</p>
-        <Link className="mt-3 inline-block text-sm text-teal-700 underline" href="/temporary-files/privacy">資料使用說明</Link>
+    <div className="site-page">
+      <div className="site-container">
+        <SitePageHeading eyebrow="Personal Storage" title="檔案暫存空間" description="把檔案或文字先放在這裡，稍後再到 Google Drive 整理。" />
+        <Link className="mt-3 inline-block text-sm text-orange-700 underline" href="/temporary-files/privacy">資料使用說明</Link>
         <div role="alert" className={error ? 'mt-6 rounded-xl bg-red-50 p-4 text-red-800' : ''}>{error}</div>
         {checking ? <p className="mt-8" role="status">正在確認空間狀態…</p> : availability !== 'available' ? (
           <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <LockKeyhole className="mb-4 text-teal-700" aria-hidden="true" />
+            <LockKeyhole className="mb-4 text-orange-700" aria-hidden="true" />
             <h2 className="text-xl font-bold">{availability === 'disabled' ? '暫存空間目前未開放' : '暫時無法連線'}</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">{availability === 'disabled' ? '這個空間只在需要時開放。開放時間結束後，登入與上傳會自動停止。' : '目前無法確認空間狀態，請稍後再試。'}</p>
             {text ? <div className="mt-4">
@@ -148,7 +147,7 @@ export default function TemporaryFilesClient() {
           </section>
         ) : !authenticated ? (
           <form onSubmit={login} className="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <LockKeyhole className="mb-4 text-teal-700" aria-hidden="true" />
+            <LockKeyhole className="mb-4 text-orange-700" aria-hidden="true" />
             <h2 className="text-xl font-bold">輸入密碼以開啟空間</h2>
             <p className="mb-6 mt-2 text-sm text-slate-500">使用網站專用密碼，無需在這裡登入 Google。</p>
             <label htmlFor="storage-password" className="mb-2 block text-sm font-semibold">網站密碼</label>
@@ -156,7 +155,7 @@ export default function TemporaryFilesClient() {
               <input id="storage-password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required maxLength={1024} placeholder="英文生日姓年" className={field + ' pr-12'} value={password} onChange={e => setPassword(e.target.value)} />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-teal-600"
+                className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 hover:text-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-orange-600"
                 aria-label={showPassword ? '隱藏密碼' : '顯示密碼'}
                 aria-pressed={showPassword}
                 onClick={() => setShowPassword(value => !value)}
@@ -169,7 +168,7 @@ export default function TemporaryFilesClient() {
         ) : (
           <>
             <div className="mt-8 flex items-center justify-between">
-              <span className="text-sm font-semibold text-teal-700">已解鎖 · 單檔上限 2 GB</span>
+              <span className="text-sm font-semibold text-orange-700">已解鎖 · 單檔上限 2 GB</span>
               <button className="flex items-center gap-2 text-sm text-slate-600" disabled={uploading || busy} onClick={logout}><LogOut size={16} aria-hidden="true" />登出</button>
             </div>
             <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -179,14 +178,14 @@ export default function TemporaryFilesClient() {
               {file && <div className="mt-5">
                 <p className="break-all font-semibold">{file.name}</p>
                 <p className="mt-1 text-sm text-slate-500">{(file.size / 1_000_000).toFixed(2)} MB</p>
-                <progress aria-label="上傳進度" className="mt-4 h-3 w-full accent-teal-700" max={file.size} value={offset} />
+                <progress aria-label="上傳進度" className="mt-4 h-3 w-full accent-orange-700" max={file.size} value={offset} />
                 <p className="mt-2 text-sm text-slate-600">{percent}% · {(offset / 1_000_000).toFixed(2)} / {(file.size / 1_000_000).toFixed(2)} MB</p>
                 <div className="mt-4 flex gap-3">
                   <button className={button} disabled={uploading || complete} onClick={upload}>{complete ? '儲存完成' : uploading ? '上傳中…' : ticket.current ? '繼續上傳' : '開始上傳'}</button>
                   {uploading && <button className="rounded-xl border border-slate-300 px-4" onClick={() => { pause.current = true; setMessage('這一段完成後即會暫停。'); }}>暫停</button>}
                 </div>
               </div>}
-              <p role="status" className="mt-4 text-sm text-teal-800">{message}</p>
+              <p role="status" className="mt-4 text-sm text-orange-800">{message}</p>
               <p className="mt-4 text-xs leading-6 text-slate-500">上傳期間請保持此頁開啟。網路中斷後可在本頁繼續；重新整理或關閉頁面後，需重新選檔並上傳。檔案不會自動刪除。</p>
             </section>
             <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -204,6 +203,6 @@ export default function TemporaryFilesClient() {
           </>
         )}
       </div>
-    </main>
+    </div>
   );
 }

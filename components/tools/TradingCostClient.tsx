@@ -1,12 +1,12 @@
 'use client';
 
+import SitePageHeading from '@/components/SitePageHeading';
 import { useMemo, useState } from 'react';
 import {
   ArrowDownRight,
   ArrowRightLeft,
   BadgeDollarSign,
   Building2,
-  Calculator,
   CircleDollarSign,
   Info,
   Landmark,
@@ -217,7 +217,7 @@ function NumberInput({
   return (
     <label htmlFor={id} className="block">
       <span className="text-sm font-bold text-slate-700">{label}</span>
-      <div className="mt-2 flex overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100">
+      <div className="mt-2 flex overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-100">
         <input
           id={id}
           type="number"
@@ -257,7 +257,7 @@ function SelectField<TValue extends string>({
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value as TValue)}
-        className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+        className="mt-2 w-full rounded-2xl border border-slate-100 bg-white px-3 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -271,7 +271,7 @@ function SelectField<TValue extends string>({
 
 function StatCard({ label, value, note }: { label: string; value: string; note: string }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
       <p className="text-xs font-black uppercase text-slate-400">{label}</p>
       <p className="mt-2 text-2xl font-black tabular-nums text-slate-900">{value}</p>
       <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">{note}</p>
@@ -398,20 +398,17 @@ export default function TradingCostClient() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-14">
+    <div className="min-h-screen bg-white">
+      <section className="site-hero">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm font-black text-orange-700">
-              <Calculator size={16} aria-hidden="true" />
-              Trading Cost Calculator
-            </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
-              交易成本與回補價位計算
-            </h1>
-            <p className="mt-4 max-w-3xl text-base font-medium leading-8 text-slate-600 sm:text-lg">
-              選擇券商、市場、商品與交易方式後，試算買賣手續費、交易稅費，以及現在賣出後要等價格跌到哪裡，這次換手才開始有淨收益。
-            </p>
+            <SitePageHeading
+              eyebrow="Trading Cost Calculator"
+              title="交易成本與回補價位計算"
+              description={<>
+                選擇券商、市場、商品與交易方式後，試算買賣手續費、交易稅費，以及現在賣出後要等價格跌到哪裡，這次換手才開始有淨收益。
+              </>}
+            />
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -429,9 +426,9 @@ export default function TradingCostClient() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[420px_1fr] lg:px-8">
+      <section className="mx-auto grid max-w-[83rem] gap-6 px-6 py-8 lg:grid-cols-[420px_1fr]">
         <div className="space-y-6">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="flex items-center gap-2">
               <Building2 size={20} className="text-orange-600" aria-hidden="true" />
               <h2 className="text-lg font-black text-slate-900">交易條件</h2>
@@ -513,7 +510,7 @@ export default function TradingCostClient() {
                   id="symbol"
                   value={symbol}
                   onChange={(event) => setSymbol(event.target.value.toUpperCase())}
-                  className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                  className="mt-2 w-full rounded-2xl border border-slate-100 bg-white px-3 py-3 text-sm font-semibold text-slate-900 shadow-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
                 />
               </div>
               <button
@@ -527,7 +524,7 @@ export default function TradingCostClient() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <Percent size={20} className="text-orange-600" aria-hidden="true" />
@@ -618,7 +615,7 @@ export default function TradingCostClient() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-black uppercase text-orange-600">{symbol || '自訂標的'}</p>
@@ -676,7 +673,7 @@ export default function TradingCostClient() {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-white p-5">
+              <div className="rounded-2xl border border-slate-100 bg-white p-5">
                 <div className="flex items-center gap-2">
                   <ReceiptText size={20} className="text-orange-600" aria-hidden="true" />
                   <h3 className="font-black text-slate-900">成本明細</h3>
@@ -699,7 +696,7 @@ export default function TradingCostClient() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="flex items-center gap-2">
               <ArrowRightLeft size={20} className="text-orange-600" aria-hidden="true" />
               <h2 className="text-lg font-black text-slate-900">QQQ 10 萬元情境</h2>
@@ -738,6 +735,6 @@ export default function TradingCostClient() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

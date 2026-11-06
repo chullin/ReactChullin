@@ -37,6 +37,49 @@ body {
 
 /* Custom Utilities */
 @layer components {
+  /* Secondary pages share the warm palette and spacing of the portfolio pages. */
+  .site-page {
+    @apply min-h-screen bg-white text-slate-900;
+    background-image: linear-gradient(180deg, var(--theme-soft), #fff 480px);
+  }
+
+  .site-container {
+    @apply mx-auto w-full max-w-[83rem] px-6 pb-20 pt-16 md:pt-24;
+  }
+
+  .site-hero {
+    @apply px-6 pb-16 pt-16 md:pt-24;
+    background: linear-gradient(180deg, var(--theme-soft), #fff 85%);
+  }
+
+  .site-eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-orange-100 bg-white/75 px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-orange-700 shadow-sm;
+  }
+
+  .site-title {
+    @apply max-w-4xl text-4xl font-black leading-[1.15] tracking-tight text-slate-950 sm:text-5xl lg:text-6xl;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  .site-description {
+    @apply max-w-3xl text-base font-medium leading-relaxed text-slate-500 sm:text-lg;
+  }
+
+  .site-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-orange-700 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .site-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-orange-100 bg-white px-5 py-3 text-sm font-bold text-orange-700 transition-colors hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .site-button-primary:focus-visible,
+  .site-button-secondary:focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: 3px;
+  }
+
   .text-gradient {
     background: linear-gradient(90deg, var(--theme-primary) 0%, var(--theme-secondary) 52%, var(--theme-accent) 100%);
     @apply bg-clip-text text-transparent font-bold py-1;

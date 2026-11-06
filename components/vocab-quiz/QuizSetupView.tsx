@@ -1,5 +1,6 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
 import { useState } from 'react';
 import { DifficultyCategory } from '@/data/wordData';
 import { 
@@ -55,10 +56,10 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
         返回選擇難度
       </Button>
 
-      <Card className="border-none shadow-2xl bg-white overflow-visible">
-        <CardHeader className="flex gap-4 p-8 bg-orange-50/50">
-          <div className={`p-3 rounded-2xl ${category.color} bg-opacity-10 text-primary`}>
-            <Globe className={`w-8 h-8 ${category.color.replace('bg-', 'text-')}`} />
+      <SiteCard className="overflow-visible">
+        <CardHeader className="flex flex-wrap gap-4 p-5 sm:p-8 bg-orange-50/50">
+          <div className="rounded-2xl bg-orange-50 p-3 text-orange-700">
+            <Globe className="h-8 w-8" aria-hidden="true" />
           </div>
           <div className="flex flex-col">
             <h2 className="text-3xl font-black tracking-tight">{category.title}</h2>
@@ -71,7 +72,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
         
         <Divider className="opacity-50" />
         
-        <CardBody className="p-8 space-y-12">
+        <CardBody className="p-5 sm:p-8 space-y-12">
           {/* Quiz Mode Selection */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
@@ -147,7 +148,7 @@ export default function QuizSetupView({ category, onStart, onBack }: QuizSetupVi
             開始測驗
           </Button>
         </CardBody>
-      </Card>
+      </SiteCard>
 
       <Card className="bg-orange-50/40 border-none shadow-none">
         <CardBody className="p-4 flex flex-row items-center gap-4 text-sm text-orange-900">

@@ -1,7 +1,8 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
+import SitePageHeading from '@/components/SitePageHeading';
 import {
-    Card,
     CardBody,
     Button,
     Link,
@@ -76,106 +77,65 @@ export default function ContactContent() {
     const { t } = useI18n();
 
     return (
-        <div className="bg-gray-50/30 min-h-[calc(100vh-80px)] flex items-center justify-center py-20 px-6">
-            <div className="max-w-xl w-full">
+        <div className="site-page">
+            <div className="site-container space-y-10">
+                <SitePageHeading
+                    eyebrow="Get in Touch"
+                    title={t('contactPage.title')}
+                    description={t('contactPage.body')}
+                />
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
+                    className="max-w-3xl"
                 >
-                    <Card className="border-none shadow-2xl bg-white overflow-visible">
-                        <CardBody className="p-12 flex flex-col items-center text-center space-y-8">
-                            {/* Profile Header */}
-                            <div className="relative">
-                                <div className="absolute -inset-4 bg-primary/20 blur-2xl rounded-full" />
+                    <SiteCard>
+                        <CardBody className="space-y-8 p-6 sm:p-10">
+                            <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
                                 <Avatar
                                     isBordered
                                     color="primary"
                                     src="/assets/github-avatar.webp"
-                                    className="w-24 h-24 text-large relative z-10"
+                                    name="Joseph Chen"
+                                    className="h-20 w-20 shrink-0"
                                 />
-                                <div className="absolute -bottom-1 -right-1 bg-success w-6 h-6 rounded-full border-4 border-white z-20" />
+                                <div className="space-y-3">
+                                    <p className="text-2xl font-black tracking-tight text-slate-950">Joseph Chen</p>
+                                    <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
+                                        <Globe size={16} className="text-orange-700" aria-hidden="true" />
+                                        <span>{t('contactPage.locationLabel')} · {t('common.location')}</span>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div className="space-y-2">
-                                <h2 className="text-3xl font-black tracking-tight text-gray-900">{t('contactPage.title')}</h2>
-                                <p className="text-gray-500 font-medium leading-relaxed">
-                                    {t('contactPage.body')}
-                                </p>
+                            <Button
+                                as={Link}
+                                href="mailto:fg6ts15@gmail.com"
+                                color="primary"
+                                size="lg"
+                                className="h-12 w-full rounded-xl font-bold sm:w-fit"
+                                startContent={<Mail size={20} aria-hidden="true" />}
+                            >
+                                {t('contactPage.email')}
+                            </Button>
+                            <div className="flex items-center gap-4">
+                                <Divider className="flex-1 opacity-50" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t('contactPage.elsewhere')}</span>
+                                <Divider className="flex-1 opacity-50" />
                             </div>
-
-                            <Link href="mailto:fg6ts15@gmail.com" className="w-full">
-                                <Button
-                                    color="primary"
-                                    size="lg"
-                                    className="w-full font-black py-8 text-xl shadow-xl shadow-orange-700/20"
-                                    radius="full"
-                                    startContent={<Mail size={24} />}
-                                >
-                                    {t('contactPage.email')}
+                            <div className="flex flex-wrap gap-3">
+                                <Button as={Link} href="https://github.com/chullin" isExternal variant="flat" color="primary" className="rounded-xl font-bold" startContent={<Github size={20} aria-hidden="true" />}>
+                                    GitHub
                                 </Button>
-                            </Link>
-
-                            <div className="w-full space-y-6 pt-4">
-                                <div className="flex items-center gap-4">
-                                    <Divider className="flex-1 opacity-50" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 whitespace-nowrap">{t('contactPage.elsewhere')}</span>
-                                    <Divider className="flex-1 opacity-50" />
-                                </div>
-
-                                <div className="flex justify-center gap-6">
-                                    <Link href="https://github.com/chullin" isExternal className="p-0">
-                                        <Button
-                                            isIconOnly
-                                            variant="flat"
-                                            color="primary"
-                                            size="lg"
-                                            radius="full"
-                                            className="bg-primary/5 hover:bg-primary/10 w-16 h-16"
-                                        >
-                                            <Github size={28} />
-                                        </Button>
-                                    </Link>
-                                    <Link href="https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about?utm_source=104&utm_medium=resumes" isExternal className="p-0">
-                                        <Button
-                                            isIconOnly
-                                            variant="flat"
-                                            color="primary"
-                                            size="lg"
-                                            radius="full"
-                                            className="bg-primary/5 hover:bg-primary/10 w-16 h-16 overflow-hidden flex items-center justify-center"
-                                        >
-                                            <OneZeroFourLogo className="w-[80%] h-auto" />
-                                        </Button>
-                                    </Link>
-                                    <Link href="https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en" isExternal className="p-0">
-                                        <Button
-                                            isIconOnly
-                                            variant="flat"
-                                            color="primary"
-                                            size="lg"
-                                            radius="full"
-                                            className="bg-primary/5 hover:bg-primary/10 w-16 h-16"
-                                        >
-                                            <LinkedinIcon size={28} />
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 w-full pt-4">
-                                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center gap-3">
-                                    <div className="bg-orange-100 text-orange-700 p-2 rounded-xl">
-                                        <Globe size={18} />
-                                    </div>
-                                    <div className="text-left">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase">{t('contactPage.locationLabel')}</p>
-                                        <p className="text-sm font-bold text-gray-700">{t('common.location')}</p>
-                                    </div>
-                                </div>
+                                <Button as={Link} href="https://profile.104.com.tw/profile/c71bed22-e78d-4e03-acdf-fb9c42e0076d/about?utm_source=104&utm_medium=resumes" isExternal variant="flat" color="primary" className="rounded-xl font-bold" startContent={<OneZeroFourLogo className="h-5 w-10" aria-hidden="true" />}>
+                                    104
+                                </Button>
+                                <Button as={Link} href="https://www.linkedin.com/in/%E6%86%B2%E5%84%84-%E9%99%B3-724511223/?locale=en" isExternal variant="flat" color="primary" className="rounded-xl font-bold" startContent={<LinkedinIcon size={20} aria-hidden="true" />}>
+                                    LinkedIn
+                                </Button>
                             </div>
                         </CardBody>
-                    </Card>
+                    </SiteCard>
                 </motion.div>
             </div>
         </div>

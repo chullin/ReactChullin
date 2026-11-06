@@ -1,5 +1,5 @@
-import HtmlPage from '@/components/HtmlPage';
+import { permanentRedirect } from 'next/navigation';
 
-export default function SegmentedVideoPage() {
-  return <HtmlPage src="Segmented Video Player.html" />;
+export default function LegacyPage() {
+  permanentRedirect('/video-player');
 }

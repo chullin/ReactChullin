@@ -34,7 +34,7 @@ export default function FlashcardApp() {
   };
 
   return (
-    <div className="min-h-[500px] w-full max-w-4xl mx-auto">
+    <div className="min-h-[500px] w-full">
       <AnimatePresence mode="wait">
         {gameState === 'selection' && (
           <motion.div
@@ -46,7 +46,8 @@ export default function FlashcardApp() {
           >
             <SelectionView 
               onSelect={handleSelectCategory} 
-              title="每日單字卡"
+              title="選擇學習等級"
+              headingLevel="h2"
               description="選擇適合的等級建立您的每日小任務！"
               modeSwitchPath="/vocab-quiz"
               modeSwitchText="前往測驗挑戰"

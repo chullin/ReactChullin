@@ -9,7 +9,7 @@ interface QRDisplayProps {
 
 export default function QRDisplay({ dataUrl, label }: QRDisplayProps) {
   return (
-    <div className="mx-auto w-full max-w-[520px] rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <div className="mx-auto w-full max-w-[520px] rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       {dataUrl ? (
         <Image src={dataUrl} alt={label} width={512} height={512} className="h-auto w-full" unoptimized priority />
       ) : (

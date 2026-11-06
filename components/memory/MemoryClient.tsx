@@ -1,8 +1,8 @@
 'use client';
 
+import SitePageHeading from '@/components/SitePageHeading';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import {
-  Brain,
   Download,
   Eye,
   EyeOff,
@@ -44,7 +44,12 @@ function getSourceLabel(source: string) {
 }
 
 export default function MemoryClient() {
-  const [profile, setProfile] = useState<MemoryProfile>(() => loadMemoryProfile());
+  const [profile, setProfile] = useState<MemoryProfile>({
+    version: 1,
+    enabled: true,
+    memories: [],
+    events: [],
+  });
   const [title, setTitle] = useState('');
   const [detail, setDetail] = useState('');
   const [category, setCategory] = useState<MemoryCategory>('preference');
@@ -105,37 +110,34 @@ export default function MemoryClient() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-14">
+    <div className="min-h-screen bg-white">
+      <section className="site-hero">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
-              <Brain size={14} />
-              Long-term Memory
-            </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              個人化記憶中心
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">
-              這裡會保存你明確新增的偏好，以及系統從網站操作中推論出的習慣。資料目前只存在這台瀏覽器的 localStorage，
-              可隨時關閉、匯出或清除。
-            </p>
+            <SitePageHeading
+              eyebrow="Long-term Memory"
+              title="個人化記憶中心"
+              description={<>
+                這裡會保存你明確新增的偏好，以及系統從網站操作中推論出的習慣。資料目前只存在這台瀏覽器的 localStorage，
+                可隨時關閉、匯出或清除。
+              </>}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
-            <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <div className="rounded-2xl border border-slate-100 bg-white p-4">
               <p className="text-xs font-bold uppercase text-slate-400">Status</p>
               <p className="mt-2 text-xl font-black text-slate-950">{profile.enabled ? '啟用中' : '已暫停'}</p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <div className="rounded-2xl border border-slate-100 bg-white p-4">
               <p className="text-xs font-bold uppercase text-slate-400">Memories</p>
               <p className="mt-2 text-xl font-black text-slate-950">{profile.memories.length}</p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <div className="rounded-2xl border border-slate-100 bg-white p-4">
               <p className="text-xs font-bold uppercase text-slate-400">Inferred</p>
               <p className="mt-2 text-xl font-black text-slate-950">{inferredMemories.length}</p>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-white p-4">
+            <div className="rounded-2xl border border-slate-100 bg-white p-4">
               <p className="text-xs font-bold uppercase text-slate-400">Events</p>
               <p className="mt-2 text-xl font-black text-slate-950">{profile.events.length}</p>
             </div>
@@ -143,9 +145,9 @@ export default function MemoryClient() {
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-5 py-8 lg:grid-cols-[360px_1fr] lg:px-8">
+      <div className="mx-auto grid max-w-[83rem] gap-6 px-6 py-8 lg:grid-cols-[360px_1fr]">
         <aside className="space-y-6">
-          <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="flex items-center gap-2">
               <Plus size={18} className="text-orange-700" />
               <h2 className="text-lg font-black text-slate-950">新增明確記憶</h2>
@@ -158,7 +160,7 @@ export default function MemoryClient() {
               id="memory-title"
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="mt-2 h-11 w-full rounded-2xl border border-slate-100 bg-white px-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
               placeholder="例如：偏好繁體中文回答"
             />
 
@@ -169,7 +171,7 @@ export default function MemoryClient() {
               id="memory-category"
               value={category}
               onChange={(event) => setCategory(event.target.value as MemoryCategory)}
-              className="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="mt-2 h-11 w-full rounded-2xl border border-slate-100 bg-white px-3 text-sm outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
             >
               {categoryOptions.map((item) => (
                 <option key={item} value={item}>
@@ -185,7 +187,7 @@ export default function MemoryClient() {
               id="memory-detail"
               value={detail}
               onChange={(event) => setDetail(event.target.value)}
-              className="mt-2 min-h-28 w-full rounded-lg border border-slate-200 bg-white px-3 py-3 text-sm leading-6 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="mt-2 min-h-28 w-full rounded-2xl border border-slate-100 bg-white px-3 py-3 text-sm leading-6 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
               placeholder="寫下未來希望網站或助理記住的偏好、工作流或學習狀態。"
             />
 
@@ -198,13 +200,13 @@ export default function MemoryClient() {
             </button>
           </form>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-black text-slate-950">控制權</h2>
             <div className="mt-4 grid gap-3">
               <button
                 type="button"
                 onClick={handleToggleEnabled}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
               >
                 {profile.enabled ? <EyeOff size={16} /> : <Eye size={16} />}
                 {profile.enabled ? '暫停記憶' : '重新啟用記憶'}
@@ -212,7 +214,7 @@ export default function MemoryClient() {
               <button
                 type="button"
                 onClick={handleExport}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-4 text-sm font-bold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
               >
                 <Download size={16} />
                 {copied ? '已複製 JSON' : '匯出記憶 JSON'}
@@ -247,7 +249,7 @@ export default function MemoryClient() {
             </section>
           )}
 
-          <section className="rounded-lg border border-slate-200 bg-white shadow-sm">
+          <section className="rounded-2xl border border-slate-100 bg-white shadow-sm">
             <div className="flex items-center justify-between gap-4 border-b border-slate-100 p-5">
               <div>
                 <h2 className="text-lg font-black text-slate-950">所有記憶</h2>
@@ -311,7 +313,7 @@ export default function MemoryClient() {
             )}
           </section>
 
-          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <h2 className="text-lg font-black text-slate-950">最近操作事件</h2>
             <div className="mt-4 grid gap-2">
               {profile.events.slice(0, 10).map((event) => (

@@ -12,7 +12,7 @@ interface TransferCardProps {
 
 export default function TransferCard({ transfer, onDelete }: TransferCardProps) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <p className="truncate text-lg font-black text-slate-950">{transfer.fileName}</p>
@@ -23,14 +23,14 @@ export default function TransferCard({ transfer, onDelete }: TransferCardProps) 
         <div className="flex gap-2">
           <Link
             href={`/qr-transfer/receive?id=${transfer.id}`}
-            className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-black text-white hover:bg-slate-800"
+            className="site-button-primary"
           >
             Continue
           </Link>
           {onDelete && (
             <button
               type="button"
-              className="rounded-lg border border-rose-200 px-4 py-2 text-sm font-black text-rose-700 hover:bg-rose-50"
+              className="rounded-2xl border border-rose-200 px-4 py-2 text-sm font-black text-rose-700 hover:bg-rose-50"
               onClick={() => onDelete(transfer.id)}
             >
               Delete

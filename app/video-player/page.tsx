@@ -1,28 +1,26 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
+import SitePageHeading from '@/components/SitePageHeading';
 import { useState, useEffect, useRef } from 'react';
 import Hls from 'hls.js';
 import { 
-  Card, 
   CardBody, 
   CardHeader, 
   Input, 
   Button, 
-  Divider, 
   Chip,
   Listbox,
   ListboxItem
 } from '@heroui/react';
 import { 
   Play, 
-  Pause, 
   RefreshCcw, 
   Video, 
   Link as LinkIcon, 
   Info,
   Layers
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export default function VideoPlayerPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -95,17 +93,16 @@ export default function VideoPlayerPage() {
   };
 
   return (
-    <div className="bg-gray-50/30 min-h-[calc(100vh-80px)] py-16 px-6">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-5xl font-black tracking-tight text-gradient mb-2">Segmented Player</h1>
-            <p className="text-gray-500 font-medium italic">High-performance HLS video streaming showcase</p>
-          </motion.div>
-        </div>
+    <div className="site-page">
+      <div className="site-container space-y-10">
+        <SitePageHeading
+          eyebrow="Video & Streaming"
+          title="Segmented Player"
+          description="High-performance HLS video streaming showcase"
+        />
 
-        <Card className="border-none shadow-2xl bg-white overflow-visible">
-          <CardBody className="p-8 space-y-8">
+        <SiteCard className="overflow-visible">
+          <CardBody className="p-5 sm:p-8 space-y-8">
             <div className="space-y-4">
               <Input
                 label="M3U8 Playlist URL"
@@ -123,7 +120,7 @@ export default function VideoPlayerPage() {
               />
             </div>
 
-            <div className="relative group rounded-3xl overflow-hidden border-4 border-gray-100 shadow-inner bg-black aspect-video">
+            <div className="relative group rounded-2xl overflow-hidden border border-slate-100 shadow-inner bg-black aspect-video">
               <video
                 ref={videoRef}
                 className="w-full h-full object-contain"
@@ -133,7 +130,7 @@ export default function VideoPlayerPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-3">
                 <Chip
                   variant="flat"
                   color="primary"
@@ -166,7 +163,7 @@ export default function VideoPlayerPage() {
                 <Button
                   color="primary"
                   radius="full"
-                  className="font-black flex-1 shadow-lg shadow-blue-500/20"
+                  className="font-black flex-1 shadow-lg shadow-orange-700/20"
                   onPress={togglePlay}
                   startContent={<Play size={18} fill="currentColor" />}
                 >
@@ -175,12 +172,12 @@ export default function VideoPlayerPage() {
               </div>
             </div>
           </CardBody>
-        </Card>
+        </SiteCard>
 
-        <Card className="border-none shadow-sm bg-white">
+        <SiteCard>
           <CardHeader className="px-8 pt-8 pb-0">
             <div className="flex items-center gap-3">
-              <div className="bg-blue-50 p-2 rounded-xl text-blue-500">
+              <div className="bg-orange-50 p-2 rounded-xl text-orange-700">
                 <Video size={20} />
               </div>
               <h3 className="text-xl font-black text-gray-900">影片連結清單</h3>
@@ -191,7 +188,7 @@ export default function VideoPlayerPage() {
               aria-label="Playlist Selection"
               className="p-0 gap-2"
               itemClasses={{
-                base: "px-4 py-3 rounded-2xl data-[hover=true]:bg-blue-50 transition-all",
+                base: "px-4 py-3 rounded-2xl data-[hover=true]:bg-orange-50 transition-all",
                 title: "font-bold text-gray-700",
               }}
             >
@@ -199,14 +196,14 @@ export default function VideoPlayerPage() {
                 <ListboxItem
                   key={idx}
                   onPress={() => handlePlaylistClick(item.url, item.name)}
-                  startContent={<Play size={16} fill="currentColor" className="text-blue-400" />}
+                  startContent={<Play size={16} fill="currentColor" className="text-orange-600" />}
                 >
                   {item.name}
                 </ListboxItem>
               ))}
             </Listbox>
           </CardBody>
-        </Card>
+        </SiteCard>
       </div>
     </div>
   );

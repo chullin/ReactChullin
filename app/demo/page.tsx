@@ -1,5 +1,7 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
+import SitePageHeading from '@/components/SitePageHeading';
 import { 
   Card, 
   CardBody, 
@@ -72,29 +74,14 @@ export default function DemoPage() {
   ];
 
   return (
-    <div className="bg-gray-50/30 min-h-screen pt-20 pb-32 px-6">
-      <div className="max-w-6xl mx-auto space-y-20">
+    <div className="site-page">
+      <div className="site-container space-y-10">
         {/* Header */}
-        <div className="text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <Chip 
-              variant="flat" 
-              color="primary" 
-              size="lg" 
-              className="font-black uppercase tracking-widest px-6"
-            >
-              Demo Showcase
-            </Chip>
-            <h1 className="text-5xl font-black tracking-tight text-gray-900 mt-6 mb-4">🎬 實作展示中心</h1>
-            <p className="text-gray-500 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              匯集了各種技術研究、專案演示與多媒體工具的展示平臺。
-            </p>
-          </motion.div>
-        </div>
+        <SitePageHeading
+          eyebrow="Demo Showcase"
+          title="實作展示中心"
+          description="匯集了各種技術研究、專案演示與多媒體工具的展示平臺。"
+        />
 
         {/* Demo Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -106,12 +93,12 @@ export default function DemoPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card 
+              <SiteCard
                 isHoverable 
-                className="border-none shadow-sm hover:shadow-2xl transition-all duration-300 bg-white group h-full"
+                className="hover:border-orange-100 hover:shadow-lg transition-all duration-300 group h-full"
               >
                 <CardBody className="p-8 flex flex-col items-center text-center space-y-6">
-                  <div className={`p-4 rounded-3xl bg-${demo.color}/10 text-${demo.color} mb-2 shadow-sm group-hover:scale-110 transition-transform duration-500`}>
+                  <div className="mb-2 rounded-2xl bg-orange-50 p-4 text-orange-700 transition-transform duration-500 group-hover:scale-110">
                     {demo.icon}
                   </div>
                   
@@ -139,7 +126,7 @@ export default function DemoPage() {
                     <p className="text-gray-500 font-medium text-sm">
                       {demo.description}
                     </p>
-                    <Chip size="sm" variant="dot" color={demo.color as any} className="font-bold border-none text-[10px]">
+                    <Chip size="sm" variant="dot" color="primary" className="font-bold border-none text-[10px]">
                       {demo.type}
                     </Chip>
                   </div>
@@ -149,22 +136,22 @@ export default function DemoPage() {
                     href={demo.href}
                     target={demo.isExternal ? "_blank" : undefined}
                     rel={demo.isExternal ? "noopener noreferrer" : undefined}
-                    color={demo.color as any}
-                    variant="shadow"
-                    className="w-full font-black py-6 rounded-2xl shadow-xl shadow-opacity-20"
+                    color="primary"
+                    variant="solid"
+                    className="w-full font-bold py-6 rounded-xl"
                     endContent={demo.isExternal ? <ExternalLink size={18} /> : <ArrowRight size={18} />}
                   >
                     {demo.isExternal ? 'Watch Demo' : 'Open Player'}
                   </Button>
                 </CardBody>
-              </Card>
+              </SiteCard>
             </motion.div>
           ))}
         </div>
 
         {/* Download Section */}
         <section className="pt-20">
-          <Card className="border-none bg-[var(--theme-primary)] shadow-2xl p-8 sm:p-16 overflow-hidden relative">
+          <Card className="rounded-3xl border-none bg-[var(--theme-primary)] shadow-sm p-8 sm:p-16 overflow-hidden relative">
             {/* Background Decorations */}
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-orange-300 rounded-full blur-3xl opacity-50" />
             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-rose-800 rounded-full blur-3xl opacity-50" />
@@ -181,7 +168,7 @@ export default function DemoPage() {
                     key={i}
                     as={Link}
                     href={dl.href}
-                    className="flex-1 bg-white text-[var(--theme-primary)] font-bold py-8 text-lg rounded-2xl shadow-2xl hover:scale-105 transition-transform group"
+                    className="flex-1 bg-white text-[var(--theme-primary)] font-bold py-8 text-lg rounded-xl shadow-sm hover:scale-105 transition-transform group"
                     startContent={<Download className="group-hover:translate-y-0.5 transition-transform" size={24} />}
                   >
                     <div className="flex flex-col items-start leading-tight">

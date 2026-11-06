@@ -7,10 +7,10 @@ export const metadata = {
 
 export default function VocabQuizPage() {
   return (
-    <main className="bg-gray-50/50 min-h-screen py-12 px-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="site-page">
+      <div className="site-container">
         <VocabularyQuiz />
       </div>
-    </main>
+    </div>
   );
 }

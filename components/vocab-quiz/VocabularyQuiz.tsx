@@ -47,7 +47,7 @@ export default function VocabularyQuiz() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8">
+    <div className="w-full">
       <AnimatePresence mode="wait">
         {gameState === 'selection' && (
           <motion.div

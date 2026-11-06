@@ -24,7 +24,7 @@ export default function TransferProgress({ receivedChunks, totalChunks, storedBy
         </p>
       </div>
       <div className="h-3 overflow-hidden rounded-full bg-slate-200">
-        <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${percent}%` }} />
+        <div className="h-full rounded-full bg-orange-700 transition-all" style={{ width: `${percent}%` }} />
       </div>
       {storedBytes !== undefined && fileSize !== undefined && (
         <p className="text-sm font-semibold text-slate-500">

@@ -1,5 +1,5 @@
-import HtmlPage from '@/components/HtmlPage';
+import { permanentRedirect } from 'next/navigation';
 
-export default function PostPage() {
-  return <HtmlPage src="post.html" />;
+export default function LegacyPage() {
+  permanentRedirect('/blog');
 }

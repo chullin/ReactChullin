@@ -148,7 +148,7 @@ export default function QRScanner({ active, onScan, onStatus }: QRScannerProps) 
   }, [active, onScan, onStatus, stopCamera]);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-950">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950">
       <div className="relative aspect-[4/3] w-full">
         <video ref={videoRef} className="h-full w-full object-cover" playsInline muted />
         {!active && (
@@ -160,7 +160,7 @@ export default function QRScanner({ active, onScan, onStatus }: QRScannerProps) 
           </div>
         )}
         {active && (
-          <div className="pointer-events-none absolute inset-8 rounded-lg border-2 border-emerald-400/80 shadow-[0_0_0_999px_rgba(15,23,42,0.25)]" />
+          <div className="pointer-events-none absolute inset-8 rounded-2xl border-2 border-emerald-400/80 shadow-[0_0_0_999px_rgba(15,23,42,0.25)]" />
         )}
       </div>
       <div className="flex items-center justify-between bg-slate-900 px-4 py-3 text-sm font-bold text-slate-200">

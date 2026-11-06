@@ -16,8 +16,8 @@ export default function FileDropZone({ accept, label = 'Drag a file here or clic
   return (
     <button
       type="button"
-      className={`flex min-h-48 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition ${
-        dragging ? 'border-emerald-400 bg-emerald-50' : 'border-slate-300 bg-white hover:border-slate-400'
+      className={`flex min-h-48 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition ${
+        dragging ? 'border-orange-400 bg-orange-50' : 'border-slate-300 bg-white hover:border-slate-400'
       }`}
       onClick={() => inputRef.current?.click()}
       onDragOver={(event) => {

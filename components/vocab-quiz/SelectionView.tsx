@@ -1,5 +1,7 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
+import SitePageHeading from '@/components/SitePageHeading';
 import { wordData, DifficultyCategory } from '@/data/wordData';
 import { 
   Baby, 
@@ -19,7 +21,6 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { 
-  Card, 
   CardHeader, 
   CardBody, 
   CardFooter, 
@@ -51,6 +52,7 @@ type SelectionViewProps = {
   description?: string;
   modeSwitchPath?: string;
   modeSwitchText?: string;
+  headingLevel?: 'h1' | 'h2';
 };
 
 export default function SelectionView({ 
@@ -58,17 +60,13 @@ export default function SelectionView({
   title = "英文單字測驗", 
   description = "請選擇難度開始挑戰！",
   modeSwitchPath,
-  modeSwitchText
+  modeSwitchText,
+  headingLevel = 'h1'
 }: SelectionViewProps) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight mb-2 text-gradient">
-            {title}
-          </h1>
-          <p className="text-gray-500 font-medium">{description}</p>
-        </div>
+        <SitePageHeading eyebrow="Learn & Practice" title={title} description={description} headingLevel={headingLevel} />
         
         {modeSwitchPath && modeSwitchText && (
           <Button
@@ -90,18 +88,16 @@ export default function SelectionView({
           const IconComponent = iconMap[category.icon as keyof typeof iconMap] || BookOpen;
           
           return (
-            <Card 
+            <SiteCard
               key={category.id}
               isPressable
               isHoverable
-              className="border-none shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 bg-white"
+              className="hover:border-orange-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               onPress={() => onSelect(category)}
             >
               <CardBody className="p-6 items-center text-center">
-                <div className={`p-4 rounded-2xl mb-6 ${category.color} bg-opacity-10 text-primary`}>
-                  <IconComponent 
-                    className={`w-10 h-10 ${category.color.replace('bg-', 'text-')}`} 
-                  />
+                <div className="mb-6 rounded-2xl bg-orange-50 p-4 text-orange-700">
+                  <IconComponent className="h-10 w-10" aria-hidden="true" />
                 </div>
                 <h3 className="text-2xl font-bold mb-2">{category.title}</h3>
                 <p className="text-sm text-gray-500 line-clamp-2">{category.description}</p>
@@ -117,7 +113,7 @@ export default function SelectionView({
                   {category.words.length} 個單字
                 </Chip>
               </CardFooter>
-            </Card>
+            </SiteCard>
           );
         })}
       </div>

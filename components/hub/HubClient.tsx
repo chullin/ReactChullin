@@ -114,7 +114,7 @@ export default function HubClient() {
 
   return (
     <main className="min-h-screen bg-white">
-      <section className="bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_72%)] px-6 pb-16 pt-24">
+      <section className="site-hero">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -122,7 +122,7 @@ export default function HubClient() {
             transition={{ duration: 0.55 }}
             className="space-y-6"
           >
-            <Chip className="bg-white font-black uppercase tracking-[0.22em] text-slate-500 shadow-sm" variant="flat">
+            <Chip className="site-eyebrow" variant="flat">
               {t('hub.eyebrow')}
             </Chip>
             <div className="space-y-5">
@@ -137,7 +137,7 @@ export default function HubClient() {
               <Button
                 as={Link}
                 href="#sections"
-                className="h-12 rounded-xl bg-slate-950 px-6 font-bold text-white shadow-lg shadow-slate-900/15"
+                className="h-12 rounded-xl bg-[var(--theme-primary)] px-6 font-bold text-white shadow-lg shadow-orange-700/20"
                 endContent={<ArrowRight size={18} />}
               >
                 {t('hub.browse')}

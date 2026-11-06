@@ -1,8 +1,10 @@
 'use client';
 
+import SiteCard from '@/components/SiteCard';
+import SitePageHeading from '@/components/SitePageHeading';
 import React, { useEffect, useCallback, useState, useRef } from 'react';
 import './tetris.css';
-import TetrisBoard, { TetrisBoardHandle, CANVAS_W, CANVAS_H } from '@/components/tetris-battle/TetrisBoard';
+import TetrisBoard, { TetrisBoardHandle, CANVAS_W } from '@/components/tetris-battle/TetrisBoard';
 import { NextPieceQueue, Leaderboard, getLeaderboard, saveToLeaderboard } from '@/components/tetris-battle/GameUI';
 import { PieceType, LeaderboardEntry, SpinType } from '@/components/tetris-battle/types';
 import { PIECES } from '@/components/tetris-battle/Constants';
@@ -33,7 +35,6 @@ import {
   VolumeX, 
   Play, 
   RotateCcw, 
-  Sword, 
   Bot, 
   Settings2,
   Info,
@@ -95,7 +96,7 @@ const StatsPanel: React.FC<{ d: DisplayState; isPlayer: boolean }> = ({ d, isPla
   const spinLabel = d.lastSpinType ? `${d.lastSpinType}-SPIN!` : null;
 
   return (
-    <div className="flex flex-col gap-3 w-[100px]">
+    <div className="grid w-full grid-cols-3 gap-3 xl:flex xl:w-[100px] xl:shrink-0 xl:flex-col">
       {/* Hold */}
       <Card className="border-none shadow-sm bg-gray-50/50">
         <CardBody className="p-3 items-center">
@@ -183,7 +184,7 @@ const GarbageBar: React.FC<{ pending: number; queuedAt: number; isPlayer: boolea
     return () => clearInterval(id);
   }, [pending]);
 
-  if (pending <= 0) return <div className="w-2" style={{ height: CANVAS_H }} />;
+  if (pending <= 0) return <div className="w-2 shrink-0 self-stretch" />;
 
   const elapsed = queuedAt ? now - queuedAt : 0;
   const remaining = Math.max(0, GARBAGE_COOLDOWN_MS - elapsed);
@@ -193,8 +194,8 @@ const GarbageBar: React.FC<{ pending: number; queuedAt: number; isPlayer: boolea
 
   return (
     <div 
-      className="relative rounded-full overflow-hidden bg-gray-100 flex flex-col justify-end"
-      style={{ width: 10, height: CANVAS_H }}
+      className="relative flex shrink-0 flex-col justify-end self-stretch overflow-hidden rounded-full bg-gray-100"
+      style={{ width: 10 }}
     >
       <motion.div
         className={`w-full rounded-full bg-${barColor} relative`}
@@ -349,20 +350,16 @@ export default function TetrisBattlePage() {
   const isOver = playerGameOver || botGameOver;
 
   return (
-    <div className="bg-gray-50/30 min-h-screen py-10 px-4 font-sans sm:px-6">
-      <div className="max-w-[1400px] mx-auto space-y-8">
+    <div className="site-page">
+      <div className="site-container space-y-8">
         
         {/* Header Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-white p-6 rounded-[32px] shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary/10 p-3 rounded-2xl">
-              <Sword className="text-primary" size={24} />
-            </div>
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-gray-900 leading-none">TETRIS BATTLE</h1>
-              <p className="text-gray-400 font-bold text-xs mt-1 uppercase tracking-widest">Compete against the AI</p>
-            </div>
-          </div>
+        <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
+          <SitePageHeading
+            eyebrow="Play & Explore"
+            title="TETRIS BATTLE"
+            description="Compete against the AI"
+          />
 
           <div className="flex items-center gap-4">
             {isStarted && !isOver && (
@@ -413,12 +410,17 @@ export default function TetrisBattlePage() {
               <Chip color="primary" variant="flat" size="sm" className="font-bold">YOUR SIDE</Chip>
             </div>
 
-            <Card className="border-none shadow-2xl p-6 bg-white">
-              <div className="flex items-start gap-4 justify-center">
-                <StatsPanel d={playerDisplay} isPlayer={true} />
+            <SiteCard className="p-4 sm:p-6">
+              <div className="flex flex-col items-center gap-4 xl:flex-row xl:items-start xl:justify-center">
+                <div className="w-full xl:w-[100px] xl:shrink-0">
+                  <StatsPanel d={playerDisplay} isPlayer={true} />
+                  <div className="mt-3 hidden xl:block">
+                    <NextPieceQueue nextPieces={playerDisplay.nextPieces} />
+                  </div>
+                </div>
                 
-                <div className="flex items-stretch gap-2 relative group">
-                  <div className="relative rounded-xl overflow-hidden border-4 border-gray-100 shadow-inner">
+                <div className="relative group flex w-full max-w-[306px] min-w-0 items-stretch gap-2">
+                  <div className="relative min-w-0 flex-1 overflow-hidden rounded-xl border-4 border-gray-100 shadow-inner [&>canvas]:h-auto [&>canvas]:w-full">
                     <TetrisBoard
                       ref={playerRef}
                       isPlayer={true}
@@ -478,12 +480,10 @@ export default function TetrisBattlePage() {
                     queuedAt={playerDisplay.garbageQueuedAt}
                     isPlayer={true}
                   />
-                  <div className="hidden xl:block">
-                    <NextPieceQueue nextPieces={playerDisplay.nextPieces} />
-                  </div>
+
                 </div>
               </div>
-            </Card>
+            </SiteCard>
           </div>
 
           {/* ────── CENTER COLUMN ────── */}
@@ -533,13 +533,18 @@ export default function TetrisBattlePage() {
               <Chip color="secondary" variant="flat" size="sm" className="font-bold">SYSTEM</Chip>
             </div>
 
-            <Card className="border-none shadow-2xl p-6 bg-white overflow-hidden">
+            <SiteCard className="p-4 sm:p-6">
              
-              <div className="flex items-start gap-4 justify-center">
-                <StatsPanel d={botDisplay} isPlayer={false} />
+              <div className="flex flex-col items-center gap-4 xl:flex-row xl:items-start xl:justify-center">
+                <div className="w-full xl:w-[100px] xl:shrink-0">
+                  <StatsPanel d={botDisplay} isPlayer={false} />
+                  <div className="mt-3 hidden xl:block">
+                    <NextPieceQueue nextPieces={botDisplay.nextPieces} />
+                  </div>
+                </div>
                 
-                <div className="flex items-stretch gap-2 relative">
-                  <div className="relative rounded-xl overflow-hidden border-4 border-gray-100 shadow-inner opacity-80 group-hover:opacity-100 transition-opacity">
+                <div className="relative flex w-full max-w-[306px] min-w-0 items-stretch gap-2">
+                  <div className="relative min-w-0 flex-1 overflow-hidden rounded-xl border-4 border-gray-100 shadow-inner [&>canvas]:h-auto [&>canvas]:w-full opacity-80 group-hover:opacity-100 transition-opacity">
                     <TetrisBoard
                       ref={botRef}
                       isPlayer={false}
@@ -555,18 +560,16 @@ export default function TetrisBattlePage() {
                     queuedAt={botDisplay.garbageQueuedAt}
                     isPlayer={false}
                   />
-                  <div className="hidden xl:block">
-                    <NextPieceQueue nextPieces={botDisplay.nextPieces} />
-                  </div>
+
                 </div>
               </div>
-            </Card>
+            </SiteCard>
           </div>
 
         </div>
 
         {/* Footer Info */}
-        <div className="flex justify-center gap-8 py-8 text-gray-400">
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 py-8 text-gray-400">
           <div className="flex items-center gap-2">
             <TrendingUp size={16} />
             <span className="text-xs font-bold uppercase tracking-widest leading-none">SRS System</span>

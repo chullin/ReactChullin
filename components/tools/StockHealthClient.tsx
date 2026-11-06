@@ -1,5 +1,6 @@
 'use client';
 
+import SitePageHeading from '@/components/SitePageHeading';
 import type { FormEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -866,21 +867,18 @@ export default function StockHealthClient() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white">
+      <section className="site-hero">
+        <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-sm font-bold text-orange-700">
-                <ShieldCheck size={16} />
-                股票健康度分析
-              </div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                用指標、新聞與來源判斷買賣時機
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-slate-600">
-                輸入台股或美股代號，選擇 3M、6M 或更長時間線，頁面會用趨勢、動能、回檔、波動、區間位置與新聞來源整理成健康分數，並給出分批買進、部分獲利與停損觀察條件。
-              </p>
+              <SitePageHeading
+                eyebrow="股票健康度分析"
+                title="用指標、新聞與來源判斷買賣時機"
+                description={<>
+                  輸入台股或美股代號，選擇 3M、6M 或更長時間線，頁面會用趨勢、動能、回檔、波動、區間位置與新聞來源整理成健康分數，並給出分批買進、部分獲利與停損觀察條件。
+                </>}
+              />
             </div>
 
             <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -892,14 +890,14 @@ export default function StockHealthClient() {
                     id="stock-symbol"
                     value={symbol}
                     onChange={(event) => setSymbol(event.target.value)}
-                    className="h-11 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-3 text-base font-bold text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                    className="h-11 w-full rounded-2xl border border-slate-100 bg-white pl-10 pr-3 text-base font-bold text-slate-900 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                     placeholder="例如 2330 或 AAPL"
                   />
                 </div>
                 <select
                   value={market}
                   onChange={(event) => setMarket(event.target.value as Market)}
-                  className="h-11 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="h-11 rounded-2xl border border-slate-100 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
                 >
                   {MARKET_OPTIONS.map((option) => (
                     <option key={option} value={option}>{option}</option>
@@ -942,9 +940,9 @@ export default function StockHealthClient() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[360px_1fr] lg:px-8">
+      <section className="mx-auto grid max-w-[83rem] gap-6 px-6 py-8 lg:grid-cols-[360px_1fr]">
         <aside className="space-y-6">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <p className="text-sm font-bold text-slate-500">{market} / {symbol.toUpperCase()}</p>
             <h2 className="mt-2 text-2xl font-black text-slate-950">{quoteName}</h2>
             <div className="mt-6 flex items-end justify-between gap-4">
@@ -977,7 +975,7 @@ export default function StockHealthClient() {
             )}
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
               <BookOpenCheck size={18} className="text-orange-600" />
               <h3 className="text-lg font-black text-slate-950">資料來源</h3>
@@ -1005,7 +1003,7 @@ export default function StockHealthClient() {
         </aside>
 
         <div className="space-y-6">
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <LineChart size={20} className="text-orange-600" />
@@ -1069,7 +1067,7 @@ export default function StockHealthClient() {
             ))}
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <BarChart3 size={20} className="text-orange-600" />
@@ -1092,7 +1090,7 @@ export default function StockHealthClient() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-start justify-between gap-4">
               <div className="flex items-start gap-2">
                 <TrendingUp size={20} className="mt-0.5 text-orange-600" />
@@ -1138,7 +1136,7 @@ export default function StockHealthClient() {
                         href={item.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-start justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
+                        className="flex items-start justify-between gap-3 rounded-2xl border border-slate-100 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-orange-300 hover:text-orange-700"
                       >
                         <span>
                           {item.title}
@@ -1166,7 +1164,7 @@ export default function StockHealthClient() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
               <Activity size={20} className="text-orange-600" />
               <h3 className="text-lg font-black text-slate-950">評判指標</h3>
@@ -1184,7 +1182,7 @@ export default function StockHealthClient() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
               <BookOpenCheck size={20} className="text-orange-600" />
               <h3 className="text-lg font-black text-slate-950">估值參考</h3>
@@ -1205,7 +1203,7 @@ export default function StockHealthClient() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Newspaper size={20} className="text-orange-600" />
@@ -1237,6 +1235,6 @@ export default function StockHealthClient() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
