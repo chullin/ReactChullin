@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Market Watch Google 登入設定小抄</title>
+<style>
+body{margin:0;background:#fff7ed;color:#0f172a;font:16px/1.7 system-ui,sans-serif}main{max-width:860px;margin:48px auto;padding:0 22px 50px}h1{line-height:1.3;font-size:34px}h2{font-size:22px}section{background:white;border:1px solid #fed7aa;border-radius:20px;padding:24px;margin:22px 0}a{color:#c2410c}p{color:#64748b}.row{display:flex;align-items:center;gap:12px;justify-content:space-between;border-top:1px solid #f1f5f9;padding:14px 0}.row div{min-width:0}code{display:block;overflow-wrap:anywhere;color:#9a3412;font-size:14px}button,.link{display:inline-block;border:0;border-radius:10px;background:#c2410c;color:white;padding:9px 16px;font:600 14px system-ui;cursor:pointer;text-decoration:none;white-space:nowrap}.links{display:flex;gap:12px;flex-wrap:wrap}.tag{color:#15803d;font-weight:700}small{color:#64748b}#notice{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0f172a;color:white;padding:10px 20px;border-radius:12px;display:none}
+</style>
+<main>
+<small>CHULLIN · MARKET WATCH</small>
+<h1>Google 登入設定<br>照著複製，剩下的交給網站。</h1>
+<p>登入介面與清單同步程式已準備。你只需要在 Google 建立一組網站憑證，將兩個值貼入 Vercel。這張小抄不會收集或儲存憑證。</p>
+<div class="links"><a class="link" href="https://console.cloud.google.com/auth/clients" target="_blank" rel="noreferrer">① 開啟 Google Cloud</a><a class="link" href="https://vercel.com/chullins-projects/chullin/settings/environment-variables" target="_blank" rel="noreferrer">② 開啟 Vercel 設定</a></div>
+<section><h2>1. 建立 Google OAuth Client</h2><p>選擇網站專案 → Google Auth Platform → Clients → Create client。類型選 <b>Web application</b>。若先要求 Branding / Audience，填寫網站名稱與你的聯絡信箱，Audience 選 External。</p>
+<div class="row"><div>名稱<code>Chullin Market Watch</code></div><button data-copy="Chullin Market Watch">複製</button></div>
+<div class="row"><div>Authorized JavaScript origins<code>https://chullin.tw</code></div><button data-copy="https://chullin.tw">複製</button></div>
+<div class="row"><div>Authorized redirect URIs<code>https://chullin.tw/api/auth/callback/google</code></div><button data-copy="https://chullin.tw/api/auth/callback/google">複製</button></div>
+<small>只需基本帳號資料，不要加入 Drive 或 Gmail 存取權限。建立成功後，保留顯示 Client ID 與 Client Secret 的視窗。</small></section>
+<section><h2>2. 將兩個值貼到 Vercel</h2><p>每個變數的 Environment 都選 <b>Production</b>，類型選 <b>Secret / Sensitive</b>。值直接從 Google 視窗複製到 Vercel。</p>
+<div class="row"><div>貼入 Google 的 Client ID<code>AUTH_GOOGLE_ID</code></div><button data-copy="AUTH_GOOGLE_ID">複製變數名稱</button></div>
+<div class="row"><div>貼入 Google 的 Client Secret<code>AUTH_GOOGLE_SECRET</code></div><button data-copy="AUTH_GOOGLE_SECRET">複製變數名稱</button></div>
+<p class="tag">AUTH_SECRET 與 AUTH_URL 已設定，不需要你複製。</p><small>請勿把密鑰貼到聊天或 Git。既有 Redis 資料庫會沿用。</small></section>
+<section><h2>3. 告訴我「設定好了」</h2><p>我會檢查變數名稱是否齊全，推送並部署登入功能，再陪你完成第一次 Google 登入。實際登入後才能確認第二部裝置能載入同一份 2330 清單。</p><p>若 Google 顯示 Testing，先在 Audience → Test users 加入要測試的帳號。要開放大家使用，再完成正式發布。</p>
+<div class="row"><div>Google Branding 的首頁網址<code>https://chullin.tw</code></div><button data-copy="https://chullin.tw">複製</button></div>
+<div class="row"><div>隱私說明網址（新版本部署後可用）<code>https://chullin.tw/market-watch/privacy</code></div><button data-copy="https://chullin.tw/market-watch/privacy">複製</button></div></section>
+</main><div id="notice" role="status"></div>
+<script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(button.dataset.copy)}catch{const field=document.createElement('textarea');field.value=button.dataset.copy;document.body.append(field);field.select();document.execCommand('copy');field.remove()}const notice=document.getElementById('notice');notice.textContent='已複製';notice.style.display='block';setTimeout(()=>notice.style.display='none',1600)}));
+</script>
+</html>

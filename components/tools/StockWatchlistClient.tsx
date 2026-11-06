@@ -2,6 +2,9 @@
 
 import type { ChangeEvent, DragEvent, FormEvent, PointerEvent as ReactPointerEvent, TouchEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import MarketWatchAccountSync from './MarketWatchAccountSync';
+import type { MarketAccountSnapshot } from '@/lib/market/account-schema';
 import {
   Activity,
   BarChart3,
@@ -3854,7 +3857,10 @@ function AlertManagerModal({
   );
 }
 
-export default function StockWatchlistClient() {
+export default function StockWatchlistClient({ accountConfigured = false }: { accountConfigured?: boolean }) {
+  const { data: session } = useSession();
+  const [guestPersistence, setGuestPersistence] = useState(!session?.user);
+  const [accountBlocked, setAccountBlocked] = useState(Boolean(session?.user));
   const [mounted, setMounted] = useState(false);
   const [symbol, setSymbol] = useState('');
   const [watchlistDefs, setWatchlistDefs] = useState<WatchlistDef[]>(DEFAULT_LISTS);
@@ -3886,6 +3892,26 @@ export default function StockWatchlistClient() {
   const refreshRequestRef = useRef(0);
   const addPanelRef = useRef<HTMLFormElement>(null);
   const addSymbolInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (session?.user) setGuestPersistence(false);
+  }, [session?.user]);
+
+  const accountSnapshot = useMemo<MarketAccountSnapshot>(() => ({
+    version: 1, watchlistDefs, watchlists, alerts, activeListId, activeMarket, viewMode,
+  }), [watchlistDefs, watchlists, alerts, activeListId, activeMarket, viewMode]);
+  const accountDefaults = useMemo<MarketAccountSnapshot>(() => ({
+    version: 1, watchlistDefs: DEFAULT_LISTS, watchlists: createEmptyWatchlists(), alerts: [],
+    activeListId: DEFAULT_LISTS[0].id, activeMarket: '全部', viewMode: 'cards',
+  }), []);
+  const restoreAccount = useCallback((snapshot: MarketAccountSnapshot) => {
+    setWatchlistDefs(snapshot.watchlistDefs);
+    setWatchlists(snapshot.watchlists);
+    setAlerts(snapshot.alerts);
+    setActiveListId(snapshot.activeListId);
+    setActiveMarket(snapshot.activeMarket);
+    setViewMode(snapshot.viewMode);
+  }, []);
 
   const openAddPanel = useCallback(() => {
     setIsAddPanelOpen(true);
@@ -3973,15 +3999,15 @@ export default function StockWatchlistClient() {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !guestPersistence || session?.user) return;
     const id = window.setTimeout(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(watchlists)), 250);
     return () => window.clearTimeout(id);
-  }, [mounted, watchlists]);
+  }, [mounted, watchlists, guestPersistence, session?.user]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !guestPersistence || session?.user) return;
     localStorage.setItem(LIST_DEFS_KEY, JSON.stringify(watchlistDefs));
-  }, [mounted, watchlistDefs]);
+  }, [mounted, watchlistDefs, guestPersistence, session?.user]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -3990,20 +4016,20 @@ export default function StockWatchlistClient() {
   }, [activeListId, mounted, watchlistDefs]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !guestPersistence || session?.user) return;
     const id = window.setTimeout(() => localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts)), 250);
     return () => window.clearTimeout(id);
-  }, [alerts, mounted]);
+  }, [alerts, mounted, guestPersistence, session?.user]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !guestPersistence || session?.user) return;
     localStorage.setItem(ACTIVE_LIST_KEY, activeListId);
-  }, [mounted, activeListId]);
+  }, [mounted, activeListId, guestPersistence, session?.user]);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !guestPersistence || session?.user) return;
     localStorage.setItem(ACTIVE_MARKET_KEY, activeMarket);
-  }, [mounted, activeMarket]);
+  }, [mounted, activeMarket, guestPersistence, session?.user]);
 
   useEffect(() => {
     const query = symbol.trim();
@@ -4215,7 +4241,9 @@ export default function StockWatchlistClient() {
       setLastRefreshFailed(missingKeys.length > 0);
       window.setTimeout(() => {
         const cacheQuotes = previousQuotesRef.current;
-        localStorage.setItem(QUOTES_CACHE_KEY, JSON.stringify({ savedAt: fetchedAt, quotes: cacheQuotes } satisfies QuoteCache));
+        if (guestPersistence && !session?.user) {
+          localStorage.setItem(QUOTES_CACHE_KEY, JSON.stringify({ savedAt: fetchedAt, quotes: cacheQuotes } satisfies QuoteCache));
+        }
       }, 0);
       setQuotesLoading(false);
 
@@ -4254,7 +4282,7 @@ export default function StockWatchlistClient() {
     } finally {
       setQuotesLoading(false);
     }
-  }, [activeItems, alerts, stocksParam]);
+  }, [activeItems, alerts, stocksParam, guestPersistence, session?.user]);
 
   useEffect(() => {
     refreshQuotes();
@@ -4636,7 +4664,10 @@ export default function StockWatchlistClient() {
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_48%,#fafafa_100%)] px-6 pb-16 pt-12 text-slate-900">
-      <main className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl">
+        <MarketWatchAccountSync configured={accountConfigured} mounted={mounted} snapshot={accountSnapshot} defaults={accountDefaults} onRestore={restoreAccount} onBlocked={setAccountBlocked} />
+      </div>
+      <main inert={accountBlocked} aria-busy={accountBlocked} className={`mx-auto w-full max-w-6xl ${accountBlocked ? 'opacity-50' : ''}`}>
         <header className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-5 inline-flex h-6 items-center rounded-full bg-orange-50 px-3 text-[10px] font-bold uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">

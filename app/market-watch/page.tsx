@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
-import StockWatchlistClient from '@/components/tools/StockWatchlistClient';
+import MarketWatchApp from '@/components/tools/MarketWatchApp';
+import { auth, marketAuthConfigured } from '@/lib/market/auth';
 
 export const metadata: Metadata = {
   title: 'Market Watch 市場觀察清單 | Joseph Chen',
@@ -9,6 +10,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MarketWatchPage() {
-  return <StockWatchlistClient />;
+export default async function MarketWatchPage() {
+  const configured = marketAuthConfigured();
+  const session = configured ? await auth() : null;
+  return <MarketWatchApp session={session} configured={configured} />;
 }
