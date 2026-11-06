@@ -5,7 +5,7 @@
 - Auth.js Google OAuth，只請求 `openid email profile`。
 - 每個 Google 帳號使用獨立 Redis key，後端從已驗證 session 取出帳號識別，不接受前端指定其他使用者。
 - 同步清單、標的、排序、置頂、通知條件、篩選與顯示模式；不儲存報價快取。
-- 首次登入可選擇帶入本機清單或從預設清單開始。已有帳號優先載入雲端版本。
+- 首次登入自動保存登入前頁面的清單與設定，OAuth 跳轉前以同分頁 sessionStorage 暫存完整快照；已有帳號載入雲端版本。
 - 700ms debounce 儲存，頁面聚焦及每 30 秒檢查更新。Redis CAS revision 防止舊裝置覆蓋新清單。
 - 同步失敗保留畫面變更並提供重試；衝突時明確選擇載入雲端版本。
 - 訪客本機清單與登入後的雲端清單分離，登出後返回原本的訪客清單。
@@ -30,13 +30,13 @@
 既有 Redis 可直接使用，支援 `UPSTASH_REDIS_REST_URL/TOKEN`、`UPSTASH_REDIS_KV_REST_API_URL/TOKEN` 或 `KV_REST_API_URL/TOKEN`，不需要另一個資料庫。不要將 Client Secret 或任何 token 貼到聊天、截圖或 Git。
 
 6. 若 Google Audience 仍為 Testing，將要測試的 Google 帳號加入 Test users；要提供所有 Google 使用者登入時，改為正式發布，並依 Google 顯示的要求完成網站、品牌與網域設定。首頁 `https://chullin.tw`、隱私說明 `https://chullin.tw/market-watch/privacy`。此說明頁需在新版本部署後才存在。
-7. 設定完成後部署程式，再驗證 Google 登入、首次清單選擇與第二部裝置載入。不能用 build 通過代替實際 OAuth 驗證。
+7. 設定完成後部署程式，再驗證 Google 登入、首次清單自動保存與第二部裝置載入。不能用 build 通過代替實際 OAuth 驗證。
 
 Google 設定依據：[Auth.js Google provider](https://authjs.dev/getting-started/providers/google)。
 
 ## 本機驗證
 
-離線檢查可執行 `node scripts/check-market-account.cjs`（已驗證 Google 身分條件、帳號隔離、跨來源拒絕、陳舊 revision 衝突與請求大小上限），另執行 `npm run build`。這些檢查不連線或修改正式 Google／Redis 資料。
+登入流程回歸測試執行 `node scripts/check-market-login.cjs`（首次自動保存、既有帳號載入、失敗保留與登入前快照）。既有離線檢查可執行 `node scripts/check-market-account.cjs`（已驗證 Google 身分條件、帳號隔離、跨來源拒絕、陳舊 revision 衝突與請求大小上限），另執行 `npm run build`。這些檢查不連線或修改正式 Google／Redis 資料。
 
 本機用獨立測試 OAuth Client 與測試 Redis；在 Google 加入 `http://localhost:3000/api/auth/callback/google`，於 gitignored 的 `.env.local` 設定 `AUTH_GOOGLE_ID`、`AUTH_GOOGLE_SECRET`、`AUTH_SECRET`、`AUTH_URL=http://localhost:3000`。不要下載或複製正式環境的 Secret 到本機。
 

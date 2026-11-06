@@ -3,17 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { Cloud, CloudCheck, LogOut, RefreshCw } from 'lucide-react';
+import { readLoginSnapshot, storeLoginSnapshot, clearLoginSnapshot } from '@/lib/market/login-snapshot';
 import { marketAccountSchema, type MarketAccountDocument, type MarketAccountSnapshot } from '@/lib/market/account-schema';
 
 type Props = {
   configured: boolean; mounted: boolean;
-  snapshot: MarketAccountSnapshot; defaults: MarketAccountSnapshot;
+  snapshot: MarketAccountSnapshot;
   onRestore: (snapshot: MarketAccountSnapshot) => void;
   onBlocked: (blocked: boolean) => void;
 };
-type Phase = 'loading' | 'setup' | 'ready' | 'saving' | 'error' | 'conflict';
+type Phase = 'loading' | 'ready' | 'saving' | 'error' | 'conflict';
 
-export default function MarketWatchAccountSync({ configured, mounted, snapshot, defaults, onRestore, onBlocked }: Props) {
+export default function MarketWatchAccountSync({ configured, mounted, snapshot, onRestore, onBlocked }: Props) {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const [phase, setPhase] = useState<Phase>('loading');
@@ -34,39 +35,6 @@ export default function MarketWatchAccountSync({ configured, mounted, snapshot, 
   useEffect(() => {
     setAuthError(new URLSearchParams(window.location.search).has('error'));
   }, []);
-
-  const load = useCallback(async (force = false) => {
-    if (busy.current) return;
-    const before = JSON.stringify(current.current);
-    if (!force && hydrated.current && before !== saved.current) return;
-    const requestGeneration = generation.current;
-    busy.current = true;
-    try {
-      const response = await fetch('/api/market/account', { cache: 'no-store' });
-      const payload = await response.json() as { document?: MarketAccountDocument | null; error?: string };
-      if (requestGeneration !== generation.current) return;
-      if (!response.ok) throw new Error(payload.error || '無法載入雲端清單。');
-      if (!force && hydrated.current && JSON.stringify(current.current) !== before) return;
-      if (!payload.document) { hydrated.current = false; revision.current = 0; setPhase('setup'); return; }
-      const document = payload.document;
-      const data = marketAccountSchema.parse(document.snapshot);
-      if (!hydrated.current || document.revision !== revision.current || force) {
-        saved.current = JSON.stringify(data);
-        revision.current = document.revision;
-        onRestore(data);
-        setUpdatedAt(document.updatedAt);
-      }
-      hydrated.current = true;
-      setProblem('');
-      setPhase('ready');
-    } catch (error) {
-      if (requestGeneration !== generation.current) return;
-      setProblem(error instanceof Error ? error.message : '無法載入雲端清單。');
-      setPhase('error');
-    } finally {
-      if (requestGeneration === generation.current) { busy.current = false; setTick((value) => value + 1); }
-    }
-  }, [onRestore]);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -98,6 +66,7 @@ export default function MarketWatchAccountSync({ configured, mounted, snapshot, 
       revision.current = payload.document.revision;
       if (!hydrated.current) onRestore(input.data);
       hydrated.current = true;
+      clearLoginSnapshot(window.sessionStorage);
       setUpdatedAt(payload.document.updatedAt);
       setProblem('');
       setPhase('ready');
@@ -111,6 +80,50 @@ export default function MarketWatchAccountSync({ configured, mounted, snapshot, 
       if (requestGeneration === generation.current) { busy.current = false; setTick((value) => value + 1); }
     }
   }, [onRestore]);
+
+  const load = useCallback(async (force = false) => {
+    if (busy.current) return;
+    if (!hydrated.current) {
+      const pending = readLoginSnapshot(window.sessionStorage);
+      if (pending) { current.current = pending; onRestore(pending); }
+    }
+    const before = JSON.stringify(current.current);
+    if (!force && hydrated.current && before !== saved.current) return;
+    const requestGeneration = generation.current;
+    busy.current = true;
+    try {
+      const response = await fetch('/api/market/account', { cache: 'no-store' });
+      const payload = await response.json() as { document?: MarketAccountDocument | null; error?: string };
+      if (requestGeneration !== generation.current) return;
+      if (!response.ok) throw new Error(payload.error || '無法載入雲端清單。');
+      if (!force && hydrated.current && JSON.stringify(current.current) !== before) return;
+      if (!payload.document) {
+        // Only an absent cloud document may adopt the page shown before login.
+        revision.current = 0;
+        busy.current = false;
+        await save(current.current);
+        return;
+      }
+      const document = payload.document;
+      const data = marketAccountSchema.parse(document.snapshot);
+      if (!hydrated.current || document.revision !== revision.current || force) {
+        saved.current = JSON.stringify(data);
+        revision.current = document.revision;
+        onRestore(data);
+        setUpdatedAt(document.updatedAt);
+      }
+      clearLoginSnapshot(window.sessionStorage);
+      hydrated.current = true;
+      setProblem('');
+      setPhase('ready');
+    } catch (error) {
+      if (requestGeneration !== generation.current) return;
+      setProblem(error instanceof Error ? error.message : '無法載入雲端清單。');
+      setPhase('error');
+    } finally {
+      if (requestGeneration === generation.current) { busy.current = false; setTick((value) => value + 1); }
+    }
+  }, [onRestore, save]);
 
   useEffect(() => {
     if (!configured || !mounted || !userId) return;
@@ -159,26 +172,26 @@ export default function MarketWatchAccountSync({ configured, mounted, snapshot, 
         </div>
         {userId ? (
           <div className="flex shrink-0 flex-wrap gap-2">
-            <button type="button" disabled={pending || phase === 'setup' || phase === 'conflict'} onClick={() => hydrated.current && dirty ? save(current.current) : load()} className={`${button} bg-orange-50 text-orange-700 hover:bg-orange-100`}><RefreshCw size={15} className={pending ? 'animate-spin' : ''} />立即同步</button>
+            <button type="button" disabled={pending || phase === 'conflict'} onClick={() => hydrated.current && dirty ? save(current.current) : load()} className={`${button} bg-orange-50 text-orange-700 hover:bg-orange-100`}><RefreshCw size={15} className={pending ? 'animate-spin' : ''} />立即同步</button>
             <button type="button" disabled={pending || phase === 'conflict'} onClick={async () => {
               if (hydrated.current && dirty && !(await save(current.current))) return;
               await signOut({ redirectTo: '/market-watch' });
             }} className={`${button} border border-slate-200 text-slate-500 hover:bg-slate-50`}><LogOut size={15} />登出</button>
           </div>
         ) : (
-          <button type="button" disabled={!configured || status === 'loading'} onClick={() => signIn('google', { redirectTo: '/market-watch' })} className={`${button} shrink-0 border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-orange-200 hover:bg-orange-50`}><span aria-hidden="true" className="text-lg font-black text-blue-600">G</span>使用 Google 登入</button>
+          <button type="button" disabled={!configured || !mounted || status === 'loading'} onClick={async () => {
+            try {
+              storeLoginSnapshot(window.sessionStorage, current.current);
+              setProblem('');
+              await signIn('google', { redirectTo: '/market-watch' });
+            } catch {
+              setProblem('目前清單無法暫存，請確認瀏覽器允許儲存資料後重試登入。');
+            }
+          }} className={`${button} shrink-0 border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-orange-200 hover:bg-orange-50`}><span aria-hidden="true" className="text-lg font-black text-blue-600">G</span>使用 Google 登入</button>
         )}
       </div>
       <div aria-live="polite" className="mt-4 text-xs leading-relaxed">
-        {!configured ? <p className="text-slate-500">Google 登入功能準備中，目前仍可使用本機觀察清單。</p> : !userId ? <p className="text-slate-400">首次登入可選擇帶入目前清單。Google 只提供基本帳號資料，不會要求存取雲端硬碟。</p> : phase === 'setup' ? (
-          <div className="rounded-xl bg-orange-50 p-4">
-            <p className="font-bold text-orange-900">這個帳號還沒有清單，選擇你的起點。</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" onClick={() => save(current.current)} className={`${button} bg-orange-700 text-white hover:bg-orange-800`}>帶入此裝置的清單</button>
-              <button type="button" onClick={() => save(defaults)} className={`${button} border border-orange-200 bg-white text-orange-700`}>從預設清單開始</button>
-            </div>
-          </div>
-        ) : problem ? (
+        {!configured ? <p className="text-slate-500">Google 登入功能準備中，目前仍可使用本機觀察清單。</p> : !userId ? <p className={problem ? 'text-amber-700' : 'text-slate-400'}>{problem || '首次登入會自動保存目前頁面的清單；已有雲端清單的帳號會載入帳號資料。Google 只提供基本帳號資料。'}</p> : problem ? (
           <div className="rounded-xl bg-amber-50 p-3 text-amber-800">
             <p>{problem}</p>
             {phase === 'conflict' ? <button type="button" onClick={() => load(true)} className="mt-2 font-black underline underline-offset-4">載入雲端版本（放棄此頁未儲存變更）</button> : <button type="button" onClick={() => hydrated.current ? save(current.current) : load(true)} className="mt-2 font-black underline underline-offset-4">重試同步</button>}

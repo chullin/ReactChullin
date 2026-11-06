@@ -3897,10 +3897,6 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   const accountSnapshot = useMemo<MarketAccountSnapshot>(() => ({
     version: 1, watchlistDefs, watchlists, alerts, activeListId, activeMarket, viewMode,
   }), [watchlistDefs, watchlists, alerts, activeListId, activeMarket, viewMode]);
-  const accountDefaults = useMemo<MarketAccountSnapshot>(() => ({
-    version: 1, watchlistDefs: DEFAULT_LISTS, watchlists: createEmptyWatchlists(), alerts: [],
-    activeListId: DEFAULT_LISTS[0].id, activeMarket: '全部', viewMode: 'cards',
-  }), []);
   const restoreAccount = useCallback((snapshot: MarketAccountSnapshot) => {
     setWatchlistDefs(snapshot.watchlistDefs);
     setWatchlists(snapshot.watchlists);
@@ -4711,7 +4707,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_48%,#fafafa_100%)] px-6 pb-16 pt-12 text-slate-900">
       <div className="mx-auto w-full max-w-6xl">
-        <MarketWatchAccountSync configured={accountConfigured} mounted={mounted} snapshot={accountSnapshot} defaults={accountDefaults} onRestore={restoreAccount} onBlocked={setAccountBlocked} />
+        <MarketWatchAccountSync configured={accountConfigured} mounted={mounted} snapshot={accountSnapshot} onRestore={restoreAccount} onBlocked={setAccountBlocked} />
       </div>
       <main inert={accountBlocked} aria-busy={accountBlocked} className={`mx-auto w-full max-w-6xl ${accountBlocked ? 'opacity-50' : ''}`}>
         <header className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
