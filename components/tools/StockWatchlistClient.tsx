@@ -1233,8 +1233,8 @@ function calculateStaff(points: HistoryPoint[]): StaffLine[] | null {
   const residualStdev = Math.sqrt(residualVariance);
   const fallbackBand = Math.max(Math.abs(averageY) * 0.04, 1);
   const band = residualStdev > 0 ? residualStdev : fallbackBand;
-  const startIndex = valid[0].index;
-  const endIndex = valid.at(-1)?.index ?? startIndex;
+  const startIndex = 0;
+  const endIndex = Math.max(0, points.length - 1);
   const midIndex = startIndex + (endIndex - startIndex) * 0.5;
   const levels = [
     { label: '+2σ', offset: 2, color: '#2563eb', tagColor: '#2563eb' },
@@ -1701,13 +1701,17 @@ function DetailChart({
     return () => observer.disconnect();
   }, [mode, points.length]);
 
-  const visiblePoints = useMemo(() => {
-    if (points.length <= 2) return points;
+  const visibleRange = useMemo(() => {
+    if (points.length <= 2) return { startIndex: 0, endIndex: Math.max(0, points.length - 1) };
     const maxIndex = points.length - 1;
     const startIndex = Math.floor(range.start * maxIndex);
     const endIndex = Math.max(startIndex + 1, Math.ceil(range.end * maxIndex));
-    return points.slice(startIndex, endIndex + 1);
-  }, [mode, points, range]);
+    return { startIndex, endIndex };
+  }, [points.length, range]);
+  const visiblePoints = useMemo(
+    () => points.slice(visibleRange.startIndex, visibleRange.endIndex + 1),
+    [points, visibleRange],
+  );
   const values = getCloseValues(visiblePoints);
   const isCandlestickMode = mode === 'price' || mode === 'staff' || mode === 'vrvp';
   const isPriceChartMode = isCandlestickMode || mode === 'line';
@@ -1715,7 +1719,18 @@ function DetailChart({
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
   };
-  const staff = calculateStaff(visiblePoints);
+  // Fit the selected period once; zooming only projects that fit into the viewport.
+  const periodStaff = useMemo(() => calculateStaff(points), [points]);
+  const staff = useMemo(() => periodStaff?.map((line) => {
+    const valueAt = (index: number) => line.startValue +
+      (line.endValue - line.startValue) * index / Math.max(1, points.length - 1);
+    return {
+      ...line,
+      startValue: valueAt(visibleRange.startIndex),
+      midValue: valueAt((visibleRange.startIndex + visibleRange.endIndex) / 2),
+      endValue: valueAt(visibleRange.endIndex),
+    };
+  }) ?? null, [periodStaff, points.length, visibleRange]);
   const vrvpProfile = calculateVrvp(visiblePoints);
   const rawPriceDomain = isCandlestickMode ? getPriceDomain(visiblePoints) : closeDomain;
   const staffValues = mode === 'staff' && staff ? staff.flatMap((line) => [line.startValue, line.midValue, line.endValue]) : [];
@@ -2389,13 +2404,18 @@ function DetailChart({
       ) : null}
       {mode === 'staff' && staff ? (
         <div className="mt-3 grid grid-cols-5 gap-2">
-          {staff.map((line) => (
+          {periodStaff?.map((line) => (
             <div key={line.label} className="rounded-xl bg-slate-50 px-2 py-2 text-center">
               <p className="text-[10px] font-black text-slate-400">{line.label}</p>
               <p className="mt-1 text-xs font-black tabular-nums text-slate-700">{formatPrice(line.endValue)}</p>
             </div>
           ))}
         </div>
+      ) : null}
+      {mode === 'staff' && periodStaff ? (
+        <p className="mt-3 text-xs font-bold leading-relaxed text-slate-400">
+          五線譜依所選 {periodLabel} 完整資料計算；縮放與平移僅改變顯示範圍。上列價位為所選期間末端的五線譜數值。
+        </p>
       ) : null}
       {mode === 'vrvp' ? (
         <p className="mt-3 text-xs font-bold leading-relaxed text-slate-400">
