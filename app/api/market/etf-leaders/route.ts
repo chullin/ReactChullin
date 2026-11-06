@@ -51,7 +51,6 @@ export async function GET() {
           listingDate: row.listingDate || '',
           averageValue: numeric(row.valueYTD),
           averageVolume: numeric(row.volumeYTD),
-          holdingsChangeSupported: row.stockNo === '006208',
         }];
       })
       .sort((first, second) => second.aum - first.aum)

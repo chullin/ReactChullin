@@ -4,6 +4,7 @@ import type { ChangeEvent, DragEvent, FormEvent, PointerEvent as ReactPointerEve
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import MarketWatchAccountSync from './MarketWatchAccountSync';
+import type { EtfHoldingsResponse } from '@/lib/market/etfHoldings';
 import type { MarketAccountSnapshot } from '@/lib/market/account-schema';
 import {
   Activity,
@@ -218,31 +219,6 @@ type StockNewsItem = NonNullable<StockDetails['news']>[number];
 type DetailsResponse = {
   success?: boolean;
   data?: StockDetails;
-};
-
-type EtfHolding = {
-  symbol: string;
-  name: string;
-  shares: number;
-  marketValue: number;
-  weight: number;
-  shareChange: number | null;
-  weightChange: number | null;
-};
-
-type EtfHoldingsResponse = {
-  success?: boolean;
-  supported?: boolean;
-  message?: string;
-  error?: string;
-  data?: {
-    updatedAt: string;
-    previousDate: string | null;
-    holdings: EtfHolding[];
-    sourceName: string;
-    sourceUrl: string;
-    disclosureNote: string;
-  } | null;
 };
 
 type PeriodOption = {
@@ -2867,6 +2843,8 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
+    setPayload(null);
+    setMessage(null);
     fetch(`/api/market/etf-holdings?symbol=${encodeURIComponent(symbol)}`, { signal: controller.signal })
       .then(async (response) => {
         const result = await response.json() as EtfHoldingsResponse;
@@ -2876,7 +2854,7 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
       .then((result) => {
         if (controller.signal.aborted) return;
         setPayload(result.data || null);
-        setMessage(result.data ? null : result.message || '目前尚未支援此 ETF 的官方持股資料');
+        setMessage(result.data ? null : result.message || '資料來源尚未提供此 ETF 的持股明細');
       })
       .catch((error) => {
         if (!controller.signal.aborted) setMessage(error instanceof Error ? error.message : '持股資料載入失敗');
@@ -2896,13 +2874,13 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
         ETF 持股明細
       </div>
       {loading ? (
-        <div className="p-8 text-center text-sm font-bold text-slate-400">ETF 官方持股載入中...</div>
+        <div className="p-8 text-center text-sm font-bold text-slate-400">ETF 持股載入中...</div>
       ) : !payload ? (
         <div className="bg-orange-50/50 p-8 text-center text-sm font-bold text-orange-700">{message}</div>
       ) : (
       <div className="space-y-4 p-4">
       <div className="rounded-2xl border border-orange-100 bg-orange-50/60 p-4 text-xs font-bold leading-relaxed text-slate-600">
-        <p>官方資料日：{payload.updatedAt}{payload.previousDate ? `（變化與 ${payload.previousDate} 比較）` : ''}</p>
+        <p>持股資料日：{payload.updatedAt}{payload.previousDate ? `（變化與 ${payload.previousDate} 比較）` : ''}</p>
         <p className="mt-1 font-medium">{payload.disclosureNote}</p>
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
@@ -2911,8 +2889,8 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
           <div className="max-h-[28rem] overflow-auto divide-y divide-slate-100">
             {payload.holdings.map((holding) => (
               <div key={holding.symbol} className="flex items-center justify-between gap-4 px-4 py-3">
-                <div><p className="text-sm font-black">{holding.symbol} <span className="font-medium text-slate-400">{holding.name}</span></p><p className="mt-1 text-xs font-medium text-slate-400">{holding.shares.toLocaleString('zh-TW')} 股</p></div>
-                <span className="text-sm font-black text-orange-700">{holding.weight.toFixed(2)}%</span>
+                <div><p className="text-sm font-black">{holding.symbol} <span className="font-medium text-slate-400">{holding.name !== holding.symbol ? holding.name : null}</span></p><p className="mt-1 text-xs font-medium text-slate-400">{holding.shares === null ? '數量未揭露' : `${holding.shares.toLocaleString('zh-TW')} ${holding.quantityUnit}`}</p></div>
+                <span className="text-sm font-black text-orange-700">{holding.weight === null ? '未揭露' : `${holding.weight.toFixed(2)}%`}</span>
               </div>
             ))}
           </div>
@@ -2922,7 +2900,7 @@ function EtfHoldingsPanel({ symbol }: { symbol: string }) {
           {changed.length ? <div className="max-h-[28rem] overflow-auto divide-y divide-slate-100">{changed.map((holding) => {
             const increased = (holding.shareChange || 0) > 0;
             return <div key={holding.symbol} className="flex items-center justify-between gap-3 px-4 py-3"><p className="text-sm font-black">{holding.symbol} <span className="font-medium text-slate-400">{holding.name}</span></p><span className={`shrink-0 rounded-lg px-2 py-1 text-xs font-black ${increased ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{increased ? '增加' : '減少'} {Math.abs(holding.shareChange || 0).toLocaleString('zh-TW')} 股</span></div>;
-          })}</div> : <div className="p-10 text-center text-sm font-bold text-slate-400">兩次揭露間沒有股票股數變化</div>}
+          })}</div> : <div className="p-10 text-center text-sm font-bold text-slate-400">{payload.previousDate ? '兩次揭露間沒有股票股數變化' : '尚無前次揭露資料可供比較'}</div>}
         </div>
       </div>
       <a href={payload.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-black text-orange-700">資料來源：{payload.sourceName}<ExternalLink size={12} /></a>
@@ -3214,7 +3192,7 @@ function StockDetailModal({
             </div>
           </section>
 
-          {isEtf ? <EtfHoldingsPanel symbol={item.symbol} /> : null}
+          {isEtf ? <EtfHoldingsPanel key={item.symbol} symbol={item.symbol} /> : null}
 
           <section className="mt-5 grid gap-3 rounded-2xl border border-orange-100 bg-orange-50/50 p-4 text-xs font-bold leading-relaxed text-slate-500 sm:grid-cols-3">
             <div>

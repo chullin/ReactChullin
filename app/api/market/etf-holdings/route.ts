@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { fetchMoneyDjHoldings, type EtfHoldingsData } from '@/lib/market/etfHoldings';
 
 export const dynamic = 'force-dynamic';
 
-const FUBON_ETFS = new Set(['006208']);
+// Keep the existing official daily comparison where its format is verified.
+const FUBON_HISTORY_ETFS = new Set(['006208']);
 const FUBON_BASE = 'https://websys.fsit.com.tw/FubonETF/Trade';
 const REQUEST_HEADERS = {
   accept: 'text/html,application/xhtml+xml',
@@ -109,51 +111,57 @@ async function previousHoldings(symbol: string, currentDate: string) {
   return results.find(Boolean) || null;
 }
 
+async function fetchFubonHoldings(symbol: string): Promise<EtfHoldingsData> {
+  const current = await latestHoldings(symbol);
+  if (!current) throw new Error('Missing official holdings');
+
+  const previous = await previousHoldings(symbol, current.date);
+  const previousBySymbol = new Map(previous?.holdings.map((holding) => [holding.symbol, holding]) || []);
+  const holdings = current.holdings.map((holding) => ({
+    ...holding,
+    quantityUnit: '股' as const,
+    shareChange: previous ? holding.shares - (previousBySymbol.get(holding.symbol)?.shares || 0) : null,
+    weightChange: previous ? holding.weight - (previousBySymbol.get(holding.symbol)?.weight || 0) : null,
+  }));
+
+  return {
+    symbol,
+    name: '富邦台50',
+    updatedAt: current.date,
+    previousDate: previous?.date || null,
+    holdings,
+    sourceName: '富邦投信基金資產',
+    sourceUrl: `${FUBON_BASE}/Assets.aspx?stkId=${symbol}&ddate=${current.date.replaceAll('-', '/')}&lan=TW`,
+    disclosureNote: '持股變化依兩個官方揭露日的基金資產股數差計算，可能包含申購贖回影響，不等同經理人主動交易。',
+  };
+}
+
 export async function GET(request: NextRequest) {
   const symbol = request.nextUrl.searchParams.get('symbol')?.trim().toUpperCase().replace(/\.(TW|TWO)$/i, '');
-
-  if (!symbol) {
-    return NextResponse.json({ success: false, error: 'Missing symbol' }, { status: 400 });
+  if (!symbol || !/^[A-Z0-9][A-Z0-9.-]{0,19}$/.test(symbol)) {
+    return NextResponse.json({ success: false, error: 'Invalid or missing symbol' }, { status: 400 });
   }
 
-  if (!FUBON_ETFS.has(symbol)) {
-    return NextResponse.json({
-      success: true,
-      supported: false,
-      data: null,
-      message: '目前先支援富邦台50（006208）的官方每日基金資產資料。',
-    });
+  if (FUBON_HISTORY_ETFS.has(symbol)) {
+    try {
+      const data = await fetchFubonHoldings(symbol);
+      return NextResponse.json({ success: true, supported: true, data });
+    } catch {
+      // The general source also covers this ETF when the issuer is unavailable.
+    }
   }
 
   try {
-    const current = await latestHoldings(symbol);
-    if (!current) throw new Error('Missing official holdings');
-
-    const previous = await previousHoldings(symbol, current.date);
-    const previousBySymbol = new Map(previous?.holdings.map((holding) => [holding.symbol, holding]) || []);
-    const holdings = current.holdings.map((holding) => ({
-      ...holding,
-      shareChange: previous ? holding.shares - (previousBySymbol.get(holding.symbol)?.shares || 0) : null,
-      weightChange: previous ? holding.weight - (previousBySymbol.get(holding.symbol)?.weight || 0) : null,
-    }));
-
+    const data = await fetchMoneyDjHoldings(symbol);
     return NextResponse.json({
       success: true,
       supported: true,
-      data: {
-        symbol,
-        name: '富邦台50',
-        updatedAt: current.date,
-        previousDate: previous?.date || null,
-        holdings,
-        sourceName: '富邦投信基金資產',
-        sourceUrl: `${FUBON_BASE}/Assets.aspx?stkId=${symbol}&ddate=${current.date.replaceAll('-', '/')}&lan=TW`,
-        disclosureNote: '持股變化依兩個官方揭露日的基金資產股數差計算，可能包含申購贖回影響，不等同經理人主動交易。',
-      },
+      data,
+      ...(!data ? { message: '資料來源尚未提供此 ETF 的持股明細，請稍後再試或查閱發行商網站。' } : {}),
     });
   } catch {
     return NextResponse.json(
-      { success: false, supported: true, error: '暫時無法取得 ETF 官方持股資料' },
+      { success: false, supported: true, error: '暫時無法取得 ETF 持股資料，請稍後再試' },
       { status: 502 },
     );
   }

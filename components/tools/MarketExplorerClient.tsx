@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { EtfHoldingsResponse as EtfResponse } from '@/lib/market/etfHoldings';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowDown,
   ArrowLeft,
@@ -51,7 +52,6 @@ type EtfLeader = {
   listingDate: string;
   averageValue: number;
   averageVolume: number;
-  holdingsChangeSupported: boolean;
 };
 
 type EtfLeadersResponse = {
@@ -62,33 +62,6 @@ type EtfLeadersResponse = {
   sourceUrl?: string;
   rankingBasis?: string;
   error?: string;
-};
-
-type EtfHolding = {
-  symbol: string;
-  name: string;
-  shares: number;
-  marketValue: number;
-  weight: number;
-  shareChange: number | null;
-  weightChange: number | null;
-};
-
-type EtfResponse = {
-  success?: boolean;
-  supported?: boolean;
-  message?: string;
-  error?: string;
-  data?: {
-    symbol: string;
-    name: string;
-    updatedAt: string;
-    previousDate: string | null;
-    holdings: EtfHolding[];
-    sourceName: string;
-    sourceUrl: string;
-    disclosureNote: string;
-  } | null;
 };
 
 type ExplorerMode = 'leaders' | 'etf';
@@ -190,24 +163,23 @@ export default function MarketExplorerClient() {
     }
   }, []);
 
+  const etfRequestId = useRef(0);
+
   const loadEtf = useCallback(async (leader: EtfLeader) => {
+    const requestId = ++etfRequestId.current;
     setSelectedEtf(leader);
     setEtf(null);
     setEtfMessage(null);
-    if (!leader.holdingsChangeSupported) {
-      setEtfMessage('這檔 ETF 已列入官方 AUM 排行，但目前尚未串接該投信的歷史持股揭露格式。');
-      return;
-    }
-
     setEtfLoading(true);
     try {
       const payload = await fetchJson<EtfResponse>(`/api/market/etf-holdings?symbol=${encodeURIComponent(leader.symbol)}`);
+      if (requestId !== etfRequestId.current) return;
       setEtf(payload.data || null);
       if (!payload.supported || !payload.data) setEtfMessage(payload.message || payload.error || '尚無可用資料');
     } catch (error) {
-      setEtfMessage(error instanceof Error ? error.message : 'ETF 資料載入失敗');
+      if (requestId === etfRequestId.current) setEtfMessage(error instanceof Error ? error.message : 'ETF 資料載入失敗');
     } finally {
-      setEtfLoading(false);
+      if (requestId === etfRequestId.current) setEtfLoading(false);
     }
   }, []);
 
@@ -292,7 +264,7 @@ export default function MarketExplorerClient() {
         <header className="mb-7">
           <div className="mb-4 inline-flex rounded-full bg-orange-50 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-orange-700 ring-1 ring-orange-100">Market Explorer</div>
           <h1 className="text-4xl font-black tracking-tight sm:text-5xl">市場<span className="text-gradient">探索</span></h1>
-          <p className="mt-3 max-w-3xl text-sm font-medium leading-relaxed text-slate-500 sm:text-base">查看美股與台股市值前 100 大，或先從台灣 ETF 規模前 100 名選擇標的，再查看可用的官方持股變化。</p>
+          <p className="mt-3 max-w-3xl text-sm font-medium leading-relaxed text-slate-500 sm:text-base">查看美股與台股市值前 100 大，或先從台灣 ETF 規模前 100 名選擇標的，再查看公開持股明細與可用的持股變化。</p>
         </header>
 
         <div className="mb-6 flex gap-1 rounded-xl bg-orange-50 p-1 ring-1 ring-orange-100">
@@ -361,18 +333,18 @@ export default function MarketExplorerClient() {
         ) : (
           <section>
             <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div><p className="text-sm font-black text-slate-800">台灣 ETF 規模前 100 名</p><p className="mt-1 text-xs font-medium text-slate-400">點選任一 ETF 查看基本資料；已串接官方歷史揭露者可進一步查看持股增減。</p></div>
+              <div><p className="text-sm font-black text-slate-800">台灣 ETF 規模前 100 名</p><p className="mt-1 text-xs font-medium text-slate-400">點選任一 ETF 查看基本資料與公開持股明細；具備前次揭露資料時可比較持股增減。</p></div>
               <button type="button" onClick={loadEtfLeaders} disabled={etfLeadersLoading} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-orange-50 px-3 text-sm font-black text-orange-700 ring-1 ring-orange-100 disabled:opacity-60"><RefreshCw size={15} className={etfLeadersLoading ? 'animate-spin' : ''} />更新</button>
             </div>
 
             {etfLeadersError ? <div className="rounded-2xl border border-rose-100 bg-rose-50 p-6 text-center text-sm font-bold text-rose-700">{etfLeadersError}</div> : null}
             {etfLeadersLoading && !etfLeaders.length ? <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-sm font-bold text-slate-400">ETF 前 100 資料載入中...</div> : null}
             {etfLeaders.length ? <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs font-black text-slate-400"><tr><th className="px-4 py-3">排名</th><th className="px-4 py-3">ETF</th><th className="px-4 py-3 text-right">價格</th><th className="px-4 py-3 text-right">基金規模</th><th className="hidden px-4 py-3 text-right sm:table-cell">受益人</th><th className="px-4 py-3 text-right">詳情</th></tr></thead><tbody className="divide-y divide-slate-100">{etfLeaders.map((leader) => <tr key={leader.symbol} className="cursor-pointer hover:bg-orange-50/40" onClick={() => loadEtf(leader)}><td className="px-4 py-3 font-black text-slate-400">#{leader.rank}</td><td className="min-w-56 px-4 py-3"><div className="flex items-center gap-2"><p className="font-black">{leader.symbol}</p>{leader.holdingsChangeSupported ? <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700">可看變化</span> : null}</div><p className="max-w-80 truncate text-xs font-medium text-slate-400">{leader.name}</p></td><td className="px-4 py-3 text-right font-black tabular-nums">{formatPrice(leader.price, 'TWD')}</td><td className="px-4 py-3 text-right font-black text-orange-700">NT${compactMoney(leader.aum * 100_000_000)}</td><td className="hidden px-4 py-3 text-right text-xs font-bold text-slate-500 sm:table-cell">{leader.holders.toLocaleString('zh-TW')}</td><td className="px-4 py-3 text-right"><button type="button" onClick={(event) => { event.stopPropagation(); loadEtf(leader); }} aria-label={`查看 ${leader.symbol} 詳情`} className="rounded-lg p-2 text-orange-700 hover:bg-orange-50"><ChevronRight size={18} /></button></td></tr>)}</tbody></table></div>
+              <div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs font-black text-slate-400"><tr><th className="px-4 py-3">排名</th><th className="px-4 py-3">ETF</th><th className="px-4 py-3 text-right">價格</th><th className="px-4 py-3 text-right">基金規模</th><th className="hidden px-4 py-3 text-right sm:table-cell">受益人</th><th className="px-4 py-3 text-right">詳情</th></tr></thead><tbody className="divide-y divide-slate-100">{etfLeaders.map((leader) => <tr key={leader.symbol} className="cursor-pointer hover:bg-orange-50/40" onClick={() => loadEtf(leader)}><td className="px-4 py-3 font-black text-slate-400">#{leader.rank}</td><td className="min-w-56 px-4 py-3"><div className="flex items-center gap-2"><p className="font-black">{leader.symbol}</p><span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700">可看持股</span></div><p className="max-w-80 truncate text-xs font-medium text-slate-400">{leader.name}</p></td><td className="px-4 py-3 text-right font-black tabular-nums">{formatPrice(leader.price, 'TWD')}</td><td className="px-4 py-3 text-right font-black text-orange-700">NT${compactMoney(leader.aum * 100_000_000)}</td><td className="hidden px-4 py-3 text-right text-xs font-bold text-slate-500 sm:table-cell">{leader.holders.toLocaleString('zh-TW')}</td><td className="px-4 py-3 text-right"><button type="button" onClick={(event) => { event.stopPropagation(); loadEtf(leader); }} aria-label={`查看 ${leader.symbol} 詳情`} className="rounded-lg p-2 text-orange-700 hover:bg-orange-50"><ChevronRight size={18} /></button></td></tr>)}</tbody></table></div>
               <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-4 py-3 text-xs font-bold text-slate-400"><span>排名依據：{etfSource?.basis || '基金規模（AUM）'}</span>{etfSource ? <a href={etfSource.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-orange-700">資料來源：{etfSource.name}<ExternalLink size={12} /></a> : null}</div>
             </div> : null}
 
-            {selectedEtf ? <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 p-0 backdrop-blur-sm sm:items-center sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedEtf(null); }}><div role="dialog" aria-modal="true" aria-labelledby="etf-detail-title" className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-t-3xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-6"><div className="mb-5 flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-widest text-orange-700">ETF #{selectedEtf.rank}</p><h2 id="etf-detail-title" className="mt-1 text-2xl font-black">{selectedEtf.symbol} {selectedEtf.name}</h2><p className="mt-2 text-xs font-bold text-slate-400">{selectedEtf.issuer} · 掛牌 {selectedEtf.listingDate}</p></div><button type="button" onClick={() => setSelectedEtf(null)} aria-label="關閉 ETF 詳情" className="rounded-xl p-2 text-slate-400 hover:bg-slate-100"><X size={20} /></button></div><div className="mb-5 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-orange-50 p-4"><p className="text-xs font-bold text-slate-400">基金規模</p><p className="mt-1 text-lg font-black text-orange-700">NT${compactMoney(selectedEtf.aum * 100_000_000)}</p></div><div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold text-slate-400">收盤價</p><p className="mt-1 text-lg font-black">{formatPrice(selectedEtf.price, 'TWD')}</p></div><div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold text-slate-400">受益人數</p><p className="mt-1 text-lg font-black">{selectedEtf.holders.toLocaleString('zh-TW')}</p></div></div>{selectedEtf.benchmark ? <p className="mb-5 rounded-xl bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500">追蹤指數：{selectedEtf.benchmark}</p> : null}{etfLoading ? <div className="p-10 text-center text-sm font-bold text-slate-400">官方持股資料載入中...</div> : null}{etfMessage ? <div className="rounded-2xl border border-amber-100 bg-amber-50 p-6 text-center text-sm font-bold text-amber-700">{etfMessage}</div> : null}{etf ? <div className="space-y-5"><div className="rounded-2xl border border-orange-100 bg-orange-50/70 p-4"><div className="flex items-start gap-3"><WalletCards className="mt-0.5 text-orange-700" size={20} /><div><p className="font-black">官方持股揭露</p><p className="mt-1 text-xs font-bold text-slate-500">揭露日 {etf.updatedAt}{etf.previousDate ? `，與 ${etf.previousDate} 比較` : ''}</p><p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">{etf.disclosureNote}</p></div></div></div><div className="grid gap-5 lg:grid-cols-2"><div className="overflow-hidden rounded-2xl border border-slate-200"><div className="border-b border-slate-100 px-4 py-3 font-black">持股明細</div><div className="max-h-96 overflow-auto"><table className="w-full text-sm"><thead className="sticky top-0 bg-slate-50 text-xs font-black text-slate-400"><tr><th className="px-4 py-2 text-left">標的</th><th className="px-4 py-2 text-right">權重</th><th className="px-4 py-2 text-right">股數</th></tr></thead><tbody className="divide-y divide-slate-100">{etf.holdings.map((holding) => <tr key={holding.symbol}><td className="px-4 py-3"><p className="font-black">{holding.symbol}</p><p className="text-xs text-slate-400">{holding.name}</p></td><td className="px-4 py-3 text-right font-black text-orange-700">{holding.weight.toFixed(2)}%</td><td className="px-4 py-3 text-right text-xs font-bold tabular-nums text-slate-500">{holding.shares.toLocaleString('zh-TW')}</td></tr>)}</tbody></table></div></div><div className="overflow-hidden rounded-2xl border border-slate-200"><div className="border-b border-slate-100 px-4 py-3 font-black">兩次揭露間持股變化</div>{changedHoldings.length ? <div className="max-h-96 divide-y divide-slate-100 overflow-auto">{changedHoldings.map((holding) => { const increased = (holding.shareChange || 0) > 0; return <div key={holding.symbol} className="flex items-center justify-between gap-4 px-4 py-3"><div><p className="font-black">{holding.symbol} <span className="text-xs font-medium text-slate-400">{holding.name}</span></p><p className="mt-1 text-xs font-bold text-slate-400">權重變化 {holding.weightChange === null ? '-' : `${holding.weightChange > 0 ? '+' : ''}${holding.weightChange.toFixed(4)}%`}</p></div><span className={`rounded-lg px-2 py-1 text-xs font-black tabular-nums ${increased ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{increased ? '增加' : '減少'} {Math.abs(holding.shareChange || 0).toLocaleString('zh-TW')} 股</span></div>; })}</div> : <div className="p-10 text-center text-sm font-bold text-slate-400">兩次揭露間沒有股票股數變化</div>}</div></div><a href={etf.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-black text-orange-700">資料來源：{etf.sourceName}<ExternalLink size={12} /></a></div> : null}</div></div> : null}
+            {selectedEtf ? <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/45 p-0 backdrop-blur-sm sm:items-center sm:p-6" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedEtf(null); }}><div role="dialog" aria-modal="true" aria-labelledby="etf-detail-title" className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-t-3xl bg-white p-5 shadow-2xl sm:rounded-3xl sm:p-6"><div className="mb-5 flex items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-widest text-orange-700">ETF #{selectedEtf.rank}</p><h2 id="etf-detail-title" className="mt-1 text-2xl font-black">{selectedEtf.symbol} {selectedEtf.name}</h2><p className="mt-2 text-xs font-bold text-slate-400">{selectedEtf.issuer} · 掛牌 {selectedEtf.listingDate}</p></div><button type="button" onClick={() => setSelectedEtf(null)} aria-label="關閉 ETF 詳情" className="rounded-xl p-2 text-slate-400 hover:bg-slate-100"><X size={20} /></button></div><div className="mb-5 grid gap-3 sm:grid-cols-3"><div className="rounded-2xl bg-orange-50 p-4"><p className="text-xs font-bold text-slate-400">基金規模</p><p className="mt-1 text-lg font-black text-orange-700">NT${compactMoney(selectedEtf.aum * 100_000_000)}</p></div><div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold text-slate-400">收盤價</p><p className="mt-1 text-lg font-black">{formatPrice(selectedEtf.price, 'TWD')}</p></div><div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold text-slate-400">受益人數</p><p className="mt-1 text-lg font-black">{selectedEtf.holders.toLocaleString('zh-TW')}</p></div></div>{selectedEtf.benchmark ? <p className="mb-5 rounded-xl bg-slate-50 px-4 py-3 text-xs font-bold text-slate-500">追蹤指數：{selectedEtf.benchmark}</p> : null}{etfLoading ? <div className="p-10 text-center text-sm font-bold text-slate-400">持股資料載入中...</div> : null}{etfMessage ? <div className="rounded-2xl border border-amber-100 bg-amber-50 p-6 text-center text-sm font-bold text-amber-700">{etfMessage}</div> : null}{etf ? <div className="space-y-5"><div className="rounded-2xl border border-orange-100 bg-orange-50/70 p-4"><div className="flex items-start gap-3"><WalletCards className="mt-0.5 text-orange-700" size={20} /><div><p className="font-black">持股揭露</p><p className="mt-1 text-xs font-bold text-slate-500">揭露日 {etf.updatedAt}{etf.previousDate ? `，與 ${etf.previousDate} 比較` : ''}</p><p className="mt-2 text-xs font-medium leading-relaxed text-slate-500">{etf.disclosureNote}</p></div></div></div><div className="grid gap-5 lg:grid-cols-2"><div className="overflow-hidden rounded-2xl border border-slate-200"><div className="border-b border-slate-100 px-4 py-3 font-black">持股明細</div><div className="max-h-96 overflow-auto"><table className="w-full text-sm"><thead className="sticky top-0 bg-slate-50 text-xs font-black text-slate-400"><tr><th className="px-4 py-2 text-left">標的</th><th className="px-4 py-2 text-right">權重</th><th className="px-4 py-2 text-right">數量</th></tr></thead><tbody className="divide-y divide-slate-100">{etf.holdings.map((holding) => <tr key={holding.symbol}><td className="px-4 py-3"><p className="font-black">{holding.symbol}</p><p className="text-xs text-slate-400">{holding.name !== holding.symbol ? holding.name : null}</p></td><td className="px-4 py-3 text-right font-black text-orange-700">{holding.weight === null ? '未揭露' : `${holding.weight.toFixed(2)}%`}</td><td className="px-4 py-3 text-right text-xs font-bold tabular-nums text-slate-500">{holding.shares === null ? '未揭露' : `${holding.shares.toLocaleString('zh-TW')} ${holding.quantityUnit}`}</td></tr>)}</tbody></table></div></div><div className="overflow-hidden rounded-2xl border border-slate-200"><div className="border-b border-slate-100 px-4 py-3 font-black">兩次揭露間持股變化</div>{changedHoldings.length ? <div className="max-h-96 divide-y divide-slate-100 overflow-auto">{changedHoldings.map((holding) => { const increased = (holding.shareChange || 0) > 0; return <div key={holding.symbol} className="flex items-center justify-between gap-4 px-4 py-3"><div><p className="font-black">{holding.symbol} <span className="text-xs font-medium text-slate-400">{holding.name}</span></p><p className="mt-1 text-xs font-bold text-slate-400">權重變化 {holding.weightChange === null ? '-' : `${holding.weightChange > 0 ? '+' : ''}${holding.weightChange.toFixed(4)}%`}</p></div><span className={`rounded-lg px-2 py-1 text-xs font-black tabular-nums ${increased ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{increased ? '增加' : '減少'} {Math.abs(holding.shareChange || 0).toLocaleString('zh-TW')} 股</span></div>; })}</div> : <div className="p-10 text-center text-sm font-bold text-slate-400">{etf.previousDate ? '兩次揭露間沒有股票股數變化' : '尚無前次揭露資料可供比較'}</div>}</div></div><a href={etf.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-black text-orange-700">資料來源：{etf.sourceName}<ExternalLink size={12} /></a></div> : null}</div></div> : null}
           </section>
         )}
       </main>
