@@ -33,6 +33,7 @@ function load(relative) {
 }
 
 const { marketAccountSchema } = load('lib/market/account-schema.ts');
+const { recoverWatchlistDefinitions } = load('lib/market/watchlist-migration.ts');
 const store = load('lib/market/account-store.ts');
 const route = load('app/api/market/account/route.ts');
 load('lib/market/auth.ts');
@@ -64,6 +65,16 @@ test('Google login requires a verified Google identity', () => {
   assert.equal(authConfig.callbacks.signIn({ account: { provider: 'google' }, profile: { sub: '123', email_verified: true } }), true);
   assert.equal(authConfig.callbacks.signIn({ account: { provider: 'google' }, profile: { sub: '123', email_verified: false } }), false);
   assert.equal(authConfig.callbacks.signIn({ account: { provider: 'other' }, profile: { sub: '123', email_verified: true } }), false);
+});
+test('legacy list contents recover missing definitions without dropping stocks or labels', () => {
+  const watchlists = { ...snapshot.watchlists, '觀察清單 4': [{ symbol: '2330', market: '台股' }], '觀察清單 5': [] };
+  const defs = recoverWatchlistDefinitions(snapshot.watchlistDefs,
+    [{ id: '觀察清單 4', name: '我的科技股' }], watchlists);
+  assert.deepEqual(defs.map((item) => item.id), ['庫存', '觀察清單 4', '觀察清單 5']);
+  assert.equal(defs[1].name, '我的科技股');
+  assert.equal(marketAccountSchema.safeParse({ ...snapshot, watchlistDefs: defs, watchlists }).success, true);
+  assert.deepEqual(recoverWatchlistDefinitions(snapshot.watchlistDefs, null, watchlists).map((item) => item.id),
+    ['庫存', '觀察清單 4', '觀察清單 5']);
 });
 test('schema rejects invalid lists, oversized lists and non-finite price targets', () => {
   assert.equal(marketAccountSchema.safeParse(snapshot).success, true);

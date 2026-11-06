@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import MarketWatchAccountSync from './MarketWatchAccountSync';
 import type { EtfHoldingsResponse } from '@/lib/market/etfHoldings';
 import type { MarketAccountSnapshot } from '@/lib/market/account-schema';
+import { recoverWatchlistDefinitions } from '@/lib/market/watchlist-migration';
 import {
   Activity,
   BarChart3,
@@ -378,20 +379,6 @@ function mergeStoredWatchlists(base: Watchlists, stored: Watchlists): Watchlists
     ...merged,
     庫存: [...inventory, ...missingFxItems],
   };
-}
-
-function normalizeWatchlistDefs(value: unknown): WatchlistDef[] {
-  if (!Array.isArray(value)) return DEFAULT_LISTS;
-  const merged = [...DEFAULT_LISTS, ...value.filter((item): item is WatchlistDef => {
-    return typeof item?.id === 'string' && typeof item?.name === 'string';
-  })];
-  const seen = new Set<string>();
-
-  return merged.filter((item) => {
-    if (seen.has(item.id)) return false;
-    seen.add(item.id);
-    return true;
-  });
 }
 
 function normalizeSymbol(value: string) {
@@ -3942,12 +3929,14 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
       const storedQuotes = localStorage.getItem(QUOTES_CACHE_KEY);
       const fxTopMigrated = localStorage.getItem(FX_TOP_MIGRATION_KEY) === 'true';
       const defaultStockMigrated = localStorage.getItem(DEFAULT_STOCK_MIGRATION_KEY) === 'true';
-      const nextListDefs = storedListDefs ? normalizeWatchlistDefs(JSON.parse(storedListDefs)) : DEFAULT_LISTS;
+      const parsedWatchlists = storedWatchlists ? JSON.parse(storedWatchlists) : null;
+      const nextListDefs = recoverWatchlistDefinitions(DEFAULT_LISTS,
+        storedListDefs ? JSON.parse(storedListDefs) : null, parsedWatchlists);
 
       setWatchlistDefs(nextListDefs);
 
       if (storedWatchlists) {
-        const nextWatchlists = mergeStoredWatchlists(createEmptyWatchlists(nextListDefs), JSON.parse(storedWatchlists));
+        const nextWatchlists = mergeStoredWatchlists(createEmptyWatchlists(nextListDefs), parsedWatchlists);
 
         if (!fxTopMigrated) {
           nextWatchlists['庫存'] = placeDefaultFxFirst(nextWatchlists['庫存'] || []);
