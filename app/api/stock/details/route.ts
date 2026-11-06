@@ -48,6 +48,7 @@ async function fetchJson<T>(url: URL | string): Promise<T | null> {
     const response = await fetch(url, {
       cache: 'no-store',
       headers: jsonHeaders,
+      signal: AbortSignal.timeout(12_000),
     });
 
     if (!response.ok) return null;
@@ -242,6 +243,7 @@ export async function GET(request: NextRequest) {
   const market = request.nextUrl.searchParams.get('market')?.trim() as Market | undefined;
   const name = request.nextUrl.searchParams.get('name')?.trim() || symbol || '';
   const years = requestedYears(request.nextUrl.searchParams.get('years'));
+  const historyOnly = request.nextUrl.searchParams.get('historyOnly') === '1';
 
   if (!symbol || !market) {
     return NextResponse.json(
@@ -278,15 +280,15 @@ export async function GET(request: NextRequest) {
   historyUrl.searchParams.set('toDate', String(now));
 
   const [quote, news, history] = await Promise.all([
-    market === '台股'
+    historyOnly ? Promise.resolve(null) : market === '台股'
       ? fetchYahooStockQuote(normalizedSymbol, market).then((data) => ({ data }))
       : fetchJson<any>(quoteUrl),
-    fetchJson<any>(newsUrl),
+    historyOnly ? Promise.resolve(null) : fetchJson<any>(newsUrl),
     fetchJson<any>(historyUrl),
   ]);
   const parsedHistory = parseHistory(history);
   const [fallbackQuote, fallbackHistory] = await Promise.all([
-    quote?.data ? Promise.resolve(quote.data) : fetchYahooStockQuote(normalizedSymbol, market),
+    historyOnly ? Promise.resolve(null) : quote?.data ? Promise.resolve(quote.data) : fetchYahooStockQuote(normalizedSymbol, market),
     parsedHistory.length
       ? Promise.resolve(parsedHistory)
       : market === '台股'

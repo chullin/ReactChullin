@@ -1356,9 +1356,8 @@ function scoreStyle(label: PositionScore['label']) {
 function positionScore(quote?: StockQuote): PositionScore | null {
   if (!quote || !isFiniteNumber(quote.price)) return null;
 
-  const sparklineValues = (quote.sparkline || []).filter(isFiniteNumber);
-  const low = isFiniteNumber(quote.fiftyTwoWeekLow) ? quote.fiftyTwoWeekLow : Math.min(...sparklineValues, quote.price);
-  const high = isFiniteNumber(quote.fiftyTwoWeekHigh) ? quote.fiftyTwoWeekHigh : Math.max(...sparklineValues, quote.price);
+  const low = quote.fiftyTwoWeekLow;
+  const high = quote.fiftyTwoWeekHigh;
 
   if (!isFiniteNumber(low) || !isFiniteNumber(high) || high <= low) return null;
 
@@ -1476,8 +1475,8 @@ function Sparkline({
   const staffPaths = staffChart?.staffPaths || [];
   const stroke = priceTone(quote?.changePercent, colorConvention).accent;
 
-  if (!path) {
-    return <div className="h-full w-full rounded bg-gray-100" />;
+  if (values.length < 5 || !path) {
+    return <div className="flex h-full w-full items-center justify-center rounded bg-slate-50 text-[10px] font-bold text-slate-400">歷史走勢待補齊</div>;
   }
 
   return (
@@ -3884,6 +3883,10 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   const missingSymbolCache = useRef(new Map<string, number>());
   const previousQuotesRef = useRef<Record<string, StockQuote>>({});
   const refreshRequestRef = useRef(0);
+  const stockHistoryCache = useRef(new Map<string, {
+    expiresAt: number;
+    summary: Promise<MarketSeriesSummary>;
+  }>());
   const addPanelRef = useRef<HTMLFormElement>(null);
   const addSymbolInputRef = useRef<HTMLInputElement>(null);
 
@@ -4150,6 +4153,35 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
             `/api/stock/quotes-batch?stocks=${encodeURIComponent(stocksParam)}`,
           ).then((payload) => payload.data || {})
         : Promise.resolve({} as Record<string, StockQuote>);
+      // Fast quote sources can contain only previous-close/current-price. Fetch
+      // historical context separately and share/cache it across quote refreshes.
+      const stockSeriesPromise = Promise.all(activeItems.filter((item) => isStockMarket(item.market)).map(async (item) => {
+        const key = stockKey(item.symbol, item.market);
+        let cached = stockHistoryCache.current.get(key);
+        if (!cached || cached.expiresAt <= Date.now()) {
+          const summary = fetchJson<DetailsResponse>(
+            `/api/stock/details?symbol=${encodeURIComponent(item.symbol)}&market=${encodeURIComponent(item.market)}&years=1&historyOnly=1`,
+          ).then((payload): MarketSeriesSummary => {
+            const history = filterHistory(payload.success ? payload.data?.history || [] : [], { months: 12 });
+            const sparkline = getCloseValues(filterHistory(history, { months: 1 }));
+            if (sparkline.length < 5) throw new Error('Insufficient stock history');
+            const domain = getPriceDomain(history);
+            const dates = history.map((point) => Date.parse(point.date));
+            const hasYear = Math.max(...dates) - Math.min(...dates) >= 330 * 24 * 60 * 60_000;
+            return {
+              sparkline,
+              fiftyTwoWeekLow: hasYear ? domain.min : null,
+              fiftyTwoWeekHigh: hasYear ? domain.max : null,
+            };
+          }).catch(() => {
+            stockHistoryCache.current.delete(key);
+            return {};
+          });
+          cached = { summary, expiresAt: Date.now() + 15 * 60_000 };
+          stockHistoryCache.current.set(key, cached);
+        }
+        return [key, await cached.summary] as const;
+      })).then((entries) => Object.fromEntries(entries));
       const [marketQuotes, stockQuotes] = await Promise.all([marketQuotesPromise, stockQuotesPromise]);
       const fallbackFxQuotes = activeItems.filter((item) => item.market === '外匯').reduce<Record<string, StockQuote>>((acc, item) => {
         if (marketQuotes[stockKey(item.symbol, item.market)]) return acc;
@@ -4159,10 +4191,18 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
       }, {});
       const fetchedAt = new Date().toISOString();
       const nextQuotes = Object.fromEntries(
-        Object.entries({ ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes }).map(([key, quote]) => [
-          key,
-          { ...quote, updatedAt: quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt || fetchedAt, fromCache: quote.fromCache ?? false },
-        ]),
+        Object.entries({ ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes }).map(([key, quote]) => {
+          const previous = previousQuotesRef.current[key];
+          return [key, {
+            ...quote,
+            sparkline: (quote.sparkline?.length || 0) >= 5 ? quote.sparkline
+              : (previous?.sparkline?.length || 0) >= 5 ? alignSparkline(previous!.sparkline!, quote.price) : [],
+            fiftyTwoWeekLow: quote.fiftyTwoWeekLow ?? previous?.fiftyTwoWeekLow,
+            fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh ?? previous?.fiftyTwoWeekHigh,
+            updatedAt: quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt || fetchedAt,
+            fromCache: quote.fromCache ?? false,
+          }];
+        }),
       );
       if (requestId !== refreshRequestRef.current) return;
       const previousQuotes = previousQuotesRef.current;
@@ -4243,8 +4283,10 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
       }, 0);
       setQuotesLoading(false);
 
-      marketSeriesPromise
-        .then((summaries) => {
+      Promise.all([marketSeriesPromise, stockSeriesPromise])
+        .then(([marketSummaries, stockSummaries]) => {
+          if (requestId !== refreshRequestRef.current) return;
+          const summaries = { ...marketSummaries, ...stockSummaries };
           setQuotes((current) => {
             const next = { ...current };
 
@@ -4260,8 +4302,16 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
               };
             });
 
+            previousQuotesRef.current = next;
             return next;
           });
+          window.setTimeout(() => {
+            if (guestPersistence && !session?.user) {
+              localStorage.setItem(QUOTES_CACHE_KEY, JSON.stringify({
+                savedAt: fetchedAt, quotes: previousQuotesRef.current,
+              } satisfies QuoteCache));
+            }
+          }, 0);
         })
         .catch(() => {
           // Keep the fast quote result even if historical context is temporarily unavailable.

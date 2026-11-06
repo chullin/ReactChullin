@@ -36,7 +36,10 @@ const fit = (points) => {
         let data = { success: true, data: [] };
         if (path === '/api/auth/session') data = {};
         if (path === '/api/stock/quotes-batch') { quotes++; data = { success: true, data: { '2330|台股': quote } }; }
-        if (path === '/api/stock/details') { details++; data = { success: true, data: { quote, history, news: [] } }; }
+        if (path === '/api/stock/details') {
+          if (new URL(route.request().url()).searchParams.get('historyOnly') !== '1') details++;
+          data = { success: true, data: { quote, history, news: [] } };
+        }
         return route.fulfill({ json: data });
       });
       await page.goto(`${process.env.TEST_BASE_URL || 'http://localhost:3000'}/market-watch`);
