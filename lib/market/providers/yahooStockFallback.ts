@@ -1,3 +1,5 @@
+import { fetchTaiwanStockQuote } from './twStockQuote';
+
 type StockMarket = '美股' | '台股';
 
 type YahooChartResponse = {
@@ -8,6 +10,7 @@ type YahooChartResponse = {
         shortName?: string;
         longName?: string;
         regularMarketPrice?: number;
+        regularMarketTime?: number;
         chartPreviousClose?: number;
         previousClose?: number;
         currency?: string;
@@ -32,6 +35,7 @@ function finiteNumber(value: unknown): value is number {
 }
 
 function marketNumber(value: unknown) {
+  if (value === null || value === undefined || String(value).trim() === '' || value === '-') return null;
   const parsed = Number(String(value ?? '').replace(/[$,%+,\s]/g, ''));
   return Number.isFinite(parsed) ? parsed : null;
 }
@@ -65,6 +69,10 @@ async function fetchTwseQuote(symbol: string) {
       quoteType: normalized.startsWith('00') ? 'ETF' : 'EQUITY',
       exchange: 'Taiwan',
       dataSource: 'TWSE OpenAPI fallback',
+      updatedAt: /^\d{7}$/.test(row.Date || '')
+        ? new Date(`${Number(row.Date.slice(0, 3)) + 1911}-${row.Date.slice(3, 5)}-${row.Date.slice(5, 7)}T13:30:00+08:00`).toISOString()
+        : undefined,
+      fromCache: true,
     };
   } catch {
     return null;
@@ -118,6 +126,10 @@ async function fetchNasdaqQuote(symbol: string) {
 }
 
 export async function fetchYahooStockQuote(symbol: string, market: StockMarket) {
+  if (market === '台股') {
+    const quote = await fetchTaiwanStockQuote(symbol);
+    if (quote) return quote;
+  }
   // TWSE STOCK_DAY_ALL only contains daily closing prices. Prefer Yahoo's
   // regularMarketPrice for Taiwan stocks so intraday quotes aren't replaced
   // by the previous session's close. Keep Nasdaq's quote as the first US fallback.
@@ -172,6 +184,9 @@ export async function fetchYahooStockQuote(symbol: string, market: StockMarket) 
         fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh ?? null,
         fiftyTwoWeekLow: meta.fiftyTwoWeekLow ?? null,
         dataSource: 'Yahoo Finance fallback',
+        updatedAt: finiteNumber(meta.regularMarketTime)
+          ? new Date(meta.regularMarketTime * 1000).toISOString()
+          : undefined,
       };
     } catch {
       // Taiwan symbols may be listed on TWSE or TPEx; try the next suffix.

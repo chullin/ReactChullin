@@ -82,6 +82,7 @@ type StockQuote = {
   fiftyTwoWeekLow?: number | null;
   updatedAt?: string;
   fromCache?: boolean;
+  dataSource?: string;
   bankRate?: {
     bankBuy: number | null;
     bankSell: number | null;
@@ -3447,7 +3448,7 @@ function StockCard({
           ) : null}
           <div className="mt-3 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[10px] font-bold text-slate-400">
             <span>資料時間 {formatQuoteTimestamp(quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt)}</span>
-            {quote.fromCache ? <span className="rounded bg-amber-50 px-1.5 py-0.5 text-amber-700">暫用快取</span> : null}
+            {quote.fromCache ? <span className="rounded bg-amber-50 px-1.5 py-0.5 text-amber-700">{quote.dataSource === 'TWSE OpenAPI fallback' ? '收盤備援' : '暫用快取'}</span> : null}
           </div>
           <button
             type="button"
@@ -4152,7 +4153,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
       const nextQuotes = Object.fromEntries(
         Object.entries({ ...stockQuotes, ...fallbackFxQuotes, ...marketQuotes }).map(([key, quote]) => [
           key,
-          { ...quote, updatedAt: quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt || fetchedAt, fromCache: false },
+          { ...quote, updatedAt: quote.updatedAt || quote.bankRate?.updatedAt || quote.metalRate?.updatedAt || fetchedAt, fromCache: quote.fromCache ?? false },
         ]),
       );
       if (requestId !== refreshRequestRef.current) return;
@@ -4381,7 +4382,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
         [stockKey(storedSymbolForMarket(normalized, target.market), target.market)]: {
           ...target.quote,
           updatedAt: target.quote.updatedAt || new Date().toISOString(),
-          fromCache: false,
+          fromCache: target.quote.fromCache ?? false,
         },
       }));
       setSymbol('');

@@ -42,31 +42,34 @@ export async function GET(request: NextRequest) {
   }
 
   const upstreamUrl = new URL(STOCK_API_BASE);
-  upstreamUrl.searchParams.set('stocks', supportedStocks);
+  const requested = parseStocks(supportedStocks);
+  const usStocks = requested.filter((stock) => stock.market === '美股');
+  upstreamUrl.searchParams.set('stocks', usStocks.map((stock) => `${stock.symbol}:${stock.market}`).join(','));
 
   try {
     let data: Record<string, unknown> = {};
 
     try {
-      const upstream = await fetch(upstreamUrl, {
-        cache: 'no-store',
-        headers: {
-          accept: 'application/json',
-          referer: STOCK_REFERER,
-          'user-agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36',
-        },
-        signal: AbortSignal.timeout(10_000),
-      });
-      if (upstream.ok) {
-        const payload = await upstream.json() as { success?: boolean; data?: Record<string, unknown> };
-        if (payload.success && payload.data) data = payload.data;
+      if (usStocks.length) {
+        const upstream = await fetch(upstreamUrl, {
+          cache: 'no-store',
+          headers: {
+            accept: 'application/json',
+            referer: STOCK_REFERER,
+            'user-agent':
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36',
+          },
+          signal: AbortSignal.timeout(10_000),
+        });
+        if (upstream.ok) {
+          const payload = await upstream.json() as { success?: boolean; data?: Record<string, unknown> };
+          if (payload.success && payload.data) data = payload.data;
+        }
       }
     } catch {
       // Missing and failed primary quotes are filled from Yahoo below.
     }
 
-    const requested = parseStocks(supportedStocks);
     const missing = requested.filter((stock) => !data[`${stock.symbol}|${stock.market}`]);
     const fallbackEntries = await Promise.all(missing.map(async (stock) => {
       const quote = await fetchYahooStockQuote(stock.symbol, stock.market);

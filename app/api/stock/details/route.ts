@@ -278,7 +278,9 @@ export async function GET(request: NextRequest) {
   historyUrl.searchParams.set('toDate', String(now));
 
   const [quote, news, history] = await Promise.all([
-    fetchJson<any>(quoteUrl),
+    market === '台股'
+      ? fetchYahooStockQuote(normalizedSymbol, market).then((data) => ({ data }))
+      : fetchJson<any>(quoteUrl),
     fetchJson<any>(newsUrl),
     fetchJson<any>(historyUrl),
   ]);

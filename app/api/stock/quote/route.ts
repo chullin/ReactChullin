@@ -24,6 +24,13 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  if (market === '台股') {
+    const quote = await fetchYahooStockQuote(symbol, market);
+    return quote
+      ? NextResponse.json({ success: true, data: quote })
+      : NextResponse.json({ success: false, error: 'Failed to fetch stock quote' }, { status: 502 });
+  }
+
   const upstreamUrl = new URL(STOCK_API_BASE);
   upstreamUrl.searchParams.set('symbol', symbol);
   upstreamUrl.searchParams.set('market', market);

@@ -23,6 +23,7 @@ export type LegacyStockQuote = {
   currency?: string;
   sparkline?: number[];
   exchange?: string;
+  updatedAt?: string;
 };
 
 export function stockSearchResult(symbol: string, market: StockMarket): MarketSearchResult {
@@ -64,7 +65,7 @@ export function normalizeLegacyStockQuote(
     priceChange,
     changePercent,
     marketStatus: getStockMarketStatus(market),
-    updatedAt,
+    updatedAt: quote.updatedAt || updatedAt,
     chartData: (quote.sparkline || [])
       .filter(isFiniteMarketNumber)
       .map((price, index, values) => ({
