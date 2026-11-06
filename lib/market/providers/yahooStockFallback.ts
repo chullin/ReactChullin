@@ -118,10 +118,11 @@ async function fetchNasdaqQuote(symbol: string) {
 }
 
 export async function fetchYahooStockQuote(symbol: string, market: StockMarket) {
-  const officialFallback = market === '台股'
-    ? await fetchTwseQuote(symbol)
-    : await fetchNasdaqQuote(symbol);
-  if (officialFallback) return officialFallback;
+  // TWSE STOCK_DAY_ALL only contains daily closing prices. Prefer Yahoo's
+  // regularMarketPrice for Taiwan stocks so intraday quotes aren't replaced
+  // by the previous session's close. Keep Nasdaq's quote as the first US fallback.
+  const nasdaqFallback = market === '美股' ? await fetchNasdaqQuote(symbol) : null;
+  if (nasdaqFallback) return nasdaqFallback;
 
   for (const yahooSymbol of yahooSymbols(symbol, market)) {
     try {
@@ -177,5 +178,5 @@ export async function fetchYahooStockQuote(symbol: string, market: StockMarket) 
     }
   }
 
-  return null;
+  return market === '台股' ? fetchTwseQuote(symbol) : null;
 }
