@@ -1683,20 +1683,16 @@ function DetailChart({
     min: values.length ? Math.min(...values) : 0,
     max: values.length ? Math.max(...values) : 0,
   };
-  // Fit the selected period once; zooming only projects that fit into the viewport.
+  // Fit and scale the staff from the selected period only. Zooming changes the
+  // visible candles, but must not change the five-line model or its price axis.
   const periodStaff = useMemo(() => calculateStaff(points), [points]);
-  const staff = useMemo(() => periodStaff?.map((line) => {
-    const valueAt = (index: number) => line.startValue +
-      (line.endValue - line.startValue) * index / Math.max(1, points.length - 1);
-    return {
-      ...line,
-      startValue: valueAt(visibleRange.startIndex),
-      midValue: valueAt((visibleRange.startIndex + visibleRange.endIndex) / 2),
-      endValue: valueAt(visibleRange.endIndex),
-    };
-  }) ?? null, [periodStaff, points.length, visibleRange]);
+  const staff = mode === 'staff' ? periodStaff : null;
   const vrvpProfile = calculateVrvp(visiblePoints);
-  const rawPriceDomain = isCandlestickMode ? getPriceDomain(visiblePoints) : closeDomain;
+  const rawPriceDomain = mode === 'staff'
+    ? getPriceDomain(points)
+    : isCandlestickMode
+      ? getPriceDomain(visiblePoints)
+      : closeDomain;
   const staffValues = mode === 'staff' && staff ? staff.flatMap((line) => [line.startValue, line.midValue, line.endValue]) : [];
   const vrvpValues = mode === 'vrvp'
     ? [
