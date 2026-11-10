@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import MarketWatchAccountSync from './MarketWatchAccountSync';
 import type { EtfHoldingsResponse } from '@/lib/market/etfHoldings';
 import type { MarketAccountSnapshot } from '@/lib/market/account-schema';
+import { selectMarketSearchResult } from '@/lib/market/resolve-search';
 import { recoverWatchlistDefinitions } from '@/lib/market/watchlist-migration';
 import {
   Activity,
@@ -3957,7 +3958,6 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
   const [draggedItemKey, setDraggedItemKey] = useState<string | null>(null);
   const [dragTarget, setDragTarget] = useState<{ key: string; placement: 'before' | 'after' } | null>(null);
   const draggedItemKeyRef = useRef<string | null>(null);
-  const missingSymbolCache = useRef(new Map<string, number>());
   const previousQuotesRef = useRef<Record<string, StockQuote>>({});
   const refreshRequestRef = useRef(0);
   const stockHistoryCache = useRef(new Map<string, {
@@ -4440,28 +4440,15 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
     setLoading(true);
 
     try {
-      const isDirectSymbol = /^\d{4,6}[A-Z]?$/.test(normalized)
-        || /^[A-Z][A-Z0-9.-]{0,9}$/.test(normalized)
-        || /^[A-Z]{3}[/-][A-Z]{3}$/.test(normalized)
-        || ['GOLD', 'AU', '黃金', 'PLATINUM', 'PT', '白金'].includes(normalized);
-
-      if (!isDirectSymbol) {
-        let candidate: MarketSearchResult | undefined = searchResults[0];
-        if (!candidate) {
-          const params = new URLSearchParams({ query: symbol.trim() });
-          const payload = await fetchJson<MarketSearchResponse>(`/api/market/search?${params}`);
-          candidate = payload.data?.[0];
-        }
+      // Resolve names even when they look like short alphabetic ticker symbols.
+      if (!marketHint && !['外匯', '貴金屬'].includes(detectMarkets(normalized)[0])) {
+        const params = new URLSearchParams({ query: symbol.trim() });
+        const payload = await fetchJson<MarketSearchResponse>(`/api/market/search?${params}`).catch(() => null);
+        const candidate = selectMarketSearchResult(symbol, payload?.data || []);
         if (candidate) {
           normalized = normalizeSymbol(candidate.symbol);
           marketHint = marketFromAssetType(candidate.assetType);
         }
-      }
-
-      const cachedUntil = missingSymbolCache.current.get(normalized) || 0;
-      if (cachedUntil > Date.now()) {
-        setMessage({ text: '查無此代號，請重試', type: 'error' });
-        return;
       }
 
       const markets = marketHint ? [marketHint] : detectMarkets(normalized);
@@ -4496,8 +4483,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
       ).filter(Boolean) as { market: Market; quote: StockQuote }[];
 
       if (!resolved.length) {
-        missingSymbolCache.current.set(normalized, Date.now() + 60_000);
-        setMessage({ text: '查無此代號，請重試', type: 'error' });
+        setMessage({ text: '無法取得報價，請確認名稱或代號，或稍後重試', type: 'error' });
         return;
       }
 
@@ -4531,7 +4517,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
     } finally {
       setLoading(false);
     }
-  }, [activeListId, activeMarket, searchResults, selectedMarketHint, symbol, watchlists]);
+  }, [activeListId, selectedMarketHint, symbol, watchlists]);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -4581,7 +4567,7 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
             || /^[A-Z]{3}[/-][A-Z]{3}$/.test(normalized)
             || ['GOLD', 'AU', '黃金', 'PLATINUM', 'PT', '白金'].includes(normalized);
 
-          if (isDirectSymbol && directMarkets.length) {
+          if (isDirectSymbol && ['外匯', '貴金屬'].includes(directMarkets[0])) {
             const market = directMarkets[0];
             return { symbol: storedSymbolForMarket(normalized, market), market } as StockItem;
           }
@@ -4591,9 +4577,11 @@ export default function StockWatchlistClient({ accountConfigured = false }: { ac
           if (row.market === '美股') params.set('assetType', 'us_stock');
           if (row.market === '外匯') params.set('assetType', 'fx');
           if (row.market === '貴金屬') params.set('assetType', 'metal');
-          const payload = await fetchJson<MarketSearchResponse>(`/api/market/search?${params}`);
-          const match = payload.data?.[0];
-          if (!match) return null;
+          const payload = await fetchJson<MarketSearchResponse>(`/api/market/search?${params}`).catch(() => null);
+          const match = selectMarketSearchResult(row.query, payload?.data || []);
+          if (!match) return isDirectSymbol && directMarkets.length
+            ? { symbol: storedSymbolForMarket(normalized, directMarkets[0]), market: directMarkets[0] } as StockItem
+            : null;
           const market = marketFromAssetType(match.assetType);
           return { symbol: storedSymbolForMarket(match.symbol, market), market } as StockItem;
         }));

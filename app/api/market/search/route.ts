@@ -7,6 +7,7 @@ import {
   detectStockMarkets,
   normalizeStockSymbol,
 } from '@/lib/market/providers/stockMarketProvider';
+import { normalizeCompanyQuery, searchUsCompanies } from '@/lib/market/providers/usSymbolSearch';
 import { stockSearchResult } from '@/lib/market/providers/jacksuStockAdapter';
 
 export const dynamic = 'force-dynamic';
@@ -44,8 +45,8 @@ function normalizedSearchText(value: string) {
 async function fetchTaiwanCompanies() {
   try {
     const [listedResponse, otcResponse] = await Promise.all([
-      fetch(TWSE_COMPANIES_URL, { next: { revalidate: 86_400 } }),
-      fetch(TPEX_COMPANIES_URL, { next: { revalidate: 86_400 } }),
+      fetch(TWSE_COMPANIES_URL, { next: { revalidate: 86_400 }, signal: AbortSignal.timeout(5_000) }),
+      fetch(TPEX_COMPANIES_URL, { next: { revalidate: 86_400 }, signal: AbortSignal.timeout(5_000) }),
     ]);
     const [listed, otc] = await Promise.all([
       listedResponse.ok ? listedResponse.json() as Promise<Record<string, string>[]> : Promise.resolve([]),
@@ -115,7 +116,7 @@ function normalizeYahooSymbol(symbol: string, assetType: MarketAssetType) {
 
 function yahooQuoteToSearchResult(quote: YahooSearchQuote): MarketSearchResult | null {
   const symbol = quote.symbol?.trim();
-  if (!symbol || quote.quoteType !== 'EQUITY') return null;
+  if (!symbol || !['EQUITY', 'ETF'].includes(quote.quoteType || '')) return null;
 
   const assetType = yahooResultAssetType(symbol);
   if (!assetType) return null;
@@ -129,7 +130,7 @@ function yahooQuoteToSearchResult(quote: YahooSearchQuote): MarketSearchResult |
   return {
     ...base,
     displayName: quote.longname || quote.shortname || base.displayName,
-    description: quote.exchDisp || quote.exchange || base.description,
+    description: quote.exchDisp || quote.exchange || `${market} · ${quote.quoteType}`,
   };
 }
 
@@ -137,7 +138,7 @@ async function searchYahoo(query: string, assetType?: MarketAssetType) {
   if (!query || assetType === 'fx') return [];
 
   const url = new URL(YAHOO_SEARCH_URL);
-  url.searchParams.set('q', query);
+  url.searchParams.set('q', normalizeCompanyQuery(query));
   url.searchParams.set('quotesCount', '12');
   url.searchParams.set('newsCount', '0');
   url.searchParams.set('enableFuzzyQuery', 'true');
@@ -147,6 +148,7 @@ async function searchYahoo(query: string, assetType?: MarketAssetType) {
   try {
     const response = await fetch(url, {
       cache: 'no-store',
+      signal: AbortSignal.timeout(5_000),
       headers: {
         accept: 'application/json',
         'user-agent':
@@ -208,10 +210,12 @@ export async function GET(request: NextRequest) {
   }
 
   if (!assetType || assetType === 'tw_stock' || assetType === 'us_stock') {
-    if (!assetType || assetType === 'tw_stock') {
-      results.push(...await searchTaiwanCompanies(query));
-    }
-    results.push(...await searchYahoo(query, assetType));
+    const [taiwan, yahoo, us] = await Promise.all([
+      !assetType || assetType === 'tw_stock' ? searchTaiwanCompanies(query) : [],
+      searchYahoo(query, assetType),
+      !assetType || assetType === 'us_stock' ? searchUsCompanies(query) : [],
+    ]);
+    results.push(...taiwan, ...yahoo, ...us);
 
     const normalizedSymbol = normalizeStockSymbol(query);
     if (/^[A-Z0-9.-]+$/i.test(normalizedSymbol)) {
