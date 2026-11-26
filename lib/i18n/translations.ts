@@ -276,13 +276,13 @@ export const translations = {
           {
             degree: '碩士 - 資訊工程研究所',
             school: '國立中正大學 National Chung Cheng University',
-            period: '2022 - 2024',
+            period: '2020–2022',
             work: '基於變換器之文字與音轉換研究及其嵌入式實現',
           },
           {
             degree: '學士 - 資訊工程學系',
             school: '國立金門大學 National Quemoy University',
-            period: '2018 - 2022',
+            period: '2016–2020',
             work: '以 LoRa 為基礎之失智老人輔助裝置設計',
           },
         ],
@@ -619,13 +619,13 @@ export const translations = {
           {
             degree: 'M.S. - Computer Science',
             school: 'National Chung Cheng University',
-            period: '2022 - 2024',
+            period: '2020–2022',
             work: 'Research on Transformer-based Text-to-Speech Conversion and Embedded Implementation',
           },
           {
             degree: 'B.S. - Computer Science',
             school: 'National Quemoy University',
-            period: '2018 - 2022',
+            period: '2016–2020',
             work: 'Design of a LoRa-based Assistive Device for Elderly People with Dementia',
           },
         ],

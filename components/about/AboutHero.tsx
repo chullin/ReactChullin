@@ -101,14 +101,14 @@ export default function AboutHero() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Link href="https://drive.usercontent.google.com/download?id=1Y7-ZQm6389M_FmAKiWLb_vMu2TzWLVwB&export=download" isExternal target="_blank">
-                <Button
-                  className="h-12 rounded-full bg-slate-950 px-7 font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)] transition-all duration-500 hover:bg-slate-800"
-                  startContent={<Download size={17} />}
-                >
-                  {t('about.hero.resume')}
-                </Button>
-              </Link>
+              <a
+                href="/Chen_Sian_Yi_Resume_2026116.pdf"
+                download
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-slate-950 px-7 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)] transition-all duration-500 hover:bg-slate-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-950"
+              >
+                <Download size={17} aria-hidden="true" />
+                {t('about.hero.resume')}
+              </a>
               <div className="flex gap-2">
                 {[
                   { icon: <GithubIcon size={18} />, href: "https://github.com/chullin", label: "GitHub" },
